@@ -1,0 +1,1 @@
+musurgia is a library of different packages which can be used for algorithmic composition.

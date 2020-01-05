@@ -1,0 +1,6 @@
+venv
+*.pyc
+.idea
+dist
+build
+AGmusic.egg-info
