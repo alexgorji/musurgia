@@ -1,8 +1,8 @@
 from quicktions import Fraction
 from unittest import TestCase
 
-from basic_functions import xToD, dToX
-from quantize import get_quantized_values
+from musurgia.basic_functions import xToD, dToX
+from musurgia.quantize import get_quantized_values
 
 
 class Test(TestCase):

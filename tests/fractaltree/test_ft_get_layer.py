@@ -1,7 +1,7 @@
 from fractions import Fraction
 from unittest import TestCase
 
-from fractaltree.fractaltree import FractalTree
+from musurgia.fractaltree.fractaltree import FractalTree
 
 
 class Test(TestCase):

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from agrandom import AGRandom
+from musurgia.agrandom import AGRandom
 
 
 class Test(TestCase):

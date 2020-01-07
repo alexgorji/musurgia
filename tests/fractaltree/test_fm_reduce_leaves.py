@@ -2,66 +2,15 @@ import os
 from unittest import TestCase
 
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
-from tests.score_templates.xml_test_score import TestScore
-from quicktions import Fraction
 
-from AGmusic.AGfractaltree.fractaltree import FractalTree, FractalMusic
+from musurgia.fractaltree.fractalmusic import FractalMusic
+from musurgia.testcomparefiles import TestCompareFiles
 
 path = os.path.abspath(__file__).split('.')[0]
 
 
 class Test(TestCase):
-    def test_1_1(self):
-        ft = FractalTree(proportions=(1, 2, 3), tree_permutation_order=(3, 1, 2))
-        ft.add_layer()
-        ft.add_layer()
-        self.assertEqual([node.fractal_order for node in ft.traverse_leaves()], [1, 2, 3, 3, 1, 2, 2, 3, 1])
-
-    def test_1_2(self):
-        ft = FractalTree(proportions=(1, 2, 3), tree_permutation_order=(3, 1, 2))
-        ft.add_layer()
-        ft.add_layer()
-        self.assertEqual([node.value for node in ft.traverse_leaves()],
-                         [Fraction(5, 6), Fraction(5, 3), Fraction(5, 2), Fraction(5, 6), Fraction(5, 18),
-                          Fraction(5, 9),
-                          Fraction(10, 9), Fraction(5, 3), Fraction(5, 9)])
-
-    def test_1_3(self):
-        ft = FractalTree(proportions=(1, 2, 3), tree_permutation_order=(3, 1, 2))
-        ft.add_layer()
-        ft.add_layer()
-        for node in ft.get_layer(1):
-            node.reduce_children(condition=lambda node: node.fractal_order == 1)
-        self.assertEqual([node.fractal_order for node in ft.traverse_leaves()], [2, 3, 3, 2, 2, 3])
-
-    def test_1_4(self):
-        ft = FractalTree(proportions=(1, 2, 3), tree_permutation_order=(3, 1, 2))
-        ft.add_layer()
-        ft.add_layer()
-        for node in ft.get_layer(1):
-            node.reduce_children(condition=lambda node: node.fractal_order == 1)
-        self.assertEqual([node.value for node in ft.traverse_leaves()],
-                         [Fraction(25, 12), Fraction(35, 12), Fraction(35, 36), Fraction(25, 36), Fraction(25, 18),
-                          Fraction(35, 18)])
-
     def test_1(self):
-        ft = FractalTree(proportions=(1, 2, 3), tree_permutation_order=(3, 1, 2))
-        ft.add_layer()
-        ft.add_layer()
-        self.assertEqual([node.fractal_order for node in ft.traverse_leaves()], [1, 2, 3, 3, 1, 2, 2, 3, 1])
-        self.assertEqual([node.value for node in ft.traverse_leaves()],
-                         [Fraction(5, 6), Fraction(5, 3), Fraction(5, 2), Fraction(5, 6), Fraction(5, 18),
-                          Fraction(5, 9),
-                          Fraction(10, 9), Fraction(5, 3), Fraction(5, 9)])
-        # ft.reduce_leaves(condition=lambda node: node.fractal_order == 1)
-        for node in ft.get_layer(1):
-            node.reduce_children(condition=lambda node: node.fractal_order == 1)
-        self.assertEqual([node.fractal_order for node in ft.traverse_leaves()], [2, 3, 3, 2, 2, 3])
-        self.assertEqual([node.value for node in ft.traverse_leaves()],
-                         [Fraction(25, 12), Fraction(35, 12), Fraction(35, 36), Fraction(25, 36), Fraction(25, 18),
-                          Fraction(35, 18)])
-
-    def test_2(self):
         fm = FractalMusic(proportions=[1, 2, 3, 4], tree_permutation_order=[3, 1, 4, 2], quarter_duration=100)
         fm.midi_generator.midi_range = [60, 79]
         fm.add_layer()
@@ -83,9 +32,9 @@ class Test(TestCase):
         v = partial_fm.get_simple_format().__deepcopy__().to_stream_voice(1)
         v.add_to_score(score, 1, 3)
 
-        result_path = path + '_test_2'
-        score.write(result_path)
-        TestScore().assert_template(result_path=result_path)
+        xml_path = path + '_test_1.xml'
+        score.write(xml_path)
+        TestCompareFiles().assertTemplate(file_path=xml_path)
 
     # def test_3(self):
     #     fm = FractalMusic(proportions=[1, 2, 3, 4], tree_permutation_order=[3, 1, 4, 2], duration=100)
@@ -154,11 +103,11 @@ class Test(TestCase):
         v = simple_format.to_stream_voice(1)
         v.add_to_score(score, 1, 3)
 
+        text_path = path + '_test_5.txt'
+        fm.write_infos(text_path)
+        TestCompareFiles().assertTemplate(file_path=text_path)
 
-
-        result_path = path + '_test_5'
-        file_name = result_path + '.txt'
-        fm.write_infos(file_name)
+        xml_path = path + '_test_5.xml'
         score.max_division = 7
-        score.write(result_path)
-        TestScore().assert_template(result_path=result_path)
+        score.write(xml_path)
+        TestCompareFiles().assertTemplate(file_path=xml_path)

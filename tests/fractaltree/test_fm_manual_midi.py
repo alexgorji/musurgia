@@ -1,9 +1,8 @@
 import os
 from unittest import TestCase
 
-from tests.score_templates.xml_test_score import TestScore
-
-from AGmusic.AGfractaltree.fractaltree import FractalMusic
+from musurgia.fractaltree.fractalmusic import FractalMusic
+from musurgia.testcomparefiles import TestCompareFiles
 
 path = os.path.abspath(__file__).split('.')[0]
 
@@ -21,11 +20,14 @@ class Test(TestCase):
             node.chord.add_lyric(node.fractal_order)
         score = self.fm.get_score()
         score.max_division = 7
-        result_path = path + '_test_1'
+
         text_path = path + '_test_1.txt'
         self.fm.write_infos(text_path)
-        score.write(path=result_path)
-        TestScore().assert_template(result_path=result_path)
+        TestCompareFiles().assertTemplate(file_path=text_path)
+
+        xml_path = path + '_test_1.xml'
+        score.write(path=xml_path)
+        TestCompareFiles().assertTemplate(file_path=xml_path)
 
     def test_2(self):
         self.fm.midi_generator.midi_range = [60, 72]
@@ -42,8 +44,11 @@ class Test(TestCase):
             node.chord.add_lyric(node.fractal_order)
         score = self.fm.get_score()
         score.max_division = 7
-        result_path = path + '_test_2'
+
         text_path = path + '_test_2.txt'
-        score.write(path=result_path)
         self.fm.write_infos(text_path)
-        TestScore().assert_template(result_path=result_path)
+        TestCompareFiles().assertTemplate(file_path=text_path)
+
+        xml_path = path + '_test_2.xml'
+        score.write(path=xml_path)
+        TestCompareFiles().assertTemplate(file_path=xml_path)

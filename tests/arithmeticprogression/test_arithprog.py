@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from arithmeticprogression import ArithmeticProgression
-from quantize import get_quantized_values
+from musurgia.arithmeticprogression import ArithmeticProgression
+from musurgia.quantize import get_quantized_values
 
 
 class Test(TestCase):

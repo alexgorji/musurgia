@@ -3,8 +3,8 @@ from unittest import TestCase
 
 from musicscore.musictree.midi import C
 
-from fractaltree.fractalmusic import FractalMusic
-from testfilecontent import TestFileContent
+from musurgia.fractaltree.fractalmusic import FractalMusic
+from musurgia.testcomparefiles import TestCompareFiles
 
 path = os.path.abspath(__file__).split('.')[0]
 
@@ -30,7 +30,7 @@ class Test(TestCase):
         xml_path = path + '_test_1.xml'
         score.write(path=xml_path)
 
-        TestFileContent().assertTemplate(file_path=xml_path)
+        TestCompareFiles().assertTemplate(file_path=xml_path)
 
     def test_2(self):
         self.fm.midi_generator.midi_range = [C(4).value, C(6).value]
@@ -56,4 +56,4 @@ class Test(TestCase):
         xml_path = path + '_test_2.xml'
         score.write(path=xml_path)
 
-        TestFileContent().assertTemplate(file_path=xml_path)
+        TestCompareFiles().assertTemplate(file_path=xml_path)

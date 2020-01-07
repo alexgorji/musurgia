@@ -2,9 +2,9 @@ import os
 from unittest import TestCase
 
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
-from tests.score_templates.xml_test_score import TestScore
 
-from AGmusic.AGfractaltree.fractaltree import FractalMusic
+from musurgia.fractaltree.fractalmusic import FractalMusic
+from musurgia.testcomparefiles import TestCompareFiles
 
 path = os.path.abspath(__file__).split('.')[0]
 
@@ -17,10 +17,15 @@ class Test(TestCase):
         self.fm.midi_generator.midi_range = [55, 55 + 24]
         self.fm.midi_generator.microtone = 4
 
+    def add_infos(self, fm):
+        for leaf in fm.traverse_leaves():
+            leaf.chord.add_lyric(leaf.fractal_order, relative_y=20)
+            leaf.chord.add_words(round(float(leaf.quarter_duration), 2), relative_y=30)
+            leaf.chord.add_words(leaf.chord.midis[0].value, relative_y=50)
+
     def test_1(self):
 
         self.fm.midi_generator.set_directions(1, 1, 1, 1)
-
         self.fm.add_layer()
 
         self.add_infos(self.fm)
@@ -34,15 +39,11 @@ class Test(TestCase):
             v = sf.to_stream_voice(1)
             v.add_to_score(score, 1, layer + 1)
 
-        result_path = path + '_test_1'
-        score.write(path=result_path)
-        TestScore().assert_template(result_path=result_path)
+        xml_path = path + '_test_1.xml'
+        score.write(path=xml_path)
+        TestCompareFiles().assertTemplate(file_path=xml_path)
 
-    def add_infos(self, fm):
-        for leaf in fm.traverse_leaves():
-            leaf.chord.add_lyric(leaf.fractal_order, relative_y=20)
-            leaf.chord.add_words(round(float(leaf.quarter_duration), 2), relative_y=30)
-            leaf.chord.add_words(leaf.chord.midis[0].value, relative_y=50)
+
 
     # def test_2(self):
     #     self.fm.midi_generator.directions = [1]
@@ -156,10 +157,10 @@ class Test(TestCase):
             v = simple_format.to_stream_voice(1)
             v.add_to_score(score, 1, layer_number + 1)
 
-        result_path = path + '_test_7'
+        xml_path = path + '_test_7.xml'
         score.accidental_mode = 'normal'
-        score.write(result_path)
-        TestScore().assert_template(result_path=result_path)
+        score.write(xml_path)
+        TestCompareFiles().assertTemplate(file_path=xml_path)
 
     def test_8(self):
         fm = FractalMusic(proportions=[1, 2, 3, 4, 5, 6, 7], tree_permutation_order=[3, 6, 1, 5, 7, 2, 4])
@@ -197,13 +198,15 @@ class Test(TestCase):
         fm.get_children()[3].reduce_children(lambda child: child.fractal_order > 4)
         for node in fm.traverse():
             node.chord.add_words(node.midi_value)
-        file_name = path + '_test_9.txt'
-
-        fm.write_infos(file_name)
+        text_path = path + '_test_9.txt'
+        fm.write_infos(text_path)
+        TestCompareFiles().assertTemplate(file_path=text_path)
 
         score = fm.get_score()
-        file_name = path + '_test_9'
-        score.write(file_name)
+        xml_path = path + '_test_9.xml'
+        score.write(xml_path)
+        TestCompareFiles().assertTemplate(file_path=xml_path)
+
 
     def test_10(self):
         fm = FractalMusic(proportions=[1, 2, 3], tree_permutation_order=[3, 1, 2])
@@ -223,7 +226,6 @@ class Test(TestCase):
         score = TreeScoreTimewise()
         score = fm.get_score(score)
         score.page_style.staff_distance = 150
-        xml_path = path + '_test_10'
+        xml_path = path + '_test_10.xml'
         score.write(xml_path)
-
-        TestScore().assert_template(xml_path)
+        TestCompareFiles().assertTemplate(xml_path)

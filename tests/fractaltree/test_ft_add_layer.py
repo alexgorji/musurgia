@@ -2,7 +2,7 @@ import os
 from unittest import TestCase
 from quicktions import Fraction
 
-from fractaltree.fractaltree import FractalTree
+from musurgia.fractaltree.fractaltree import FractalTree
 
 path = os.path.abspath(__file__).split('.')[0]
 

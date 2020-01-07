@@ -1,5 +1,5 @@
 from unittest import TestCase
-from permutation.permutation import LimitedPermutation
+from musurgia.permutation import LimitedPermutation
 
 
 class Test(TestCase):

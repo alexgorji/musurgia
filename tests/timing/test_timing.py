@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from timing import Clock, Timing
+from musurgia.timing import Clock, Timing
 
 
 class Test(TestCase):

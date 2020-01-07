@@ -3,8 +3,8 @@ from unittest import TestCase
 
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
-from fractaltree.fractalmusic import FractalMusic
-from testfilecontent import TestFileContent
+from musurgia.fractaltree.fractalmusic import FractalMusic
+from musurgia.testcomparefiles import TestCompareFiles
 
 path = os.path.abspath(__file__).split('.')[0]
 
@@ -38,8 +38,8 @@ class Test(TestCase):
         score.write(path=xml_path)
         text_path = path + '_test_1.txt'
         fm.write_infos(text_path)
-        TestFileContent().assertTemplate(file_path=text_path)
-        TestFileContent().assertTemplate(file_path=xml_path)
+        TestCompareFiles().assertTemplate(file_path=text_path)
+        TestCompareFiles().assertTemplate(file_path=xml_path)
 
     def test_2(self):
         fm = FractalMusic(quarter_duration=12, tree_permutation_order=(3, 1, 2), proportions=[1, 2, 3], multi=(1, 2))
@@ -52,4 +52,4 @@ class Test(TestCase):
 
         text_path = path + '_test_2.txt'
         fm.write_infos(text_path)
-        TestFileContent().assertTemplate(file_path=text_path)
+        TestCompareFiles().assertTemplate(file_path=text_path)

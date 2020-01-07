@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from tree import Tree
+from musurgia.tree import Tree
 
 
 class Test(TestCase):

@@ -1,7 +1,7 @@
 from fractions import Fraction
 from unittest import TestCase
 
-from fractaltree.fractalmusic import FractalMusic
+from musurgia.fractaltree.fractalmusic import FractalMusic
 
 
 def get_infos(fm):

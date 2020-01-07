@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
-from AGmusic.AGfractaltree.fractaltree import FractalMusic
+from musurgia.fractaltree.fractalmusic import FractalMusic
 
 path = os.path.abspath(__file__).split('.')[0]
 

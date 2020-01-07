@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from fractaltree.fractalmusic import FractalMusic
+from musurgia.fractaltree.fractalmusic import FractalMusic
 import os
 
 path = os.path.abspath(__file__).split(".")[0]

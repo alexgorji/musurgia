@@ -4,8 +4,8 @@ from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
 import os
 
-from fractaltree.fractalmusic import FractalMusic
-from testfilecontent import TestFileContent
+from musurgia.fractaltree.fractalmusic import FractalMusic
+from musurgia.testcomparefiles import TestCompareFiles
 
 path = os.path.abspath(__file__).split('.')[0]
 
@@ -25,4 +25,4 @@ class Test(TestCase):
         v.add_to_score(self.score)
         xml_path = path + '_test_1.xml'
         self.score.write(xml_path)
-        TestFileContent().assertTemplate(xml_path)
+        TestCompareFiles().assertTemplate(xml_path)

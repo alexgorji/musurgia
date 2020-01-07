@@ -1,3 +1,5 @@
 quicktions==1.9
 musicscore==1.0.0
 prettytable==0.7.2
+diff-pdf-visually == 1.4.1
+fpdf2 == 2.0.3
