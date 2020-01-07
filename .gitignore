@@ -3,4 +3,7 @@ venv
 .idea
 dist
 build
-AGmusic.egg-info
+musurgia.egg-info
+
+
+
