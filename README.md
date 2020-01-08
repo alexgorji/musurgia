@@ -11,5 +11,10 @@ permutation
 LimitedPermutation  
 FractalTree  
 
+v 1.1.1
+reading_direction (vertical) added to:  
+Square()
+pdf function deleted in Square() and Module() 
+
 
 
