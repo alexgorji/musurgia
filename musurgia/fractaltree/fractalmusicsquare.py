@@ -4,6 +4,7 @@ from prettytable import PrettyTable
 from quicktions import Fraction
 
 from musurgia.fractaltree.fractalmusic import FractalMusic
+from musurgia.fractaltree.fractaltree import FractalTreeException
 
 
 class Module(FractalMusic):
@@ -82,65 +83,65 @@ class Module(FractalMusic):
         file.write(x.get_string())
         file.close()
 
-    def get_time_line(self, factor=1, **kwargs):
-        return TreeTimeLine(length=self.quarter_duration, factor=factor, **kwargs)
+    # def get_time_line(self, factor=1, **kwargs):
+    #     return TreeTimeLine(length=self.quarter_duration, factor=factor, **kwargs)
 
-    def get_pdf(self, factor=None):
-        pdf = Pdf(orientation='landscape')
-
-        # pdf.set_margins(20, 20, 20)
-
-        pdf.write_line(txt=self.__name__)
-        pdf.write_line(txt='tree_permutation_order: ' + str(self.tree_permutation_order))
-        pdf.write_line(txt='permutation_order: ' + str(self.permutation_order))
-
-        pdf.write_line(txt='module_tempo: ' + str(self.module_tempo))
-        pdf.write_line(txt='score_tempo: ' + str(self.score_tempo))
-        pdf.write_line(txt='quarter_duration: ' + str(self.quarter_duration))
-        pdf.write_line(txt='duration: ' + str(round(float(self.actual_duration), 2)))
-
-        if factor is None:
-            factor = (pdf.w - pdf.l_margin - pdf.r_margin) / self.quarter_duration
-
-        module_tl = TreeTimeLine(length=self.quarter_duration, factor=factor)
-        label_6 = Label(text=round(float(self.quarter_duration), 2), relative_y=-1,
-                        relative_x=self.quarter_duration * module_tl.factor / 2)
-        label_6.font.size = 5
-        module_tl.mark_line.add_label(label_6)
-
-        label_7 = Label(text=round(float(self.actual_duration), 2), relative_y=1,
-                        relative_x=self.quarter_duration * module_tl.factor / 2)
-        label_7.font.size = 5
-        module_tl.mark_line.add_label(label_7)
-
-        for child in self.get_children():
-            child_tl = module_tl.add_child(TreeTimeLine(length=child.quarter_duration, x_offset=None, y_offset=None))
-
-            label_1 = Label(text=child.fractal_order)
-            label_1.font.size = 5
-            child_tl.mark_line.add_label(label_1)
-
-            label_2 = Label(text=round(float(child.quarter_position_in_tree), 2), relative_y=5)
-            label_2.font.size = 5
-            child_tl.mark_line.add_label(label_2)
-
-            label_3 = Label(text=round(float(child.position_in_score), 2), relative_y=7)
-            label_3.font.size = 5
-            child_tl.mark_line.add_label(label_3)
-
-            label_4 = Label(text=round(float(child.quarter_duration), 2), relative_y=-1,
-                            relative_x=child.quarter_duration * child_tl.factor / 2)
-            label_4.font.size = 5
-            child_tl.mark_line.add_label(label_4)
-
-            label_5 = Label(text=round(float(child.actual_duration), 2), relative_y=1,
-                            relative_x=child.quarter_duration * child_tl.factor / 2)
-            label_5.font.size = 5
-            child_tl.mark_line.add_label(label_5)
-
-        pdf.add_time_line(module_tl)
-
-        return pdf
+    # def get_pdf(self, factor=None):
+    #     pdf = Pdf(orientation='landscape')
+    #
+    #     # pdf.set_margins(20, 20, 20)
+    #
+    #     pdf.write_line(txt=self.__name__)
+    #     pdf.write_line(txt='tree_permutation_order: ' + str(self.tree_permutation_order))
+    #     pdf.write_line(txt='permutation_order: ' + str(self.permutation_order))
+    #
+    #     pdf.write_line(txt='module_tempo: ' + str(self.module_tempo))
+    #     pdf.write_line(txt='score_tempo: ' + str(self.score_tempo))
+    #     pdf.write_line(txt='quarter_duration: ' + str(self.quarter_duration))
+    #     pdf.write_line(txt='duration: ' + str(round(float(self.actual_duration), 2)))
+    #
+    #     if factor is None:
+    #         factor = (pdf.w - pdf.l_margin - pdf.r_margin) / self.quarter_duration
+    #
+    #     module_tl = TreeTimeLine(length=self.quarter_duration, factor=factor)
+    #     label_6 = Label(text=round(float(self.quarter_duration), 2), relative_y=-1,
+    #                     relative_x=self.quarter_duration * module_tl.factor / 2)
+    #     label_6.font.size = 5
+    #     module_tl.mark_line.add_label(label_6)
+    #
+    #     label_7 = Label(text=round(float(self.actual_duration), 2), relative_y=1,
+    #                     relative_x=self.quarter_duration * module_tl.factor / 2)
+    #     label_7.font.size = 5
+    #     module_tl.mark_line.add_label(label_7)
+    #
+    #     for child in self.get_children():
+    #         child_tl = module_tl.add_child(TreeTimeLine(length=child.quarter_duration, x_offset=None, y_offset=None))
+    #
+    #         label_1 = Label(text=child.fractal_order)
+    #         label_1.font.size = 5
+    #         child_tl.mark_line.add_label(label_1)
+    #
+    #         label_2 = Label(text=round(float(child.quarter_position_in_tree), 2), relative_y=5)
+    #         label_2.font.size = 5
+    #         child_tl.mark_line.add_label(label_2)
+    #
+    #         label_3 = Label(text=round(float(child.position_in_score), 2), relative_y=7)
+    #         label_3.font.size = 5
+    #         child_tl.mark_line.add_label(label_3)
+    #
+    #         label_4 = Label(text=round(float(child.quarter_duration), 2), relative_y=-1,
+    #                         relative_x=child.quarter_duration * child_tl.factor / 2)
+    #         label_4.font.size = 5
+    #         child_tl.mark_line.add_label(label_4)
+    #
+    #         label_5 = Label(text=round(float(child.actual_duration), 2), relative_y=1,
+    #                         relative_x=child.quarter_duration * child_tl.factor / 2)
+    #         label_5.font.size = 5
+    #         child_tl.mark_line.add_label(label_5)
+    #
+    #     pdf.add_time_line(module_tl)
+    #
+    #     return pdf
 
     def __deepcopy__(self, memodict={}):
         copied = super().__deepcopy__(memodict)
@@ -228,17 +229,20 @@ class Column(RowColumn):
 
 
 class Square(object):
-    def __init__(self, duration, proportions, tree_permutation_order, first_multi=(1, 1)):
+    def __init__(self, duration, proportions, tree_permutation_order, first_multi=(1, 1),
+                 reading_direction='horizontal'):
 
         self._duration = None
         self._proportions = None
         self._modules = {}
         self._tree_permutation_order = None
         self._first_multi = (1, 1)
+        self._reading_direction = None
         self._side_size = None
 
         self.duration = duration
         self.proportions = proportions
+        self.reading_direction = reading_direction
         self.tree_permutation_order = tree_permutation_order
         self.first_multi = first_multi
         self._rows = None
@@ -312,9 +316,25 @@ class Square(object):
                     self.r_c_to_index(module.row_number, module.column_number) + self.r_c_to_index(self.first_multi[0],
                                                                                                    self.first_multi[1]))
 
+    @property
+    def reading_direction(self):
+        return self._reading_direction
+
+    @reading_direction.setter
+    def reading_direction(self, val):
+        if self._reading_direction:
+            raise FractalTreeException('reading_direction can only be set during initialisation')
+        permitted = ['horizontal', 'vertical']
+        if val not in permitted:
+            raise ValueError('reading_direction.value {} must be in {}'.format(val, permitted))
+        self._reading_direction = val
+
     def get_module(self, *args):
         args = tuple(args)
         return self.modules[args]
+
+    def get_all_modules(self):
+        return self.modules.values()
 
     @property
     def rows(self):
@@ -367,7 +387,7 @@ class Square(object):
                     self.r_c_to_index(row, column) + self.r_c_to_index(self.first_multi[0], self.first_multi[1]))
                 module = Module(duration=module_durations[column - 1],
                                 tree_permutation_order=self.tree_permutation_order, proportions=self.proportions,
-                                multi=multi)
+                                multi=multi, reading_direction=self.reading_direction)
                 (module.row_number, module.column_number) = (row, column)
                 self._modules[(row, column)] = module
                 module._parent_square = self
@@ -434,49 +454,48 @@ class Square(object):
         file.write(x.get_string())
         file.close()
 
+# class Selection(object):
+#
+#     def __init__(self, *modules, **kwargs):
+#         super().__init__(**kwargs)
+#         self._modules = None
+#         self._time_lines = {}
+#         self.modules = modules
+#
+#     @property
+#     def time_lines(self):
+#         return self._time_lines
+#
+#     @property
+#     def modules(self):
+#         return self._modules
+#
+#     @modules.setter
+#     def modules(self, val):
+#         self.remove_modules()
+#         for v in val:
+#             self.add_module(v)
+#
+#     def remove_modules(self):
+#         self._modules = []
+#
+#     def _get_last_position_in_time_lines(self):
+#         positions = [v.x_offset + v.length for v in self._time_lines.values()]
+#         try:
+#             return max(positions)
+#         except ValueError:
+#             return 0
+#
+#     def add_module(self, module):
+#         if not isinstance(module, Module):
+#             raise TypeError('added module must be of type not{}'.format(type(module)))
+#         self._modules.append(module)
+#         x_offset = self._get_last_position_in_time_lines()
+#         self._time_lines[module] = module.get_time_line(x_offset=x_offset)
 
-class Selection(object):
-
-    def __init__(self, *modules, **kwargs):
-        super().__init__(**kwargs)
-        self._modules = None
-        self._time_lines = {}
-        self.modules = modules
-
-    @property
-    def time_lines(self):
-        return self._time_lines
-
-    @property
-    def modules(self):
-        return self._modules
-
-    @modules.setter
-    def modules(self, val):
-        self.remove_modules()
-        for v in val:
-            self.add_module(v)
-
-    def remove_modules(self):
-        self._modules = []
-
-    def _get_last_position_in_time_lines(self):
-        positions = [v.x_offset + v.length for v in self._time_lines.values()]
-        try:
-            return max(positions)
-        except ValueError:
-            return 0
-
-    def add_module(self, module):
-        if not isinstance(module, Module):
-            raise TypeError('added module must be of type not{}'.format(type(module)))
-        self._modules.append(module)
-        x_offset = self._get_last_position_in_time_lines()
-        self._time_lines[module] = module.get_time_line(x_offset=x_offset)
-
-    def get_pdf(self):
-        pdf = Pdf(orientation='landscape')
-        for time_line in self.time_lines.values():
-            pdf.add_time_line(time_line)
-
-        return pdf
+# def get_pdf(self):
+#     pdf = Pdf(orientation='landscape')
+#     for time_line in self.time_lines.values():
+#         pdf.add_time_line(time_line)
+#
+#     return pdf
