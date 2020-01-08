@@ -12,13 +12,16 @@ class FractalTreeException(Exception):
 
 
 class FractalTree(Tree):
-    def __init__(self, proportions, tree_permutation_order, value=None, multi=None, fertile=True, *args, **kwargs):
+    def __init__(self, proportions=None, tree_permutation_order=None, value=None, multi=None, fertile=True,
+                 reading_direction='horizontal', *args, **kwargs):
         super().__init__(self, *args, **kwargs)
         self._value = None
         self._proportions = None
         self._tree_permutation_order = None
         self._multi = None
         self._permutation_order = None
+        self._fertile = None
+        self._reading_direction = None
         self._fractal_order = None
         self._children_fractal_values = None
         self._name = None
@@ -28,17 +31,17 @@ class FractalTree(Tree):
         self.value = value
         self.multi = multi
         self.fertile = fertile
+        self.reading_direction = reading_direction
 
     @property
     def proportions(self):
-        if self._proportions is None:
-            self._proportions = [1, 1]
         return self._proportions
 
     @proportions.setter
     def proportions(self, values):
-        if values:
-            self._proportions = [Fraction(Fraction(value) / Fraction(sum(values))) for value in values]
+        if values is None:
+            values = [1, 2, 3]
+        self._proportions = [Fraction(Fraction(value) / Fraction(sum(values))) for value in values]
 
     @property
     def tree_permutation_order(self):
@@ -46,6 +49,8 @@ class FractalTree(Tree):
 
     @tree_permutation_order.setter
     def tree_permutation_order(self, values):
+        if values is None:
+            values = [3, 1, 2]
         self._tree_permutation_order = values
         self._permutation_order = None
 
@@ -88,11 +93,35 @@ class FractalTree(Tree):
         self._permutation_order = None
 
     @property
+    def fertile(self):
+        return self._fertile
+
+    @fertile.setter
+    def fertile(self, val):
+        if not isinstance(val, bool):
+            raise TypeError('fertile.value must be of type bool not{}'.format(type(val)))
+        self._fertile = val
+
+    @property
+    def reading_direction(self):
+        return self._reading_direction
+
+    @reading_direction.setter
+    def reading_direction(self, val):
+        if self._reading_direction:
+            raise FractalTreeException('reading_direction can only be set during initialisation')
+        permitted = ['horizontal', 'vertical']
+        if val not in permitted:
+            raise ValueError('reading_direction.value {} must be in {}'.format(val, permitted))
+        self._reading_direction = val
+
+    @property
     def permutation_order(self):
         def _calculate_permutation_order():
             if self.tree_permutation_order:
                 permutation = LimitedPermutation(input_list=list(range(1, len(self.proportions) + 1)),
-                                                 main_permutation_order=self.tree_permutation_order, multi=self.multi)
+                                                 main_permutation_order=self.tree_permutation_order, multi=self.multi,
+                                                 reading_direction=self.reading_direction)
 
                 return permutation.permutation_order
             else:
@@ -187,7 +216,6 @@ class FractalTree(Tree):
         if value == 0:
             value = 0.01
         if value and self.proportions:
-
             children_fractal_values = [value * prop for prop in self.proportions]
             if self.permutation_order:
                 try:
@@ -207,7 +235,7 @@ class FractalTree(Tree):
     def add_self(self):
         leaves = self.get_leaves()
         for leaf in leaves:
-            new_node = self.copy_node()
+            new_node = self.copy()
             new_node._up = self
             new_node._fractal_order = self.fractal_order
             leaf.add_child(new_node)
@@ -357,31 +385,19 @@ class FractalTree(Tree):
                 for sister in non_zero_sisters:
                     if sister.value != 0:
                         sister.value += addition
-                        # if isinstance(self, FractalMusic):
-                        #     sister.quarter_duration = None
                 self.value = 0
-                # if isinstance(self, FractalMusic):
-                #     self.quarter_duration = None
 
     def reduce_children(self, condition):
-        # if isinstance(self, FractalMusic):
-        #     midis = [child.midi_value for child in self.get_children()]
 
         for child in self.get_children():
             if condition(child):
                 child._reduce()
 
         to_be_detached = [child for child in self.get_children() if condition(child)]
-        # last_midi_range = self.get_children()[-1].midi_generator.midi_range
         for child in to_be_detached:
             child.detach()
 
         self._children_fractal_values = [child.value for child in self.get_children()]
-        # if isinstance(self, FractalMusic):
-        #     try:
-        #         self.change_midis()
-        #     except TypeError:
-        #         pass
 
     def merge_children(self, *lengths):
         children = self.get_children()
@@ -403,22 +419,13 @@ class FractalTree(Tree):
         for chunk in chunks:
             _merge(chunk)
 
-    def copy_node(self):
-        return self.__class__(value=self.value, proportions=self.proportions,
-                              tree_permutation_order=self.tree_permutation_order, multi=self.multi,
-                              fertile=self.fertile)
-
     def copy(self):
         return self.__class__(value=self.value, proportions=self.proportions,
-                              tree_permutation_order=self.tree_permutation_order, fertile=self.fertile)
+                              tree_permutation_order=self.tree_permutation_order, multi=self.multi,
+                              reading_direction=self.reading_direction, fertile=self.fertile)
 
     def __deepcopy__(self, memodict={}):
-        # return super().__deepcopy__(proportions=self.proportions, tree_permutation_order=self.tree_permutation_order)
-        copied = self.__class__(value=self.value, proportions=self.proportions,
-                                tree_permutation_order=self.tree_permutation_order, fertile=self.fertile,
-                                # first_position=self.first_position,
-                                multi=self.multi)
-
+        copied = self.copy()
         copied._fractal_order = self.fractal_order
         copied.__name__ = self.__name__
         return copied

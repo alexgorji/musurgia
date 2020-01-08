@@ -3,7 +3,6 @@ import os
 
 from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treechord import TreeChord
-from musicscore.musictree.treemeasure import TreeMeasure
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 from prettytable import PrettyTable
 from quicktions import Fraction
@@ -19,7 +18,8 @@ from musurgia.timing import Timing
 class FractalMusic(FractalTree):
     def __init__(self, midi_generator=None, duration=None, module_tempo=60, score_tempo=None, quarter_duration=None,
                  tree_directions=None, permute_directions=True, *args, **kwargs):
-        super().__init__(value=duration, *args, **kwargs)
+        # super().__init__(value=duration, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self._midi_value = None
         self._chord = None
@@ -147,9 +147,6 @@ class FractalMusic(FractalTree):
                 output.append(cycled.__next__())
             val = output
         self._tree_directions = val
-        # for node in self.traverse():
-        #     if isinstance(node._midi_generator, RelativeMidi):
-        #         node._midi_generator._diretions = None
 
     @property
     def midi_generator(self):
@@ -167,9 +164,6 @@ class FractalMusic(FractalTree):
 
             if not self._midi_generator._directions:
                 tree_directions = self.get_root().tree_directions
-
-                # direction_iterator = itertools.cycle(tree_directions)
-                # directions = [direction_iterator.__next__() for i in range(len(self.proportions))]
 
                 if self.permute_directions:
                     directions = permute(tree_directions, self.permutation_order)
@@ -298,7 +292,6 @@ class FractalMusic(FractalTree):
             self._chord = TreeChord(quarter_duration=self.quarter_duration, midis=[self.midi_value])
         else:
             self._chord.quarter_duration = self.quarter_duration
-            # self._chord.midis = [self.midi_value]
 
         return self._chord
 
@@ -336,28 +329,6 @@ class FractalMusic(FractalTree):
             self.add_child(new_node)
 
         return self.get_children()
-
-    # def add_field(self, field):
-    #     field.duration = self.duration
-    #     notes = list(field)
-    #     self.add_notes(notes)
-
-    # def split_rest(self, offset=None):
-    #     if not self.is_leaf():
-    #         raise Exception('FractalMusic.split_rest can only be used on leaves')
-    #     else:
-    #         if self.chord.quarter_duration > 0.5:
-    #
-    #             if offset is None:
-    #                 offset = self.position_in_tree - int(self.position_in_tree)
-    #             else:
-    #                 print('split_rest.offset:', self.name, offset)
-    #
-    #             duration = 1 - offset
-    #             if offset % 1. == 0: duration = 0.5
-    #             first_note = copy.deepcopy(self.chord)
-    #             first_note.duration = duration
-    #             self.add_notes([first_note])
 
     def merge_children(self, *lengths):
         super().merge_children(*lengths)
@@ -485,14 +456,6 @@ class FractalMusic(FractalTree):
         else:
             layer_to_score(layer_number, 1)
 
-        measures = score.get_children_by_type(TreeMeasure)
-
-        # for index, measure in enumerate(measures):
-        #     if index == 0:
-        #         measure.add_page_break()
-        #     elif index % 4 == 0 and index != len(measures) - 1:
-        #         measure.add_system_break()
-
         score.get_measure(1).get_part(1).add_metronome(per_minute=self.score_tempo, relative_y=40)
         score.get_measure(-1).set_barline_style('light-heavy')
 
@@ -532,25 +495,6 @@ class FractalMusic(FractalTree):
         file.write(x.get_string())
         file.close()
 
-    # @property
-    # def __name__(self):
-    #     return self.index
-
-    def copy_node(self):
-        copied_midi_generator = self.midi_generator.copy()
-        copied = self.__class__(duration=self.duration, proportions=self.proportions,
-                                tree_permutation_order=self.tree_permutation_order, multi=self.multi,
-                                fertile=self.fertile, midi_generator=copied_midi_generator,
-                                module_tempo=self.get_root().module_tempo, score_tempo=self.get_root().score_tempo,
-                                permute_directions=self.permute_directions)
-
-        if self.fertile is False:
-            try:
-                copied.midi_value = self.midi_value
-            except:
-                copied.midi_value = None
-        return copied
-
     def copy(self):
         copied_midi_generator = self.midi_generator.copy()
 
@@ -560,35 +504,19 @@ class FractalMusic(FractalTree):
             copied_midi_generator.proportions = None
             copied_midi_generator._iterator = None
 
-        # copied_midi_generator.directions = self.get_tree_root().midi_generator.directions
-
-        copied = self.__class__(duration=self.duration, module_tempo=self.get_root().module_tempo,
-                                score_tempo=self.get_root().score_tempo, proportions=self.proportions,
-                                tree_permutation_order=self.tree_permutation_order, fertile=self.fertile,
-                                midi_generator=copied_midi_generator,
-                                # first_position=self.first_position,
-                                permute_directions=self.permute_directions, tree_directions=self.tree_directions)
-
-        # print(copied.permutation_order)
+        copied = super().copy()
+        copied.module_tempo = self.get_root().module_tempo
+        copied.score_tempo = self.get_root().score_tempo
+        copied.midi_generator = copied_midi_generator
+        copied.tree_directions = self.tree_directions
+        copied.permute_directions = self.permute_directions
 
         if self.fertile is False:
-            try:
-                copied._midi_value = self._midi_value
-            except:
-                copied._midi_value = None
+            copied._midi_value = self._midi_value
         return copied
 
     def reduce_children(self, condition):
         super().reduce_children(condition)
-        # for child in self.get_children():
-        #     if condition(child):
-        #         child._reduce()
-        #
-        # to_be_detached = [child for child in self.get_children() if condition(child)]
-        # for child in to_be_detached:
-        #     child.detach()
-        #
-        # self._children_fractal_values = [child.value for child in self.get_children()]
 
         for child in self.get_children():
             child.quarter_duration = None
@@ -599,17 +527,10 @@ class FractalMusic(FractalTree):
             pass
 
     def __deepcopy__(self, memodict={}):
-        copied = self.__class__(duration=self.duration, proportions=self.proportions,
-                                tree_permutation_order=self.tree_permutation_order, fertile=self.fertile,
-                                # first_position=self.first_position,
-                                multi=self.multi)
-
+        copied = super().copy()
+        copied.multi = self.multi
         copied._fractal_order = self.fractal_order
         copied._name = self.__name__
-        # copied = super().__deepcopy__(memodict=memodict)
-        # copied.duration = self.duration
-        # print(copied.duration)
-        # print(copied.value)
         copied.module_tempo = self.module_tempo
         copied.score_tempo = self.score_tempo
         if self._midi_generator is not None:
@@ -617,20 +538,10 @@ class FractalMusic(FractalTree):
         copied.permute_directions = self.permute_directions
         copied.tree_directions = self.tree_directions
 
-        # copied = self.__class__(duration=self.duration, module_tempo=self.get_root().module_tempo,
-        #                         score_tempo=self.get_root().score_tempo, proportions=self.proportions,
-        #                         tree_permutation_order=self.tree_permutation_order, fertile=self.fertile,
-        #                         midi_generator=copied_midi_generator, first_position=self.first_position,
-        #                         permute_directions=self.permute_directions, tree_directions=self.tree_directions,
-        #                         multi=self.multi)
-
         copied._up = self.up
         for child in self.get_children():
             copied.add_child(child.__deepcopy__())
 
         if self.fertile is False:
-            try:
-                copied._midi_value = self._midi_value
-            except:
-                copied._midi_value = None
+            copied._midi_value = self._midi_value
         return copied

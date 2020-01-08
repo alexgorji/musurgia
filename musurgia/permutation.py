@@ -23,24 +23,42 @@ def self_permute(permutation_order):
     return output
 
 
-def multiplied_permutation(permutation_order, multi):
-    self_permuted = self_permute(permutation_order)
-    multiplier = self_permuted[multi - 1]
+def get_self_multiplied_permutation(permutation_order):
+    self_permuted_order = self_permute(permutation_order)
+    multiplied = [permute(self_permuted_order, current_order) for current_order in self_permuted_order]
+    return multiplied
 
-    return [self_permuted[m - 1] for m in multiplier]
+
+def get_reordered_self_multiplied_permutation(permutation_order):
+    def _reorder(matrix):
+        index_of_first_row = None
+        for index_of_first_row in range(len(matrix)):
+            if matrix[index_of_first_row][0] == permutation_order:
+                break
+        output = []
+        for i in range(index_of_first_row, index_of_first_row + len(matrix)):
+            output.append(matrix[i % len(matrix)])
+        return output
+
+    multiplied = get_self_multiplied_permutation(permutation_order)
+    return _reorder(multiplied)
 
 
-def _transpose(matrix):
-    output = []
-    for i in range(len(matrix)):
-        temp = []
-        for j in range(len(matrix)):
-            temp2 = []
-            for k in range(len(matrix)):
-                temp2.append(matrix[i][k][j])
-            temp.append(temp2)
-        output.append(temp)
-    return output
+def get_vertical_self_multiplied_permutation(permutation_order):
+    def _transpose(matrix):
+        output = []
+        for i in range(len(matrix)):
+            temp = []
+            for j in range(len(matrix)):
+                temp2 = []
+                for k in range(len(matrix)):
+                    temp2.append(matrix[i][k][j])
+                temp.append(temp2)
+            output.append(temp)
+        return output
+
+    multiplied = get_self_multiplied_permutation(permutation_order)
+    return _transpose(multiplied)
 
 
 class LimitedPermutation(object):
@@ -96,28 +114,18 @@ class LimitedPermutation(object):
     @property
     def multiplied_orders(self):
         if self._multiplied_orders is None:
-            def reordered(multiplied):
-                index_of_first_row = None
-                for index_of_first_row in range(len(multiplied)):
-                    if multiplied[index_of_first_row][0] == self.main_permutation_order:
-                        break
-                output = []
-                for i in range(index_of_first_row, index_of_first_row + len(multiplied)):
-                    output.append(multiplied[i % len(multiplied)])
-                return output
+            if self.reading_direction == 'horizontal':
+                multiplied = get_reordered_self_multiplied_permutation(self.main_permutation_order)
+            else:
+                multiplied = get_vertical_self_multiplied_permutation(self.main_permutation_order)
 
-            self_permuted_order = self_permute(self.main_permutation_order)
-            multiplied = [permute(self_permuted_order, current_order) for current_order in self_permuted_order]
-            multiplied = reordered(multiplied)
-            if self.reading_direction == 'vertical':
-                multiplied = _transpose(multiplied)
             self._multiplied_orders = [order for orders in multiplied for order in orders]
         return self._multiplied_orders
 
     @property
     def permutation_order(self):
         index = (self.multi[0] - 1) * len(self.input_list) + self.multi[1] - 1
-        return (self.multiplied_orders[index])
+        return self.multiplied_orders[index]
 
     @property
     def iterator(self):
