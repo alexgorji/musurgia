@@ -15,8 +15,18 @@ from musurgia.quantize import get_quantized_values
 from musurgia.timing import Timing
 
 
+class FractalMusicException(Exception):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, kwargs)
+
+
+class SetTempoFirstException(FractalMusicException):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, kwargs)
+
+
 class FractalMusic(FractalTree):
-    def __init__(self, midi_generator=None, duration=None, module_tempo=60, score_tempo=None, quarter_duration=None,
+    def __init__(self, midi_generator=None, duration=None, tempo=None,
                  tree_directions=None, permute_directions=True, *args, **kwargs):
         # super().__init__(value=duration, *args, **kwargs)
         super().__init__(*args, **kwargs)
@@ -27,17 +37,13 @@ class FractalMusic(FractalTree):
         self._children_generated_midis = None
         self._tree_directions = None
         self._permute_directions = True
-        self._quarter_duration = None
-        self._module_tempo = None
-        self._score_tempo = None
+        self._tempo = None
 
         self._corrected_score_duration = None
 
         self.midi_generator = midi_generator
         self.duration = duration
-        self.module_tempo = module_tempo
-        self.score_tempo = score_tempo
-        self.quarter_duration = quarter_duration
+        self.tempo = tempo
         self.permute_directions = permute_directions
         self.tree_directions = tree_directions
 
@@ -49,74 +55,30 @@ class FractalMusic(FractalTree):
     def duration(self, val):
         if val and not isinstance(val, Fraction):
             val = Fraction(val)
-        self.quarter_duration = None
         self.value = val
 
     @property
     def quarter_duration(self):
-        if not self._quarter_duration:
-            self._quarter_duration = Fraction(self.value * self.module_tempo, 60)
-        return self._quarter_duration
+        if not self.tempo:
+            raise SetTempoFirstException()
+        return Fraction(self.duration * self.tempo, 60)
 
     @quarter_duration.setter
     def quarter_duration(self, val):
         if val is not None:
-            self.value = Fraction(val * 60, self.module_tempo)
-        self._quarter_duration = val
+            self.duration = Fraction(val * 60, self.tempo)
 
     @property
-    def module_tempo(self):
-        return self._module_tempo
+    def tempo(self):
+        return self._tempo
 
-    @module_tempo.setter
-    def module_tempo(self, val):
-        if self._quarter_duration:
-            self._quarter_duration = Fraction(val * self._quarter_duration, self._module_tempo)
-        self._module_tempo = val
-
-    @property
-    def score_tempo(self):
-        if self._score_tempo:
-            return self._score_tempo
-        else:
-            return self.module_tempo
-
-    @score_tempo.setter
-    def score_tempo(self, val):
-        self._score_tempo = val
-
-    @property
-    def actual_duration(self):
-        return self.duration * self.module_tempo / self.score_tempo
+    @tempo.setter
+    def tempo(self, val):
+        self._tempo = val
 
     @property
     def quarter_position_in_tree(self):
-        return self.position_in_tree * self.module_tempo / 60
-
-    @property
-    def position_in_score(self):
-        return self.quarter_position_in_tree * 60 / self.score_tempo
-
-    @property
-    def score_duration(self):
-        return Fraction(self.quarter_duration * 60, self.score_tempo)
-
-    @score_duration.setter
-    def score_duration(self, val):
-        if not val:
-            raise ValueError()
-        self.quarter_duration = Fraction(self.score_tempo * val, 60)
-
-    @property
-    def rounded_score_duration(self):
-        if not self._corrected_score_duration:
-            duration = float(self.score_duration)
-            rounded_duration = round(duration)
-            if duration - rounded_duration == 0.5:
-                rounded_duration += 1
-        else:
-            rounded_duration = self._corrected_score_duration
-        return rounded_duration
+        return self.position_in_tree * self.tempo / 60
 
     @property
     def permute_directions(self):
@@ -429,7 +391,7 @@ class FractalMusic(FractalTree):
         if show_positions:
             for node in self.get_children()[1:]:
                 position_in_tree = float(node.position_in_tree)
-                quarter_position_in_tree = position_in_tree * self.module_tempo / 60
+                quarter_position_in_tree = position_in_tree * self.tempo / 60
                 position_in_score = quarter_position_in_tree * 60 / self.score_tempo
                 node.chord.add_words(
                     Timing.get_clock(time=round(position_in_score, 1), mode='msreduced'),
@@ -473,7 +435,7 @@ class FractalMusic(FractalTree):
 
         for node in self.traverse():
             x.add_row([node.__name__, node.fractal_order, round(float(node.quarter_duration), 2),
-                       Timing(quarter_duration=float(node.quarter_duration), tempo=self.module_tempo).clock,
+                       Timing(quarter_duration=float(node.quarter_duration), tempo=self.tempo).clock,
                        node.midi_value,
                        node.permutation_order, node.multi, node.midi_generator.directions,
                        node.midi_generator.midi_range, node.children_generated_midis]
@@ -486,7 +448,7 @@ class FractalMusic(FractalTree):
         file.write('\n')
         file.write(
             'quarter_duration: {}, tempo: {}, duration: {}'.format(round(float(self.quarter_duration), 2),
-                                                                   self.module_tempo,
+                                                                   self.tempo,
                                                                    round(float(self.duration), 2)))
         file.write('\n')
         file.write('tree directions: {}'.format(self.tree_directions))
@@ -505,7 +467,7 @@ class FractalMusic(FractalTree):
             copied_midi_generator._iterator = None
 
         copied = super().copy()
-        copied.module_tempo = self.get_root().module_tempo
+        copied.tempo = self.get_root().tempo
         copied.score_tempo = self.get_root().score_tempo
         copied.midi_generator = copied_midi_generator
         copied.tree_directions = self.tree_directions
@@ -531,7 +493,7 @@ class FractalMusic(FractalTree):
         copied.multi = self.multi
         copied._fractal_order = self.fractal_order
         copied._name = self.__name__
-        copied.module_tempo = self.module_tempo
+        copied.tempo = self.tempo
         copied.score_tempo = self.score_tempo
         if self._midi_generator is not None:
             copied._midi_generator = self._midi_generator.__deepcopy__()
