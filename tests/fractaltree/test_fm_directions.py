@@ -8,7 +8,7 @@ path = os.path.abspath(__file__).split(".")[0]
 
 class Test(TestCase):
     def setUp(self) -> None:
-        self.fm = FractalMusic(proportions=[1, 2, 3], tree_permutation_order=(3, 1, 2))
+        self.fm = FractalMusic(proportions=[1, 2, 3], tree_permutation_order=(3, 1, 2), duration=10)
 
     def test_1(self):
         self.fm.midi_generator.set_directions(1, -1, -1)

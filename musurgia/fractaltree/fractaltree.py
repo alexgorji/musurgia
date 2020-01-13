@@ -7,8 +7,18 @@ from musurgia.tree import Tree
 
 
 class FractalTreeException(Exception):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, kwargs)
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
+class ValueCannotBeChanged(FractalTreeException):
+    def __init__(self, *args):
+        super().__init__('FractalTree().value can only be changed for the root with no children', *args)
+
+
+class SetValueFirst(FractalTreeException):
+    def __init__(self, *args):
+        super().__init__('FractalTree().value must be set before add_layer()', *args)
 
 
 class FractalTree(Tree):
@@ -60,10 +70,14 @@ class FractalTree(Tree):
 
     @value.setter
     def value(self, val):
-        if val is None:
-            self._value = 10
+        if self._value:
+            if self.is_root and not self.get_children():
+                self._value = val
+            else:
+                raise ValueCannotBeChanged()
         else:
             self._value = val
+
         if self._value == 0:
             self.fertile = False
 
@@ -230,6 +244,9 @@ class FractalTree(Tree):
             leaf.add_child(new_node)
 
     def add_layer(self, *conditions):
+        if self.value is None:
+            raise SetValueFirst()
+
         leaves = list(self.traverse_leaves())
         if not leaves:
             leaves = [self]
@@ -353,7 +370,7 @@ class FractalTree(Tree):
         for leaf in self.traverse_leaves():
             factor = 1 / min_diff
             new_value = round(leaf.value * factor) / factor
-            leaf.value = Fraction(new_value)
+            leaf._value = Fraction(new_value)
 
         difference = self.value - sum([leaf.value for leaf in self.traverse_leaves()])
         # if difference != 0:
@@ -373,8 +390,8 @@ class FractalTree(Tree):
                 addition = Fraction(self.value, len(non_zero_sisters))
                 for sister in non_zero_sisters:
                     if sister.value != 0:
-                        sister.value += addition
-                self.value = 0
+                        sister._value += addition
+                self._value = 0
 
     def reduce_children(self, condition):
 
@@ -388,6 +405,9 @@ class FractalTree(Tree):
 
         self._children_fractal_values = [child.value for child in self.get_children()]
 
+    def _check_merge_nodes(self, nodes):
+        return True
+
     def merge_children(self, *lengths):
         children = self.get_children()
         if not children:
@@ -397,8 +417,11 @@ class FractalTree(Tree):
                 'sum of lengths {} must be the same as length of children {}'.format(sum(lengths), len(children)))
 
         def _merge(nodes):
-            node_value = [node.value for node in nodes]
-            nodes[0].value = sum(node_value)
+            self._check_merge_nodes(nodes)
+
+            node_values = [node.value for node in nodes]
+
+            nodes[0]._value = sum(node_values)
             for node in nodes[1:]:
                 self.remove_child(node)
 

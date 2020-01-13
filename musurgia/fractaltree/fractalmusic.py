@@ -16,18 +16,50 @@ from musurgia.timing import Timing
 
 
 class FractalMusicException(Exception):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, kwargs)
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
+class SetDurationFirstException(FractalMusicException):
+    def __init__(self, *args):
+        super().__init__('set duration first!', *args)
 
 
 class SetTempoFirstException(FractalMusicException):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, kwargs)
+    def __init__(self, *args):
+        super().__init__('set tempo first!', *args)
+
+
+class TempoIsAlreadySet(FractalMusicException):
+    def __init__(self, *args):
+        super().__init__('FractalMusic().tempo can only be set once', *args)
+
+
+class ChildTempoIsAlreadySet(FractalMusicException):
+    def __init__(self, *args):
+        super().__init__('FractalMusic().tempo of parent can not be set after setting tempo of child', *args)
+
+
+class MergeException(FractalMusicException):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
+class MergeTempoException(MergeException):
+    def __init__(self, tempo, *args):
+        super().__init__('nodes to merge must have the same tempo {}'.format(tempo), *args)
 
 
 class FractalMusic(FractalTree):
-    def __init__(self, midi_generator=None, duration=None, tempo=None,
-                 tree_directions=None, permute_directions=True, *args, **kwargs):
+    def __init__(self,
+                 midi_generator=None,
+                 duration=None,
+                 tempo=None,
+                 quarter_duration=None,
+                 tree_directions=None,
+                 permute_directions=True,
+                 *args, **kwargs):
+
         # super().__init__(value=duration, *args, **kwargs)
         super().__init__(*args, **kwargs)
 
@@ -46,6 +78,7 @@ class FractalMusic(FractalTree):
         self.tempo = tempo
         self.permute_directions = permute_directions
         self.tree_directions = tree_directions
+        self.quarter_duration = quarter_duration
 
     @property
     def duration(self):
@@ -66,7 +99,16 @@ class FractalMusic(FractalTree):
     @quarter_duration.setter
     def quarter_duration(self, val):
         if val is not None:
+            if not self.tempo:
+                raise SetTempoFirstException()
             self.duration = Fraction(val * 60, self.tempo)
+
+    def _child_has_tempo(self):
+        children_tempi = [child.tempo for child in self.get_children() if child.tempo]
+        if children_tempi:
+            return True
+        else:
+            return False
 
     @property
     def tempo(self):
@@ -74,7 +116,22 @@ class FractalMusic(FractalTree):
 
     @tempo.setter
     def tempo(self, val):
+        if self._tempo:
+            raise TempoIsAlreadySet()
+        if self._child_has_tempo():
+            raise ChildTempoIsAlreadySet()
         self._tempo = val
+        for child in self.get_children():
+            child.tempo = val
+
+    def set_non_tempi(self, val=60):
+        try:
+            self.tempo = val
+        except TempoIsAlreadySet:
+            pass
+        except ChildTempoIsAlreadySet:
+            for child in self.get_children():
+                child.set_non_tempi(val=val)
 
     @property
     def quarter_position_in_tree(self):
@@ -114,6 +171,8 @@ class FractalMusic(FractalTree):
     def midi_generator(self):
         if self._midi_generator is None:
             try:
+                if not self.duration:
+                    raise SetDurationFirstException()
                 self._midi_generator = RelativeMidi(midi_range=[71, 71], proportions=self.children_fractal_values,
                                                     directions=None)
                 self._midi_generator.node = self
@@ -292,7 +351,13 @@ class FractalMusic(FractalTree):
 
         return self.get_children()
 
+    def _check_merge_nodes(self, nodes):
+        tempo = set([node.tempo for node in nodes])
+        if len(tempo) != 1:
+            raise MergeTempoException(tempo)
+
     def merge_children(self, *lengths):
+
         super().merge_children(*lengths)
         for child in self.get_children():
             child._quarter_duration = None
@@ -303,6 +368,7 @@ class FractalMusic(FractalTree):
         durations = [leaf.quarter_duration for leaf in leaves]
         quantized_durations = get_quantized_values(durations, grid_size)
         for leaf, quantized_duration in zip(leaves, quantized_durations):
+            leaf._value = None
             leaf.quarter_duration = quantized_duration
 
     def change_midis(self):
@@ -353,15 +419,16 @@ class FractalMusic(FractalTree):
         score.page_style.bottom_margin = 100
 
         score.add_title('module: {}'.format(self.__name__))
-        clock = Timing.get_clock(self.rounded_score_duration, mode='msreduced')
+        clock = Timing.get_clock(round(self.duration), mode='msreduced')
         score.add_subtitle(
             'duration: {}'.format(clock))
         score.accidental_mode = 'modern'
         return score
 
     def get_fractal_score(self, score=None, layer_number=None, set_time_signatures=False, times=None,
-                          show_fractal_orders=False, show_midis=False, show_positions=False):
-
+                          show_fractal_orders=False, show_midis=False
+                          # , show_positions=False
+                          ):
         if not score:
             score = self.get_score_template()
 
@@ -388,14 +455,14 @@ class FractalMusic(FractalTree):
                     midi_value = int(midi_value)
                 node.chord.add_words(midi_value, enclosure='none', relative_y=10)
 
-        if show_positions:
-            for node in self.get_children()[1:]:
-                position_in_tree = float(node.position_in_tree)
-                quarter_position_in_tree = position_in_tree * self.tempo / 60
-                position_in_score = quarter_position_in_tree * 60 / self.score_tempo
-                node.chord.add_words(
-                    Timing.get_clock(time=round(position_in_score, 1), mode='msreduced'),
-                    enclosure='rectangle', relative_y=40)
+        # if show_positions:
+        #     for node in self.get_children()[1:]:
+        #         position_in_tree = float(node.position_in_tree)
+        #         quarter_position_in_tree = position_in_tree * self.tempo / 60
+        #         position_in_score = quarter_position_in_tree * 60 / self.score_tempo
+        #         node.chord.add_words(
+        #             Timing.get_clock(time=round(position_in_score, 1), mode='msreduced'),
+        #             enclosure='rectangle', relative_y=40)
 
         def layer_to_score(layer_number, part_number):
             try:
@@ -418,7 +485,7 @@ class FractalMusic(FractalTree):
         else:
             layer_to_score(layer_number, 1)
 
-        score.get_measure(1).get_part(1).add_metronome(per_minute=self.score_tempo, relative_y=40)
+        score.get_measure(1).get_part(1).add_metronome(per_minute=self.tempo, relative_y=40)
         score.get_measure(-1).set_barline_style('light-heavy')
 
         return score
@@ -467,8 +534,7 @@ class FractalMusic(FractalTree):
             copied_midi_generator._iterator = None
 
         copied = super().copy()
-        copied.tempo = self.get_root().tempo
-        copied.score_tempo = self.get_root().score_tempo
+        copied.tempo = self.tempo
         copied.midi_generator = copied_midi_generator
         copied.tree_directions = self.tree_directions
         copied.permute_directions = self.permute_directions
@@ -479,9 +545,6 @@ class FractalMusic(FractalTree):
 
     def reduce_children(self, condition):
         super().reduce_children(condition)
-
-        for child in self.get_children():
-            child.quarter_duration = None
 
         try:
             self.change_midis()
@@ -494,7 +557,6 @@ class FractalMusic(FractalTree):
         copied._fractal_order = self.fractal_order
         copied._name = self.__name__
         copied.tempo = self.tempo
-        copied.score_tempo = self.score_tempo
         if self._midi_generator is not None:
             copied._midi_generator = self._midi_generator.__deepcopy__()
         copied.permute_directions = self.permute_directions

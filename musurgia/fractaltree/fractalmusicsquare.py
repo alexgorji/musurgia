@@ -57,17 +57,14 @@ class Module(FractalMusic):
     def write_square_infos(self, text_path, show_quarter_durations=False):
         os.system('touch ' + text_path)
         file = open(text_path, 'w')
-        file.write("module_tempo: " + str(self.module_tempo))
-        file.write("\n")
-        file.write("score_tempo: " + str(self.score_tempo))
+        file.write("module_tempo: " + str(self.tempo))
         file.write("\n")
         x = PrettyTable(hrules=1)
 
         leaf_names = [leaf.__name__ for leaf in self.traverse_leaves()]
         leaf_fractal_orders = [leaf.fractal_order for leaf in self.traverse_leaves()]
 
-        leaf_durations = [leaf.duration * self.module_tempo / self.score_tempo for leaf in
-                          self.traverse_leaves()]
+        leaf_durations = [leaf.duration for leaf in self.traverse_leaves()]
 
         rounded_leaf_durations = [round(float(dur), 2) for dur in leaf_durations]
 
@@ -415,7 +412,7 @@ class Square(object):
         for module in self.modules.values():
             module.quarter_duration = round(module.quarter_duration)
 
-    def write_infos(self, text_path, show_row_name=False, show_score_tempo=False, show_module_tempo=False,
+    def write_infos(self, text_path, show_row_name=False, show_module_tempo=False,
                     show_quarter_durations=False):
         os.system('touch ' + text_path)
         file = open(text_path, 'w')
@@ -434,22 +431,21 @@ class Square(object):
             else:
                 row_info = [row_number]
 
-            module_tempi = [module.module_tempo for module in row.modules]
-            score_tempi = [module.score_tempo for module in row.modules]
-            score_durations = [module.rounded_score_duration for module in row.modules]
+            tempi = [module.tempo for module in row.modules]
+            durations = [round(module.duration) for module in row.modules]
 
-            quarter_durations = [round(float(module.quarter_duration), 2) for module in row.modules]
+
 
             if show_module_tempo:
-                x.add_row([*row_info, 'mod_tempo', *module_tempi])
-
-            if show_score_tempo:
-                x.add_row([*row_info, 'sc_tempo', *score_tempi])
+                x.add_row([*row_info, 'tempo', *tempi])
 
             if show_quarter_durations:
+                if None in tempi:
+                    raise Exception('set tempi first')
+                quarter_durations = [round(float(module.quarter_duration), 2) for module in row.modules]
                 x.add_row([*row_info, 'quarter_dur', *quarter_durations])
 
-            x.add_row([*row_info, 'duration', *score_durations])
+            x.add_row([*row_info, 'duration', *durations])
 
         file.write(x.get_string())
         file.close()

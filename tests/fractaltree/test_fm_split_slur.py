@@ -6,12 +6,14 @@ from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 from musurgia.fractaltree.fractalmusic import FractalMusic
 from musurgia.testcomparefiles import TestCompareFiles
 
-path = os.path.abspath(__file__).split('.')[0]
+path = str(os.path.abspath(__file__).split('.')[0])
 
 
 class Test(TestCase):
     def setUp(self) -> None:
         self.fm = FractalMusic(proportions=(1, 2, 3), tree_permutation_order=(3, 1, 2))
+        self.fm.duration = 10
+        self.fm.tempo = 60
         self.fm.midi_generator.midi_range = [60, 67]
         self.fm.add_layer()
         self.score = TreeScoreTimewise()

@@ -6,12 +6,12 @@ from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 from musurgia.fractaltree.fractalmusic import FractalMusic
 from musurgia.testcomparefiles import TestCompareFiles
 
-path = os.path.abspath(__file__).split('.')[0]
+path = str(os.path.abspath(__file__).split('.')[0])
 
 
 class Test(TestCase):
     def test_1(self):
-        fm = FractalMusic(proportions=[1, 2, 3, 4], tree_permutation_order=[3, 1, 4, 2], quarter_duration=100)
+        fm = FractalMusic(tempo=60, proportions=[1, 2, 3, 4], tree_permutation_order=[3, 1, 4, 2], quarter_duration=100)
         fm.midi_generator.midi_range = [60, 79]
         fm.add_layer()
         partial_fm = fm.get_leaves()[3]
@@ -75,7 +75,7 @@ class Test(TestCase):
     def test_5(self):
         score = TreeScoreTimewise()
 
-        fm = FractalMusic(proportions=[1, 2, 3, 4], tree_permutation_order=[3, 1, 4, 2], quarter_duration=20)
+        fm = FractalMusic(tempo=60, proportions=[1, 2, 3, 4], tree_permutation_order=[3, 1, 4, 2], quarter_duration=20)
         fm.midi_generator.midi_range = [60, 79]
         fm.midi_generator.microtone = 4
         fm.add_layer()

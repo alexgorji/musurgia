@@ -8,7 +8,7 @@ path = os.path.abspath(__file__).split('.')[0]
 
 class Test(TestCase):
     def test_1(self):
-        ft = FractalTree(proportions=(1, 2, 3, 4, 5), tree_permutation_order=(3, 5, 1, 2, 4))
+        ft = FractalTree(proportions=(1, 2, 3, 4, 5), tree_permutation_order=(3, 5, 1, 2, 4), value=10)
         ft.add_layer()
         # ft.add_layer()
         # print(ft.get_leaves(key=lambda leaf: leaf.index))

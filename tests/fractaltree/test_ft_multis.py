@@ -5,7 +5,7 @@ from musurgia.fractaltree.fractaltree import FractalTree
 
 class Test(TestCase):
     def setUp(self) -> None:
-        self.ft = FractalTree(tree_permutation_order=[3, 1, 2], proportions=[1, 2, 3])
+        self.ft = FractalTree(tree_permutation_order=[3, 1, 2], proportions=[1, 2, 3], value=10)
 
     def test_1(self):
         self.ft.add_layer()

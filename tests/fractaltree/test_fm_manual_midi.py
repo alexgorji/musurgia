@@ -4,12 +4,12 @@ from unittest import TestCase
 from musurgia.fractaltree.fractalmusic import FractalMusic
 from musurgia.testcomparefiles import TestCompareFiles
 
-path = os.path.abspath(__file__).split('.')[0]
+path = str(os.path.abspath(__file__).split('.')[0])
 
 
 class Test(TestCase):
     def setUp(self) -> None:
-        self.fm = FractalMusic(proportions=[1, 2, 3], tree_permutation_order=[3, 1, 2], quarter_duration=20)
+        self.fm = FractalMusic(proportions=[1, 2, 3], tree_permutation_order=[3, 1, 2], tempo=60, quarter_duration=20)
 
     def test_1(self):
         self.fm.midi_generator.midi_range = [60, 72]

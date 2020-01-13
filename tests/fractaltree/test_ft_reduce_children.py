@@ -10,7 +10,7 @@ path = os.path.abspath(__file__).split('.')[0]
 class Test(TestCase):
 
     def test_1(self):
-        ft = FractalTree(proportions=(1, 2, 3), tree_permutation_order=(3, 1, 2))
+        ft = FractalTree(proportions=(1, 2, 3), tree_permutation_order=(3, 1, 2), value=10)
         ft.add_layer()
         ft.add_layer()
         for node in ft.get_layer(1):
@@ -18,7 +18,7 @@ class Test(TestCase):
         self.assertEqual([node.fractal_order for node in ft.traverse_leaves()], [2, 3, 3, 2, 2, 3])
 
     def test_2(self):
-        ft = FractalTree(proportions=(1, 2, 3), tree_permutation_order=(3, 1, 2))
+        ft = FractalTree(proportions=(1, 2, 3), tree_permutation_order=(3, 1, 2), value=10)
         ft.add_layer()
         ft.add_layer()
         for node in ft.get_layer(1):

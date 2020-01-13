@@ -2,17 +2,22 @@ import os
 from unittest import TestCase
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
-from musurgia.fractaltree.fractalmusic import FractalMusic
+from musurgia.fractaltree.fractalmusic import FractalMusic, MergeTempoException
 from musurgia.testcomparefiles import TestCompareFiles
 
-path = os.path.abspath(__file__).split('.')[0]
+path = str(os.path.abspath(__file__).split('.')[0])
 
 
 class Test(TestCase):
+    def setUp(self) -> None:
+        self.fm = FractalMusic(proportions=(1, 2, 3, 4, 5), tree_permutation_order=(3, 5, 1, 2, 4))
+        self.fm.duration = 10
+        self.fm.midi_generator.midi_range = [60, 72]
+
     def test_1(self):
-        fm = FractalMusic(proportions=(1, 2, 3, 4, 5), tree_permutation_order=(3, 5, 1, 2, 4))
-        fm.midi_generator.midi_range = [60, 72]
+        fm = self.fm
         fm.add_layer()
+        fm.tempo = 60
         for ch in fm.get_children():
             ch.chord.add_words(ch.fractal_order)
 
@@ -37,3 +42,11 @@ class Test(TestCase):
         # # print(ft.get_leaves(key=lambda leaf: leaf.index))
         # self.assertEqual(ft.get_leaves(key=lambda leaf: leaf.fractal_order), [3, 5, 2])
         # self.assertEqual(ft.get_leaves(key=lambda leaf: round(float(leaf.value), 2)), [2.0, 4.0, 4.0])
+
+    def test_2(self):
+        self.fm.duration = 20
+        self.fm.add_layer()
+        self.fm.get_children()[1].tempo = 72
+        self.fm.set_non_tempi(60)
+        with self.assertRaises(MergeTempoException):
+            self.fm.merge_children(2, 1, 2)

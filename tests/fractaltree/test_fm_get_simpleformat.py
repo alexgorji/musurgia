@@ -12,7 +12,7 @@ path = os.path.abspath(__file__).split('.')[0]
 
 class Test(TestCase):
     def setUp(self) -> None:
-        self.fm = FractalMusic(tree_permutation_order=[3, 1, 2], proportions=[1, 2, 3], quarter_duration=20)
+        self.fm = FractalMusic(tempo=60, tree_permutation_order=[3, 1, 2], proportions=[1, 2, 3], quarter_duration=20)
         self.score = TreeScoreTimewise()
 
     def test_1(self):

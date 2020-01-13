@@ -6,13 +6,13 @@ from musicscore.musictree.midi import C
 from musurgia.fractaltree.fractalmusic import FractalMusic
 from musurgia.testcomparefiles import TestCompareFiles
 
-path = os.path.abspath(__file__).split('.')[0]
+path = str(os.path.abspath(__file__).split('.')[0])
 
 
 class Test(TestCase):
     def setUp(self) -> None:
         self.fm = FractalMusic(proportions=[1, 2, 3, 4], tree_permutation_order=[3, 1, 4, 2], quarter_duration=20,
-                               module_tempo=70)
+                               tempo=70)
         self.fm.midi_generator.midi_range = [36, 60]
 
     def test_1(self):

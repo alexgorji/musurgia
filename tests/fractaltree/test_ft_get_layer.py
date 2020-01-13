@@ -6,7 +6,7 @@ from musurgia.fractaltree.fractaltree import FractalTree
 
 class Test(TestCase):
     def setUp(self) -> None:
-        self.ft = FractalTree(proportions=[1, 2, 3], tree_permutation_order=[3, 1, 2])
+        self.ft = FractalTree(proportions=[1, 2, 3], tree_permutation_order=[3, 1, 2], value=10)
 
     def test_0(self):
         with self.assertRaises(Exception):

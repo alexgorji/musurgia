@@ -6,13 +6,14 @@ from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 from musurgia.fractaltree.fractalmusic import FractalMusic
 from musurgia.testcomparefiles import TestCompareFiles
 
-path = os.path.abspath(__file__).split('.')[0]
+path = str(os.path.abspath(__file__).split('.')[0])
 
 
 class Test(TestCase):
 
     def setUp(self) -> None:
-        self.fm = FractalMusic(quarter_duration=12, tree_permutation_order=(3, 1, 4, 2), proportions=[1, 2, 3, 4],
+        self.fm = FractalMusic(tempo=60, quarter_duration=12, tree_permutation_order=(3, 1, 4, 2),
+                               proportions=[1, 2, 3, 4],
                                multi=(1, 1))
         self.fm.midi_generator.midi_range = [55, 55 + 24]
         self.fm.midi_generator.microtone = 4
@@ -42,8 +43,6 @@ class Test(TestCase):
         xml_path = path + '_test_1.xml'
         score.write(path=xml_path)
         TestCompareFiles().assertTemplate(file_path=xml_path)
-
-
 
     # def test_2(self):
     #     self.fm.midi_generator.directions = [1]
@@ -133,7 +132,7 @@ class Test(TestCase):
     #     #     print_infos(leaf)
 
     def test_7(self):
-        fm = FractalMusic(proportions=[1, 2, 3, 4], tree_permutation_order=[3, 1, 4, 2], quarter_duration=20)
+        fm = FractalMusic(tempo=60, proportions=[1, 2, 3, 4], tree_permutation_order=[3, 1, 4, 2], quarter_duration=20)
         fm.midi_generator.midi_range = [60, 79]
         fm.add_layer()
         fm.chord.add_words(fm.midi_generator.midi_range)
@@ -164,6 +163,7 @@ class Test(TestCase):
 
     def test_8(self):
         fm = FractalMusic(proportions=[1, 2, 3, 4, 5, 6, 7], tree_permutation_order=[3, 6, 1, 5, 7, 2, 4])
+        fm.tempo = 60
         fm.quarter_duration = 350
         fm.midi_generator.midi_range = [60, 72]
         fm.midi_generator.microtone = 4
@@ -184,11 +184,13 @@ class Test(TestCase):
         fm = FractalMusic(proportions=[1, 2, 3, 4, 5, 6, 7], tree_permutation_order=[3, 6, 2, 5, 1, 7, 4])
 
         fm.multi = (7, 4)
+        fm.tempo = 60
+        fm.quarter_duration = 70
 
         fm.midi_generator.microtone = 4
         fm.quantize_leaves(0.5)
         fm.midi_generator.directions = [1, -1, 1, -1, 1, -1, 1]
-        fm.quarter_duration = 70
+
         fm.midi_generator.midi_range = [36, 56]
         fm.add_layer()
 
@@ -207,9 +209,10 @@ class Test(TestCase):
         score.write(xml_path)
         TestCompareFiles().assertTemplate(file_path=xml_path)
 
-
     def test_10(self):
         fm = FractalMusic(proportions=[1, 2, 3], tree_permutation_order=[3, 1, 2])
+        fm.tempo = 60
+        fm.duration = 10
         fm.midi_generator.midi_range = (60, 72)
         fm.permute_directions = True
         fm.midi_generator.set_directions(-1, 1, -1)

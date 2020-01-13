@@ -6,13 +6,13 @@ from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 from musurgia.fractaltree.fractalmusic import FractalMusic
 from musurgia.testcomparefiles import TestCompareFiles
 
-path = os.path.abspath(__file__).split('.')[0]
+path = str(os.path.abspath(__file__).split('.')[0])
 
 
 class Test(TestCase):
 
     def setUp(self) -> None:
-        self.fm = FractalMusic(quarter_duration=12, tree_permutation_order=(3, 1, 2), proportions=[1, 2, 3])
+        self.fm = FractalMusic(tempo=60, quarter_duration=12, tree_permutation_order=(3, 1, 2), proportions=[1, 2, 3])
         self.fm.midi_generator.set_directions(1, 1, -1)
         self.fm.midi_generator.midi_range = [55, 72]
 
@@ -43,3 +43,11 @@ class Test(TestCase):
         xml_path = path + '_test_1.xml'
         score.write(path=xml_path)
         TestCompareFiles().assertTemplate(file_path=xml_path)
+
+    def test_2(self):
+        fm = self.fm
+        fm.add_layer()
+        score_1 = fm.get_children()[0].get_score()
+        xml_path = path + '_test_2.xml'
+        score_1.write(path=xml_path)
+        # TestCompareFiles().assertTemplate(file_path=xml_path)

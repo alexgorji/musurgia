@@ -13,7 +13,7 @@ class Test(TestCase):
         self.score = TreeScoreTimewise()
 
     def test_1(self):
-        fm = FractalMusic(proportions=[1, 2, 3], tree_permutation_order=[3, 1, 2], duration=12, module_tempo=72)
+        fm = FractalMusic(proportions=[1, 2, 3], tree_permutation_order=[3, 1, 2], duration=12, tempo=72)
         fm.quarter_duration = round(fm.quarter_duration)
         fm.add_layer()
         quarter_durations = [float(leaf.quarter_duration) for leaf in fm.traverse_leaves()]
