@@ -434,8 +434,6 @@ class Square(object):
             tempi = [module.tempo for module in row.modules]
             durations = [round(module.duration) for module in row.modules]
 
-
-
             if show_module_tempo:
                 x.add_row([*row_info, 'tempo', *tempi])
 
