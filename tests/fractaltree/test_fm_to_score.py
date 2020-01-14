@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
-from musurgia.fractaltree.fractalmusic import FractalMusic
+from musurgia.fractaltree.fractalmusic import FractalMusic, SetTempoFirstException
 from musurgia.testcomparefiles import TestCompareFiles
 
 path = str(os.path.abspath(__file__).split('.')[0])
@@ -34,7 +34,7 @@ class Test(TestCase):
         #     node.chord.add_words(node.permutation_order, relative_y=60)
 
         score = TreeScoreTimewise()
-        score = fm.get_score(score, show_fractal_orders=False)
+        score = fm.get_score(score=score, show_fractal_orders=False)
 
         text_path = path + '_test_1.txt'
         fm.write_infos(text_path)
@@ -50,4 +50,23 @@ class Test(TestCase):
         score_1 = fm.get_children()[0].get_score()
         xml_path = path + '_test_2.xml'
         score_1.write(path=xml_path)
-        # TestCompareFiles().assertTemplate(file_path=xml_path)
+        TestCompareFiles().assertTemplate(file_path=xml_path)
+
+    def test_3(self):
+        fm = FractalMusic(duration=30)
+        fm.add_layer()
+        with self.assertRaises(SetTempoFirstException):
+            fm.get_score()
+
+    def test_4(self):
+        fm = FractalMusic(duration=30)
+        fm.add_layer()
+        fm.get_children()[1].tempo = 72
+        fm.set_non_tempi(80)
+        fm.quantize_leaves(0.5)
+        fm.add_layer()
+        score = fm.get_root_score(layer_number=1, show_fractal_orders=True)
+        xml_path = path + '_test_4.xml'
+        score.write(path=xml_path)
+        with self.assertRaises(SetTempoFirstException):
+            fm.get_score()

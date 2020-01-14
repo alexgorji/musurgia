@@ -56,7 +56,7 @@ class ModuleTimeLine(object):
         self._instruments = val
 
     def get_end_time(self):
-        return int(round(self.start_time + self.module.rounded_score_duration))
+        return int(round(self.start_time + round(self.module.duration)))
 
 
 class Vertical(Positioned):
@@ -163,14 +163,14 @@ class ScoreTimeLine(TimeLine):
                 segment = voice.add_voice_segment(module_time_line.start_time, module_time_line.get_end_time())
                 segment.lines[0].add_text_label(module.__name__, font_size=8, font_weight='bold', relative_x=1)
                 try:
-                    segment.lines[2].add_text_label('t=' + str(module.score_tempo), font_size=8)
+                    segment.lines[2].add_text_label('t=' + str(module.tempo), font_size=8)
                 except IndexError:
-                    segment.lines[0].add_text_label('t=' + str(module.score_tempo), font_size=4, y_offset=-4.5,
+                    segment.lines[0].add_text_label('t=' + str(module.tempo), font_size=4, y_offset=-4.5,
                                                     x_offset=4)
                 try:
-                    segment.lines[4].add_text_label('d=' + str(module.rounded_score_duration) + '"', font_size=8)
+                    segment.lines[4].add_text_label('d=' + str(round(module.duration)) + '"', font_size=8)
                 except IndexError:
-                    segment.lines[0].add_text_label('d=' + str(module.rounded_score_duration) + '"', font_size=4,
+                    segment.lines[0].add_text_label('d=' + str(round(module.duration)) + '"', font_size=4,
                                                     x_offset=8, y_offset=-4.5)
                 if module_time_line.text:
                     segment.lines[0].add_text_label(module_time_line.text, font_size=4, y_offset=-4.5, x_offset=1)

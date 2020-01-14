@@ -503,7 +503,6 @@
         </pitch>
         <voice>1</voice>
         <type>eighth</type>
-        <accidental>flat</accidental>
       </note>
       <note>
         <pitch>
@@ -598,7 +597,6 @@
         <duration>4</duration>
         <voice>1</voice>
         <type>16th</type>
-        <accidental>flat</accidental>
         <time-modification>
           <actual-notes>6</actual-notes>
           <normal-notes>4</normal-notes>
@@ -1212,7 +1210,6 @@
         <duration>48</duration>
         <voice>1</voice>
         <type>half</type>
-        <accidental>flat</accidental>
       </note>
     </part>
   </measure>
@@ -1731,7 +1728,6 @@
         <voice>1</voice>
         <type>eighth</type>
         <dot/>
-        <accidental>flat</accidental>
         <time-modification>
           <actual-notes>3</actual-notes>
           <normal-notes>2</normal-notes>
@@ -1840,7 +1836,6 @@
         <duration>14</duration>
         <voice>1</voice>
         <type>eighth</type>
-        <accidental>sharp</accidental>
         <time-modification>
           <actual-notes>3</actual-notes>
           <normal-notes>2</normal-notes>
@@ -2089,7 +2084,6 @@
         <duration>24</duration>
         <voice>1</voice>
         <type>16th</type>
-        <accidental>sharp</accidental>
         <time-modification>
           <actual-notes>7</actual-notes>
           <normal-notes>4</normal-notes>
@@ -2143,7 +2137,6 @@
         <duration>21</duration>
         <voice>1</voice>
         <type>32nd</type>
-        <accidental>sharp</accidental>
         <beam number="1">begin</beam>
         <beam number="2">begin</beam>
         <beam number="3">begin</beam>
@@ -2256,7 +2249,6 @@
         </pitch>
         <voice>1</voice>
         <type>eighth</type>
-        <accidental>flat</accidental>
       </note>
       <note>
         <grace/>
@@ -2297,7 +2289,6 @@
         <duration>28</duration>
         <voice>1</voice>
         <type>16th</type>
-        <accidental>sharp</accidental>
         <time-modification>
           <actual-notes>3</actual-notes>
           <normal-notes>2</normal-notes>

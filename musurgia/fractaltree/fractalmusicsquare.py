@@ -200,13 +200,17 @@ class Row(RowColumn):
         module._parent_row = self
         self._modules.append(module)
 
-    def set_module_tempo(self, tempo):
-        for module in self.modules:
-            module.module_tempo = tempo
+    # def set_module_tempo(self, tempo):
+    #     for module in self.modules:
+    #         module.module_tempo = tempo
+    #
+    # def set_score_tempo(self, tempo):
+    #     for module in self.modules:
+    #         module.score_tempo = tempo
 
-    def set_score_tempo(self, tempo):
+    def set_tempo(self, tempo):
         for module in self.modules:
-            module.score_tempo = tempo
+            module.tempo = tempo
 
     def set_name(self, val):
         self._name = val

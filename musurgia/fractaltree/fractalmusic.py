@@ -356,20 +356,29 @@ class FractalMusic(FractalTree):
         if len(tempo) != 1:
             raise MergeTempoException(tempo)
 
-    def merge_children(self, *lengths):
+    # def merge_children(self, *lengths):
+    #     super().merge_children(*lengths)
 
-        super().merge_children(*lengths)
-        for child in self.get_children():
-            child._quarter_duration = None
+    def _refill_duration(self):
+        if not self._value:
+            self._value = sum([child._refill_duration() for child in self.get_children()])
+        else:
+            return self._value
 
     def quantize_leaves(self, grid_size):
+        def _reset_durations():
+            for node in self.traverse():
+                node._value = None
+
         #     quantizing quarter_durations!
         leaves = list(self.traverse_leaves())
         durations = [leaf.quarter_duration for leaf in leaves]
         quantized_durations = get_quantized_values(durations, grid_size)
+        if quantized_durations:
+            _reset_durations()
         for leaf, quantized_duration in zip(leaves, quantized_durations):
-            leaf._value = None
             leaf.quarter_duration = quantized_duration
+        self._refill_duration()
 
     def change_midis(self):
         if not isinstance(self._midi_generator, RelativeMidi):
@@ -425,25 +434,12 @@ class FractalMusic(FractalTree):
         score.accidental_mode = 'modern'
         return score
 
-    def get_fractal_score(self, score=None, layer_number=None, set_time_signatures=False, times=None,
-                          show_fractal_orders=False, show_midis=False
-                          # , show_positions=False
-                          ):
+    def get_score(self, score=None, layer_number=None, show_fractal_orders=False, show_midis=None,
+                  barline='light-heavy',
+                  show_metronome=True):
         if not score:
             score = self.get_score_template()
-
-        if set_time_signatures:
-            if layer_number == 0 or not self.get_children():
-                score.set_time_signatures(durations=self.quarter_duration, barline_style='light-light', times=times)
-            else:
-                durations = [child.quarter_duration for child in self.get_children() if child.quarter_duration != 0]
-                score.set_time_signatures(
-                    durations=durations, barline_style='light-light', times=times)
-        else:
-            score.set_time_signatures(durations=self.quarter_duration)
-
-        score.accidental_mode = 'modern'
-
+        score.set_time_signatures(durations=self.quarter_duration)
         if show_fractal_orders:
             for node in self.traverse():
                 node.chord.add_lyric(node.fractal_order)
@@ -454,15 +450,6 @@ class FractalMusic(FractalTree):
                 if int(midi_value) == midi_value:
                     midi_value = int(midi_value)
                 node.chord.add_words(midi_value, enclosure='none', relative_y=10)
-
-        # if show_positions:
-        #     for node in self.get_children()[1:]:
-        #         position_in_tree = float(node.position_in_tree)
-        #         quarter_position_in_tree = position_in_tree * self.tempo / 60
-        #         position_in_score = quarter_position_in_tree * 60 / self.score_tempo
-        #         node.chord.add_words(
-        #             Timing.get_clock(time=round(position_in_score, 1), mode='msreduced'),
-        #             enclosure='rectangle', relative_y=40)
 
         def layer_to_score(layer_number, part_number):
             try:
@@ -485,12 +472,53 @@ class FractalMusic(FractalTree):
         else:
             layer_to_score(layer_number, 1)
 
-        score.get_measure(1).get_part(1).add_metronome(per_minute=self.tempo, relative_y=40)
-        score.get_measure(-1).set_barline_style('light-heavy')
-
+        if show_metronome:
+            score.get_measure(1).get_part(1).add_metronome(per_minute=self.tempo, relative_y=40)
+        score.get_measure(-1).set_barline_style(barline)
         return score
 
-    get_score = get_fractal_score
+    def get_root_score(self, score=None, layer_number=None, show_fractal_orders=False, show_midis=False
+                       # , show_positions=False
+                       ):
+
+        if not score:
+            score = self.get_score_template()
+
+        try:
+            return self.get_score(score=score, layer_number=layer_number, show_fractal_orders=show_fractal_orders,
+                                  show_midis=show_midis)
+        except SetTempoFirstException as err:
+            if not self.get_children():
+                raise err
+            else:
+                for child in self.get_children():
+                    score.extend(
+                        child.get_score(layer_number=layer_number, show_fractal_orders=show_fractal_orders,
+                                        show_midis=show_midis, barline='light-light'))
+
+        # if set_time_signatures:
+        #     if layer_number == 0 or not self.get_children():
+        #         score.set_time_signatures(durations=self.quarter_duration, barline_style='light-light', times=times)
+        #     else:
+        #         durations = [child.quarter_duration for child in self.get_children() if child.quarter_duration != 0]
+        #         score.set_time_signatures(
+        #             durations=durations, barline_style='light-light', times=times)
+        # else:
+
+        score.accidental_mode = 'modern'
+
+        # if show_positions:
+        #     for node in self.get_children()[1:]:
+        #         position_in_tree = float(node.position_in_tree)
+        #         quarter_position_in_tree = position_in_tree * self.tempo / 60
+        #         position_in_score = quarter_position_in_tree * 60 / self.score_tempo
+        #         node.chord.add_words(
+        #             Timing.get_clock(time=round(position_in_score, 1), mode='msreduced'),
+        #             enclosure='rectangle', relative_y=40)
+        score.get_measure(-1).set_barline_style('light-heavy')
+        return score
+
+    # get_score = get_fractal_score
 
     def write_infos(self, file_name):
         os.system('touch ' + file_name)

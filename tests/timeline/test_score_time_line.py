@@ -11,16 +11,22 @@ from musurgia.timeline.scoretimeline import ScoreTimeLine, ModuleTimeLine
 path = str(os.path.abspath(__file__).split('.')[0])
 
 square = Square(duration=100, tree_permutation_order=[3, 1, 2], proportions=[1, 2, 3])
+
+square.change_module_duration(1, 1, 4)
+square.get_row(1).set_tempo(50)
+square.get_row(2).set_tempo(80)
+square.get_row(3).set_tempo(100)
+
 for module in square.modules.values():
     module.quarter_duration = round(module.quarter_duration)
 
-square.change_module_duration(1, 1, 4, mode='score_duration')
-square.get_row(1).set_score_tempo(50)
-square.get_row(1).set_module_tempo(72)
-square.get_row(2).set_score_tempo(80)
-square.get_row(2).set_module_tempo(72)
-square.get_row(3).set_score_tempo(100)
-square.get_row(3).set_module_tempo(72)
+# square.get_row(1).set_score_tempo(50)
+# square.get_row(1).set_module_tempo(72)
+# square.get_row(2).set_score_tempo(80)
+# square.get_row(2).set_module_tempo(72)
+# square.get_row(3).set_score_tempo(100)
+# square.get_row(3).set_module_tempo(72)
+
 
 VIOLIN = Violin()
 VIOLA = Viola()
@@ -33,7 +39,7 @@ class Test(TestCase):
 
     def test_1(self):
         pdf = Pdf(orientation='landscape', t_margin=25, l_margin=20)
-        title = PageText(text='w h i t e', v_position='center', h_position='top', relative_y=-14, font_size=18,
+        title = PageText(text='t e s t', v_position='center', h_position='top', relative_y=-14, font_size=18,
                          font_weight='bold')
         composer = PageText(text='A. G. 2019', v_position='right', h_position='top', relative_y=-14)
 

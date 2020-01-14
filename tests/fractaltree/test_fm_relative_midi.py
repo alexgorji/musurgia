@@ -188,7 +188,7 @@ class Test(TestCase):
         fm.quarter_duration = 70
 
         fm.midi_generator.microtone = 4
-        fm.quantize_leaves(0.5)
+        # fm.quantize_leaves(0.5)
         fm.midi_generator.directions = [1, -1, 1, -1, 1, -1, 1]
 
         fm.midi_generator.midi_range = [36, 56]
@@ -227,6 +227,7 @@ class Test(TestCase):
         fm.add_layer()
 
         score = TreeScoreTimewise()
+        score.accidental_mode = 'modern'
         score = fm.get_score(score)
         score.page_style.staff_distance = 150
         xml_path = path + '_test_10.xml'
