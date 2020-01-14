@@ -16,7 +16,7 @@ reading_direction (vertical) added to:
 Square()
 pdf function deleted in Square() and Module() 
 
-v 1.2.0
+v 1.2.1 (1.2.0 was corrupt)
 FractalTree()
 value can only be changed for the root without children
 FractalMusic()
@@ -30,6 +30,7 @@ FractalTree() and FractalMusic()
 changes needed in merge, reduce, quantize, round
 Square() and TimeLine()
 minor changes needed
+
 
 
 
