@@ -16,5 +16,22 @@ reading_direction (vertical) added to:
 Square()
 pdf function deleted in Square() and Module() 
 
+v 1.2.0
+FractalTree()
+value can only be changed for the root without children
+FractalMusic()
+delete module_tempo, score_tempo
+add tempo
+quarter_duration only changes duration
+children can have different tempi
+tempo can only be set once
+set_non_tempi()
+FractalTree() and FractalMusic()
+changes needed in merge, reduce, quantize, round
+Square() and TimeLine()
+minor changes needed
+
+
+
 
 
