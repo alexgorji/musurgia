@@ -2,21 +2,21 @@ musurgia is a library of different (personal) tools for computer aided music com
 
 **VERSIONS** 
 
-v 1.0.1
+v 1.0.1 
 \__init\__.py added
 
-v 1.1.0
+v 1.1.0  
 reading_direction (vertical) added to:  
 permutation  
 LimitedPermutation  
 FractalTree  
 
-v 1.1.1
+v 1.1.1  
 reading_direction (vertical) added to:  
 Square()
 pdf function deleted in Square() and Module() 
 
-v 1.2.1 (1.2.0 was corrupt)
+v 1.2.1 (1.2.0 was corrupt)  
 FractalTree()
 value can only be changed for the root without children
 FractalMusic()
