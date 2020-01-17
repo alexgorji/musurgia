@@ -97,14 +97,17 @@ class FractalMusic(FractalTree):
         try:
             return Fraction(self.duration * self.tempo, 60)
         except TypeError:
-            return Fraction(Fraction(self.duration) * Fraction(self.tempo, 60))
+            return Fraction(Fraction(self.duration * self.tempo), Fraction(60))
 
     @quarter_duration.setter
     def quarter_duration(self, val):
         if val is not None:
             if not self.tempo:
                 raise SetTempoFirstException()
-            self.duration = Fraction(val * 60, self.tempo)
+            try:
+                self.duration = Fraction(val * 60, self.tempo)
+            except TypeError:
+                self.duration = Fraction(Fraction(val * 60), Fraction(self.tempo))
 
     def _child_has_tempo(self):
         children_tempi = [child.tempo for child in self.get_children() if child.tempo]
