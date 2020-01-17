@@ -436,7 +436,12 @@ class Square(object):
                 row_info = [row_number]
 
             tempi = [module.tempo for module in row.modules]
-            durations = [round(module.duration) for module in row.modules]
+            def _round(duration):
+                output = round(duration, 1)
+                if output != int(output):
+                    output = float(output)
+                return output
+            durations = [_round(module.duration) for module in row.modules]
 
             if show_module_tempo:
                 x.add_row([*row_info, 'tempo', *tempi])
@@ -451,49 +456,3 @@ class Square(object):
 
         file.write(x.get_string())
         file.close()
-
-# class Selection(object):
-#
-#     def __init__(self, *modules, **kwargs):
-#         super().__init__(**kwargs)
-#         self._modules = None
-#         self._time_lines = {}
-#         self.modules = modules
-#
-#     @property
-#     def time_lines(self):
-#         return self._time_lines
-#
-#     @property
-#     def modules(self):
-#         return self._modules
-#
-#     @modules.setter
-#     def modules(self, val):
-#         self.remove_modules()
-#         for v in val:
-#             self.add_module(v)
-#
-#     def remove_modules(self):
-#         self._modules = []
-#
-#     def _get_last_position_in_time_lines(self):
-#         positions = [v.x_offset + v.length for v in self._time_lines.values()]
-#         try:
-#             return max(positions)
-#         except ValueError:
-#             return 0
-#
-#     def add_module(self, module):
-#         if not isinstance(module, Module):
-#             raise TypeError('added module must be of type not{}'.format(type(module)))
-#         self._modules.append(module)
-#         x_offset = self._get_last_position_in_time_lines()
-#         self._time_lines[module] = module.get_time_line(x_offset=x_offset)
-
-# def get_pdf(self):
-#     pdf = Pdf(orientation='landscape')
-#     for time_line in self.time_lines.values():
-#         pdf.add_time_line(time_line)
-#
-#     return pdf
