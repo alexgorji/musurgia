@@ -31,9 +31,13 @@ changes needed in merge, reduce, quantize, round
 Square() and TimeLine()
 minor changes needed
 
-v 1.2.2
+v 1.2.2  
 Square()
 write_infos() module duration decimal changed to 1
+
+v 1.2.3  
+FractalMusic().quarter_duration: bug fix
+
 
 
 
