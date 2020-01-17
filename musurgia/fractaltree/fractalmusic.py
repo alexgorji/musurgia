@@ -1,5 +1,6 @@
 import itertools
 import os
+from math import ceil, floor
 
 from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treechord import TreeChord
@@ -86,18 +87,15 @@ class FractalMusic(FractalTree):
 
     @duration.setter
     def duration(self, val):
-        if val and not isinstance(val, Fraction):
-            val = Fraction(val)
+        # if val and not isinstance(val, Fraction):
+        #     val = Fraction(val)
         self.value = val
 
     @property
     def quarter_duration(self):
         if not self.tempo:
             raise SetTempoFirstException()
-        try:
-            return Fraction(self.duration * self.tempo, 60)
-        except TypeError:
-            return Fraction(Fraction(self.duration * self.tempo), Fraction(60))
+        return self.duration * self.tempo / 60.
 
     @quarter_duration.setter
     def quarter_duration(self, val):
@@ -138,6 +136,17 @@ class FractalMusic(FractalTree):
         except ChildTempoIsAlreadySet:
             for child in self.get_children():
                 child.set_non_tempi(val=val)
+
+    def find_best_tempo(self, min_tempo=40, max_tempo=144):
+        min_quarter_duration = ceil(Timing(duration=self.duration, tempo=min_tempo).quarter_duration)
+        max_quarter_duration = floor(Timing(duration=self.duration, tempo=max_tempo).quarter_duration)
+        tempi = [Timing(duration=self.duration, quarter_duration=x).tempo for x in
+                 range(min_quarter_duration, max_quarter_duration + 1)]
+        tempo_deltas = [abs(round(tempo) - tempo) for tempo in tempi]
+        min_delta = min(tempo_deltas)
+        index = tempo_deltas.index(min_delta)
+        best_tempo = int(round(tempi[index]))
+        return best_tempo
 
     @property
     def quarter_position_in_tree(self):
@@ -365,6 +374,10 @@ class FractalMusic(FractalTree):
     # def merge_children(self, *lengths):
     #     super().merge_children(*lengths)
 
+    def _reset_durations(self):
+        for node in self.traverse():
+            node._value = None
+
     def _refill_duration(self):
         if not self._value:
             self._value = sum([child._refill_duration() for child in self.get_children()])
@@ -372,18 +385,26 @@ class FractalMusic(FractalTree):
             return self._value
 
     def quantize_leaves(self, grid_size):
-        def _reset_durations():
-            for node in self.traverse():
-                node._value = None
 
         #     quantizing quarter_durations!
         leaves = list(self.traverse_leaves())
         durations = [leaf.quarter_duration for leaf in leaves]
         quantized_durations = get_quantized_values(durations, grid_size)
         if quantized_durations:
-            _reset_durations()
+            self._reset_durations()
         for leaf, quantized_duration in zip(leaves, quantized_durations):
             leaf.quarter_duration = quantized_duration
+        self._refill_duration()
+
+    def round_leaves(self):
+
+        #     quantizing quarter_durations!
+        leaves = list(self.traverse_leaves())
+        rounded_quarter_durations = [round(leaf.quarter_duration) for leaf in leaves]
+        if rounded_quarter_durations:
+            self._reset_durations()
+        for leaf, rounded_quarter_duration in zip(leaves, rounded_quarter_durations):
+            leaf.quarter_duration = rounded_quarter_duration
         self._refill_duration()
 
     def change_midis(self):

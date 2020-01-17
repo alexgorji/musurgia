@@ -366,17 +366,6 @@ class FractalTree(Tree):
             self.add_self()
             self.get_children()[-1].value = self.value * prop / sum(proportions)
 
-    def round_leaves(self, min_diff=1):
-        for leaf in self.traverse_leaves():
-            factor = 1 / min_diff
-            new_value = round(leaf.value * factor) / factor
-            leaf._value = Fraction(new_value)
-
-        difference = self.value - sum([leaf.value for leaf in self.traverse_leaves()])
-        # if difference != 0:
-        #     warnings.warn('tree node {} round leaves difference= {}'.format(self.__name__, difference))
-        return difference
-
     def _reduce(self):
         sisters = self.get_siblings()
 

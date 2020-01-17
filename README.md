@@ -48,8 +48,12 @@ Square().change_module_duration(): attribute mode (module_duration or score_dura
 Row().change_duration(): added
 Row().change_quarter_duration(): added
 
-
-
+v 1.4.0  
+FractalMusic().quarter_duration: bug fix (float instead of fraction)
+FractalMusic().find_best_tempo(): function added
+FractalMusic().duration: bug fix (no type change to fraction)
+FractalTree().round_leaves() : deleted
+FractalMusic().round_leaves() : added
 
 
 
