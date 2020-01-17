@@ -29,18 +29,6 @@ class Module(FractalMusic):
     def parent_column(self):
         return self._parent_column
 
-    def change_duration(self, new_duration):
-        if self.parent_square:
-            self.parent_square.change_module_duration(self.row_number, self.column_number, new_duration)
-        else:
-            raise ValueError('parent_square is not set')
-
-    def change_quarter_duration(self, new_quarter_duration):
-        if self.parent_square:
-            self.parent_square.change_module_quarter_duration(self.row_number, self.column_number, new_quarter_duration)
-        else:
-            raise ValueError('parent_square is not set')
-
     def set_name(self, value):
         self._name = value
 
@@ -79,66 +67,6 @@ class Module(FractalMusic):
 
         file.write(x.get_string())
         file.close()
-
-    # def get_time_line(self, factor=1, **kwargs):
-    #     return TreeTimeLine(length=self.quarter_duration, factor=factor, **kwargs)
-
-    # def get_pdf(self, factor=None):
-    #     pdf = Pdf(orientation='landscape')
-    #
-    #     # pdf.set_margins(20, 20, 20)
-    #
-    #     pdf.write_line(txt=self.__name__)
-    #     pdf.write_line(txt='tree_permutation_order: ' + str(self.tree_permutation_order))
-    #     pdf.write_line(txt='permutation_order: ' + str(self.permutation_order))
-    #
-    #     pdf.write_line(txt='module_tempo: ' + str(self.module_tempo))
-    #     pdf.write_line(txt='score_tempo: ' + str(self.score_tempo))
-    #     pdf.write_line(txt='quarter_duration: ' + str(self.quarter_duration))
-    #     pdf.write_line(txt='duration: ' + str(round(float(self.actual_duration), 2)))
-    #
-    #     if factor is None:
-    #         factor = (pdf.w - pdf.l_margin - pdf.r_margin) / self.quarter_duration
-    #
-    #     module_tl = TreeTimeLine(length=self.quarter_duration, factor=factor)
-    #     label_6 = Label(text=round(float(self.quarter_duration), 2), relative_y=-1,
-    #                     relative_x=self.quarter_duration * module_tl.factor / 2)
-    #     label_6.font.size = 5
-    #     module_tl.mark_line.add_label(label_6)
-    #
-    #     label_7 = Label(text=round(float(self.actual_duration), 2), relative_y=1,
-    #                     relative_x=self.quarter_duration * module_tl.factor / 2)
-    #     label_7.font.size = 5
-    #     module_tl.mark_line.add_label(label_7)
-    #
-    #     for child in self.get_children():
-    #         child_tl = module_tl.add_child(TreeTimeLine(length=child.quarter_duration, x_offset=None, y_offset=None))
-    #
-    #         label_1 = Label(text=child.fractal_order)
-    #         label_1.font.size = 5
-    #         child_tl.mark_line.add_label(label_1)
-    #
-    #         label_2 = Label(text=round(float(child.quarter_position_in_tree), 2), relative_y=5)
-    #         label_2.font.size = 5
-    #         child_tl.mark_line.add_label(label_2)
-    #
-    #         label_3 = Label(text=round(float(child.position_in_score), 2), relative_y=7)
-    #         label_3.font.size = 5
-    #         child_tl.mark_line.add_label(label_3)
-    #
-    #         label_4 = Label(text=round(float(child.quarter_duration), 2), relative_y=-1,
-    #                         relative_x=child.quarter_duration * child_tl.factor / 2)
-    #         label_4.font.size = 5
-    #         child_tl.mark_line.add_label(label_4)
-    #
-    #         label_5 = Label(text=round(float(child.actual_duration), 2), relative_y=1,
-    #                         relative_x=child.quarter_duration * child_tl.factor / 2)
-    #         label_5.font.size = 5
-    #         child_tl.mark_line.add_label(label_5)
-    #
-    #     pdf.add_time_line(module_tl)
-    #
-    #     return pdf
 
     def __deepcopy__(self, memodict={}):
         copied = super().__deepcopy__(memodict)
@@ -218,6 +146,22 @@ class Row(RowColumn):
     @property
     def __name__(self):
         return self._name
+
+    def change_module_quarter_duration(self, module_number, new_quarter_duration):
+        factor = Fraction(Fraction(new_quarter_duration),
+                          Fraction(self.modules[module_number - 1].quarter_duration))
+
+        for index, module in enumerate(self.modules):
+            module.duration = self.modules[index].duration * factor
+
+    def change_module_duration(self, module_number, new_duration):
+        factor = Fraction(
+            Fraction(new_duration),
+            Fraction(self.modules[module_number - 1].duration)
+        )
+
+        for index, module in enumerate(self.modules):
+            module.duration = self.modules[index].duration * factor
 
 
 class Column(RowColumn):
@@ -400,14 +344,11 @@ class Square(object):
         for key in self.modules:
             self.modules[key].duration = self.modules[key].duration * factor
 
-    def change_module_duration(self, row_number, column_number, new_duration, mode='module_duration'):
-        if mode == 'module_duration':
-            factor = Fraction(Fraction(new_duration), Fraction(self.get_module(row_number, column_number).duration))
-        elif mode == 'score_duration':
-            factor = Fraction(Fraction(new_duration),
-                              Fraction(self.get_module(row_number, column_number).score_duration))
-        else:
-            raise ValueError()
+    def change_module_duration(self, row_number, column_number, new_duration):
+        factor = Fraction(
+            Fraction(new_duration),
+            Fraction(self.get_module(row_number, column_number).duration)
+        )
 
         for key in self.modules:
             self.modules[key].duration = self.modules[key].duration * factor
@@ -436,11 +377,13 @@ class Square(object):
                 row_info = [row_number]
 
             tempi = [module.tempo for module in row.modules]
+
             def _round(duration):
                 output = round(duration, 1)
                 if output != int(output):
                     output = float(output)
                 return output
+
             durations = [_round(module.duration) for module in row.modules]
 
             if show_module_tempo:

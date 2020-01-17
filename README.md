@@ -41,6 +41,14 @@ FractalMusic().quarter_duration: bug fix
 v 1.2.4  
 FractalMusic().quarter_duration: bug fix
 
+v 1.3.0
+Module().change_duration(): deleted
+Module().change_quarter_duration(): deleted
+Square().change_module_duration(): attribute mode (module_duration or score_duration) deleted
+Row().change_duration(): added
+Row().change_quarter_duration(): added
+
+
 
 
 
