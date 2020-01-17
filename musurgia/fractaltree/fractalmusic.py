@@ -94,7 +94,10 @@ class FractalMusic(FractalTree):
     def quarter_duration(self):
         if not self.tempo:
             raise SetTempoFirstException()
-        return Fraction(self.duration * self.tempo, 60)
+        try:
+            return Fraction(self.duration * self.tempo, 60)
+        except TypeError:
+            return Fraction(Fraction(self.duration) * Fraction(self.tempo, 60))
 
     @quarter_duration.setter
     def quarter_duration(self, val):
