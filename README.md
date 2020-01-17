@@ -38,6 +38,9 @@ write_infos() module duration decimal changed to 1
 v 1.2.3  
 FractalMusic().quarter_duration: bug fix
 
+v 1.2.4  
+FractalMusic().quarter_duration: bug fix
+
 
 
 
