@@ -72,7 +72,8 @@ Tests:
 if comparing files is needed use Test(AGTestCase)
 _template.* renamed to _expected.*
 
-
+v 1.5.1
+setup.py: install_requires: added diff-pdf-visually == 1.4.1
 
 
 
