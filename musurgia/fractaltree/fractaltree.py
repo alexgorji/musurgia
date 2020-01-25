@@ -1,9 +1,8 @@
 import itertools
 
-from quicktions import Fraction
-
 from musurgia.permutation import LimitedPermutation, permute
 from musurgia.tree import Tree
+from quicktions import Fraction
 
 
 class FractalTreeException(Exception):
@@ -122,7 +121,7 @@ class FractalTree(Tree):
     def permutation_order(self):
         def _calculate_permutation_order():
             if self.tree_permutation_order:
-                permutation = LimitedPermutation(input_list=list(range(1, len(self.proportions) + 1)),
+                permutation = LimitedPermutation(input_list=list(range(1, self.size + 1)),
                                                  main_permutation_order=self.tree_permutation_order, multi=self.multi,
                                                  reading_direction=self.reading_direction)
 
@@ -204,7 +203,7 @@ class FractalTree(Tree):
 
     def _calculate_children_fractal_orders(self):
         if self.value and self.proportions:
-            children_fractal_orders = range(1, len(self.proportions) + 1)
+            children_fractal_orders = range(1, self.size + 1)
             permutation_order = self.permutation_order
             if permutation_order:
                 children_fractal_orders = permute(children_fractal_orders, permutation_order)
@@ -227,8 +226,12 @@ class FractalTree(Tree):
                     raise ValueError('proportions and tree_permutation_order should have the same length')
             return children_fractal_values
 
+    @property
+    def size(self):
+        return len(self.proportions)
+
     def _child_multi(self, parent, index):
-        number_of_children = len(self.proportions)
+        number_of_children = self.size
         multi_first = sum(parent.multi) % number_of_children
         if multi_first == 0:
             multi_first = number_of_children
@@ -260,7 +263,7 @@ class FractalTree(Tree):
 
         for leaf in leaves:
             if leaf.fertile is True:
-                for i in range(len(leaf.proportions)):
+                for i in range(leaf.size):
                     new_node = leaf.copy()
                     new_node.value = leaf.children_fractal_values[i]
                     new_node.multi = self._child_multi(leaf, i)
@@ -426,7 +429,6 @@ class FractalTree(Tree):
                               reading_direction=self.reading_direction, fertile=self.fertile)
 
     # def copy_without_children(self):
-
 
     def __deepcopy__(self, memodict={}):
         copied = self.__class__(value=self.value, proportions=self.proportions,

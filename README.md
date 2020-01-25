@@ -59,6 +59,9 @@ v 1.4.1
 FractalTree().\__deepcopy\__(): optimize
 FractalMusic().\__deepcopy\__(): optimize
 
+v 1.4.2
+FractalTree().size: added
+
 
 
 
