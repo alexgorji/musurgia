@@ -1,14 +1,13 @@
 import os
-from unittest import TestCase
 
 from musurgia.agpdf.pdf import Pdf
 from musurgia.agpdf.textlabel import Text
-from musurgia.testcomparefiles import TestCompareFiles
+from musurgia.agunittest import AGTestCase
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(TestCase):
+class Test(AGTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf()
 
@@ -19,4 +18,4 @@ class Test(TestCase):
         copied = tl.__deepcopy__()
         copied.draw(self.pdf)
         self.pdf.write(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
+        self.assertCompareFiles(actual_file_path=pdf_path)

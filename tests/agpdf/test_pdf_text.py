@@ -1,15 +1,14 @@
 import os
-from unittest import TestCase
 
-from musurgia.agpdf.pdf import Pdf, PageText
 from fpdf import FPDF
 
-from musurgia.testcomparefiles import TestCompareFiles
+from musurgia.agpdf.pdf import Pdf, PageText
+from musurgia.agunittest import AGTestCase
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(TestCase):
+class Test(AGTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf()
 
@@ -23,7 +22,7 @@ class Test(TestCase):
         t = PageText('normal_test')
         t.draw(pdf)
         pdf.write(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
+        self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_0_2(self):
         pdf = self.pdf
@@ -35,7 +34,7 @@ class Test(TestCase):
         t = PageText('normal_test')
         t.draw(pdf)
         pdf.write(pdf_path)
-        # TestCompareFiles().assertTemplate(file_path=pdf_path)
+        # TestCompareFiles().assertExpected(file_path=pdf_path)
 
     def test_1(self):
         pdf = self.pdf
@@ -46,7 +45,7 @@ class Test(TestCase):
         pdf.add_page()
         t.draw(pdf)
         pdf.write(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
+        self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_2(self):
         pdf = self.pdf
@@ -70,7 +69,7 @@ class Test(TestCase):
         t.draw(pdf)
         pdf.page = 2
         pdf.write(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
+        self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_3(self):
         pdf = self.pdf
@@ -95,7 +94,7 @@ class Test(TestCase):
         t.draw(pdf)
         pdf.page = 2
         pdf.write(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
+        self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_4(self):
         pdf = FPDF()
@@ -119,4 +118,4 @@ class Test(TestCase):
         pdf.text(10, 150, 'hello old world!')
         pdf.page = 2
         pdf.output(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
+        self.assertCompareFiles(actual_file_path=pdf_path)

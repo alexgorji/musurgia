@@ -1,15 +1,14 @@
 import os
-from unittest import TestCase
 
 from musurgia.agpdf.line import Line
 from musurgia.agpdf.pdf import Pdf
 from musurgia.agpdf.textlabel import TextLabel
-from musurgia.testcomparefiles import TestCompareFiles
+from musurgia.agunittest import AGTestCase
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(TestCase):
+class Test(AGTestCase):
     def test_1(self):
         pdf_path = path + '_test_1.pdf'
         pdf = Pdf()
@@ -17,7 +16,7 @@ class Test(TestCase):
         line.end_mark_line.show = True
         line.draw(pdf=pdf)
         pdf.write(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
+        self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_2(self):
         pdf_path = path + '_test_2.pdf'
@@ -28,7 +27,7 @@ class Test(TestCase):
         line_1.draw_with_break(pdf)
         line_2.draw_with_break(pdf)
         pdf.write(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
+        self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_3(self):
         pdf_path = path + '_test_3.pdf'
@@ -48,7 +47,7 @@ class Test(TestCase):
         line_1.draw_with_break(pdf)
         line_3.draw_with_break(pdf)
         pdf.write(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
+        self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_5(self):
         pdf_path = path + '_test_5.pdf'
@@ -58,7 +57,7 @@ class Test(TestCase):
         line.add_text_label(TextLabel('bla', font_size=8))
         line.draw(pdf=pdf)
         pdf.write(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
+        self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_6(self):
         pdf_path = path + '_test_6.pdf'
@@ -74,7 +73,7 @@ class Test(TestCase):
         line.add_text_label(TextLabel('bla bla', relative_y=-4))
         line.draw(pdf=pdf)
         pdf.write(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
+        self.assertCompareFiles(actual_file_path=pdf_path)
         TextLabel.DEFAULT_FONT_SIZE = 10
 
     def test_7(self):
@@ -84,4 +83,4 @@ class Test(TestCase):
         line.end_mark_line.show = True
         line.draw(pdf=pdf)
         pdf.write(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
+        self.assertCompareFiles(actual_file_path=pdf_path)
