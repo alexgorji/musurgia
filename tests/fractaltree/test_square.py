@@ -1,14 +1,13 @@
 import os
-from unittest import TestCase
 
+from musurgia.agunittest import AGTestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.fractaltree.fractalmusicsquare import Square
-from musurgia.testcomparefiles import TestCompareFiles
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(TestCase):
+class Test(AGTestCase):
     def setUp(self) -> None:
         self.square = Square(duration=600, tree_permutation_order=[4, 1, 2, 3], proportions=[1, 2, 3, 4])
         # for module in self.square.modules.values():
@@ -22,7 +21,7 @@ class Test(TestCase):
     def test_1(self):
         text_path = path + '_test_1.txt'
         self.square.write_infos(text_path=text_path, show_module_tempo=True, show_quarter_durations=True)
-        TestCompareFiles().assertTemplate(text_path)
+        self.assertCompareFiles(text_path)
 
     def test_2(self):
         text_path = path + '_test_2.txt'
@@ -31,7 +30,7 @@ class Test(TestCase):
 
         self.square.write_infos(text_path=text_path, show_module_tempo=True,
                                 show_quarter_durations=True)
-        TestCompareFiles().assertTemplate(text_path)
+        self.assertCompareFiles(text_path)
 
     def test_3(self):
         self.square.change_module_quarter_duration(1, 1, 3)
@@ -41,7 +40,7 @@ class Test(TestCase):
         self.square.write_infos(text_path=text_path, show_module_tempo=True,
                                 show_quarter_durations=True)
 
-        TestCompareFiles().assertTemplate(text_path)
+        self.assertCompareFiles(text_path)
 
     def test_4(self):
         self.square = Square(duration=600, tree_permutation_order=[3, 4, 2, 1], proportions=[1, 2, 3, 4],
@@ -61,7 +60,7 @@ class Test(TestCase):
         text_path = path + '_test_5.txt'
         self.square.write_infos(text_path=text_path, show_module_tempo=True,
                                 show_quarter_durations=True)
-        TestCompareFiles().assertTemplate(text_path)
+        self.assertCompareFiles(text_path)
 
     def test_6(self):
         row_2 = self.square.rows[1]
@@ -69,4 +68,4 @@ class Test(TestCase):
         text_path = path + '_test_6.txt'
         self.square.write_infos(text_path=text_path, show_module_tempo=True,
                                 show_quarter_durations=True)
-        TestCompareFiles().assertTemplate(text_path)
+        self.assertCompareFiles(text_path)

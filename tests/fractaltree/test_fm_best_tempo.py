@@ -1,13 +1,12 @@
 import os
-from unittest import TestCase
 
 from musurgia.fractaltree.fractalmusic import FractalMusic
-from musurgia.testcomparefiles import TestCompareFiles
+from musurgia.agunittest import AGTestCase
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(TestCase):
+class Test(AGTestCase):
     def setUp(self) -> None:
         self.fm = FractalMusic(proportions=[1, 2, 3, 4], tree_permutation_order=[3, 1, 4, 2], duration=10.4)
 
@@ -38,4 +37,4 @@ class Test(TestCase):
         xml_path = path + '_test_4.xml'
         score = self.fm.get_root_score()
         score.write(xml_path)
-        TestCompareFiles().assertTemplate(xml_path)
+        self.assertCompareFiles(xml_path)

@@ -1,16 +1,15 @@
 import os
-from unittest import TestCase
 
-from musurgia.agpdf.pdf import Pdf
 from quicktions import Fraction
 
-from musurgia.testcomparefiles import TestCompareFiles
+from musurgia.agpdf.pdf import Pdf
+from musurgia.agunittest import AGTestCase
 from musurgia.timeline.timeline import TimeLine
 
-path = os.path.abspath(__file__).split('.')[0]
+path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(TestCase):
+class Test(AGTestCase):
     def test_1(self):
         pdf_path = path + '_test_1.pdf'
         pdf = Pdf(orientation='portrait')
@@ -20,7 +19,7 @@ class Test(TestCase):
         tl.show_interval = 10
         tl.ruler.draw(pdf)
         pdf.write(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
+        self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_2(self):
         pdf_path = path + '_test_2.pdf'
@@ -31,5 +30,4 @@ class Test(TestCase):
         tl.show_interval = 10
         tl.ruler.draw(pdf)
         pdf.write(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
-
+        self.assertCompareFiles(actual_file_path=pdf_path)

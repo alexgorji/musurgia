@@ -1,16 +1,14 @@
-from unittest import TestCase
+import os
 
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
-import os
-
+from musurgia.agunittest import AGTestCase
 from musurgia.fractaltree.fractalmusic import FractalMusic
-from musurgia.testcomparefiles import TestCompareFiles
 
 path = os.path.abspath(__file__).split('.')[0]
 
 
-class Test(TestCase):
+class Test(AGTestCase):
     def setUp(self) -> None:
         self.fm = FractalMusic(tempo=60, tree_permutation_order=[3, 1, 2], proportions=[1, 2, 3], quarter_duration=20)
         self.score = TreeScoreTimewise()
@@ -25,4 +23,4 @@ class Test(TestCase):
         v.add_to_score(self.score)
         xml_path = path + '_test_1.xml'
         self.score.write(xml_path)
-        TestCompareFiles().assertTemplate(xml_path)
+        self.assertCompareFiles(xml_path)

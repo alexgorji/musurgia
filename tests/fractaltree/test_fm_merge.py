@@ -1,14 +1,13 @@
 import os
-from unittest import TestCase
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
 from musurgia.fractaltree.fractalmusic import FractalMusic, MergeTempoException
-from musurgia.testcomparefiles import TestCompareFiles
+from musurgia.agunittest import AGTestCase
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(TestCase):
+class Test(AGTestCase):
     def setUp(self) -> None:
         self.fm = FractalMusic(proportions=(1, 2, 3, 4, 5), tree_permutation_order=(3, 5, 1, 2, 4))
         self.fm.duration = 10
@@ -33,7 +32,7 @@ class Test(TestCase):
         fm.get_simple_format().to_stream_voice().add_to_score(score, part_number=2)
         xml_path = path + '_test_1.xml'
         score.write(xml_path)
-        TestCompareFiles().assertTemplate(xml_path)
+        self.assertCompareFiles(xml_path)
         # # ft.add_layer()
         # # print(ft.get_leaves(key=lambda leaf: leaf.index))
         # # print(ft.get_leaves(key=lambda leaf: leaf.fractal_order))

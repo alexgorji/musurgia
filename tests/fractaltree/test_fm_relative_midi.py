@@ -1,15 +1,14 @@
 import os
-from unittest import TestCase
 
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
+from musurgia.agunittest import AGTestCase
 from musurgia.fractaltree.fractalmusic import FractalMusic
-from musurgia.testcomparefiles import TestCompareFiles
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(TestCase):
+class Test(AGTestCase):
 
     def setUp(self) -> None:
         self.fm = FractalMusic(tempo=60, quarter_duration=12, tree_permutation_order=(3, 1, 4, 2),
@@ -42,7 +41,7 @@ class Test(TestCase):
 
         xml_path = path + '_test_1.xml'
         score.write(path=xml_path)
-        TestCompareFiles().assertTemplate(file_path=xml_path)
+        self.assertCompareFiles(actual_file_path=xml_path)
 
     # def test_2(self):
     #     self.fm.midi_generator.directions = [1]
@@ -159,7 +158,7 @@ class Test(TestCase):
         xml_path = path + '_test_7.xml'
         score.accidental_mode = 'normal'
         score.write(xml_path)
-        TestCompareFiles().assertTemplate(file_path=xml_path)
+        self.assertCompareFiles(actual_file_path=xml_path)
 
     def test_8(self):
         fm = FractalMusic(proportions=[1, 2, 3, 4, 5, 6, 7], tree_permutation_order=[3, 6, 1, 5, 7, 2, 4])
@@ -202,12 +201,12 @@ class Test(TestCase):
             node.chord.add_words(node.midi_value)
         text_path = path + '_test_9.txt'
         fm.write_infos(text_path)
-        TestCompareFiles().assertTemplate(file_path=text_path)
+        self.assertCompareFiles(actual_file_path=text_path)
 
         score = fm.get_score()
         xml_path = path + '_test_9.xml'
         score.write(xml_path)
-        TestCompareFiles().assertTemplate(file_path=xml_path)
+        self.assertCompareFiles(actual_file_path=xml_path)
 
     def test_10(self):
         fm = FractalMusic(proportions=[1, 2, 3], tree_permutation_order=[3, 1, 2])
@@ -232,4 +231,4 @@ class Test(TestCase):
         score.page_style.staff_distance = 150
         xml_path = path + '_test_10.xml'
         score.write(xml_path)
-        TestCompareFiles().assertTemplate(xml_path)
+        self.assertCompareFiles(xml_path)

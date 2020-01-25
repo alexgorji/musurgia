@@ -1,15 +1,14 @@
 import os
-from unittest import TestCase
 
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
+from musurgia.agunittest import AGTestCase
 from musurgia.fractaltree.fractalmusic import FractalMusic
-from musurgia.testcomparefiles import TestCompareFiles
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(TestCase):
+class Test(AGTestCase):
     def test_1(self):
         fm = FractalMusic(tempo=60, proportions=[1, 2, 3, 4], tree_permutation_order=[3, 1, 4, 2], quarter_duration=100)
         fm.midi_generator.midi_range = [60, 79]
@@ -34,7 +33,7 @@ class Test(TestCase):
 
         xml_path = path + '_test_1.xml'
         score.write(xml_path)
-        TestCompareFiles().assertTemplate(file_path=xml_path)
+        self.assertCompareFiles(actual_file_path=xml_path)
 
     # def test_3(self):
     #     fm = FractalMusic(proportions=[1, 2, 3, 4], tree_permutation_order=[3, 1, 4, 2], duration=100)
@@ -105,9 +104,9 @@ class Test(TestCase):
 
         text_path = path + '_test_5.txt'
         fm.write_infos(text_path)
-        TestCompareFiles().assertTemplate(file_path=text_path)
+        self.assertCompareFiles(actual_file_path=text_path)
 
         xml_path = path + '_test_5.xml'
         score.max_division = 7
         score.write(xml_path)
-        TestCompareFiles().assertTemplate(file_path=xml_path)
+        self.assertCompareFiles(actual_file_path=xml_path)

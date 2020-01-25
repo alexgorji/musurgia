@@ -443,7 +443,7 @@ class FractalMusic(FractalTree):
                     child.midi_generator._iterator = None
                     child._children_generated_midis = None
 
-    def get_score_template(self):
+    def get_score_expected(self):
         score = TreeScoreTimewise()
         score.tuplet_line_width = 2.4
         score.page_style.orientation = 'landscape'
@@ -463,7 +463,7 @@ class FractalMusic(FractalTree):
                   barline='light-heavy',
                   show_metronome=True):
         if not score:
-            score = self.get_score_template()
+            score = self.get_score_expected()
         score.set_time_signatures(durations=self.quarter_duration)
         if show_fractal_orders:
             for node in self.traverse():
@@ -507,7 +507,7 @@ class FractalMusic(FractalTree):
                        ):
 
         if not score:
-            score = self.get_score_template()
+            score = self.get_score_expected()
 
         try:
             return self.get_score(score=score, layer_number=layer_number, show_fractal_orders=show_fractal_orders,

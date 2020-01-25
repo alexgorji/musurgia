@@ -4,7 +4,7 @@ import os
 from diff_pdf_visually import pdfdiff
 
 
-class TestCaseWithCompareFiles(TestCase):
+class AGTestCase(TestCase):
     """"""
 
     def __init__(self, *args, **kwargs):
@@ -22,7 +22,7 @@ class TestCaseWithCompareFiles(TestCase):
 
         self.assertEqual(expected, result)
 
-    def assertExpectedFile(self, actual_file_path, expected_file_path=None, verbosity=0):
+    def assertCompareFiles(self, actual_file_path, expected_file_path=None, verbosity=0):
         file_name, extension = os.path.splitext(actual_file_path)
         if not expected_file_path:
             if not extension:

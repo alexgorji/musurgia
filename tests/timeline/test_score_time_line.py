@@ -1,11 +1,10 @@
 import os
-from unittest import TestCase
 
-from musurgia.agpdf.pdf import Pdf, PageText
 from musicscore.musictree.treeinstruments import Violin, Viola, Cello, Percussion, Accordion
 
+from musurgia.agpdf.pdf import Pdf, PageText
+from musurgia.agunittest import AGTestCase
 from musurgia.fractaltree.fractalmusicsquare import Square
-from musurgia.testcomparefiles import TestCompareFiles
 from musurgia.timeline.scoretimeline import ScoreTimeLine, ModuleTimeLine
 
 path = str(os.path.abspath(__file__).split('.')[0])
@@ -35,7 +34,7 @@ PERCUSSION = Percussion()
 ACCORDION = Accordion()
 
 
-class Test(TestCase):
+class Test(AGTestCase):
 
     def test_1(self):
         pdf = Pdf(orientation='landscape', t_margin=25, l_margin=20)
@@ -73,4 +72,4 @@ class Test(TestCase):
             title.draw(pdf)
             composer.draw(pdf)
         pdf.write(pdf_path)
-        TestCompareFiles().assertTemplate(file_path=pdf_path)
+        self.assertCompareFiles(actual_file_path=pdf_path)
