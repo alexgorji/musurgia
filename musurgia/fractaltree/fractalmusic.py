@@ -53,8 +53,8 @@ class MergeTempoException(MergeException):
 
 class FractalMusic(FractalTree):
     def __init__(self,
-                 midi_generator=None,
                  duration=None,
+                 midi_generator=None,
                  tempo=None,
                  quarter_duration=None,
                  tree_directions=None,
@@ -63,7 +63,6 @@ class FractalMusic(FractalTree):
 
         # super().__init__(value=duration, *args, **kwargs)
         super().__init__(*args, **kwargs)
-
         self._midi_value = None
         self._chord = None
         self._midi_generator = None
@@ -72,13 +71,14 @@ class FractalMusic(FractalTree):
         self._permute_directions = True
         self._tempo = None
 
-        self._corrected_score_duration = None
-
         self.midi_generator = midi_generator
-        self.duration = duration
+        if duration:
+            self.duration = duration
+
         self.tempo = tempo
         self.permute_directions = permute_directions
         self.tree_directions = tree_directions
+
         self.quarter_duration = quarter_duration
 
     @property
@@ -87,8 +87,6 @@ class FractalMusic(FractalTree):
 
     @duration.setter
     def duration(self, val):
-        # if val and not isinstance(val, Fraction):
-        #     val = Fraction(val)
         self.value = val
 
     @property
@@ -607,19 +605,10 @@ class FractalMusic(FractalTree):
             pass
 
     def __deepcopy__(self, memodict={}):
-        copied = super().copy()
-        copied.multi = self.multi
-        copied._fractal_order = self.fractal_order
-        copied._name = self.__name__
+        copied = super().__deepcopy__()
         copied.tempo = self.tempo
         if self._midi_generator is not None:
             copied._midi_generator = self._midi_generator.__deepcopy__()
-        copied.permute_directions = self.permute_directions
-        copied.tree_directions = self.tree_directions
-
-        copied._up = self.up
-        for child in self.get_children():
-            copied.add_child(child.__deepcopy__())
 
         if self.fertile is False:
             copied._midi_value = self._midi_value

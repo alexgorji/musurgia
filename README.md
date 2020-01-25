@@ -55,6 +55,10 @@ FractalMusic().duration: bug fix (no type change to fraction)
 FractalTree().round_leaves() : deleted
 FractalMusic().round_leaves() : added
 
+v 1.4.1  
+FractalTree().\__deepcopy\__(): optimize
+FractalMusic().\__deepcopy\__(): optimize
+
 
 
 

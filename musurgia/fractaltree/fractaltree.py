@@ -425,8 +425,15 @@ class FractalTree(Tree):
                               tree_permutation_order=self.tree_permutation_order, multi=self.multi,
                               reading_direction=self.reading_direction, fertile=self.fertile)
 
+    # def copy_without_children(self):
+
+
     def __deepcopy__(self, memodict={}):
-        copied = self.copy()
+        copied = self.__class__(value=self.value, proportions=self.proportions,
+                                tree_permutation_order=self.tree_permutation_order, multi=self.multi,
+                                reading_direction=self.reading_direction, fertile=self.fertile)
         copied._fractal_order = self.fractal_order
-        copied.__name__ = self.__name__
+        copied._name = self._name
+        for child in self.get_children():
+            copied.add_child(child.__deepcopy__())
         return copied
