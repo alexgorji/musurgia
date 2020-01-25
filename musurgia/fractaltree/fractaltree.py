@@ -22,9 +22,9 @@ class SetValueFirst(FractalTreeException):
 
 
 class FractalTree(Tree):
-    def __init__(self, proportions=None, tree_permutation_order=None, value=None, multi=None, fertile=True,
+    def __init__(self, value=None, proportions=None, tree_permutation_order=None, multi=None, fertile=True,
                  reading_direction='horizontal', *args, **kwargs):
-        super().__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._value = None
         self._proportions = None
         self._tree_permutation_order = None

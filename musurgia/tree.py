@@ -11,7 +11,16 @@ class Tree(object):
         self._children = []
         self._up = None
         self._leaves = []
+        self._label = None
         self.label = label
+
+    @property
+    def label(self):
+        return self._label
+
+    @label.setter
+    def label(self, val):
+        self._label = val
 
     @property
     def up(self):
