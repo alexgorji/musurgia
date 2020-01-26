@@ -5,15 +5,14 @@ from math import ceil, floor
 from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treechord import TreeChord
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
-from prettytable import PrettyTable
-from quicktions import Fraction
-
 from musurgia import basic_functions, scaledvalues
 from musurgia.fractaltree.fractaltree import FractalTree
 from musurgia.fractaltree.midigenerators import RelativeMidi, MidiGenerator
 from musurgia.permutation import permute
 from musurgia.quantize import get_quantized_values
 from musurgia.timing import Timing
+from prettytable import PrettyTable
+from quicktions import Fraction
 
 
 class FractalMusicException(Exception):
@@ -510,6 +509,7 @@ class FractalMusic(FractalTree):
             score = self.get_score_template()
 
         old_tempo = None
+        max_layers = max([child.number_of_layers for child in self.get_children()])
         for child in self.get_children():
             tempo = child.tempo
             if tempo == old_tempo:
@@ -517,7 +517,8 @@ class FractalMusic(FractalTree):
             else:
                 show_metronome = True
             old_tempo = tempo
-            child_score = child.get_score(show_fractal_orders=show_fractal_orders, show_midis=show_midis,
+            child_score = child.get_score(layer_number=list(range(0, max_layers + 1)),
+                                          show_fractal_orders=show_fractal_orders, show_midis=show_midis,
                                           barline='light-light', show_metronome=show_metronome)
 
             score.extend(child_score)

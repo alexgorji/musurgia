@@ -92,6 +92,13 @@ FractalMusic().round_leaves(): optimised
 FractalMusic().get_root_score(): deleted
 FractalMusic().get_children_score(): added
 
+v 1.7.1  
+FractalTree().val: Fraction
+FractalTree().change_value(): bug fix
+FractalMusic().get_children_score(): bug fix: gets score of each child with max layers of all children 
+
+
+
 
 
 
