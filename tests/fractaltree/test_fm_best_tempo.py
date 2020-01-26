@@ -12,11 +12,11 @@ class Test(AGTestCase):
 
     def test_1(self):
         self.fm.tempo = self.fm.find_best_tempo()
-        self.assertEqual(self.fm.duration, 10.4)
+        self.assertEqual(10.4, self.fm.duration)
 
     def test_2(self):
         self.fm.tempo = self.fm.find_best_tempo()
-        self.assertEqual(self.fm.quarter_duration, 13)
+        self.assertEqual(13, self.fm.quarter_duration)
 
     def test_3(self):
         self.fm.add_layer()
@@ -26,7 +26,7 @@ class Test(AGTestCase):
         # print([leaf.quarter_duration for leaf in self.fm.get_children()])
         self.fm.round_leaves()
         result = [4.0, 1.0, 7.0, 2.0]
-        self.assertEqual([child.quarter_duration for child in self.fm.get_children()], result)
+        self.assertEqual(result, [child.quarter_duration for child in self.fm.get_children()])
 
     def test_4(self):
         self.fm.add_layer()

@@ -24,7 +24,7 @@ class Test(TestCase):
         # print_infos(self.fm)
         self.fm.tempo = 60
         result = [60, Fraction(20, 1), Fraction(20, 1)]
-        self.assertEqual(get_infos(self.fm), result)
+        self.assertEqual(result, get_infos(self.fm))
 
     def test_2(self):
         self.fm.tempo = 60
@@ -32,7 +32,7 @@ class Test(TestCase):
         # print_infos(self.fm)
         result = [60, Fraction(10, 1), Fraction(10, 1)]
         # print(get_infos(self.fm))
-        self.assertEqual(get_infos(self.fm), result)
+        self.assertEqual(result, get_infos(self.fm))
 
     def test_3(self):
         self.fm.duration = 10
@@ -40,7 +40,7 @@ class Test(TestCase):
         # print_infos(self.fm)
         result = [72, Fraction(12, 1), Fraction(10, 1), ]
         # print(get_infos(self.fm))
-        self.assertEqual(get_infos(self.fm), result)
+        self.assertEqual(result, get_infos(self.fm))
 
     def test_5(self):
         self.fm.duration = 10
@@ -49,7 +49,7 @@ class Test(TestCase):
         # print_infos(self.fm)
         result = [72, 30, 25]
         # print(get_infos(self.fm))
-        self.assertEqual(get_infos(self.fm), result)
+        self.assertEqual(result, get_infos(self.fm))
 
     def test_6(self):
         self.fm.duration = 10
@@ -59,4 +59,4 @@ class Test(TestCase):
         # print_infos(self.fm)
         result = [72, 24, 20]
         # print(get_infos(self.fm))
-        self.assertEqual(get_infos(self.fm), result)
+        self.assertEqual(result, get_infos(self.fm))

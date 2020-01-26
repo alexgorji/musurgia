@@ -12,8 +12,8 @@ class Test(TestCase):
 
     def test_1(self):
         self.fm.midi_generator.set_directions(1, -1, -1)
-        self.assertEqual(self.fm.midi_generator.directions, [1, -1, -1])
-        self.assertEqual(self.fm.tree_directions, [-1, -1, 1])
+        self.assertEqual([1, -1, -1], self.fm.midi_generator.directions)
+        self.assertEqual([-1, -1, 1], self.fm.tree_directions)
         self.fm.add_layer()
         # for node in self.fm.get_children():
         #     print(node.__name__)
@@ -25,7 +25,7 @@ class Test(TestCase):
         # self.fm.write_infos(text_path)
         directions = [leaf.midi_generator.directions for leaf in self.fm.traverse_leaves()]
 
-        self.assertEqual(directions, [[-1, -1, 1], [1, -1, -1], [-1, 1, -1]])
+        self.assertEqual([[-1, -1, 1], [1, -1, -1], [-1, 1, -1]], directions)
 
     def test_2(self):
         self.fm.tree_directions = [1, 1, -1]
@@ -34,8 +34,8 @@ class Test(TestCase):
         directions = [leaf.midi_generator.directions for leaf in self.fm.traverse_leaves()]
         self.fm.add_layer()
         midis = [leaf.midi_value for leaf in self.fm.traverse_leaves()]
-        self.assertEqual(directions, [[1, 1, -1], [-1, 1, 1], [1, -1, 1]])
-        self.assertEqual(midis, [60.0, 63.0, 70.0, 63.0, 60.0, 61.0, 65.0, 70.0, 63.0])
+        self.assertEqual([[1, 1, -1], [-1, 1, 1], [1, -1, 1]], directions)
+        self.assertEqual([60.0, 63.0, 70.0, 63.0, 60.0, 61.0, 65.0, 70.0, 63.0], midis)
 
     def test_3(self):
         self.fm.tree_directions = [1, 1, -1]
@@ -48,4 +48,4 @@ class Test(TestCase):
         result = [[[60.0, 63.0], [63.0, 70.0], [70.0, 60.0]], [[60.0, 62.0], [62.0, 63.0], [63.0, 61.0]],
                   [[63.0, 66.0], [66.0, 70.0], [70.0, 69.0]]]
 
-        self.assertEqual(midi_ranges, result)
+        self.assertEqual(result, midi_ranges)

@@ -10,21 +10,21 @@ class Test(TestCase):
 
     def test_1(self):
         result = {'a': None, 'an': None, 'n': None, 'd': None, 's': None}
-        self.assertEqual(self.arith_prog._parameters_dict, result)
+        self.assertEqual(result, self.arith_prog._parameters_dict)
 
     def test_2(self):
         self.arith_prog.n = 15
         self.arith_prog.a1 = 1
         self.arith_prog.d = 2
         result = {'a': 1, 'an': 29, 'n': 15, 'd': 2, 's': 225.0}
-        self.assertEqual(self.arith_prog.parameters_dict, result)
+        self.assertEqual(result, self.arith_prog.parameters_dict)
 
     def test_3(self):
         self.arith_prog.n = 15
         self.arith_prog.a1 = 1
         self.arith_prog.d = 2
         result = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]
-        self.assertEqual(list(self.arith_prog), result)
+        self.assertEqual(result, list(self.arith_prog))
 
     def test_4(self):
         self.arith_prog.a1 = 36
@@ -37,4 +37,4 @@ class Test(TestCase):
         # print(quantized)
         # print(sum(quantized))
         result = [36, 34, 32, 31, 29, 26, 25]
-        self.assertEqual(quantized, result)
+        self.assertEqual(result, quantized)

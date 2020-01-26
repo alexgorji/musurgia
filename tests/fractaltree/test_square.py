@@ -52,7 +52,7 @@ class Test(AGTestCase):
                   [3, 1, 4, 2], [1, 4, 3, 2], [2, 3, 4, 1], [3, 1, 2, 4], [4, 2, 1, 3], [3, 2, 4, 1], [4, 1, 3, 2],
                   [2, 4, 1, 3], [1, 3, 2, 4]]
 
-        self.assertEqual(orders, result)
+        self.assertEqual(result, orders)
 
     def test_5(self):
         row_1 = self.square.rows[0]

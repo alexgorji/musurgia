@@ -8,7 +8,7 @@ class Test(TestCase):
         permutation_order = [3, 1, 2]
         self_permutation = self_permute(permutation_order)
         result = [[3, 1, 2], [2, 3, 1], [1, 2, 3]]
-        self.assertEqual(self_permutation, result)
+        self.assertEqual(result, self_permutation)
 
     def test_1_2(self):
         permutation_order = [3, 1, 2]
@@ -16,7 +16,7 @@ class Test(TestCase):
         result = [[[1, 2, 3], [3, 1, 2], [2, 3, 1]],
                   [[2, 3, 1], [1, 2, 3], [3, 1, 2]],
                   [[3, 1, 2], [2, 3, 1], [1, 2, 3]]]
-        self.assertEqual(self_multiplied_permutation, result)
+        self.assertEqual(result, self_multiplied_permutation)
 
     def test_1_3(self):
         permutation_order = [3, 1, 2]
@@ -24,7 +24,7 @@ class Test(TestCase):
         result = [[[3, 1, 2], [2, 3, 1], [1, 2, 3]],
                   [[1, 2, 3], [3, 1, 2], [2, 3, 1]],
                   [[2, 3, 1], [1, 2, 3], [3, 1, 2]]]
-        self.assertEqual(reordered_self_multiplied_permutation, result)
+        self.assertEqual(result, reordered_self_multiplied_permutation)
 
     def test_1_4(self):
         permutation_order = [3, 1, 2]
@@ -32,18 +32,18 @@ class Test(TestCase):
         result = [[[1, 3, 2], [2, 1, 3], [3, 2, 1]],
                   [[2, 1, 3], [3, 2, 1], [1, 3, 2]],
                   [[3, 2, 1], [1, 3, 2], [2, 1, 3]]]
-        self.assertEqual(vertical_self_multiplied_permutation, result)
+        self.assertEqual(result, vertical_self_multiplied_permutation)
 
     def test_2_1(self):
         perm = LimitedPermutation(['a', 'b', 'c'], [3, 1, 2], multi=[1, 1])
         result = [[3, 1, 2], [2, 3, 1], [1, 2, 3], [1, 2, 3], [3, 1, 2], [2, 3, 1], [2, 3, 1], [1, 2, 3], [3, 1, 2]]
-        self.assertEqual(perm.multiplied_orders, result)
+        self.assertEqual(result, perm.multiplied_orders)
 
     def test_2_2(self):
         perm = LimitedPermutation(['a', 'b', 'c'], [3, 1, 2], multi=[1, 1], reading_direction='vertical')
 
         result = [[1, 3, 2], [2, 1, 3], [3, 2, 1], [2, 1, 3], [3, 2, 1], [1, 3, 2], [3, 2, 1], [1, 3, 2], [2, 1, 3]]
-        self.assertEqual(perm.multiplied_orders, result)
+        self.assertEqual(result, perm.multiplied_orders)
 
     def test_3_1(self):
         permutation_order = [3, 4, 2, 1]
@@ -52,7 +52,7 @@ class Test(TestCase):
                   [[2, 1, 4, 3], [3, 4, 2, 1], [1, 2, 3, 4], [4, 3, 1, 2]],
                   [[1, 2, 3, 4], [4, 3, 1, 2], [3, 4, 2, 1], [2, 1, 4, 3]],
                   [[3, 4, 2, 1], [2, 1, 4, 3], [4, 3, 1, 2], [1, 2, 3, 4]]]
-        self.assertEqual(self_multiplied_permutation, result)
+        self.assertEqual(result, self_multiplied_permutation)
 
     def test_3_2(self):
         permutation_order = [3, 4, 2, 1]
@@ -61,7 +61,7 @@ class Test(TestCase):
                   [[4, 3, 1, 2], [1, 2, 3, 4], [2, 1, 4, 3], [3, 4, 2, 1]],
                   [[2, 1, 4, 3], [3, 4, 2, 1], [1, 2, 3, 4], [4, 3, 1, 2]],
                   [[1, 2, 3, 4], [4, 3, 1, 2], [3, 4, 2, 1], [2, 1, 4, 3]]]
-        self.assertEqual(reordered_self_multiplied_permutation, result)
+        self.assertEqual(result, reordered_self_multiplied_permutation)
 
     def test_3_3(self):
         permutation_order = [3, 4, 2, 1]
@@ -70,7 +70,7 @@ class Test(TestCase):
                   [[2, 3, 1, 4], [1, 4, 2, 3], [4, 2, 3, 1], [3, 1, 4, 2]],
                   [[1, 4, 3, 2], [2, 3, 4, 1], [3, 1, 2, 4], [4, 2, 1, 3]],
                   [[3, 2, 4, 1], [4, 1, 3, 2], [2, 4, 1, 3], [1, 3, 2, 4]]]
-        self.assertEqual(vertical_self_multiplied_permutation, result)
+        self.assertEqual(result, vertical_self_multiplied_permutation)
 
     def test_4_1(self):
         permutation_order = [4, 3, 2, 1]
@@ -79,7 +79,7 @@ class Test(TestCase):
                   [[4, 3, 2, 1], [1, 2, 3, 4], [4, 3, 2, 1], [1, 2, 3, 4]],
                   [[1, 2, 3, 4], [4, 3, 2, 1], [1, 2, 3, 4], [4, 3, 2, 1]],
                   [[4, 3, 2, 1], [1, 2, 3, 4], [4, 3, 2, 1], [1, 2, 3, 4]]]
-        self.assertEqual(self_multiplied_permutation, result)
+        self.assertEqual(result, self_multiplied_permutation)
 
     def test_4_2(self):
         permutation_order = [4, 3, 2, 1]
@@ -88,4 +88,4 @@ class Test(TestCase):
                   [[4, 1, 4, 1], [3, 2, 3, 2], [2, 3, 2, 3], [1, 4, 1, 4]],
                   [[1, 4, 1, 4], [2, 3, 2, 3], [3, 2, 3, 2], [4, 1, 4, 1]],
                   [[4, 1, 4, 1], [3, 2, 3, 2], [2, 3, 2, 3], [1, 4, 1, 4]]]
-        self.assertEqual(vertical_self_multiplied_permutation, result)
+        self.assertEqual(result, vertical_self_multiplied_permutation)

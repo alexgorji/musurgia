@@ -10,4 +10,4 @@ class Test(TestCase):
     def test_1(self):
         self.ft.add_layer()
         result = [(2, 1), (2, 2), (2, 3)]
-        self.assertEqual([child.multi for child in self.ft.get_children()], result)
+        self.assertEqual(result, [child.multi for child in self.ft.get_children()])

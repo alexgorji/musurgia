@@ -11,7 +11,7 @@ class Test(TestCase):
         input = [0.2, 0.333, 0.6, 0.99, 0.1, 0.5]
         example = get_quantized_values(input, 0.6)
         result = [Fraction(0, 1), Fraction(3, 5), Fraction(3, 5), Fraction(6, 5), Fraction(0, 1), Fraction(0, 1)]
-        self.assertEqual(example, result)
+        self.assertEqual(result, example)
 
     def test_2(self):
         midis = [60, 61.5, 58.5, 56.5, 63]
@@ -19,4 +19,4 @@ class Test(TestCase):
         quantized_intervals = get_quantized_values(intervals, 1)
         quantized_midis = [int(x) for x in dToX(quantized_intervals, first_element=midis[0])]
         result = [60, 61, 58, 57, 63]
-        self.assertEqual(quantized_midis, result)
+        self.assertEqual(result, quantized_midis)

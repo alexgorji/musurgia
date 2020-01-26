@@ -133,7 +133,11 @@ class Tree(object):
                     output.append(key(child))
                 else:
                     output.append(child)
-
+        if not output:
+            if key is not None:
+                return [key(self)]
+            else:
+                return [self]
         return output
 
     def traverse(self):

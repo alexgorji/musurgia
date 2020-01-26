@@ -177,7 +177,7 @@ class Test(AGTestCase):
         partial.round_leaves()
 
         result = [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
-        self.assertEqual([node.midi_generator.microtone for node in fm.traverse()], result)
+        self.assertEqual(result, [node.midi_generator.microtone for node in fm.traverse()])
 
     def test_9(self):
         fm = FractalMusic(proportions=[1, 2, 3, 4, 5, 6, 7], tree_permutation_order=[3, 6, 2, 5, 1, 7, 4])

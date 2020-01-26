@@ -41,39 +41,43 @@ FractalMusic().quarter_duration: bug fix
 v 1.2.4  
 FractalMusic().quarter_duration: bug fix
 
-v 1.3.0
-Module().change_duration(): deleted
-Module().change_quarter_duration(): deleted
-Square().change_module_duration(): attribute mode (module_duration or score_duration) deleted
-Row().change_duration(): added
+v 1.3.0  
+Module().change_duration(): deleted  
+Module().change_quarter_duration(): deleted  
+Square().change_module_duration(): attribute mode (module_duration or score_duration) deleted  
+Row().change_duration(): added  
 Row().change_quarter_duration(): added
 
 v 1.4.0  
-FractalMusic().quarter_duration: bug fix (float instead of fraction)
-FractalMusic().find_best_tempo(): function added
-FractalMusic().duration: bug fix (no type change to fraction)
-FractalTree().round_leaves() : deleted
-FractalMusic().round_leaves() : added
+FractalMusic().quarter_duration: bug fix (float instead of fraction)  
+FractalMusic().find_best_tempo(): function added  
+FractalMusic().duration: bug fix (no type change to fraction)  
+FractalTree().round_leaves() : deleted  
+FractalMusic().round_leaves() : added  
 
 v 1.4.1  
 FractalTree().\__deepcopy\__(): optimize
 FractalMusic().\__deepcopy\__(): optimize
 
-v 1.4.2
+v 1.4.2  
 FractalTree().size: added
 
-v 1.5.0
+v 1.5.0  
 testcomparefiles: renamed to agtestunit
 TestCompareFiles(): renames to AGTestCase
 TestCompareFiles().assertTemplate(file_path=pdf_path): changed to: self.assertCompareFiles(actual_file_path=pdf_path)
 file_path: renamed tp actual_path
 template_path: renamed to expected_path
-Tests:
+Tests:  
 if comparing files is needed use Test(AGTestCase)
 _template.* renamed to _expected.*
 
-v 1.5.1
+v 1.5.1  
 setup.py: install_requires: added diff-pdf-visually == 1.4.1
+
+v 1.6.0  
+Tree().get_leaves(): modified to return \[self\] if no children exist  
+FractalTree().generate_children(): added
 
 
 

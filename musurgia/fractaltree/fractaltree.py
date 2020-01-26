@@ -1,8 +1,9 @@
 import itertools
 
+from quicktions import Fraction
+
 from musurgia.permutation import LimitedPermutation, permute
 from musurgia.tree import Tree
-from quicktions import Fraction
 
 
 class FractalTreeException(Exception):
@@ -154,18 +155,10 @@ class FractalTree(Tree):
 
     @property
     def number_of_layers(self):
-        if len(self.get_leaves()) == 0:
+        if self.get_leaves() == [self]:
             return 0
         else:
             return self.get_farthest_leaf().get_distance(self)
-
-    @property
-    def __name__(self):
-        return self.name
-
-    @__name__.setter
-    def __name__(self, val):
-        self.name = val
 
     @property
     def name(self):
@@ -181,6 +174,14 @@ class FractalTree(Tree):
     @name.setter
     def name(self, value):
         self._name = value
+
+    @property
+    def __name__(self):
+        return self.name
+
+    @__name__.setter
+    def __name__(self, val):
+        self.name = val
 
     @property
     def position(self):
@@ -422,6 +423,29 @@ class FractalTree(Tree):
 
         for chunk in chunks:
             _merge(chunk)
+
+    def generate_children(self, number_of_children):
+        if isinstance(number_of_children, int):
+
+            if number_of_children == 0:
+                pass
+            if number_of_children > self.size or number_of_children < 0:
+                raise ValueError()
+            else:
+                self.add_layer()
+                self.reduce_children(
+                    lambda child: child.fractal_order < self.size - number_of_children + 1)
+        elif isinstance(number_of_children, tuple):
+
+            self.generate_children(len(number_of_children))
+
+            for child in self.get_children():
+                number_of_grand_children = number_of_children[
+                    child.fractal_order - child.size + len(number_of_children) - 1]
+                child.generate_children(number_of_grand_children)
+
+        else:
+            raise TypeError()
 
     def copy(self):
         return self.__class__(value=self.value, proportions=self.proportions,

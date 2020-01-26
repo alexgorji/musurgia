@@ -13,4 +13,4 @@ class Test(TestCase):
         ft.add_layer()
         permutation_orders = [child.permutation_order for child in ft.get_children()]
         result = [[2, 1, 3], [3, 2, 1], [1, 3, 2]]
-        self.assertEqual(permutation_orders, result)
+        self.assertEqual(result, permutation_orders)
