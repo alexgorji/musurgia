@@ -378,43 +378,35 @@ class FractalMusic(FractalTree):
     # def merge_children(self, *lengths):
     #     super().merge_children(*lengths)
 
-    def _reset_durations(self):
-        for node in self.traverse():
-            node._value = None
-
-    def _refill_duration(self):
-        if not self._value:
-            self._value = sum([child._refill_duration() for child in self.get_children()])
-        else:
-            return self._value
-
     def quantize_leaves(self, grid_size):
 
         #     quantizing quarter_durations!
         leaves = list(self.traverse_leaves())
-        durations = [leaf.quarter_duration for leaf in leaves]
-        quantized_durations = get_quantized_values(durations, grid_size)
-        if quantized_durations:
-            self._reset_durations()
-        for leaf, quantized_duration in zip(leaves, quantized_durations):
-            leaf.quarter_duration = quantized_duration
-        self._refill_duration()
+        quarter_durations = [leaf.quarter_duration for leaf in leaves]
+        quantized_quarter_durations = get_quantized_values(quarter_durations, grid_size)
+        for leaf, quantized_duration in zip(leaves, quantized_quarter_durations):
+            leaf.change_quarter_duration(quantized_duration)
+
+    def quantize_children(self, grid_size=0.5):
+        #     quantizing quarter_durations!
+        children = self.get_children()
+        quarter_durations = [child.quarter_duration for child in children]
+        quantized_quarter_durations = get_quantized_values(quarter_durations, grid_size)
+        for child, quantized_duration in zip(children, quantized_quarter_durations):
+            child.change_quarter_duration(quantized_duration)
 
     def round_leaves(self):
-
         #     quantizing quarter_durations!
         leaves = list(self.traverse_leaves())
         rounded_quarter_durations = [round(leaf.quarter_duration) for leaf in leaves]
-        if rounded_quarter_durations:
-            self._reset_durations()
         for leaf, rounded_quarter_duration in zip(leaves, rounded_quarter_durations):
-            leaf.quarter_duration = rounded_quarter_duration
-        self._refill_duration()
+            leaf.change_quarter_duration(rounded_quarter_duration)
 
-    #
-    # def round_children(self):
-    #     rounded_quarter_duration = round(self.quarter_duration)
-    #     self._duration = None
+    def round_children(self):
+        children = self.get_children()
+        rounded_quarter_durations = [round(child.quarter_duration) for child in children]
+        for child, rounded_quarter_duration in zip(children, rounded_quarter_durations):
+            child.change_quarter_duration(rounded_quarter_duration)
 
     def change_midis(self):
         if not isinstance(self._midi_generator, RelativeMidi):
@@ -511,6 +503,27 @@ class FractalMusic(FractalTree):
         if show_metronome:
             score.get_measure(1).get_part(1).add_metronome(per_minute=self.tempo, relative_y=40)
         score.get_measure(-1).set_barline_style(barline)
+        return score
+
+    def get_children_score(self, score=None, show_fractal_orders=False, show_midis=False):
+        if not score:
+            score = self.get_score_template()
+
+        old_tempo = None
+        for child in self.get_children():
+            tempo = child.tempo
+            if tempo == old_tempo:
+                show_metronome = False
+            else:
+                show_metronome = True
+            old_tempo = tempo
+            child_score = child.get_score(show_fractal_orders=show_fractal_orders, show_midis=show_midis,
+                                          barline='light-light', show_metronome=show_metronome)
+
+            score.extend(child_score)
+
+        score.accidental_mode = 'modern'
+        score.get_measure(-1).set_barline_style('light-heavy')
         return score
 
     def get_root_score(self, score=None, layer_number=None, show_fractal_orders=False, show_midis=False

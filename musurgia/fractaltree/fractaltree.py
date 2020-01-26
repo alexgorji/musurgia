@@ -320,8 +320,9 @@ class FractalTree(Tree):
             self.value = new_value
         else:
             delta = new_value - self.value
-            for node in self.get_branch():
-                node._value += delta
+            self._value = new_value
+            for node in reversed(self.get_branch()[:-1]):
+                node._value = sum([child.value for child in node.get_children()])
 
             self._change_children_value(delta)
 

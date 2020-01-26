@@ -35,6 +35,6 @@ class Test(AGTestCase):
             child.tempo = best_tempo
         self.fm.round_leaves()
         xml_path = path + '_test_4.xml'
-        score = self.fm.get_root_score()
+        score = self.fm.get_children_score()
         score.write(xml_path)
         self.assertCompareFiles(xml_path)

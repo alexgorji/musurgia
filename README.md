@@ -85,7 +85,13 @@ FractalTree()._reduce(): bug fix (/ instead of Fraction)
 v 1.7.1
 FractalTree().change_value()
 FractalMusic().quarter_duration: modified to Fraction
-FractalTree().change_quarter_duration()
+FractalMusic().change_quarter_duration(): added
+FractalMusic().quantize_children(): added
+FractalMusic().quantize_leaves(): optimised
+FractalMusic().round_leaves(): optimised
+FractalMusic().get_root_score(): deleted
+FractalMusic().get_children_score(): added
+
 
 
 
