@@ -94,7 +94,7 @@ FractalMusic().get_children_score(): added
 
 v 1.7.1  
 FractalTree().val: Fraction
-FractalTree().change_value(): bug fix
+FractalTree().change_value(): bug fix (children duration)
 FractalMusic().get_children_score(): bug fix: gets score of each child with max layers of all children 
 
 

@@ -29,15 +29,16 @@ class Test(TestCase):
     def test_4(self):
         self.fm.add_layer()
         self.fm.change_quarter_duration(15)
-        expected = [Fraction(20, 3), Fraction(10, 3), Fraction(5, 1)]
+        expected = [Fraction(15, 2), Fraction(5, 2), Fraction(5, 1)]
         self.assertEqual(expected, [child.quarter_duration for child in self.fm.get_children()])
 
     def test_5(self):
         self.fm.add_layer()
         self.fm.add_layer()
         self.fm.get_children()[0].change_quarter_duration(10)
-        expected = [[Fraction(15, 1)], [Fraction(10, 1), Fraction(5, 3), Fraction(10, 3)],
-                    [[Fraction(5, 2), Fraction(10, 3), Fraction(25, 6)],
+        expected = [[Fraction(15, 1)],
+                    [10, Fraction(5, 3), Fraction(10, 3)],
+                    [[Fraction(5, 3), Fraction(10, 3), Fraction(5, 1)],
                      [Fraction(5, 6), Fraction(5, 18), Fraction(5, 9)],
                      [Fraction(10, 9), Fraction(5, 3), Fraction(5, 9)]]]
         self.assertEqual(expected,

@@ -348,7 +348,7 @@
     </part>
     <part id="p2">
       <attributes>
-        <divisions>6</divisions>
+        <divisions>24</divisions>
         <time>
           <beats>7</beats>
           <beat-type>8</beat-type>
@@ -368,7 +368,7 @@
           <step>B</step>
           <octave>4</octave>
         </pitch>
-        <duration>6</duration>
+        <duration>24</duration>
         <tie type="start"/>
         <voice>1</voice>
         <type>quarter</type>
@@ -384,7 +384,7 @@
           <step>B</step>
           <octave>4</octave>
         </pitch>
-        <duration>1</duration>
+        <duration>4</duration>
         <tie type="stop"/>
         <voice>1</voice>
         <type>16th</type>
@@ -407,7 +407,7 @@
           <step>B</step>
           <octave>4</octave>
         </pitch>
-        <duration>2</duration>
+        <duration>8</duration>
         <tie type="start"/>
         <voice>1</voice>
         <type>eighth</type>
@@ -432,7 +432,7 @@
           <step>B</step>
           <octave>4</octave>
         </pitch>
-        <duration>6</duration>
+        <duration>24</duration>
         <tie type="start"/>
         <tie type="stop"/>
         <voice>1</voice>
@@ -447,11 +447,13 @@
           <step>B</step>
           <octave>4</octave>
         </pitch>
-        <duration>3</duration>
+        <duration>9</duration>
         <tie type="stop"/>
         <voice>1</voice>
-        <type>eighth</type>
-        <beam number="1"/>
+        <type>16th</type>
+        <dot/>
+        <beam number="1">begin</beam>
+        <beam number="2">begin</beam>
         <notations>
           <tied number="1" type="stop"/>
         </notations>
@@ -462,12 +464,32 @@
           <octave>4</octave>
         </pitch>
         <duration>3</duration>
+        <tie type="start"/>
         <voice>1</voice>
-        <type>eighth</type>
-        <beam number="1"/>
+        <type>32nd</type>
+        <beam number="1">end</beam>
+        <beam number="2">end</beam>
+        <beam number="3">end</beam>
+        <notations>
+          <tied number="1" type="start"/>
+        </notations>
         <lyric number="1">
           <text>1</text>
         </lyric>
+      </note>
+      <note>
+        <pitch>
+          <step>B</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>12</duration>
+        <tie type="stop"/>
+        <voice>1</voice>
+        <type>eighth</type>
+        <beam number="1"/>
+        <notations>
+          <tied number="1" type="stop"/>
+        </notations>
       </note>
     </part>
   </measure>

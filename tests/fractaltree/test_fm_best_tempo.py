@@ -16,6 +16,7 @@ class Test(AGTestCase):
 
     def test_2(self):
         self.fm.tempo = self.fm.find_best_tempo()
+        self.fm.change_quarter_duration(round(self.fm.quarter_duration))
         self.assertEqual(13, self.fm.quarter_duration)
 
     def test_3(self):
