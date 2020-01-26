@@ -82,7 +82,7 @@ FractalTree().generate_children(): added
 v 1.6.1  
 FractalTree()._reduce(): bug fix (/ instead of Fraction)
 
-v 1.7.1
+v 1.7.0
 FractalTree().change_value()
 FractalMusic().quarter_duration: modified to Fraction
 FractalMusic().change_quarter_duration(): added
