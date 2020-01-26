@@ -380,7 +380,7 @@ class FractalTree(Tree):
             non_zero_sisters = [sister for sister in sisters if sister.value != 0]
 
             if non_zero_sisters:
-                addition = Fraction(self.value, len(non_zero_sisters))
+                addition = self.value / len(non_zero_sisters)
                 for sister in non_zero_sisters:
                     if sister.value != 0:
                         sister._value += addition

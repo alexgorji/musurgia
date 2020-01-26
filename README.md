@@ -79,6 +79,9 @@ v 1.6.0
 Tree().get_leaves(): modified to return \[self\] if no children exist  
 FractalTree().generate_children(): added
 
+v 1.6.1  
+FractalTree()._reduce(): bug fix (/ instead of Fraction)
+
 
 
 
