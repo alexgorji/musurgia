@@ -93,17 +93,23 @@ class FractalMusic(FractalTree):
     def quarter_duration(self):
         if not self.tempo:
             raise SetTempoFirstException()
-        return self.duration * self.tempo / 60.
+        return Fraction(Fraction(self.duration * self.tempo), Fraction(60))
 
     @quarter_duration.setter
     def quarter_duration(self, val):
         if val is not None:
             if not self.tempo:
                 raise SetTempoFirstException()
+            self.duration = Fraction(Fraction(val * 60), Fraction(self.tempo))
+
+    def change_quarter_duration(self, new_quarter_duration):
+        if new_quarter_duration is not None:
+            if not self.tempo:
+                raise SetTempoFirstException()
             try:
-                self.duration = Fraction(val * 60, self.tempo)
+                self.change_value(Fraction(new_quarter_duration * 60, self.tempo))
             except TypeError:
-                self.duration = Fraction(Fraction(val * 60), Fraction(self.tempo))
+                self.change_value(Fraction(Fraction(new_quarter_duration * 60), Fraction(self.tempo)))
 
     def _child_has_tempo(self):
         children_tempi = [child.tempo for child in self.get_children() if child.tempo]
@@ -404,11 +410,11 @@ class FractalMusic(FractalTree):
         for leaf, rounded_quarter_duration in zip(leaves, rounded_quarter_durations):
             leaf.quarter_duration = rounded_quarter_duration
         self._refill_duration()
+
     #
     # def round_children(self):
     #     rounded_quarter_duration = round(self.quarter_duration)
     #     self._duration = None
-
 
     def change_midis(self):
         if not isinstance(self._midi_generator, RelativeMidi):
