@@ -1,9 +1,8 @@
 import itertools
 
-from quicktions import Fraction
-
 from musurgia.permutation import LimitedPermutation, permute
 from musurgia.tree import Tree
+from quicktions import Fraction
 
 
 class FractalTreeException(Exception):
@@ -70,6 +69,8 @@ class FractalTree(Tree):
 
     @value.setter
     def value(self, val):
+        if val:
+            val = Fraction(val)
         if self._value:
             if self.is_root and not self.get_children():
                 self._value = val
@@ -309,22 +310,24 @@ class FractalTree(Tree):
             err = 'max layer number=' + str(self.number_of_layers)
             raise ValueError(err)
 
-    def _change_children_value(self, delta):
+    def _change_children_value(self, factor):
         for child in self.get_children():
-            child_delta = Fraction(delta, len(self.get_children()))
-            child._value += child_delta
-            child._change_children_value(child_delta)
+            # child_delta = Fraction(delta, len(self.get_children()))
+            child._value *= factor
+            child._change_children_value(factor)
 
     def change_value(self, new_value):
+        if not new_value:
+            new_value = Fraction(new_value)
         if not self.value:
             self.value = new_value
         else:
-            delta = new_value - self.value
+            factor = Fraction(new_value, self.value)
             self._value = new_value
             for node in reversed(self.get_branch()[:-1]):
                 node._value = sum([child.value for child in node.get_children()])
 
-            self._change_children_value(delta)
+            self._change_children_value(factor)
 
     @property
     def layers(self):
