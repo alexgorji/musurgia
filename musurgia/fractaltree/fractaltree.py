@@ -13,7 +13,7 @@ class FractalTreeException(Exception):
 
 class ValueCannotBeChanged(FractalTreeException):
     def __init__(self, *args):
-        super().__init__('FractalTree().value can only be changed for the root with no children', *args)
+        super().__init__(*args)
 
 
 class SetValueFirst(FractalTreeException):
@@ -74,7 +74,9 @@ class FractalTree(Tree):
             if self.is_root and not self.get_children():
                 self._value = val
             else:
-                raise ValueCannotBeChanged()
+                raise ValueCannotBeChanged(
+                    'FractalTree().value can only be changed for the root with no children. Use change_value() for other cases.'
+                )
         else:
             self._value = val
 
@@ -306,6 +308,22 @@ class FractalTree(Tree):
         else:
             err = 'max layer number=' + str(self.number_of_layers)
             raise ValueError(err)
+
+    def _change_children_value(self, delta):
+        for child in self.get_children():
+            child_delta = Fraction(delta, len(self.get_children()))
+            child._value += child_delta
+            child._change_children_value(child_delta)
+
+    def change_value(self, new_value):
+        if not self.value:
+            self.value = new_value
+        else:
+            delta = new_value - self.value
+            for node in self.get_branch():
+                node._value += delta
+
+            self._change_children_value(delta)
 
     @property
     def layers(self):

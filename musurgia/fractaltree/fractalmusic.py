@@ -404,6 +404,11 @@ class FractalMusic(FractalTree):
         for leaf, rounded_quarter_duration in zip(leaves, rounded_quarter_durations):
             leaf.quarter_duration = rounded_quarter_duration
         self._refill_duration()
+    #
+    # def round_children(self):
+    #     rounded_quarter_duration = round(self.quarter_duration)
+    #     self._duration = None
+
 
     def change_midis(self):
         if not isinstance(self._midi_generator, RelativeMidi):

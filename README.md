@@ -82,6 +82,9 @@ FractalTree().generate_children(): added
 v 1.6.1  
 FractalTree()._reduce(): bug fix (/ instead of Fraction)
 
+v 1.7.1
+FractalTree().change_value()
+
 
 
 
