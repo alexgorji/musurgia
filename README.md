@@ -111,7 +111,7 @@ setup.py install_requires: musicscore 1.0.1
 FractalMusic().get_score_template(): subtitle changed to have one decimal place for seconds
 FractalMusic().find_best_tempo(): renamed to: find_best_tempo_in_range()
 FractalMusic().find_best_tempi_in_list(): added
-FractalTree().generate_children(): added argument mode in ['reduce','merge']
+FractalTree().generate_children(): added argument mode in ['reduce','merge'] and argument merge_index
 
 
 
