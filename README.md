@@ -1,5 +1,7 @@
 musurgia is a library of different (personal) tools for computer aided music composition.
 
+python 3.7
+
 **DEPENDENCIES:**  
 quicktions == 1.9
 musicscore == 1.0.1
@@ -108,7 +110,7 @@ v 1.8.0
 setup.py install_requires: musicscore 1.0.1
 FractalMusic().get_score_template(): subtitle changed to have one decimal place for seconds
 FractalMusic().get_best_tempo(): accepts a list of tempi instead of min_tempo and max tempo
-FractalMusic().get
+FractalTree().generate_children(): added argument mode in ['reduce','merge']
 
 
 

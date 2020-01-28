@@ -5,14 +5,15 @@ from math import ceil, floor
 from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treechord import TreeChord
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
+from prettytable import PrettyTable
+from quicktions import Fraction
+
 from musurgia import basic_functions, scaledvalues
 from musurgia.fractaltree.fractaltree import FractalTree
 from musurgia.fractaltree.midigenerators import RelativeMidi, MidiGenerator
 from musurgia.permutation import permute
 from musurgia.quantize import get_quantized_values
 from musurgia.timing import Timing
-from prettytable import PrettyTable
-from quicktions import Fraction
 
 
 class FractalMusicException(Exception):
@@ -455,7 +456,11 @@ class FractalMusic(FractalTree):
         score.page_style.bottom_margin = 100
 
         score.add_title('module: {}'.format(self.__name__))
-        clock = Timing.get_clock(round(self.duration), mode='msreduced')
+        rounded_duration = round(float(self.duration), 1)
+        if rounded_duration == int(rounded_duration):
+            rounded_duration = int(rounded_duration)
+
+        clock = Timing.get_clock(rounded_duration, mode='msreduced')
         score.add_subtitle(
             'duration: {}'.format(clock))
         score.accidental_mode = 'modern'
