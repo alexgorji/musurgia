@@ -30,7 +30,7 @@ class Test(TestCase):
         fm = FractalMusic(duration=100)
         fm.add_layer()
         fm.get_children()[0].tempo = 72
-        fm.set_non_tempi(90)
+        fm.set_none_tempi(90)
         self.assertEqual([child.tempo for child in fm.get_children()], [72, 90., 90])
 
     def test_5(self):
@@ -58,7 +58,7 @@ class Test(TestCase):
         fm.add_layer()
         fm.get_children()[2].get_children()[2].tempo = 72
         fm.add_layer()
-        fm.set_non_tempi(60)
+        fm.set_none_tempi(60)
 
         self.assertEqual(fm.get_layer(2, key='tempo'), [[60, 60, 60], [80, 80, 80], [60, 60, 72]])
 
@@ -68,6 +68,6 @@ class Test(TestCase):
         fm.add_layer()
         fm.add_layer()
         fm.add_layer()
-        fm.set_non_tempi(60)
+        fm.set_none_tempi(60)
 
         self.assertEqual(fm.get_layer(2, key='tempo'), [[72, 72, 72], [72, 72, 72], [72, 72, 72]])

@@ -61,7 +61,7 @@ class Test(AGTestCase):
         fm = FractalMusic(duration=30)
         fm.add_layer()
         fm.get_children()[1].tempo = 72
-        fm.set_non_tempi(80)
+        fm.set_none_tempi(80)
         fm.quantize_leaves(0.5)
         fm.add_layer()
         score = fm.get_root_score(layer_number=1, show_fractal_orders=True)

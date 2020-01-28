@@ -132,16 +132,16 @@ class FractalMusic(FractalTree):
         for child in self.get_children():
             child.tempo = val
 
-    def set_non_tempi(self, val=60):
+    def set_none_tempi(self, val=60):
         try:
             self.tempo = val
         except TempoIsAlreadySet:
             pass
         except ChildTempoIsAlreadySet:
             for child in self.get_children():
-                child.set_non_tempi(val=val)
+                child.set_none_tempi(val=val)
 
-    def find_best_tempo(self, min_tempo=40, max_tempo=144):
+    def find_best_tempo_in_range(self, min_tempo=40, max_tempo=144):
         min_quarter_duration = ceil(Timing(duration=self.duration, tempo=min_tempo).quarter_duration)
         max_quarter_duration = floor(Timing(duration=self.duration, tempo=max_tempo).quarter_duration)
         tempi = [Timing(duration=self.duration, quarter_duration=x).tempo for x in
@@ -151,6 +151,29 @@ class FractalMusic(FractalTree):
         index = tempo_deltas.index(min_delta)
         best_tempo = int(round(tempi[index]))
         return best_tempo
+
+    def find_best_tempi_in_list(self, tempi):
+        quarter_durations = [Timing(duration=self.duration, tempo=tempo).quarter_duration for tempo in tempi]
+        quarter_duration_deltas = [abs(round(quarter_duration) - quarter_duration) for quarter_duration in
+                                   quarter_durations]
+        rounded_duration_deltas = [round(float(delta), 2) for delta in quarter_duration_deltas]
+
+        min_delta = min(rounded_duration_deltas)
+        indices = [i for i, quarter_duration_delta in enumerate(rounded_duration_deltas) if
+                   quarter_duration_delta == min_delta]
+        best_tempi = [tempi[index] for index in indices]
+        return best_tempi
+
+    #
+    # def find_best_tempo(self, tempi=None):
+    #     if not tempi:
+    #         tempi = list(range(40, 145))
+    #         quarter_durations = [Timing(duration=self.duration, tempo=tempo) for tempo in tempi]
+    #         quarter_duration_deltas = [abs(round(quarter_duration) - quarter_duration) for quarter_duration in
+    #                                    quarter_durations]
+    #             min_delta = min(tempo_deltas)
+    #             index = tempo_deltas.index(min_delta)
+    #             best_tempo = int(round(tempi[index]))
 
     @property
     def quarter_position_in_tree(self):

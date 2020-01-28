@@ -109,7 +109,7 @@ FractalMusic().get_children_score(): bug fix: gets score of each child with max 
 v 1.8.0
 setup.py install_requires: musicscore 1.0.1
 FractalMusic().get_score_template(): subtitle changed to have one decimal place for seconds
-FractalMusic().get_best_tempo(): accepts a list of tempi instead of min_tempo and max tempo
+FractalMusic().find_best_tempo(): accepts a list of tempi instead of min_tempo and max tempo
 FractalTree().generate_children(): added argument mode in ['reduce','merge']
 
 

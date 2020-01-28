@@ -46,6 +46,6 @@ class Test(AGTestCase):
         self.fm.duration = 20
         self.fm.add_layer()
         self.fm.get_children()[1].tempo = 72
-        self.fm.set_non_tempi(60)
+        self.fm.set_none_tempi(60)
         with self.assertRaises(MergeTempoException):
             self.fm.merge_children(2, 1, 2)
