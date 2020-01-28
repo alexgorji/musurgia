@@ -1,8 +1,9 @@
 import itertools
 
+from quicktions import Fraction
+
 from musurgia.permutation import LimitedPermutation, permute
 from musurgia.tree import Tree
-from quicktions import Fraction
 
 
 class FractalTreeException(Exception):
@@ -446,25 +447,66 @@ class FractalTree(Tree):
         for chunk in chunks:
             _merge(chunk)
 
-    def generate_children(self, number_of_children):
-        if isinstance(number_of_children, int):
+    def _get_merge_lengths(self, number_of_children, merge_index):
+        if 0 > merge_index > self.size - 1:
+            raise ValueError('generate_children.merge_index {} not valid'.format(merge_index))
+        if number_of_children > self.size or number_of_children < 0:
+            raise ValueError(
+                'generate_children.number_of_children {} must be a positive int'.format(number_of_children))
+        if number_of_children == 1:
+            return [self.size]
 
+        lengths = self.size * [1]
+        pointer = merge_index
+        sliced_lengths = [lengths[:pointer], lengths[pointer:]]
+
+        if not sliced_lengths[0]:
+            sliced_lengths = sliced_lengths[1:]
+
+        while len(sliced_lengths) < number_of_children and len(sliced_lengths[0]) > 1:
+            temp = sliced_lengths[0]
+            sliced_lengths[0] = temp[:-1]
+            sliced_lengths.insert(1, temp[-1:])
+
+        while len(sliced_lengths) < number_of_children and len(sliced_lengths[pointer]) > 1:
+            temp = sliced_lengths[pointer]
+            sliced_lengths[pointer] = temp[:-1]
+            sliced_lengths.insert(pointer + 1, temp[-1:])
+
+        sliced_lengths = [len(x) for x in sliced_lengths]
+
+        return sliced_lengths
+
+    def generate_children(self, number_of_children, mode='reduce', merge_index=0):
+
+        permitted_modes = ['reduce', 'merge']
+        if mode not in permitted_modes:
+            raise ValueError('generate_children.mode {} must be in{}'.format(mode, permitted_modes))
+        if isinstance(number_of_children, int):
             if number_of_children == 0:
                 pass
             if number_of_children > self.size or number_of_children < 0:
-                raise ValueError()
+                raise ValueError(
+                    'generate_children.number_of_children {} must be a positive int'.format(number_of_children))
             else:
                 self.add_layer()
-                self.reduce_children(
-                    lambda child: child.fractal_order < self.size - number_of_children + 1)
+                if mode == 'reduce':
+                    self.reduce_children(
+                        lambda child: child.fractal_order < self.size - number_of_children + 1)
+                else:
+                    merge_lengths = self._get_merge_lengths(number_of_children, merge_index)
+                    self.merge_children(*merge_lengths)
+
         elif isinstance(number_of_children, tuple):
+            self.generate_children(len(number_of_children), mode=mode, merge_index=merge_index)
 
-            self.generate_children(len(number_of_children))
-
-            for child in self.get_children():
-                number_of_grand_children = number_of_children[
-                    child.fractal_order - child.size + len(number_of_children) - 1]
-                child.generate_children(number_of_grand_children)
+            for index, child in enumerate(self.get_children()):
+                if mode == 'reduce':
+                    number_of_grand_children = number_of_children[
+                        child.fractal_order - child.size + len(number_of_children) - 1]
+                else:
+                    number_of_grand_children = number_of_children[index]
+                child.generate_children(number_of_grand_children, mode=mode, merge_index=merge_index)
 
         else:
             raise TypeError()

@@ -164,17 +164,6 @@ class FractalMusic(FractalTree):
         best_tempi = [tempi[index] for index in indices]
         return best_tempi
 
-    #
-    # def find_best_tempo(self, tempi=None):
-    #     if not tempi:
-    #         tempi = list(range(40, 145))
-    #         quarter_durations = [Timing(duration=self.duration, tempo=tempo) for tempo in tempi]
-    #         quarter_duration_deltas = [abs(round(quarter_duration) - quarter_duration) for quarter_duration in
-    #                                    quarter_durations]
-    #             min_delta = min(tempo_deltas)
-    #             index = tempo_deltas.index(min_delta)
-    #             best_tempo = int(round(tempi[index]))
-
     @property
     def quarter_position_in_tree(self):
         return self.position_in_tree * self.tempo / 60
