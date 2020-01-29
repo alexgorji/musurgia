@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="musurgia",
-    version="1.8.0",
+    version="1.8.1",
     author="Alex Gorji",
     author_email="aligorji@hotmail.com",
     description="tools for algorithmic composition",

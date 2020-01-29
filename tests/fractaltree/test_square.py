@@ -20,7 +20,7 @@ class Test(AGTestCase):
 
     def test_1(self):
         text_path = path + '_test_1.txt'
-        self.square.write_infos(text_path=text_path, show_module_tempo=True, show_quarter_durations=True)
+        self.square.write_info(text_path=text_path, show_module_tempo=True, show_quarter_durations=True)
         self.assertCompareFiles(text_path)
 
     def test_2(self):
@@ -28,8 +28,8 @@ class Test(AGTestCase):
         module = self.square.get_module(1, 1)
         module.duration = 3
 
-        self.square.write_infos(text_path=text_path, show_module_tempo=True,
-                                show_quarter_durations=True)
+        self.square.write_info(text_path=text_path, show_module_tempo=True,
+                               show_quarter_durations=True)
         self.assertCompareFiles(text_path)
 
     def test_3(self):
@@ -37,8 +37,8 @@ class Test(AGTestCase):
 
         text_path = path + '_test_3.txt'
 
-        self.square.write_infos(text_path=text_path, show_module_tempo=True,
-                                show_quarter_durations=True)
+        self.square.write_info(text_path=text_path, show_module_tempo=True,
+                               show_quarter_durations=True)
 
         self.assertCompareFiles(text_path)
 
@@ -58,14 +58,14 @@ class Test(AGTestCase):
         row_1 = self.square.rows[0]
         row_1.change_module_duration(1, 3)
         text_path = path + '_test_5.txt'
-        self.square.write_infos(text_path=text_path, show_module_tempo=True,
-                                show_quarter_durations=True)
+        self.square.write_info(text_path=text_path, show_module_tempo=True,
+                               show_quarter_durations=True)
         self.assertCompareFiles(text_path)
 
     def test_6(self):
         row_2 = self.square.rows[1]
         row_2.change_module_quarter_duration(2, 3)
         text_path = path + '_test_6.txt'
-        self.square.write_infos(text_path=text_path, show_module_tempo=True,
-                                show_quarter_durations=True)
+        self.square.write_info(text_path=text_path, show_module_tempo=True,
+                               show_quarter_durations=True)
         self.assertCompareFiles(text_path)

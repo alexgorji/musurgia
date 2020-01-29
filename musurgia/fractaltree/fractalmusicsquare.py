@@ -42,7 +42,7 @@ class Module(FractalMusic):
         else:
             return super().__name__
 
-    def write_square_infos(self, text_path, show_quarter_durations=False):
+    def write_info(self, text_path, show_quarter_durations=False):
         os.system('touch ' + text_path)
         file = open(text_path, 'w')
         file.write("module_tempo: " + str(self.tempo))
@@ -62,8 +62,9 @@ class Module(FractalMusic):
         x.field_names = ["name", "info", *leaf_names, "sum"]
         x.add_row([self.__name__, 'frac_ord', *leaf_fractal_orders, " "])
         x.add_row([self.__name__, 'durations', *rounded_leaf_durations, round(float(sum(leaf_durations)), 2)])
-        x.add_row(
-            [self.__name__, 'quarter_dur', *rounded_quarter_durations, round(float(sum(leaf_quarter_durations)), 2)])
+        if show_quarter_durations:
+            x.add_row(
+                [self.__name__, 'quarter_dur', *rounded_quarter_durations, round(float(sum(leaf_quarter_durations)), 2)])
 
         file.write(x.get_string())
         file.close()
@@ -357,8 +358,8 @@ class Square(object):
         for module in self.modules.values():
             module.quarter_duration = round(module.quarter_duration)
 
-    def write_infos(self, text_path, show_row_name=False, show_module_tempo=False,
-                    show_quarter_durations=False):
+    def write_info(self, text_path, show_row_name=False, show_module_tempo=False,
+                   show_quarter_durations=False):
         os.system('touch ' + text_path)
         file = open(text_path, 'w')
         x = PrettyTable(hrules=1)
