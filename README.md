@@ -113,9 +113,14 @@ FractalMusic().find_best_tempo(): renamed to: find_best_tempo_in_range()
 FractalMusic().find_best_tempi_in_list(): added
 FractalTree().generate_children(): added argument mode in ['reduce','merge'] and argument merge_index
 
-v 1.8.1
+v 1.8.1:
 Module().write_square_infos(): renamed to  write_info
 Square().write_infos(): renamed to write_info 
+
+v 1.8.2:
+FractalTree().multi: bug fix: if multi = (size, x>size)
+--> LimitedPermutation().multi
+FractalTree()._calculate_children_fractal_values(): deleted: if value == 0: value = 0.01
 
 
 

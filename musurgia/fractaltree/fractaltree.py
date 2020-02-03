@@ -220,8 +220,6 @@ class FractalTree(Tree):
 
     def _calculate_children_fractal_values(self):
         value = self.value
-        if value == 0:
-            value = 0.01
         if value and self.proportions:
             children_fractal_values = [value * prop for prop in self.proportions]
             if self.permutation_order:

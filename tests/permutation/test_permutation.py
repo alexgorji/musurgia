@@ -1,4 +1,5 @@
 from unittest import TestCase
+
 from musurgia.permutation import LimitedPermutation, self_permute, get_self_multiplied_permutation, \
     get_reordered_self_multiplied_permutation, get_vertical_self_multiplied_permutation
 
@@ -89,3 +90,15 @@ class Test(TestCase):
                   [[1, 4, 1, 4], [2, 3, 2, 3], [3, 2, 3, 2], [4, 1, 4, 1]],
                   [[4, 1, 4, 1], [3, 2, 3, 2], [2, 3, 2, 3], [1, 4, 1, 4]]]
         self.assertEqual(result, vertical_self_multiplied_permutation)
+
+    def test_5(self):
+        size = 3
+        tree_permutation_order = (3, 1, 2)
+        multi = (3, 4)
+
+        permutation = LimitedPermutation(input_list=list(range(1, size + 1)),
+                                         main_permutation_order=tree_permutation_order,
+                                         multi=multi)
+        result = permutation.multi
+        expected = (1, 1)
+        self.assertEqual(expected, result)
