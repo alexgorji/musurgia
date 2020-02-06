@@ -426,11 +426,10 @@ class FractalMusic(FractalTree):
                 'set_reduced_auto_ranges can only be applied to FractalMusic nodes with RelativeMidi as midi_generator')
         else:
 
-            # print(self.children_generated_midis)
             directions = self.midi_generator.directions
             midi_range = self.midi_generator.midi_range
             microtone = self.midi_generator.microtone
-
+            # print('inside'+ midi_range)
             # children = iter(self.get_children())
             # old_generated_midis = self.children_generated_midis
             # print("old_generated_midis", old_generated_midis)
@@ -443,7 +442,6 @@ class FractalMusic(FractalTree):
             self.midi_generator.midi_range = midi_range
             self.midi_generator.microtone = microtone
             self.midi_generator.directions = directions
-
             self._children_generated_midis = None
 
             for child in self.get_children():

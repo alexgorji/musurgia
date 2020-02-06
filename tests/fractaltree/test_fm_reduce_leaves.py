@@ -110,3 +110,15 @@ class Test(AGTestCase):
         score.max_division = 7
         score.write(xml_path)
         self.assertCompareFiles(actual_file_path=xml_path)
+
+    def test_6(self):
+        fm = FractalMusic(reading_direction='vertical', tempo=120, value=1.5, proportions=(1, 2, 3, 4, 5, 6, 7),
+                          tree_permutation_order=(2, 6, 4, 1, 3, 7, 5), multi=(1, 4))
+        fm.midi_generator.midi_range = (62, 70)
+        fm.add_layer()
+        # fm.generate_children(number_of_children=1)
+        fm.reduce_children(lambda child: child.fractal_order < 7)
+        result = fm.get_children()[0].midi_generator.midi_range
+        # not [62, 70] because of directions ([-1, ...])
+        expected = [70, 62]
+        self.assertEqual(expected, result)

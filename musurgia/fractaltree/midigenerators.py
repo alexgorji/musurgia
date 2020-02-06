@@ -170,51 +170,13 @@ class RelativeMidi(MidiGenerator):
                 raise AttributeError('set microtone')
 
             intervals = [proportion * self.direction_iterator.__next__() for proportion in self.proportions]
-
-            # print('directions inside', self.directions)
-            # print('proportions inside', [round(float(i), 2) for i in self.proportions])
-
-            # print('non scaled intervals inside', [round(float(i), 2) for i in intervals])
-            # print('node fractal values', [round(float(i), 2) for i in self.node.children_fractal_values])
-            # print('fractalvalue and interval inside',
-            #       [v / p for v, p in zip(self.node.children_fractal_values, intervals)])
             midis = basic_functions.dToX(intervals)
-            # print('midis inside', [float(midi) for midi in midis])
-            # print('midirange inside', self.midi_range)
             midis = [scale(midi, min(midis), max(midis), min(self.midi_range), max(self.midi_range)) for midi in midis]
 
             grid = 2 / self.microtone
             quantized_positions = get_quantized_positions(midis, grid_size=grid)
             quantized_midis = [float(midi) for midi in quantized_positions]
 
-            # print(quantized_midis)
-
-            # print('scaled midis inside', midis)
-            # scaled_intervals = basic_functions.xToD(midis)
-            # print('scaled_intervals', [float(interval) for interval in scaled_intervals])
-            # print('scaled /non scaled intervlas', [s / n for s, n in zip(scaled_intervals, intervals)])
-            # print('intern mictronone', self.microtone)
-
-            # rounded_scaled_intervals = [round(interval * factor) / factor for interval in scaled_intervals]
-            # quantized_scaled_intervals = quantize.get_quantized_values(scaled_intervals, grid_size=grid)
-
-            # print("quantized_scaled_intervals", quantized_scaled_intervals)
-            # midis = [round(midi * factor) / factor for midi in midis]
-            # midis = basic_functions.dToX(rounded_scaled_intervals, round(midis[0] * factor) / factor)
-            # first_midi = midis[0]
-            # # print("first_midi", first_midi)
-            # # print(factor)
-            #
-            # first_midi = round(first_midi * factor) / factor
-            # if first_midi > self.midi_range[1]:
-            #     first_midi -= grid
-            # elif first_midi < self.midi_range[0]:
-            #     first_midi += grid
-            # midis = basic_functions.dToX(rounded_scaled_intervals, first_midi)
-            # midis = basic_functions.dToX(quantized_scaled_intervals, first_midi)
-            # print("first_midi", first_midi)
-            # print(midis)
-            # print('rounded intervals', basic_functions.xToD(midis))
             self._iterator = iter(quantized_midis)
 
         return self._iterator
