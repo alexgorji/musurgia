@@ -69,3 +69,27 @@ class Test(AGTestCase):
         self.square.write_info(text_path=text_path, show_module_tempo=True,
                                show_quarter_durations=True)
         self.assertCompareFiles(text_path)
+
+    def test_7(self):
+        self.assertEqual(None, self.square.__name__)
+
+    def test_8(self):
+        self.square.__name__ = 'blue'
+        self.assertEqual('blue', self.square.__name__)
+
+    def test_9(self):
+        self.square.__name__ = 'blue'
+        text_path = path + '_test_9.txt'
+        self.square.write_info(text_path=text_path)
+        self.assertCompareFiles(text_path)
+
+    def test_10(self):
+        self.square.__name__ = 'blue'
+        row_2 = self.square.rows[1]
+        row_2.change_module_quarter_duration(2, 3)
+        square = self.square.__deepcopy__()
+        self.square.__name__ = 'red'
+        text_path = path + '_test_10.txt'
+        square.write_info(text_path=text_path, show_module_tempo=True,
+                          show_quarter_durations=True)
+        self.assertCompareFiles(text_path)

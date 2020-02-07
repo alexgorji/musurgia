@@ -64,7 +64,8 @@ class Module(FractalMusic):
         x.add_row([self.__name__, 'durations', *rounded_leaf_durations, round(float(sum(leaf_durations)), 2)])
         if show_quarter_durations:
             x.add_row(
-                [self.__name__, 'quarter_dur', *rounded_quarter_durations, round(float(sum(leaf_quarter_durations)), 2)])
+                [self.__name__, 'quarter_dur', *rounded_quarter_durations,
+                 round(float(sum(leaf_quarter_durations)), 2)])
 
         file.write(x.get_string())
         file.close()
@@ -73,6 +74,7 @@ class Module(FractalMusic):
         copied = super().__deepcopy__(memodict)
         copied.row_number = self.row_number
         copied.column_number = self.column_number
+        copied._name = self._name
 
         return copied
 
@@ -176,7 +178,7 @@ class Column(RowColumn):
 
 class Square(object):
     def __init__(self, duration, proportions, tree_permutation_order, first_multi=(1, 1),
-                 reading_direction='horizontal'):
+                 reading_direction='horizontal', name=None):
 
         self._duration = None
         self._proportions = None
@@ -185,6 +187,7 @@ class Square(object):
         self._first_multi = (1, 1)
         self._reading_direction = None
         self._side_size = None
+        self._name = None
 
         self.duration = duration
         self.proportions = proportions
@@ -193,6 +196,7 @@ class Square(object):
         self.first_multi = first_multi
         self._rows = None
         self._columns = None
+        self.__name__ = name
 
     @property
     def side_size(self):
@@ -274,6 +278,14 @@ class Square(object):
         if val not in permitted:
             raise ValueError('reading_direction.value {} must be in {}'.format(val, permitted))
         self._reading_direction = val
+
+    @property
+    def __name__(self):
+        return self._name
+
+    @__name__.setter
+    def __name__(self, val):
+        self._name = val
 
     def get_module(self, *args):
         args = tuple(args)
@@ -358,10 +370,27 @@ class Square(object):
         for module in self.modules.values():
             module.quarter_duration = round(module.quarter_duration)
 
+    def __deepcopy__(self, memodict={}):
+        copied = self.__class__(duration=self.duration, proportions=self.proportions,
+                                tree_permutation_order=self.tree_permutation_order, first_multi=self.first_multi,
+                                reading_direction=self.reading_direction, name=self.__name__)
+
+        copied._rows = []
+        for row in self.rows:
+            copied_row = Row(number=row.number, square=copied)
+            for module in row.modules:
+                copied_row._add_module(module.__deepcopy__())
+            copied._rows.append(row)
+
+        return copied
+
     def write_info(self, text_path, show_row_name=False, show_module_tempo=False,
                    show_quarter_durations=False):
         os.system('touch ' + text_path)
         file = open(text_path, 'w')
+        if self.__name__:
+            file.write('square: ' + str(self.__name__) + '\n')
+
         x = PrettyTable(hrules=1)
 
         column_numbers = [str(number) for number in range(1, self.side_size + 1)]

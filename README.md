@@ -122,6 +122,9 @@ FractalTree().multi: bug fix: if multi = (size, x>size)
 --> LimitedPermutation().multi
 FractalTree()._calculate_children_fractal_values(): deleted: if value == 0: value = 0.01
 
+v 1.8.3:
+Square().\__name__: added
+Square().\__deepcopy__(): added
 
 
 
