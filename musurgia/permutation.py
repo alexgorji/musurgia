@@ -110,6 +110,8 @@ class LimitedPermutation(object):
         input_length = len(self.input_list)
         m_1, m_2 = (((m_1 - 1) % input_length) + 1 + ((m_2 - 1) // input_length)) % input_length, (
                     (m_2 - 1) % input_length) + 1
+        if m_1 == 0:
+            m_1 = len(self.input_list)
         self._multi = (m_1, m_2)
 
     @property

@@ -102,3 +102,15 @@ class Test(TestCase):
         result = permutation.multi
         expected = (1, 1)
         self.assertEqual(expected, result)
+
+    def test_6(self):
+        size = 3
+        tree_permutation_order = (3, 1, 2)
+        multi = (2, 4)
+
+        permutation = LimitedPermutation(input_list=list(range(1, size + 1)),
+                                         main_permutation_order=tree_permutation_order,
+                                         multi=multi)
+        result = permutation.multi
+        expected = (3, 1)
+        self.assertEqual(expected, result)
