@@ -3,6 +3,7 @@ import os
 from prettytable import PrettyTable
 from quicktions import Fraction
 
+from musurgia.agtable.agtable import AGTable
 from musurgia.fractaltree.fractalmusic import FractalMusic
 from musurgia.fractaltree.fractaltree import FractalTreeException
 
@@ -125,19 +126,11 @@ class RowColumn(object):
 class Row(RowColumn):
     def __init__(self, square, number, *args, **kwargs):
         super().__init__(square, number, *args, **kwargs)
-        self._name = None
+        self._name = str(self.number)
 
     def _add_module(self, module):
         module._parent_row = self
         self._modules.append(module)
-
-    # def set_module_tempo(self, tempo):
-    #     for module in self.modules:
-    #         module.module_tempo = tempo
-    #
-    # def set_score_tempo(self, tempo):
-    #     for module in self.modules:
-    #         module.score_tempo = tempo
 
     def set_tempo(self, tempo):
         for module in self.modules:
@@ -380,29 +373,19 @@ class Square(object):
 
         return copied
 
-    def write_info(self, text_path, show_row_name=False, show_module_tempo=False,
-                   show_quarter_durations=False):
-        os.system('touch ' + text_path)
-        file = open(text_path, 'w')
-        if self.__name__:
-            file.write('square: ' + str(self.__name__) + '\n')
+    def write_to_table(self, table=None, show_attributes=None):
+        if not show_attributes:
+            show_attributes = []
 
-        x = PrettyTable(hrules=1)
-
-        column_numbers = [str(number) for number in range(1, self.side_size + 1)]
-        if show_row_name:
-            x.field_names = ["row", 'row_name', "column:", *column_numbers]
-        else:
-            x.field_names = ["row", "column:", *column_numbers]
+        if not table:
+            table = AGTable(hrules=1)
+            column_numbers = [str(number) for number in range(1, self.side_size + 1)]
+            table.field_names = ['row', "column:", *column_numbers]
+        elif not isinstance(table, AGTable):
+            raise TypeError('table must be of type AGTable not {}'.format(type(table)))
 
         for row_number in range(1, self.side_size + 1):
             row = self.get_row(row_number)
-            if show_row_name:
-                row_info = [row_number, row.__name__]
-            else:
-                row_info = [row_number]
-
-            tempi = [module.tempo for module in row.modules]
 
             def _round(duration):
                 output = round(duration, 1)
@@ -410,18 +393,75 @@ class Square(object):
                     output = float(output)
                 return output
 
-            durations = [_round(module.duration) for module in row.modules]
+            row_name = row.__name__
+            for attr in show_attributes:
+                if attr == 'quarter_duration':
+                    tempi = [module.tempo for module in row.modules]
+                    if None in tempi:
+                        raise Exception('set tempi first')
+                    quarter_durations = [round(float(module.quarter_duration), 2) for module in row.modules]
+                    table.add_row([row_name, 'quarter_dur', *quarter_durations])
+                elif attr == 'duration':
+                    durations = [_round(module.duration) for module in row.modules]
+                    table.add_row([row_name, 'duration', *durations])
+                else:
+                    if isinstance(attr, str):
+                        module_attributes = [getattr(module, attr) for module in row.modules]
+                        table.add_row([row_name, attr, *module_attributes])
+                    elif isinstance(attr, tuple) and len(attr) == 2 and isinstance(attr[0], str) and callable(
+                            attr[1]):
+                        module_attributes = [attr[1](module) for module in row.modules]
+                        table.add_row([row_name, attr[0], *module_attributes])
+                    else:
+                        raise ValueError('attribute {} can not be written to table'.format(attr))
+                row_name = ''
+        return table
 
-            if show_module_tempo:
-                x.add_row([*row_info, 'tempo', *tempi])
+    def write_info(self, text_path, show_attributes=None, title=None):
+        if not show_attributes:
+            show_attributes = []
 
-            if show_quarter_durations:
-                if None in tempi:
-                    raise Exception('set tempi first')
-                quarter_durations = [round(float(module.quarter_duration), 2) for module in row.modules]
-                x.add_row([*row_info, 'quarter_dur', *quarter_durations])
+        os.system('touch ' + text_path)
+        file = open(text_path, 'w')
+        if title:
+            file.write(title + '\n')
+        table = self.write_to_table(show_attributes=show_attributes)
 
-            x.add_row([*row_info, 'duration', *durations])
+        file.write(table.get_string())
+        file.close()
 
-        file.write(x.get_string())
+
+class SquareGroup(object):
+    def __init__(self, *squares):
+        super().__init__()
+        self._squares = squares
+
+    @property
+    def squares(self):
+        return self._squares
+
+    def get_all_rows(self):
+        return [row for square in self.squares for row in square.rows]
+
+    def __deepcopy__(self, memodict={}):
+        copied = self.__class__(*[square.__deepcopy__() for square in self.squares])
+        return copied
+
+    def write_to_table(self, table=None, show_attributes=None):
+        first_square = self.squares[0]
+        if not table:
+            table = first_square.write_to_table(table=None, show_attributes=show_attributes)
+        for square in self.squares[1:]:
+            table.extend(square.write_to_table(table=None, show_attributes=show_attributes))
+        return table
+
+    def write_info(self, text_path, show_attributes=None, title=None):
+
+        os.system('touch ' + text_path)
+        file = open(text_path, 'w')
+        if title:
+            file.write(title + '\n')
+        table = self.write_to_table(show_attributes=show_attributes)
+
+        file.write(table.get_string())
         file.close()

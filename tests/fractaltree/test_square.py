@@ -20,7 +20,7 @@ class Test(AGTestCase):
 
     def test_1(self):
         text_path = path + '_test_1.txt'
-        self.square.write_info(text_path=text_path, show_module_tempo=True, show_quarter_durations=True)
+        self.square.write_info(text_path=text_path, show_attributes=['tempo', 'quarter_duration', 'duration'])
         self.assertCompareFiles(text_path)
 
     def test_2(self):
@@ -28,8 +28,7 @@ class Test(AGTestCase):
         module = self.square.get_module(1, 1)
         module.duration = 3
 
-        self.square.write_info(text_path=text_path, show_module_tempo=True,
-                               show_quarter_durations=True)
+        self.square.write_info(text_path=text_path, show_attributes=['tempo', 'quarter_duration', 'duration'])
         self.assertCompareFiles(text_path)
 
     def test_3(self):
@@ -37,8 +36,7 @@ class Test(AGTestCase):
 
         text_path = path + '_test_3.txt'
 
-        self.square.write_info(text_path=text_path, show_module_tempo=True,
-                               show_quarter_durations=True)
+        self.square.write_info(text_path=text_path, show_attributes=['tempo', 'quarter_duration', 'duration'])
 
         self.assertCompareFiles(text_path)
 
@@ -58,16 +56,14 @@ class Test(AGTestCase):
         row_1 = self.square.rows[0]
         row_1.change_module_duration(1, 3)
         text_path = path + '_test_5.txt'
-        self.square.write_info(text_path=text_path, show_module_tempo=True,
-                               show_quarter_durations=True)
+        self.square.write_info(text_path=text_path, show_attributes=['tempo', 'quarter_duration', 'duration'])
         self.assertCompareFiles(text_path)
 
     def test_6(self):
         row_2 = self.square.rows[1]
         row_2.change_module_quarter_duration(2, 3)
         text_path = path + '_test_6.txt'
-        self.square.write_info(text_path=text_path, show_module_tempo=True,
-                               show_quarter_durations=True)
+        self.square.write_info(text_path=text_path, show_attributes=['tempo', 'quarter_duration', 'duration'])
         self.assertCompareFiles(text_path)
 
     def test_7(self):
@@ -80,16 +76,18 @@ class Test(AGTestCase):
     def test_9(self):
         self.square.__name__ = 'blue'
         text_path = path + '_test_9.txt'
-        self.square.write_info(text_path=text_path)
+        self.square.write_info(text_path=text_path, show_attributes=['duration'],
+                               title='square: {}'.format(self.square.__name__))
         self.assertCompareFiles(text_path)
 
     def test_10(self):
         self.square.__name__ = 'blue'
         row_2 = self.square.rows[1]
         row_2.change_module_quarter_duration(2, 3)
-        square = self.square.__deepcopy__()
+        copied = self.square.__deepcopy__()
         self.square.__name__ = 'red'
+        copied.__name__ = 'green'
         text_path = path + '_test_10.txt'
-        square.write_info(text_path=text_path, show_module_tempo=True,
-                          show_quarter_durations=True)
+        self.square.write_info(text_path=text_path, show_attributes=['tempo', 'quarter_duration', 'duration'],
+                               title='square: {}'.format(self.square.__name__))
         self.assertCompareFiles(text_path)
