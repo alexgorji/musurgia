@@ -375,12 +375,8 @@ class Square(object):
                                 tree_permutation_order=self.tree_permutation_order, first_multi=self.first_multi,
                                 reading_direction=self.reading_direction, name=self.__name__)
 
-        copied._rows = []
-        for row in self.rows:
-            copied_row = Row(number=row.number, square=copied)
-            for module in row.modules:
-                copied_row._add_module(module.__deepcopy__())
-            copied._rows.append(row)
+        for key in self.modules.keys():
+            copied.modules[key] = self.modules[key].__deepcopy__()
 
         return copied
 
