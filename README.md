@@ -126,6 +126,10 @@ v 1.8.3:
 Square().\__name__: added
 Square().\__deepcopy__(): added
 
+v 1.8.4:
+Square().\__deepcopy__(): bug fixed
+
+
 
 
 
