@@ -371,6 +371,10 @@ class Square(object):
         for key in self.modules.keys():
             copied.modules[key] = self.modules[key].__deepcopy__()
 
+        for row, copied_row in zip(self.rows, copied.rows):
+            if row.__name__:
+                copied_row.set_name(row.__name__)
+
         return copied
 
     def write_to_table(self, table=None, show_attributes=None):

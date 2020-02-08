@@ -27,3 +27,11 @@ class Test(TestCase):
         self.square.get_module(1, 1).duration = 20
         copied_square = self.square.__deepcopy__()
         self.assertEqual(20, copied_square.get_module(1, 1).duration)
+
+    def test_6(self):
+        for row in self.square.rows:
+            row.set_name('L {} L'.format(row.number))
+        copied_square = self.square.__deepcopy__()
+        expected = [row.__name__ for row in self.square.rows]
+        result = [row.__name__ for row in copied_square.rows]
+        self.assertEqual(expected, result)

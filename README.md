@@ -133,6 +133,9 @@ SquareGroup(): added
 Square().write_to_table: added
 Square().write_info: optimised
 
+v 1.8.5:
+Square().\__deepcopy__(): bug fixed: row.\__name__ will be copied
+
 
 
 
