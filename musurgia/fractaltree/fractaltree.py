@@ -96,7 +96,15 @@ class FractalTree(Tree):
 
         elif not isinstance(vals, tuple) or len(vals) != 2:
             raise TypeError('multi has to be a tuple with a length of 2')
-        self._multi = vals
+
+        m_1 = vals[0]
+        m_2 = vals[1]
+        m_1, m_2 = (((m_1 - 1) % self.size) + 1 + ((m_2 - 1) // self.size)) % self.size, (
+                (m_2 - 1) % self.size) + 1
+        if m_1 == 0:
+            m_1 = self.size
+        self._multi = (m_1, m_2)
+
         self._permutation_order = None
 
     @property

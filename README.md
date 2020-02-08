@@ -136,6 +136,12 @@ Square().write_info: optimised
 v 1.8.5:
 Square().\__deepcopy__(): bug fixed: row.\__name__ will be copied
 
+v 1.8.6
+LimitedPermutation().multi: bug fixed (if m_1 == 0)
+FractalTree().multi: optimised like LimitedPermutation().multi
+
+
+
 
 
 
