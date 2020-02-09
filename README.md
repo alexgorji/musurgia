@@ -140,7 +140,7 @@ v 1.8.6
 LimitedPermutation().multi: bug fixed (if m_1 == 0)
 FractalTree().multi: optimised like LimitedPermutation().multi
 
-
+v 1.8.7: VERSION deleted
 
 
 
