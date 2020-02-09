@@ -14,13 +14,12 @@ class Module(FractalMusic):
         self.row_number = row_number
         self.column_number = column_number
         self._parent_row = None
-        self._parent_square = None
         self._parent_column = None
         self._name = None
 
     @property
     def parent_square(self):
-        return self._parent_square
+        return self.parent_row.square
 
     @property
     def parent_row(self):
@@ -113,7 +112,7 @@ class RowColumn(object):
 
     @property
     def modules(self):
-        return self._modules
+        raise NotImplementedError()
 
     def get_module(self, number):
         return self.modules[number - 1]
@@ -128,9 +127,10 @@ class Row(RowColumn):
         super().__init__(square, number, *args, **kwargs)
         self._name = str(self.number)
 
-    def _add_module(self, module):
-        module._parent_row = self
-        self._modules.append(module)
+    @property
+    def modules(self):
+        return [self.square.get_module(self.number, column_number) for column_number in
+                range(1, self.square.side_size + 1)]
 
     def set_tempo(self, tempo):
         for module in self.modules:
@@ -164,9 +164,9 @@ class Column(RowColumn):
     def __init__(self, square, number, *args, **kwargs):
         super().__init__(square, number, *args, **kwargs)
 
-    def _add_module(self, module):
-        module._parent_column = self
-        self._modules.append(module)
+    @property
+    def modules(self):
+        return [self.square.get_module(row_number, self.number) for row_number in range(1, self.square.side_size + 1)]
 
 
 class Square(object):
@@ -293,10 +293,9 @@ class Square(object):
             self._rows = []
             for row_number in range(1, self.side_size + 1):
                 row = Row(square=self, number=row_number)
-                for column_number in range(1, self.side_size + 1):
-                    module = self.get_module(row_number, column_number)
-                    row._add_module(module)
-
+                # for column_number in range(1, self.side_size + 1):
+                #     module = self.get_module(row_number, column_number)
+                #     row._add_module(module)
                 self._rows.append(row)
         return self._rows
 
@@ -306,10 +305,9 @@ class Square(object):
             self._columns = []
             for column_number in range(1, self.side_size + 1):
                 column = Column(square=self, number=column_number)
-                for row_number in range(1, self.side_size + 1):
-                    module = self.get_module(row_number, column_number)
-                    column._add_module(module)
-
+                # for row_number in range(1, self.side_size + 1):
+                #     module = self.get_module(row_number, column_number)
+                #     column._add_module(module)
                 self._columns.append(column)
         return self._columns
 
