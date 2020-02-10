@@ -142,6 +142,10 @@ FractalTree().multi: optimised like LimitedPermutation().multi
 
 v 1.8.7: VERSION deleted
 
+v.1.8.8:
+Module().parent_square: bug fixed
+RowColumn().square: changed to .parent_square
+
 
 
 

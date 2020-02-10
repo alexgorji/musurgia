@@ -14,13 +14,12 @@ class Module(FractalMusic):
         self.row_number = row_number
         self.column_number = column_number
         self._parent_row = None
-        self._parent_square = None
         self._parent_column = None
         self._name = None
 
     @property
     def parent_square(self):
-        return self._parent_square
+        return self.parent_row.parent_square
 
     @property
     def parent_row(self):
@@ -81,23 +80,23 @@ class Module(FractalMusic):
 
 
 class RowColumn(object):
-    def __init__(self, square, number, *args, **kwargs):
+    def __init__(self, parent_square, number, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._square = None
-        self.square = square
+        self._parent_square = None
+        self.parent_square = parent_square
         self._number = None
         self.number = number
         self._modules = []
 
     @property
-    def square(self):
-        return self._square
+    def parent_square(self):
+        return self._parent_square
 
-    @square.setter
-    def square(self, value):
+    @parent_square.setter
+    def parent_square(self, value):
         if not isinstance(value, Square):
-            raise TypeError('square.value must be of type Square not {}'.format(type(value)))
-        self._square = value
+            raise TypeError('parent_square.value must be of type Square not {}'.format(type(value)))
+        self._parent_square = value
 
     @property
     def number(self):
@@ -107,8 +106,8 @@ class RowColumn(object):
     def number(self, value):
         if not isinstance(value, int):
             raise TypeError('number.value must be of type int not {}'.format(type(value)))
-        if not 0 < value <= self.square.side_size:
-            raise ValueError('number.value must be of between 0 and {}'.format(self.square.side_size))
+        if not 0 < value <= self.parent_square.side_size:
+            raise ValueError('number.value must be of between 0 and {}'.format(self.parent_square.side_size))
         self._number = value
 
     @property
