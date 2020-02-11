@@ -61,6 +61,30 @@ def get_vertical_self_multiplied_permutation(permutation_order):
     return _transpose(multiplied)
 
 
+def permute_matrix_rowwise(matrix, main_permutation_order):
+    lp = LimitedPermutation(main_permutation_order=main_permutation_order, input_list=[1, 2, 3, 4, 5, 6, 7])
+    output = []
+    for row in matrix:
+        permutation_order = lp.__next__()
+        output.append(permute(input_list=row, permutation_order=permutation_order))
+    return output
+
+
+def invert_matrix(matrix):
+    return [x for x in zip(*matrix)]
+
+
+def permute_matrix_columnwise(matrix, main_permutation_order):
+    inverted_matrix = invert_matrix(matrix)
+    inverted_matrix = permute_matrix_rowwise(inverted_matrix, main_permutation_order)
+    return invert_matrix(inverted_matrix)
+
+
+def permute_matrix(matrix, main_permutation_order):
+    output = permute_matrix_rowwise(matrix, main_permutation_order)
+    return permute_matrix_columnwise(output, main_permutation_order)
+
+
 class LimitedPermutation(object):
     class Element(object):
         def __init__(self, value, order):
@@ -109,7 +133,7 @@ class LimitedPermutation(object):
         m_2 = val[1]
         input_length = len(self.input_list)
         m_1, m_2 = (((m_1 - 1) % input_length) + 1 + ((m_2 - 1) // input_length)) % input_length, (
-                    (m_2 - 1) % input_length) + 1
+                (m_2 - 1) % input_length) + 1
         if m_1 == 0:
             m_1 = len(self.input_list)
         self._multi = (m_1, m_2)

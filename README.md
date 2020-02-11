@@ -146,6 +146,12 @@ v.1.8.8:
 Module().parent_square: bug fixed
 RowColumn().square: changed to .parent_square
 
+v.1.8.9:
+permutation.invert_matrix(): added
+permutation.permute_matrix_rowwise(): added
+permutation.permute_matrix_columnwise(): added
+permutation.permute_matrix(): added
+
 
 
 
