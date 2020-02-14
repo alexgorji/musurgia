@@ -152,6 +152,8 @@ permutation.permute_matrix_rowwise(): added
 permutation.permute_matrix_columnwise(): added
 permutation.permute_matrix(): added
 
+v.1.8.10:
+FractalTree().multi: bug fix: _children_fractal_values set to None
 
 
 

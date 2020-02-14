@@ -106,6 +106,7 @@ class FractalTree(Tree):
         self._multi = (m_1, m_2)
 
         self._permutation_order = None
+        self._children_fractal_values = None
 
     @property
     def fertile(self):

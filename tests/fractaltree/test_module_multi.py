@@ -69,3 +69,20 @@ class Test(AGTestCase):
         xml_path = path + '_test_2.xml'
         generate_score(modules).write(xml_path)
         self.assertCompareFiles(xml_path)
+
+    def test_3(self):
+        modules = [self.square.get_module(2, 2), self.copied_square.get_module(2, 2)]
+        for module in modules:
+            module.children_fractal_values
+        multi_additions = [0, 1]
+        for module, multi_addition in zip(modules, multi_additions):
+            forward_multi(module, multi_addition)
+        for module in modules:
+            module.add_layer()
+
+        for module in modules:
+            add_info(module)
+
+        xml_path = path + '_test_3.xml'
+        generate_score(modules).write(xml_path)
+        self.assertCompareFiles(xml_path)
