@@ -6,7 +6,7 @@ from musurgia.permutation import permute_matrix_columnwise, permute_matrix_rowwi
 class Test(TestCase):
     def setUp(self) -> None:
         self.main_permutation_order = (2, 6, 4, 1, 3, 7, 5)
-        self.matrix = [[(i, j) for i in range(1, 8) for j in range(1, 8)][i * 7:i * 7 + 7] for i in range(7)]
+        self.matrix = [[(i, j) for i in range(1, 8) for j in range(1, 8)][k * 7:k * 7 + 7] for k in range(7)]
 
     def test_1(self):
         result = invert_matrix(self.matrix)
