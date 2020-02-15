@@ -185,11 +185,11 @@ class RelativeMidi(MidiGenerator):
         return self.iterator.__next__()
 
     def copy(self):
-        return self.__class__(midi_range=self.midi_range, proportions=self.proportions, directions=self.directions,
-                              microtone=self.microtone)
+        return self.__class__(microtone=self.microtone)
 
     def __deepcopy__(self, memodict={}):
-        return self.copy()
+        return self.__class__(midi_range=self.midi_range, proportions=self.proportions, directions=self.directions,
+                              microtone=self.microtone)
 
 
 class RandomMidi(MidiGenerator):

@@ -3,6 +3,7 @@ import os
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
 from musurgia.agunittest import AGTestCase
+from musurgia.fractaltree.fractalmusic import FractalMusic
 from musurgia.fractaltree.fractalmusicsquare import Square
 
 path = str(os.path.abspath(__file__).split('.')[0])
@@ -86,3 +87,18 @@ class Test(AGTestCase):
         xml_path = path + '_test_3.xml'
         generate_score(modules).write(xml_path)
         self.assertCompareFiles(xml_path)
+
+    def test_4(self):
+        fm_1 = FractalMusic(multi=(1, 2), tempo=60, quarter_duration=10)
+        fm_2 = FractalMusic(multi=(1, 1), tempo=60, quarter_duration=10)
+        fms = [fm_1, fm_2]
+
+        for fm in fms:
+            fm.midi_generator.midi_range = [60, 72]
+
+        fm_2.multi = fm_1.multi
+
+        self.assertEqual(fm_2.children_fractal_values, fm_1.children_fractal_values)
+        self.assertEqual(fm_2.children_fractal_orders, fm_1.children_fractal_orders)
+        self.assertEqual(fm_2.midi_generator.midi_range, fm_1.midi_generator.midi_range)
+        self.assertEqual(fm_2.children_generated_midis, fm_1.children_generated_midis)

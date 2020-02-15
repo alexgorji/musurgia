@@ -155,7 +155,9 @@ permutation.permute_matrix(): added
 v.1.8.10:
 FractalTree().multi: bug fix: _children_fractal_values set to None
 
-
+v.1.8.11:  
+midi_generator.RelativeMidi(): copy() (used in add_layer) changed to: self.__class__(microtone=self.microtone)
+FractalTree().multi: bug fix: midi_generator
 
 
 

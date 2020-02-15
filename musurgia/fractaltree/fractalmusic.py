@@ -82,6 +82,28 @@ class FractalMusic(FractalTree):
         self.quarter_duration = quarter_duration
 
     @property
+    def multi(self):
+        return super().multi
+        
+    @multi.setter
+    def multi(self, val):
+        FractalTree.multi.fset(self, val)
+        # is midi_generator already set?
+        try:
+            if self._midi_generator:
+                if isinstance(self._midi_generator, RelativeMidi):
+                    midi_range = self._midi_generator.midi_range
+                    _auto_ranged = self._midi_generator._auto_ranged
+                    self._midi_generator = self._midi_generator.copy()
+                    self._midi_generator.midi_range = midi_range
+                    self._midi_generator._auto_ranged = _auto_ranged
+                else:
+                    self._midi_generator = self._midi_generator.copy()
+        except AttributeError:
+            pass
+
+
+    @property
     def duration(self):
         return self.value
 
@@ -619,12 +641,6 @@ class FractalMusic(FractalTree):
 
     def copy(self):
         copied_midi_generator = self.midi_generator.copy()
-
-        if isinstance(copied_midi_generator, RelativeMidi):
-            copied_midi_generator.midi_range = None
-            copied_midi_generator._directions = None
-            copied_midi_generator.proportions = None
-            copied_midi_generator._iterator = None
 
         copied = super().copy()
         copied.tempo = self.tempo
