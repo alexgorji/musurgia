@@ -159,5 +159,8 @@ v.1.8.11:
 midi_generator.RelativeMidi(): copy() (used in add_layer) changed to: self.__class__(microtone=self.microtone)
 FractalTree().multi: bug fix: midi_generator
 
+v.1.8.12:
+FractalTree().generate_children: modi added: reduce_backwards (=reduce), reduce_forwards and reduce_sieve'  
+
 
 

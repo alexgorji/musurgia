@@ -1,5 +1,7 @@
 import os
 
+from musicscore.musictree.treescoretimewise import TreeScoreTimewise
+
 from musurgia.agunittest import AGTestCase
 from musurgia.fractaltree.fractalmusic import FractalMusic
 
@@ -135,5 +137,59 @@ class Test(AGTestCase):
         sf.to_stream_voice().add_to_score(score, part_number=3)
 
         xml_path = path + '_test_14.xml'
+        score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_15(self):
+        self.fm_7.quarter_duration = 10
+        score = TreeScoreTimewise()
+        score.add_title('reduce backwards')
+        score.page_style.orientation = 'portrait'
+        score.set_time_signatures(barline_style='light-light', durations=self.fm_7.quarter_duration)
+        for i in range(1, 8):
+            fm = self.fm_7.__deepcopy__()
+            fm.generate_children(number_of_children=i, mode='reduce_backwards')
+            for leaf in fm.traverse_leaves():
+                leaf.chord.add_lyric(leaf.fractal_order)
+            sf = fm.get_simple_format(layer=fm.number_of_layers)
+            sf.to_stream_voice().add_to_score(score, part_number=i)
+
+        xml_path = path + '_test_15.xml'
+        score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_16(self):
+        self.fm_7.quarter_duration = 10
+        score = TreeScoreTimewise()
+        score.add_title('reduce forwards')
+        score.page_style.orientation = 'portrait'
+        score.set_time_signatures(barline_style='light-light', durations=self.fm_7.quarter_duration)
+        for i in range(1, 8):
+            fm = self.fm_7.__deepcopy__()
+            fm.generate_children(number_of_children=i, mode='reduce_forwards')
+            for leaf in fm.traverse_leaves():
+                leaf.chord.add_lyric(leaf.fractal_order)
+            sf = fm.get_simple_format(layer=fm.number_of_layers)
+            sf.to_stream_voice().add_to_score(score, part_number=i)
+
+        xml_path = path + '_test_16.xml'
+        score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_17(self):
+        self.fm_7.quarter_duration = 10
+        score = TreeScoreTimewise()
+        score.add_title('reduce sieve')
+        score.page_style.orientation = 'portrait'
+        score.set_time_signatures(barline_style='light-light', durations=self.fm_7.quarter_duration)
+        for i in range(1, 8):
+            fm = self.fm_7.__deepcopy__()
+            fm.generate_children(number_of_children=i, mode='reduce_sieve')
+            for leaf in fm.traverse_leaves():
+                leaf.chord.add_lyric(leaf.fractal_order)
+            sf = fm.get_simple_format(layer=fm.number_of_layers)
+            sf.to_stream_voice().add_to_score(score, part_number=i)
+
+        xml_path = path + '_test_17.xml'
         score.write(xml_path)
         self.assertCompareFiles(xml_path)

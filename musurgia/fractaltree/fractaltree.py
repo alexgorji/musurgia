@@ -2,6 +2,7 @@ import itertools
 
 from quicktions import Fraction
 
+from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.permutation import LimitedPermutation, permute
 from musurgia.tree import Tree
 
@@ -486,7 +487,7 @@ class FractalTree(Tree):
 
     def generate_children(self, number_of_children, mode='reduce', merge_index=0):
 
-        permitted_modes = ['reduce', 'merge']
+        permitted_modes = ['reduce', 'reduce_backwards', 'reduce_forwards', 'reduce_sieve', 'merge']
         if mode not in permitted_modes:
             raise ValueError('generate_children.mode {} must be in{}'.format(mode, permitted_modes))
         if isinstance(number_of_children, int):
@@ -497,9 +498,19 @@ class FractalTree(Tree):
                     'generate_children.number_of_children {} must be a positive int'.format(number_of_children))
             else:
                 self.add_layer()
-                if mode == 'reduce':
+                if mode in ['reduce', 'reduce_backwards']:
                     self.reduce_children(
                         lambda child: child.fractal_order < self.size - number_of_children + 1)
+                elif mode == 'reduce_forwards':
+                    self.reduce_children(
+                        lambda child: child.fractal_order > number_of_children)
+                elif mode == 'reduce_sieve':
+                    if number_of_children == 1:
+                        self.reduce_children(condition=lambda child: child.fractal_order not in [1])
+                    else:
+                        ap = ArithmeticProgression(a1=1, an=self.size, n=number_of_children)
+                        selection = [int(round(x)) for x in ap]
+                        self.reduce_children(condition=lambda child: child.fractal_order not in selection)
                 else:
                     merge_lengths = self._get_merge_lengths(number_of_children, merge_index)
                     self.merge_children(*merge_lengths)
