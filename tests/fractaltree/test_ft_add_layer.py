@@ -26,3 +26,10 @@ class Test(TestCase):
                          [Fraction(5, 6), Fraction(5, 3), Fraction(5, 2), Fraction(5, 6), Fraction(5, 18),
                           Fraction(5, 9),
                           Fraction(10, 9), Fraction(5, 3), Fraction(5, 9)])
+
+
+    def test_3(self):
+        ft = FractalTree(value=10, proportions=(1, 2, 3), tree_permutation_order=(3, 1, 2))
+        ft.add_layer()
+        ft.get_children()[0].add_layer()
+        print(ft.get_leaves(key=lambda leaf: float(leaf.value)))

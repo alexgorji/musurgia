@@ -84,7 +84,7 @@ class FractalMusic(FractalTree):
     @property
     def multi(self):
         return super().multi
-        
+
     @multi.setter
     def multi(self, val):
         FractalTree.multi.fset(self, val)
@@ -101,7 +101,6 @@ class FractalMusic(FractalTree):
                     self._midi_generator = self._midi_generator.copy()
         except AttributeError:
             pass
-
 
     @property
     def duration(self):
