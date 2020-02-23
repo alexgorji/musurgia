@@ -21,4 +21,3 @@ class Test(TestCase):
         score = fm.get_score(show_fractal_orders=True)
         xml_path = path + '_test_.xml'
         score.write(path=xml_path)
-        print(fm.get_leaves(key=lambda leaf: float(leaf.value)))

@@ -12,8 +12,8 @@ class ChordField(object):
     position to output a value. If a value_generator has a duration attribute, it will be overwritten by Field.duration. The same is
     the case for sum (s) in ArithmeticProgression """
 
-    def __init__(self, quarter_duration, duration_generator=None, midi_generator=None, chord_generator=None,
-                 transition_mode=None,
+    def __init__(self, quarter_duration=None, duration_generator=None, midi_generator=None, chord_generator=None,
+                 long_ending_mode=None, short_ending_mode='rest',
                  name=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._quarter_duration = None
@@ -22,15 +22,17 @@ class ChordField(object):
         self._duration_generator = None
         self._midi_generator = None
         self._chord_generator = None
-        self._transition_mode = None
+        self._long_ending_mode = None
+        self._short_ending_mode = None
         self._exit = False
         self._first = True
-        self._simple_format = SimpleFormat()
+        self._chords = []
         self.quarter_duration = quarter_duration
         self.duration_generator = duration_generator
         self.midi_generator = midi_generator
         self.chord_generator = chord_generator
-        self.transition_mode = transition_mode
+        self.long_ending_mode = long_ending_mode
+        self.short_ending_mode = short_ending_mode
         self.name = name
 
     def _set_value_generator_duration(self, value_generator):
@@ -49,12 +51,11 @@ class ChordField(object):
 
     @quarter_duration.setter
     def quarter_duration(self, value):
-        if not value:
-            raise ValueError('quarter_duration can not be None.')
-        self._quarter_duration = value
-        self._set_value_generator_duration(self.duration_generator)
-        self._set_value_generator_duration(self.midi_generator)
-        self._set_value_generator_duration(self.chord_generator)
+        if value is not None:
+            self._quarter_duration = value
+            self._set_value_generator_duration(self.duration_generator)
+            self._set_value_generator_duration(self.midi_generator)
+            self._set_value_generator_duration(self.chord_generator)
 
     @property
     def duration_generator(self):
@@ -89,14 +90,42 @@ class ChordField(object):
             self._set_value_generator_duration(self.chord_generator)
 
     @property
-    def transition_mode(self):
-        return self._transition_mode
+    def long_ending_mode(self):
+        return self._long_ending_mode
 
-    @transition_mode.setter
-    def transition_mode(self, value):
-        if value not in [None, 'pre', 'post']:
-            raise ValueError('transition_mode can only be None, pre or post')
-        self._transition_mode = value
+    @long_ending_mode.setter
+    def long_ending_mode(self, value):
+        """
+
+        :param value: can be None, pre, post
+        for dealing with last chord, if it is too long and ends after self.quarter_duration
+        None: last chord will be cut short.
+        pre: last chord will be omitted and self.quarter_duration cut short.
+        post: self.quarter_duration will be prolonged.
+        """
+        permitted = [None, 'pre', 'post']
+        if value not in permitted:
+            raise ValueError('{} not in permitted long_ending_modes: {}'.format(value, permitted))
+        self._long_ending_mode = value
+
+    @property
+    def short_ending_mode(self):
+        return self._short_ending_mode
+
+    @short_ending_mode.setter
+    def short_ending_mode(self, value):
+        """
+
+        :param value: can be None, rest and prolong
+        for dealing with last chord, if it is too short and ends before self.quarter_duration
+        None: self.quarter_duration will be cut short.
+        rest: a rest with remaining quarter_duration will be added.
+        prolong: last chord will be prolonged
+        """
+        permitted = [None, 'rest', 'prolong']
+        if value not in permitted:
+            raise ValueError('{} not in permitted short_ending_mode: {}'.format(value, permitted))
+        self._short_ending_mode = value
 
     @property
     def position(self):
@@ -112,81 +141,92 @@ class ChordField(object):
         if self._exit:
             raise StopIteration()
 
-        try:
-            if self.chord_generator is None:
-                next_duration = None
-                next_midi = None
+        if self.chord_generator is None:
+            next_duration = None
+            next_midi = None
 
-                if callable(getattr(self.duration_generator, '__next__', None)):
-                    next_duration = self.duration_generator.__next__()
-                elif hasattr(self.duration_generator, '__call__'):
-                    next_duration = self.duration_generator(self.position)
+            if callable(getattr(self.duration_generator, '__next__', None)):
+                next_duration = self.duration_generator.__next__()
+            elif hasattr(self.duration_generator, '__call__'):
+                next_duration = self.duration_generator(self.position)
 
-                if callable(getattr(self.midi_generator, '__next__', None)):
-                    next_midi = self.midi_generator.__next__()
-                elif hasattr(self.midi_generator, '__call__'):
-                    next_midi = self.midi_generator(self.position)
+            if callable(getattr(self.midi_generator, '__next__', None)):
+                next_midi = self.midi_generator.__next__()
+            elif hasattr(self.midi_generator, '__call__'):
+                next_midi = self.midi_generator(self.position)
 
-                remain = self.quarter_duration - self.position
-                self._position += next_duration
+            remain = self.quarter_duration - self.position
+            self._position += next_duration
 
-                if self._position < self.quarter_duration:
-                    pass
-                elif self._position == self.quarter_duration:
-                    self._exit = True
+            if self._position < self.quarter_duration:
+                pass
+            elif self._position == self.quarter_duration:
+                self._exit = True
 
-                elif self._position > self.quarter_duration:
-                    if self.transition_mode is None:
-                        next_duration = remain
-                        self._position = self.quarter_duration
-                    elif self.transition_mode == 'post':
-                        self.quarter_duration = self.position
-                    elif self.transition_mode == 'pre':
-                        self.quarter_duration = self.position - remain
-                        raise StopIteration()
+            elif self._position > self.quarter_duration:
+                if self.long_ending_mode is None:
+                    next_duration = remain
+                    self._position = self.quarter_duration
+                elif self.long_ending_mode == 'post':
+                    self.quarter_duration = self.position
+                elif self.long_ending_mode == 'pre':
+                    self.quarter_duration = self.position - remain
+                    raise StopIteration()
 
-                    self._exit = True
-                chord = TreeChord(quarter_duration=next_duration, midis=next_midi)
-                if self._first:
-                    if self.name is not None:
-                        chord.add_lyric(Lyric(self.name))
-                    self._first = False
+                self._exit = True
+            chord = TreeChord(quarter_duration=next_duration, midis=next_midi)
+            if self._first:
+                if self.name is not None:
+                    chord.add_lyric(Lyric(self.name))
+                self._first = False
 
-                self._simple_format.add_chord(chord)
-                return chord
+            self._chords.append(chord)
+            return chord
+        else:
+            try:
+                next_chord = self.chord_generator(self.position)
+            except TypeError:
+                next_chord = self.chord_generator.__next__()
+            remain = self.quarter_duration - self.position
+            self._position += next_chord.duration
+            if self._position < self.quarter_duration:
+                pass
+            elif self._position == self.quarter_duration:
+                self._exit = True
+            elif self._position > self.quarter_duration:
+                if self.long_ending_mode is None:
+                    next_chord.quarter_duration = remain
+                    self._position = self.quarter_duration
+                elif self.long_ending_mode == 'post':
+                    self.quarter_duration = self.position
+                elif self.long_ending_mode == 'pre':
+                    self.quarter_duration = self.position - remain
+
+                self._exit = True
+
+            if self._first:
+                if self.name is not None:
+                    next_chord.add_lyric(self.name)
+                self._first = False
+            self._chords.append(next_chord)
+            return next_chord
+
+    @property
+    def chords(self):
+        list(self)
+        delta = self.quarter_duration - sum([chord.quarter_duration for chord in self._chords])
+        if delta > 0:
+            if self.short_ending_mode is None:
+                self._quarter_duration -= delta
+            elif self.short_ending_mode == 'rest':
+                self._chords.append(TreeChord(midis=0, quarter_duration=delta))
             else:
-                try:
-                    next_chord = self.chord_generator(self.position)
-                except TypeError:
-                    next_chord = self.chord_generator.__next__()
-                remain = self.quarter_duration - self.position
-                self._position += next_chord.duration
-                if self._position < self.quarter_duration:
-                    pass
-                elif self._position == self.quarter_duration:
-                    self._exit = True
-                elif self._position > self.quarter_duration:
-                    if self.transition_mode is None:
-                        next_chord.quarter_duration = remain
-                        self._position = self.duration
-                    elif self.transition_mode == 'post':
-                        self.quarter_duration = self.position
-                    elif self.transition_mode == 'pre':
-                        self.quarter_duration = self.position - remain
-                        raise StopIteration()
-
-                    self._exit = True
-
-                if self._first:
-                    if self.name is not None:
-                        next_chord.add_lyric(self.name)
-                    self._first = False
-                self._simple_format.add_chord(next_chord)
-                return next_chord
-        except StopIteration:
-            raise StopIteration()
+                self._chords[-1].quarter_duration += delta
+        return self._chords
 
     @property
     def simple_format(self):
-        list(self)
-        return self._simple_format
+        sf = SimpleFormat()
+        for chord in self.chords:
+            sf.add_chord(chord)
+        return sf

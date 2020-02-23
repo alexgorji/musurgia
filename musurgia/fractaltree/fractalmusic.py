@@ -9,6 +9,7 @@ from prettytable import PrettyTable
 from quicktions import Fraction
 
 from musurgia import basic_functions, scaledvalues
+from musurgia.chordfield.chordfield import ChordField
 from musurgia.fractaltree.fractaltree import FractalTree
 from musurgia.fractaltree.midigenerators import RelativeMidi, MidiGenerator
 from musurgia.permutation import permute
@@ -51,6 +52,16 @@ class MergeTempoException(MergeException):
         super().__init__('nodes to merge must have the same tempo {}'.format(tempo), *args)
 
 
+class ChordFieldConflict(FractalMusicException):
+    def __init__(self, *args):
+        super().__init__('node.chord and node.chord_field cannot be both set!', *args)
+
+
+class NoneChordException(FractalMusicException):
+    def __init__(self, *args):
+        super().__init__('node.chord and node.chord_field are both None.', *args)
+
+
 class FractalMusic(FractalTree):
     def __init__(self,
                  duration=None,
@@ -65,6 +76,7 @@ class FractalMusic(FractalTree):
         super().__init__(*args, **kwargs)
         self._midi_value = None
         self._chord = None
+        self._chord_field = None
         self._midi_generator = None
         self._children_generated_midis = None
         self._tree_directions = None
@@ -361,15 +373,30 @@ class FractalMusic(FractalTree):
 
     @property
     def chord(self):
-        if self._chord is None:  # or self._note.midis!=[self.midi] or self._note.duration!=self.duration:
-            self._chord = TreeChord(quarter_duration=self.quarter_duration, midis=[self.midi_value])
-        else:
-            self._chord.quarter_duration = self.quarter_duration
+        if self.chord_field is None:
+            if self._chord is None:
+                self._chord = TreeChord(quarter_duration=self.quarter_duration, midis=[self.midi_value])
+            else:
+                self._chord.quarter_duration = self.quarter_duration
 
-        return self._chord
+            return self._chord
+        else:
+            return None
 
     def set_chord(self, chord):
         self._chord = chord
+
+    @property
+    def chord_field(self):
+        return self._chord_field
+
+    @chord_field.setter
+    def chord_field(self, chord_field):
+        if chord_field is not None and not isinstance(chord_field, ChordField):
+            raise TypeError()
+        if chord_field is not None:
+            chord_field.quarter_duration = self.quarter_duration
+        self._chord_field = chord_field
 
     def get_simple_format(self, layer=None):
         if layer is None:
@@ -377,9 +404,18 @@ class FractalMusic(FractalTree):
         self.get_layer(layer=layer)
 
         simple_format = SimpleFormat()
-        for chord in [node.chord for node in basic_functions.flatten(self.get_layer(layer))]:
-            copied_chord = chord.__deepcopy__()
-            simple_format.add_chord(copied_chord)
+        for node in basic_functions.flatten(self.get_layer(layer)):
+            if node.chord is not None:
+                if node.chord_field is not None:
+                    raise ChordFieldConflict()
+                copied_chord = node.chord.__deepcopy__()
+                simple_format.add_chord(copied_chord)
+            elif node.chord_field is not None:
+                for chord in node.chord_field.chords:
+                    copied_chord = chord.__deepcopy__()
+                    simple_format.add_chord(copied_chord)
+            else:
+                raise NoneChordException()
 
         return simple_format
 
@@ -505,14 +541,19 @@ class FractalMusic(FractalTree):
         score.set_time_signatures(durations=self.quarter_duration)
         if show_fractal_orders:
             for node in self.traverse():
-                node.chord.add_lyric(node.fractal_order)
+                try:
+                    node.chord.add_lyric(node.fractal_order)
+                except AttributeError:
+                    for chord in node.chord_field.chords:
+                        chord.add_lyric(node.fractal_order)
 
         if show_midis:
             for node in self.traverse():
-                midi_value = node.midi_value
-                if int(midi_value) == midi_value:
-                    midi_value = int(midi_value)
-                node.chord.add_words(midi_value, enclosure='none', relative_y=10)
+                try:
+                    node.chord.add_words(node.chord.midis)
+                except AttributeError:
+                    for chord in node.chord_field.chords:
+                        chord.add_words(node.chord.midis)
 
         def layer_to_score(layer_number, part_number):
             try:

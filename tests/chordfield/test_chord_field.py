@@ -61,3 +61,13 @@ class Test(AGTestCase):
         xml_path = path + '_test_5.xml'
         self.score.write(xml_path)
         self.assertCompareFiles(xml_path)
+
+    def test_6(self):
+        field = ChordField(quarter_duration=10, duration_generator=ArithmeticProgression(a1=0.2, an=2),
+                           midi_generator=Interpolation(start=84, end=60, duration=None,
+                                                        key=lambda midi: round(midi * 2) / 2))
+        field.short_ending_mode = 'prolong'
+        field.simple_format.to_stream_voice().add_to_score(self.score)
+        xml_path = path + '_test_6.xml'
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)
