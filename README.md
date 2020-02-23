@@ -162,5 +162,11 @@ FractalTree().multi: bug fix: midi_generator
 v.1.8.12:
 FractalTree().generate_children: modi added: reduce_backwards (=reduce), reduce_forwards and reduce_sieve'  
 
+v.1.9.0:
+InterpolationSection: changed to Interpolation
+Interpolation: changed to InterpolationGroup
+Interpolation/InterpolationGroup: get_value changed to \__call__
+Interpolation: key added
+musurgia.chordfield: New sublibrary added
 
 

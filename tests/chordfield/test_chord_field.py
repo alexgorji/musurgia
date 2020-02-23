@@ -5,8 +5,8 @@ from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 from musurgia.agrandom import AGRandom
 from musurgia.agunittest import AGTestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
+from musurgia.chordfield.chordfield import ChordField
 from musurgia.interpolation import Interpolation
-from musurgia.chordfield import ChordField
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
@@ -55,8 +55,8 @@ class Test(AGTestCase):
 
     def test_5(self):
         field = ChordField(10, transition_mode='post')
-        field.duration_generator = duration_generator(first_duration=1, delta=0.2)
-        field.midi_generator = Interpolation()
+        field.duration_generator = AGRandom(pool=[0.2, 0.4, 0.8, 1.2, 1.6, 2], periodicity=3, seed=20)
+        field.midi_generator = Interpolation(start=84, end=60, duration=None, key=lambda x: int(x))
         field.simple_format.to_stream_voice().add_to_score(self.score)
         xml_path = path + '_test_5.xml'
         self.score.write(xml_path)
