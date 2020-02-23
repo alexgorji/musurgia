@@ -169,4 +169,8 @@ Interpolation/InterpolationGroup: get_value changed to \__call__
 Interpolation: key added
 musurgia.chordfield: New sublibrary added
 
+v.1.9.1:
+FractalMusic().add_chord_field(): new method added
+
+
 
