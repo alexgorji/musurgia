@@ -6,6 +6,11 @@ from musicscore.musictree.treechord import TreeChord
 from musurgia.arithmeticprogression import ArithmeticProgression
 
 
+class BreatheException(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
 class ChordField(object):
     """duration_ or midi_ or chord_generator can be iterators or classes with call method which use current time
     position to output a value. If a value_generator has a duration attribute, it will be overwritten by Field.duration. The same is
@@ -349,9 +354,12 @@ class ChordFieldGroup(object):
 
 
 class Breathe(ChordFieldGroup):
-    def __init__(self, quarter_durations=None, *args, **kwargs):
+    def __init__(self, quarter_durations, breakpoints=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._quarter_durations = []
+        self._breakpoints = []
         self.quarter_durations = quarter_durations
+        self.breakpoints = breakpoints
 
     @property
     def quarter_durations(self):
@@ -360,19 +368,42 @@ class Breathe(ChordFieldGroup):
 
     @quarter_durations.setter
     def quarter_durations(self, values):
-        if not values:
-            values = [0, 5, 5, 5, 0]
-        if len(values) != 5:
-            raise ValueError('durations must contain 5 values: repose_1, inspiration, climax, expiration, repose_2')
-        if not self.fields:
+        if not self._quarter_durations:
+            if len(values) != 5:
+                ValueError('quarter_durations must have 5 elements.')
+            self._fields = []
             names = ['repose_1', 'inspiration', 'climax', 'expiration', 'repose_2']
             for index, quarter_duration in enumerate(values):
                 field = ChordField(quarter_duration=quarter_duration)
                 field.name = names[index]
                 self.add_field(field)
+                self._quarter_durations.append(quarter_duration)
         else:
-            for index, quarter_duration in enumerate(values):
-                self.fields[index].quarter_duration = quarter_duration
+            raise BreatheException('quarter_durations can only be set during initialisation')
+
+    @property
+    def breakpoints(self):
+        return self._breakpoints
+
+    @breakpoints.setter
+    def breakpoints(self, values):
+        if not self._breakpoints:
+            if len(values) != 3:
+                ValueError('quarter_durations must have 3 elements.')
+            for i in range(5):
+                if i == 0:
+                    a1, an = values[0], values[0]
+                elif i == 1:
+                    a1, an = values[0], values[1]
+                elif i == 2:
+                    a1, an = values[1], values[1]
+                elif i == 3:
+                    a1, an = values[1], values[2]
+                elif i == 4:
+                    a1, an = values[2], values[2]
+                self.fields[i].duration_generator = ArithmeticProgression(a1=a1, an=an, correct_s=True)
+        else:
+            raise BreatheException('breakpoints can only be set during initialisation')
 
     @property
     def repose_1(self):

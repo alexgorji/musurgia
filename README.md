@@ -171,6 +171,9 @@ musurgia.chordfield: New sublibrary added
 
 v.1.9.1:
 FractalMusic().add_chord_field(): new method added
+musurgia.chordfield: further developments
+ArithmeticProgression().correct_s: attribute added and other minor optimisations
+
 
 
 

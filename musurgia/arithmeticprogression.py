@@ -4,7 +4,7 @@ from quicktions import Fraction
 
 
 class ArithmeticProgression(object):
-    def __init__(self, a1=None, an=None, n=None, d=None, s=None):
+    def __init__(self, a1=None, an=None, n=None, d=None, s=None, correct_s=False):
         self._a1 = None
         self._an = None
         self._n = None
@@ -12,12 +12,15 @@ class ArithmeticProgression(object):
         self._s = None
         self._current = None
         self._index = None
+        self._correction_factor = None
+        self._correct_s = None
 
         self.a1 = a1
         self.an = an
         self.n = n
         self.d = d
         self.s = s
+        self.correct_s = correct_s
 
     def _check_args(self, arg):
         if self._parameters_dict[arg] is None and len([v for v in self._parameters_dict.values() if v is not None]) > 2:
@@ -142,6 +145,30 @@ class ArithmeticProgression(object):
                 raise AttributeError(err)
         self._d = value
 
+    @property
+    def correct_s(self):
+        return self._correct_s
+
+    @correct_s.setter
+    def correct_s(self, val):
+        if not isinstance(val, bool):
+            raise TypeError('correct_s.value must be of type bool not{}'.format(type(val)))
+        self._correct_s = val
+
+    @property
+    def correction_factor(self):
+        def _calculate_correction_factor():
+            if self.correct_s:
+                actual_s = self.n * (self.a1 + self.an)/2
+                factor = self.s / actual_s
+                return factor
+            else:
+                return 1
+
+        if self._correction_factor is None:
+            self._correction_factor = _calculate_correction_factor()
+        return self._correction_factor
+
     def __iter__(self):
         return self
 
@@ -161,7 +188,7 @@ class ArithmeticProgression(object):
             self._current += self.d
 
         if self._index < self.n:
-            return self._current
+            return self._current * self.correction_factor
         else:
             raise StopIteration()
 

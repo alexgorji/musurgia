@@ -38,3 +38,13 @@ class Test(TestCase):
         # print(sum(quantized))
         result = [36, 34, 32, 31, 29, 26, 25]
         self.assertEqual(result, quantized)
+
+    def test_5(self):
+        self.arith_prog.a1 = 0.2
+        self.arith_prog.an = 1.5
+        self.arith_prog.s = 10
+
+        self.arith_prog.correct_s = True
+        test_case = sum(list(self.arith_prog))
+        expected = self.arith_prog.s
+        self.assertEqual(expected, test_case)
