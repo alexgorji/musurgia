@@ -1,4 +1,4 @@
-from itertools import cycle
+from itertools import chain
 
 from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treechord import TreeChord
@@ -13,8 +13,7 @@ class ChordField(object):
     the case for sum (s) in ArithmeticProgression """
 
     def __init__(self, quarter_duration=None, duration_generator=None, midi_generator=None, chord_generator=None,
-                 long_ending_mode=None, short_ending_mode='rest',
-                 name=None, *args, **kwargs):
+                 long_ending_mode=None, short_ending_mode='rest', name=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._quarter_duration = None
         self._current_duration = None
@@ -34,6 +33,8 @@ class ChordField(object):
         self.long_ending_mode = long_ending_mode
         self.short_ending_mode = short_ending_mode
         self.name = name
+        self.parent_group = None
+        self._position_in_group = None
 
     def _set_value_generator_duration(self, value_generator):
         if value_generator is not None:
@@ -63,8 +64,6 @@ class ChordField(object):
 
     @duration_generator.setter
     def duration_generator(self, value):
-        if value is None:
-            value = cycle([1])
         self._duration_generator = value
         self._set_value_generator_duration(self.duration_generator)
 
@@ -74,8 +73,6 @@ class ChordField(object):
 
     @midi_generator.setter
     def midi_generator(self, value):
-        if value is None:
-            value = cycle([71])
         self._midi_generator = value
         self._set_value_generator_duration(self.midi_generator)
 
@@ -86,7 +83,7 @@ class ChordField(object):
     @chord_generator.setter
     def chord_generator(self, value):
         self._chord_generator = value
-        if value is not None:
+        if value:
             self._set_value_generator_duration(self.chord_generator)
 
     @property
@@ -131,6 +128,42 @@ class ChordField(object):
     def position(self):
         return self._position
 
+    @property
+    def position_in_group(self):
+        return self._position_in_group
+
+    @position_in_group.setter
+    def position_in_group(self, val):
+        self._position_in_group = val
+
+    def _get_next_duration(self):
+        if self.duration_generator:
+            try:
+                return self.duration_generator.__next__()
+            except AttributeError:
+                return self.duration_generator(self.position)
+        elif self.parent_group and self.parent_group.duration_generator:
+            try:
+                return self.parent_group.duration_generator.__next__()
+            except AttributeError:
+                return self.parent_group.duration_generator(self.position + self.position_in_group)
+        else:
+            return 1
+
+    def _get_next_midi(self):
+        if self.midi_generator:
+            try:
+                return self.midi_generator.__next__()
+            except AttributeError:
+                return self.midi_generator(self.position)
+        elif self.parent_group and self.parent_group.midi_generator:
+            try:
+                return self.parent_group.midi_generator.__next__()
+            except AttributeError:
+                return self.parent_group.midi_generator(self.position + self.position_in_group)
+        else:
+            return 71
+
     def __iter__(self):
         return self
 
@@ -142,18 +175,8 @@ class ChordField(object):
             raise StopIteration()
 
         if self.chord_generator is None:
-            next_duration = None
-            next_midi = None
-
-            if callable(getattr(self.duration_generator, '__next__', None)):
-                next_duration = self.duration_generator.__next__()
-            elif hasattr(self.duration_generator, '__call__'):
-                next_duration = self.duration_generator(self.position)
-
-            if callable(getattr(self.midi_generator, '__next__', None)):
-                next_midi = self.midi_generator.__next__()
-            elif hasattr(self.midi_generator, '__call__'):
-                next_midi = self.midi_generator(self.position)
+            next_duration = self._get_next_duration()
+            next_midi = self._get_next_midi()
 
             remain = self.quarter_duration - self.position
             self._position += next_duration
@@ -222,6 +245,101 @@ class ChordField(object):
                 self._chords.append(TreeChord(midis=0, quarter_duration=delta))
             else:
                 self._chords[-1].quarter_duration += delta
+        return self._chords
+
+    @property
+    def simple_format(self):
+        sf = SimpleFormat()
+        for chord in self.chords:
+            sf.add_chord(chord)
+        return sf
+
+
+class ChordFieldGroup(object):
+    def __init__(self, duration_generator=None, midi_generator=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._duration_generator = None
+        self._midi_generator = None
+        self._field_iter = None
+        self._fields = []
+        self._current_field = None
+        self._chords = []
+        self.duration_generator = duration_generator
+        self.midi_generator = midi_generator
+
+    @property
+    def fields(self):
+        return self._fields
+
+    def _set_value_generator_duration(self, value_generator):
+        if value_generator is not None:
+            if isinstance(value_generator, ArithmeticProgression):
+                value_generator.s = self.get_duration()
+            else:
+                try:
+                    value_generator.duration = self.get_duration()
+                except AttributeError:
+                    pass
+
+    @property
+    def duration_generator(self):
+        return self._duration_generator
+
+    @duration_generator.setter
+    def duration_generator(self, val):
+        self._duration_generator = val
+        self._set_value_generator_duration(self.duration_generator)
+
+
+    @property
+    def midi_generator(self):
+        return self._midi_generator
+
+    @midi_generator.setter
+    def midi_generator(self, val):
+        self._midi_generator = val
+        self._set_value_generator_duration(self.midi_generator)
+
+    def get_duration(self):
+        if self.fields:
+            return sum([field.quarter_duration for field in self.fields])
+        else:
+            return 0
+
+    def add_field(self, field):
+        if field is None:
+            field = ChordField()
+        if not isinstance(field, ChordField):
+            raise TypeError('{} has wrong type for Field'.format(field))
+        else:
+            field.position_in_group = self.get_duration()
+            field.parent_group = self
+            self._fields.append(field)
+            if not self._field_iter:
+                self._field_iter = iter(self.fields)
+            else:
+                self._field_iter = chain(self._field_iter, field)
+
+            self._set_value_generator_duration(self.duration_generator)
+            self._set_value_generator_duration(self.midi_generator)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._current_field is None:
+            self._current_field = self._field_iter.__next__()
+        try:
+            chord = self._current_field.__next__()
+            self._chords.append(chord)
+            return chord
+        except StopIteration:
+            self._current_field = self._field_iter.__next__()
+            self.__next__()
+
+    @property
+    def chords(self):
+        list(self)
         return self._chords
 
     @property

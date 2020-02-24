@@ -46,7 +46,7 @@ class Test(AGTestCase):
         self.assertCompareFiles(xml_path)
 
     def test_4(self):
-        field = ChordField(10, transition_mode='post')
+        field = ChordField(10, long_ending_mode='post')
         field.duration_generator = duration_generator(first_duration=1, delta=0.2)
         field.simple_format.to_stream_voice().add_to_score(self.score)
         xml_path = path + '_test_4.xml'
@@ -54,7 +54,7 @@ class Test(AGTestCase):
         self.assertCompareFiles(xml_path)
 
     def test_5(self):
-        field = ChordField(10, transition_mode='post')
+        field = ChordField(10, long_ending_mode='post')
         field.duration_generator = AGRandom(pool=[0.2, 0.4, 0.8, 1.2, 1.6, 2], periodicity=3, seed=20)
         field.midi_generator = Interpolation(start=84, end=60, duration=None, key=lambda x: int(x))
         field.simple_format.to_stream_voice().add_to_score(self.score)

@@ -1,4 +1,5 @@
 import math
+
 from quicktions import Fraction
 
 
@@ -18,9 +19,8 @@ class ArithmeticProgression(object):
         self.d = d
         self.s = s
 
-    def _check_args(self):
-
-        if len([v for v in self._parameters_dict.values() if v is not None]) > 2:
+    def _check_args(self, arg):
+        if self._parameters_dict[arg] is None and len([v for v in self._parameters_dict.values() if v is not None]) > 2:
             err = 'attribute cannot be set. Three parameters are already set. ArithmeticProgression is already created!'
             raise AttributeError(err)
 
@@ -70,11 +70,11 @@ class ArithmeticProgression(object):
 
     @property
     def _parameters_dict(self):
-        return {'a': self._a1, 'an': self._an, 'n': self._n, 'd': self._d, 's': self._s}
+        return {'a1': self._a1, 'an': self._an, 'n': self._n, 'd': self._d, 's': self._s}
 
     @property
     def parameters_dict(self):
-        return {'a': self.a1, 'an': self.an, 'n': self.n, 'd': self.d, 's': self.s}
+        return {'a1': self.a1, 'an': self.an, 'n': self.n, 'd': self.d, 's': self.s}
 
     @property
     def a1(self):
@@ -85,7 +85,7 @@ class ArithmeticProgression(object):
     @a1.setter
     def a1(self, value):
         if value is not None:
-            self._check_args()
+            self._check_args('a1')
         self._a1 = value
 
     @property
@@ -97,7 +97,7 @@ class ArithmeticProgression(object):
     @an.setter
     def an(self, value):
         if value is not None:
-            self._check_args()
+            self._check_args('an')
         self._an = value
 
     @property
@@ -109,7 +109,7 @@ class ArithmeticProgression(object):
     @n.setter
     def n(self, value):
         if value is not None:
-            self._check_args()
+            self._check_args('n')
         self._n = value
 
     @property
@@ -121,7 +121,7 @@ class ArithmeticProgression(object):
     @s.setter
     def s(self, value):
         if value is not None:
-            self._check_args()
+            self._check_args('s')
             if self._d is not None:
                 err = 'you cannot set both d an s!'
                 raise AttributeError(err)
@@ -136,7 +136,7 @@ class ArithmeticProgression(object):
     @d.setter
     def d(self, value):
         if value is not None:
-            self._check_args()
+            self._check_args('d')
             if self._s is not None:
                 err = 'you cannot set both d an s!'
                 raise AttributeError(err)

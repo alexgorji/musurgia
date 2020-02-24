@@ -9,14 +9,14 @@ class Test(TestCase):
         self.arith_prog = ArithmeticProgression()
 
     def test_1(self):
-        result = {'a': None, 'an': None, 'n': None, 'd': None, 's': None}
+        result = {'a1': None, 'an': None, 'n': None, 'd': None, 's': None}
         self.assertEqual(result, self.arith_prog._parameters_dict)
 
     def test_2(self):
         self.arith_prog.n = 15
         self.arith_prog.a1 = 1
         self.arith_prog.d = 2
-        result = {'a': 1, 'an': 29, 'n': 15, 'd': 2, 's': 225.0}
+        result = {'a1': 1, 'an': 29, 'n': 15, 'd': 2, 's': 225.0}
         self.assertEqual(result, self.arith_prog.parameters_dict)
 
     def test_3(self):
