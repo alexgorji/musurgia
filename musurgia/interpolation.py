@@ -4,15 +4,17 @@ from musurgia.agrandom import AGRandom
 
 
 class Interpolation(object):
-    def __init__(self, start, end, duration, key=None, *args, **kwargs):
+    def __init__(self, start, end, duration=None, key=None, mode=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._start = None
         self._end = None
         self._duration = None
         self.start = start
         self.end = end
+        self.mode = mode
         self.duration = duration
         self.key = key
+
 
     @property
     def start(self):

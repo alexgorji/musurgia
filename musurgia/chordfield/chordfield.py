@@ -2,7 +2,6 @@ from itertools import chain
 
 from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treechord import TreeChord
-from musicscore.musicxml.elements.note import Lyric
 
 from musurgia.arithmeticprogression import ArithmeticProgression
 
@@ -200,7 +199,7 @@ class ChordField(object):
             chord = TreeChord(quarter_duration=next_duration, midis=next_midi)
             if self._first:
                 if self.name is not None:
-                    chord.add_lyric(Lyric(self.name))
+                    chord.add_lyric(self.name)
                 self._first = False
 
             self._chords.append(chord)
@@ -290,7 +289,6 @@ class ChordFieldGroup(object):
         self._duration_generator = val
         self._set_value_generator_duration(self.duration_generator)
 
-
     @property
     def midi_generator(self):
         return self._midi_generator
@@ -348,3 +346,50 @@ class ChordFieldGroup(object):
         for chord in self.chords:
             sf.add_chord(chord)
         return sf
+
+
+class Breathe(ChordFieldGroup):
+    def __init__(self, quarter_durations=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.quarter_durations = quarter_durations
+
+    @property
+    def quarter_durations(self):
+        return [self.repose_1.quarter_duration, self.inspiration.quarter_duration, self.climax.quarter_duration,
+                self.expiration.quarter_duration, self.repose_2.quarter_duration]
+
+    @quarter_durations.setter
+    def quarter_durations(self, values):
+        if not values:
+            values = [0, 5, 5, 5, 0]
+        if len(values) != 5:
+            raise ValueError('durations must contain 5 values: repose_1, inspiration, climax, expiration, repose_2')
+        if not self.fields:
+            names = ['repose_1', 'inspiration', 'climax', 'expiration', 'repose_2']
+            for index, quarter_duration in enumerate(values):
+                field = ChordField(quarter_duration=quarter_duration)
+                field.name = names[index]
+                self.add_field(field)
+        else:
+            for index, quarter_duration in enumerate(values):
+                self.fields[index].quarter_duration = quarter_duration
+
+    @property
+    def repose_1(self):
+        return self.fields[0]
+
+    @property
+    def inspiration(self):
+        return self.fields[1]
+
+    @property
+    def climax(self):
+        return self.fields[2]
+
+    @property
+    def expiration(self):
+        return self.fields[3]
+
+    @property
+    def repose_2(self):
+        return self.fields[4]
