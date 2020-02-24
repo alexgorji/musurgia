@@ -171,7 +171,8 @@ musurgia.chordfield: New sublibrary added
 
 v.1.9.1:
 FractalMusic().add_chord_field(): new method added
-musurgia.chordfield: further developments
+RandomInterpolation: new Interpolation class
+musurgia.chordfield: further developments (Breathe etc.)
 ArithmeticProgression().correct_s: attribute added and other minor optimisations
 
 
