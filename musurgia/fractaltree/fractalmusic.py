@@ -444,9 +444,6 @@ class FractalMusic(FractalTree):
         if len(tempo) != 1:
             raise MergeTempoException(tempo)
 
-    # def merge_children(self, *lengths):
-    #     super().merge_children(*lengths)
-
     def quantize_leaves(self, grid_size):
 
         #     quantizing quarter_durations!
