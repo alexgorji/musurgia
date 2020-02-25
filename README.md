@@ -175,6 +175,8 @@ RandomInterpolation: new Interpolation class
 musurgia.chordfield: further developments (Breathe etc.)
 ArithmeticProgression().correct_s: attribute added and other minor optimisations
 
-
+v.1.9.2:
+issue #2'
+AGRandom(): bug fix
 
 
