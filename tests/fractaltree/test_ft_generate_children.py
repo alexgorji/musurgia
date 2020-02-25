@@ -91,3 +91,23 @@ class Test(TestCase):
         test_case = ft.get_leaves(key=lambda leaf: float(leaf.value))
         expected = [8.214285714285714, 1.7857142857142858]
         self.assertEqual(expected, test_case)
+
+    def test_11(self):
+        ft = FractalTree(value=10, proportions=(1, 2, 3, 4, 5, 6, 7), tree_permutation_order=(2, 6, 4, 1, 3, 7, 5))
+        output = []
+        for i in range(7):
+            ft_copy = ft.__deepcopy__()
+            ft_copy.generate_children(mode='merge', number_of_children=2, merge_index=i)
+            output.append(ft_copy.get_leaves(key=lambda leaf: float(leaf.value)))
+        test_case = output
+        # ft.add_layer()
+        # print(ft.get_leaves(key=lambda leaf: float(leaf.value)))
+        # print(output)
+        expected = [[8.214285714285714, 1.7857142857142858],
+                    [0.7142857142857143, 9.285714285714286],
+                    [2.857142857142857, 7.142857142857143],
+                    [4.285714285714286, 5.714285714285714],
+                    [4.642857142857143, 5.357142857142857],
+                    [5.714285714285714, 4.285714285714286],
+                    [8.214285714285714, 1.7857142857142858]]
+        self.assertEqual(expected, test_case)
