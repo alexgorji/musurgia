@@ -84,3 +84,10 @@ class Test(TestCase):
             [2, 3]
         ]
         self.assertEqual(result, self.ft.get_leaves(key=lambda leaf: leaf.fractal_order))
+
+    def test_10(self):
+        ft = FractalTree(value=10, proportions=(1, 2, 3, 4, 5, 6, 7), tree_permutation_order=(2, 6, 4, 1, 3, 7, 5))
+        ft.generate_children(mode='merge', number_of_children=2)
+        test_case = ft.get_leaves(key=lambda leaf: float(leaf.value))
+        expected = [8.214285714285714, 1.7857142857142858]
+        self.assertEqual(expected, test_case)
