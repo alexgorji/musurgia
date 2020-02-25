@@ -28,3 +28,9 @@ class Test(TestCase):
         test_case = [ri.__call__(x) for x in range(0, 20)]
         expected = [2, 3, 2, 1, 3, 2, 3, 7, 3, 7, 3, 7, 3, 7, 3, 7, 3, 7, 7, 7]
         self.assertEqual(expected, test_case)
+
+    def test_3(self):
+        ri = RandomInterpolation(start=[60, 62, 66, 68], end=[67, 69, 73, 75], duration=13, seed=10)
+        test_case = [ri.__call__(x) for x in range(0, 13)]
+        expected = [60, 68, 67, 62, 66, 69, 67, 68, 66, 73, 69, 68, 73]
+        self.assertEqual(expected, test_case)

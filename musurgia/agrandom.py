@@ -24,8 +24,8 @@ class AGRandom(object):
     def pool(self, values):
         if values is not None:
             try:
-                self._pool = list(set(values))
-            except:
+                self._pool = list(dict.fromkeys(values))
+            except TypeError:
                 self._pool = [values]
 
     @property

@@ -15,7 +15,6 @@ class Interpolation(object):
         self.duration = duration
         self.key = key
 
-
     @property
     def start(self):
         return self._start
@@ -107,6 +106,7 @@ class RandomInterpolation(Interpolation):
         pool_size = len(self.start)
         first_index = int(round(Interpolation(start=0, end=pool_size, duration=self.duration)(x)))
         pool = pools[first_index:first_index + pool_size]
+
         return pool
 
     def __call__(self, x):
