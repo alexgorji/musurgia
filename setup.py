@@ -9,7 +9,7 @@ setuptools.setup(
     url="https://github.com/alexgorji/musurgia.git",
     packages=setuptools.find_packages(),
     install_requires=['quicktions==1.9',
-                      'musicscore==1.2.5',
+                      'musicscore==1.2.11',
                       'prettytable==0.7.2',
                       'fpdf2 == 2.0.3',
                       'diff-pdf-visually == 1.4.1'
