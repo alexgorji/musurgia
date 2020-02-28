@@ -1,5 +1,5 @@
-import re
 import functools
+import re
 from itertools import cycle, islice
 
 
@@ -95,19 +95,8 @@ def xToD(input_list):
 
 
 def step_sums(input):
-    # if input == {}:
-    #     return {}
     if not input:
         return []
-
-    # if isinstance(input, dict):
-    #     input_items = zip(*input.items())[1]
-    #     input_keys = zip(*input.items())[0]
-    #     output_items = [input_items[0]]
-    #     for i in range(1, len(input_items)):
-    #         output_items.append(output_items[-1] + input_items[i])
-    #
-    #     return dict(zip(input_keys, output_items))
 
     result = [input[0]]
     for i in range(1, len(input)):
@@ -144,3 +133,11 @@ def split_list(input_list, index_proportions):
     return output
 
 
+def slice_list(input_list, sizes):
+    try:
+        sizes = list(sizes)
+    except TypeError:
+        sizes = [sizes]
+
+    stepped_sizes = dToX(sizes)
+    return [input_list[stepped_sizes[i]:stepped_sizes[i + 1]] for i in range(len(stepped_sizes) - 1)]

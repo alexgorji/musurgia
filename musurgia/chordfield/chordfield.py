@@ -38,7 +38,6 @@ class ChordField(object):
         self.short_ending_mode = short_ending_mode
         self.name = name
         self.parent_group = None
-        self._position_in_group = None
 
     def _set_value_generator_duration(self, value_generator):
         if value_generator is not None:
@@ -134,11 +133,14 @@ class ChordField(object):
 
     @property
     def position_in_group(self):
-        return self._position_in_group
-
-    @position_in_group.setter
-    def position_in_group(self, val):
-        self._position_in_group = val
+        if self.parent_group:
+            index = self.parent_group.fields.index(self)
+            if index == 0:
+                return 0
+            else:
+                return sum([chord_field.quarter_duration for chord_field in self.parent_group.fields[:index]])
+        else:
+            return None
 
     def _get_next_duration(self):
         if self.duration_generator:
@@ -315,7 +317,6 @@ class ChordFieldGroup(object):
         if not isinstance(field, ChordField):
             raise TypeError('{} has wrong type for Field'.format(field))
         else:
-            field.position_in_group = self.get_duration()
             field.parent_group = self
             self._fields.append(field)
             if not self._field_iter:
@@ -325,6 +326,7 @@ class ChordFieldGroup(object):
 
             self._set_value_generator_duration(self.duration_generator)
             self._set_value_generator_duration(self.midi_generator)
+        return field
 
     def __iter__(self):
         return self

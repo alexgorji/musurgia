@@ -47,8 +47,9 @@ class ArithmeticProgression(object):
         self._n = math.floor(self._n)
 
     def _calculate_d(self):
-
-        if self._a1 is None:
+        if self.n == 1:
+            self._d = 0
+        elif self._a1 is None:
             self._calculate_a1()
             self._d = Fraction(Fraction(self.an - self.a1), Fraction(self.n - 1))
         elif self._an is None:
