@@ -289,21 +289,25 @@ class ChordFieldGroup(object):
 
     @property
     def duration_generator(self):
+        if self._duration_generator and self._duration_generator.duration is None:
+            self._set_value_generator_duration(self._duration_generator)
         return self._duration_generator
 
     @duration_generator.setter
     def duration_generator(self, val):
         self._duration_generator = val
-        self._set_value_generator_duration(self.duration_generator)
+        # self._set_value_generator_duration(self.duration_generator)
 
     @property
     def midi_generator(self):
+        if self._midi_generator and self._midi_generator.duration is None:
+            self._set_value_generator_duration(self._midi_generator)
         return self._midi_generator
 
     @midi_generator.setter
     def midi_generator(self, val):
         self._midi_generator = val
-        self._set_value_generator_duration(self.midi_generator)
+        # self._set_value_generator_duration(self.midi_generator)
 
     def get_duration(self):
         if self.fields:
@@ -323,9 +327,6 @@ class ChordFieldGroup(object):
                 self._field_iter = iter(self.fields)
             else:
                 self._field_iter = chain(self._field_iter, field)
-
-            self._set_value_generator_duration(self.duration_generator)
-            self._set_value_generator_duration(self.midi_generator)
         return field
 
     def __iter__(self):
