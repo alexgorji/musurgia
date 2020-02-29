@@ -22,10 +22,22 @@ class ArithmeticProgression(object):
         self.s = s
         self.correct_s = correct_s
 
-    def _check_args(self, arg):
-        if self._parameters_dict[arg] is None and len([v for v in self._parameters_dict.values() if v is not None]) > 2:
-            err = 'attribute cannot be set. Three parameters are already set. ArithmeticProgression is already created!'
-            raise AttributeError(err)
+    def _to_fraction(self, value):
+        if not isinstance(value, Fraction):
+            value = Fraction(value)
+        return value
+
+    def _check_args(self, arg=None):
+        if arg is None:
+            err = 'Not enough attributes are set. Three are needed!'
+            if len([v for v in self._parameters_dict.values() if v is not None]) < 3:
+                raise AttributeError(err)
+        else:
+            if self._parameters_dict[arg] is None and len(
+                    [v for v in self._parameters_dict.values() if v is not None]) > 2:
+                err = 'attribute cannot be set. Three parameters are already set. ArithmeticProgression is already ' \
+                      'created!'
+                raise AttributeError(err)
 
     def _calculate_a1(self):
         if self._d is None:
@@ -51,26 +63,29 @@ class ArithmeticProgression(object):
             self._d = 0
         elif self._a1 is None:
             self._calculate_a1()
-            self._d = Fraction(Fraction(self.an - self.a1), Fraction(self.n - 1))
+            # self._d = Fraction(Fraction(self.an - self.a1), Fraction(self.n - 1))
+            self._d = (self.an - self.a1) / (self.n - 1)
         elif self._an is None:
-            self._d = Fraction(Fraction((self.s - (self.n * self.a1)) * 2), Fraction((self.n - 1) * self.n))
+            # self._d = Fraction(Fraction((self.s - (self.n * self.a1)) * 2), Fraction((self.n - 1) * self.n))
+            self._d = ((self.s - (self.n * self.a1)) * 2) / ((self.n - 1) * self.n)
         elif self._n is None:
             self._calculate_n()
-            self._d = Fraction(Fraction(self.an - self.a1), Fraction(self.n - 1))
+            # self._d = Fraction(Fraction(self.an - self.a1), Fraction(self.n - 1))
+            self._d = (self.an - self.a1) / (self.n - 1)
         else:
-            self._d = Fraction(Fraction(self.an - self.a1), Fraction(self.n - 1))
+            self._d = (self.an - self.a1) / (self.n - 1)
 
     def _calculate_s(self):
         if self._a1 is None:
             self._calculate_a1()
-            self._s = self.n * (self.a1 + self.an) / 2.
+            self._s = (self.a1 + self.an) * (self.n / 2)
         elif self._an is None:
-            self._s = self.n * self.a1 + ((self.n - 1) * self.n / 2) * self.d
+            self._s = self.n * self.a1 + ((self.n - 1) * (self.n / 2)) * self.d
         elif self._n is None:
             self._calculate_n()
-            self._s = self.n * (self.a1 + self.an) / 2.
+            self._s = (self.a1 + self.an) * (self.n / 2)
         else:
-            self._s = self.n * (self.a1 + self.an) / 2.
+            self._s = (self.a1 + self.an) * (self.n / 2)
 
     @property
     def _parameters_dict(self):
@@ -89,6 +104,7 @@ class ArithmeticProgression(object):
     @a1.setter
     def a1(self, value):
         if value is not None:
+            value = self._to_fraction(value)
             self._check_args('a1')
         self._a1 = value
 
@@ -101,6 +117,7 @@ class ArithmeticProgression(object):
     @an.setter
     def an(self, value):
         if value is not None:
+            value = self._to_fraction(value)
             self._check_args('an')
         self._an = value
 
@@ -113,6 +130,8 @@ class ArithmeticProgression(object):
     @n.setter
     def n(self, value):
         if value is not None:
+            if not isinstance(value, int):
+                raise AttributeError('n {} must be int'.format(value))
             self._check_args('n')
         self._n = value
 
@@ -125,6 +144,7 @@ class ArithmeticProgression(object):
     @s.setter
     def s(self, value):
         if value is not None:
+            value = self._to_fraction(value)
             self._check_args('s')
             if self._d is not None:
                 err = 'you cannot set both d an s!'
@@ -140,6 +160,7 @@ class ArithmeticProgression(object):
     @d.setter
     def d(self, value):
         if value is not None:
+            value = self._to_fraction(value)
             self._check_args('d')
             if self._s is not None:
                 err = 'you cannot set both d an s!'
@@ -160,7 +181,7 @@ class ArithmeticProgression(object):
     def correction_factor(self):
         def _calculate_correction_factor():
             if self.correct_s:
-                actual_s = self.n * (self.a1 + self.an)/2
+                actual_s = self.n * (self.a1 + self.an) / 2
                 factor = self.s / actual_s
                 return factor
             else:
@@ -174,6 +195,8 @@ class ArithmeticProgression(object):
         return self
 
     def __next__(self):
+        if self._current is None:
+            self._check_args()
         parameters = [self.a1, self.an, self.n, self.s, self.d]
 
         if len([v for v in parameters if v is not None]) < 5:

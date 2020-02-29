@@ -6,10 +6,15 @@ class ValueGeneratorException(Exception):
         super().__init__(*args)
 
 
-class GeneratorIsNotCallable(ValueGeneratorException):
+class GeneratorHasNoNextError(ValueGeneratorException):
     def __init__(self, generator, *args):
-        msg = 'generator {} is not callable.'.format(generator)
-        super().__init__(msg, *args)
+        msg = 'generator {} has no __next__'.format(generator)
+        super().__init__(*args)
+
+
+class GeneratorNotIterableError(ValueGeneratorException):
+    def __init__(self, *args):
+        super().__init__(*args)
 
 
 class XOutOfRange(ValueGeneratorException):
@@ -17,7 +22,18 @@ class XOutOfRange(ValueGeneratorException):
         super().__init__(*args)
 
 
-class NoneDuration(ValueGeneratorException):
+class NoDurationError(ValueGeneratorException):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
+class PositionError(ValueGeneratorException):
+    def __init__(self, position_in_duration, duration, *args):
+        msg = 'position_in_duration {} must be smaller than duration {}'.format(position_in_duration, duration)
+        super().__init__(msg, *args)
+
+
+class CallConflict(ValueGeneratorException):
     def __init__(self, *args):
         super().__init__(*args)
 
@@ -28,13 +44,15 @@ class ValueGeneratorTypeConflict(ValueGeneratorException):
 
 
 class ValueGenerator(object):
-    def __init__(self, generator, duration, *args, **kwargs):
+    def __init__(self, generator, value_mode=None, duration=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._generator = None
         self._duration = None
-        self._position_in_group = 0
+        self._position_in_duration = 0
+        self._parent_group = None
 
         self.generator = generator
+        self.value_mode = value_mode
         self.duration = duration
 
     @property
@@ -43,7 +61,19 @@ class ValueGenerator(object):
 
     @generator.setter
     def generator(self, val):
-        raise NotImplementedError('generator must be overwritten')
+        if not callable(val) and not hasattr(val, '__iter__'):
+            raise TypeError('generator must be callable or iterable')
+        self._generator = val
+
+    @property
+    def parent_group(self):
+        return self._parent_group
+
+    @parent_group.setter
+    def parent_group(self, val):
+        if not isinstance(val, ValueGeneratorGroup):
+            raise TypeError('parent_group.value must be of type ValueGeneratorGroup not{}'.format(type(val)))
+        self._parent_group = val
 
     def _set_generator_duration(self):
         if isinstance(self.generator, ArithmeticProgression):
@@ -56,58 +86,80 @@ class ValueGenerator(object):
             pass
 
     @property
+    def value_mode(self):
+        return self._value_mode
+
+    @value_mode.setter
+    def value_mode(self, val):
+        permitted = [None, 'duration', 'midi']
+        if val not in permitted:
+            raise ValueError('value_mode.value {} must be in {}'.format(val, permitted))
+        self._value_mode = val
+
+    @property
     def duration(self):
         return self._duration
 
     @duration.setter
     def duration(self, val):
         self._duration = val
-        if val is not None:
+        if val is not None and self.value_mode == 'duration':
             self._set_generator_duration()
 
     @property
-    def position_in_group(self):
-        return self._position_in_group
-
-class IterableValueGenerator(ValueGenerator):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    @ValueGenerator.generator.setter
-    def generator(self, val):
-        if not hasattr(val, '__iter__'):
-            raise TypeError('generator of IterableValueGenerator must be iterable')
+    def position_in_group_duration(self):
+        if self.parent_group:
+            value_generators = self.parent_group.value_generators
+            index = value_generators.index(self)
+            if index == 0:
+                return 0
+            else:
+                return sum([value_generator.duration for value_generator in value_generators[:index]])
         else:
-            self._generator = val
+            return 0
+
+    @property
+    def position_in_duration(self):
+        return self._position_in_duration
+
+    @position_in_duration.setter
+    def position_in_duration(self, val):
+        if val < 0:
+            raise ValueError()
+        self._position_in_duration = val
+
+    def _check_position(self):
+        if not self.duration:
+            raise NoDurationError()
+        if not self.position_in_duration < self.duration:
+            raise PositionError(self.position_in_duration, self.duration)
+
+    def _check_value(self, value):
+        self._check_position()
+        if self.value_mode == 'duration':
+            self.position_in_duration += value
+        return value
 
     def __next__(self):
-        return self.generator.__next__()
+        if not hasattr(self.generator, '__next__'):
+            raise GeneratorHasNoNextError(self.generator)
+        return self._check_value(self.generator.__next__())
+
+    def __call__(self, x):
+        self.position_in_duration = x
+        if callable(self.generator):
+            return self._check_value(self.generator.__call__(x))
+        else:
+            if isinstance(self.generator, ArithmeticProgression):
+                raise CallConflict('Calling Arithmetic Progression is not allowed.')
+            return self._check_value(self.generator.__next__())
 
     def __iter__(self):
         return self
-
-
-class CallableValueGenerator(ValueGenerator):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    @ValueGenerator.generator.setter
-    def generator(self, val):
-        if not callable(val):
-            raise TypeError('generator of CallableValueGenerator must be callable')
-        else:
-            self._generator = val
-
-    def __call__(self, x):
-        if self.duration is None:
-            raise NoneDuration('CallableValueGenerator needs a None value duration')
-
-        minimum = self.position_in_group
-        maximum = minimum + self.duration
-        if minimum <= x < maximum:
-            return self.generator.__call__(x - self.position_in_group)
-        else:
-            raise XOutOfRange('x: {} must be in range ({} - {})'.format(x, minimum, maximum))
+        # if hasattr(self.generator, '__iter__'):
+        #     return self.generator.__iter__()
+        # else:
+        #     return GeneratorNotIterableError()
 
 
 class ValueGeneratorGroup(object):
@@ -143,11 +195,5 @@ class ValueGeneratorGroup(object):
             raise TypeError('value_generators must be of type ValueGenerator not{}'.format(type(value_generator)))
         if self._value_generators is None:
             self._value_generators = []
-            if isinstance(value_generator, IterableValueGenerator):
-                self._child_type = IterableValueGenerator
-            else:
-                self._child_type = CallableValueGenerator
-        else:
-            if not isinstance(value_generator, self._child_type):
-                raise ValueGeneratorTypeConflict()
+        value_generator.parent_group = self
         self._value_generators.append(value_generator)
