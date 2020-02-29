@@ -66,3 +66,17 @@ class Test(AGTestCase):
         with self.assertRaises(GeneratorHasNoNextError):
             vg.__next__()
 
+    def test_11(self):
+        vg = ValueGenerator(generator=RandomInterpolation(start=[1, 1, 2], end=[3, 4, 5], seed=10, duration=10),
+                            duration=100)
+        with self.assertRaises(GeneratorHasNoNextError):
+            list(vg)
+
+    def test_12(self):
+        vg = ValueGenerator(generator=RandomInterpolation(start=[1, 1, 2], end=[3, 4, 5], seed=10),
+                            value_mode='duration',
+                            duration=10)
+
+        expected = [1, 2, 2, 4, 3]
+        actual = list(vg)
+        self.assertEqual(expected, actual)

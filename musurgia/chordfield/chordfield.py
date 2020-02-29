@@ -289,19 +289,22 @@ class ChordFieldGroup(object):
 
     @property
     def duration_generator(self):
-        if self._duration_generator and self._duration_generator.duration is None:
+        try:
             self._set_value_generator_duration(self._duration_generator)
+        except AttributeError:
+            pass
         return self._duration_generator
 
     @duration_generator.setter
     def duration_generator(self, val):
         self._duration_generator = val
-        # self._set_value_generator_duration(self.duration_generator)
 
     @property
     def midi_generator(self):
-        if self._midi_generator and self._midi_generator.duration is None:
+        try:
             self._set_value_generator_duration(self._midi_generator)
+        except AttributeError:
+            pass
         return self._midi_generator
 
     @midi_generator.setter

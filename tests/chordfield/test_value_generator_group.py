@@ -2,17 +2,10 @@ from itertools import cycle
 
 from musurgia.agunittest import AGTestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
-from musurgia.chordfield.valuegenerator import ValueGeneratorGroup, ValueGenerator, ValueGeneratorTypeConflict
+from musurgia.chordfield.valuegenerator import ValueGeneratorGroup, ValueGenerator
 
 
 class Test(AGTestCase):
-    def test_1(self):
-        vg_1 = ValueGenerator(generator=cycle([2]), duration=5)
-        vg_2 = ValueGenerator(generator=cycle([3]), duration=10)
-        vgg = ValueGeneratorGroup(vg_1, vg_2)
-        actual = [vg_1.position_in_group_duration, vg_2.position_in_group_duration]
-        expected = [0, 5]
-        self.assertEqual(expected, actual)
 
     def test_2(self):
         vg_1 = ValueGenerator(generator=cycle([2]), duration=5)
@@ -27,7 +20,7 @@ class Test(AGTestCase):
         vg_2 = ValueGenerator(generator=cycle([3]), duration=10)
         vgg = ValueGeneratorGroup(vg_1, vg_2)
         actual = vgg(6)
-        expected = 5
+        expected = 3
         self.assertEqual(expected, actual)
 
     def test_4(self):
@@ -35,14 +28,8 @@ class Test(AGTestCase):
         vg_2 = ValueGenerator(generator=cycle([3]), duration=10)
         vgg = ValueGeneratorGroup(vg_1, vg_2)
         actual = vgg(5)
-        expected = 5
+        expected = 3
         self.assertEqual(expected, actual)
-
-    def test_5(self):
-        vg_1 = ValueGenerator(generator=ArithmeticProgression(a1=0.2, an=1, s=5, correct_s=True), duration=10)
-        vg_2 = ValueGenerator(generator=cycle([3]), duration=10)
-        with self.assertRaises(ValueGeneratorTypeConflict):
-            ValueGeneratorGroup(vg_1, vg_2)
 
     def test_6(self):
         vg_1 = ValueGenerator(generator=ArithmeticProgression(a1=0.2, an=1, correct_s=True), duration=10,
@@ -50,6 +37,7 @@ class Test(AGTestCase):
         vg_2 = ValueGenerator(generator=ArithmeticProgression(an=0.2, a1=1, correct_s=True), duration=5,
                               value_mode='duration')
         vgg = ValueGeneratorGroup(vg_1, vg_2)
-        actual = list(vgg)
-        expected = []
+        actual = [round(float(x), 3) for x in vgg]
+        expected = [0.208, 0.264, 0.319, 0.375, 0.431, 0.486, 0.542, 0.597, 0.653, 0.708, 0.764, 0.819, 0.875, 0.931,
+                    0.986, 1.042, 1.042, 0.923, 0.804, 0.685, 0.565, 0.446, 0.327, 0.208]
         self.assertEqual(expected, actual)
