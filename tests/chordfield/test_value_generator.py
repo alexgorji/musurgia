@@ -56,21 +56,21 @@ class Test(AGTestCase):
             vg(21)
 
     def test_9(self):
-        vg = ValueGenerator(generator=RandomInterpolation(start=[1, 1, 2], end=[3, 4, 5], seed=10, duration=10),
-                            duration=100)
+        vg = ValueGenerator(generator=RandomInterpolation(start=[1, 1, 2], end=[3, 4, 5], seed=10),
+                            duration=10)
         actual = [vg(x / 2) for x in range(20)]
         expected = [1, 2, 2, 1, 1, 2, 3, 1, 3, 2, 3, 2, 4, 3, 2, 3, 2, 5, 4, 5]
         self.assertEqual(expected, actual)
 
     def test_10(self):
-        vg = ValueGenerator(generator=RandomInterpolation(start=[1, 1, 2], end=[3, 4, 5], seed=10, duration=10),
-                            duration=100)
+        vg = ValueGenerator(generator=RandomInterpolation(start=[1, 1, 2], end=[3, 4, 5], seed=10),
+                            duration=10)
         with self.assertRaises(GeneratorHasNoNextError):
             vg.__next__()
 
     def test_11(self):
-        vg = ValueGenerator(generator=RandomInterpolation(start=[1, 1, 2], end=[3, 4, 5], seed=10, duration=10),
-                            duration=100)
+        vg = ValueGenerator(generator=RandomInterpolation(start=[1, 1, 2], end=[3, 4, 5], seed=10),
+                            duration=10)
         with self.assertRaises(GeneratorHasNoNextError):
             list(vg)
 

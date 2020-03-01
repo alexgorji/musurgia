@@ -94,25 +94,4 @@
       </note>
     </part>
   </measure>
-  <measure number="3">
-    <part id="p1">
-      <attributes>
-        <divisions>1</divisions>
-        <time>
-          <beats>3</beats>
-          <beat-type>4</beat-type>
-        </time>
-      </attributes>
-      <note>
-        <pitch>
-          <step>B</step>
-          <octave>4</octave>
-        </pitch>
-        <duration>3</duration>
-        <voice>1</voice>
-        <type>half</type>
-        <dot/>
-      </note>
-    </part>
-  </measure>
 </score-timewise>

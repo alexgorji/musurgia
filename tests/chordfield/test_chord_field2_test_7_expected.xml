@@ -89,8 +89,12 @@
           <octave>4</octave>
         </pitch>
         <duration>2</duration>
+        <tie type="start"/>
         <voice>1</voice>
         <type>half</type>
+        <notations>
+          <tied number="1" type="start"/>
+        </notations>
       </note>
     </part>
   </measure>
@@ -99,7 +103,7 @@
       <attributes>
         <divisions>1</divisions>
         <time>
-          <beats>3</beats>
+          <beats>2</beats>
           <beat-type>4</beat-type>
         </time>
       </attributes>
@@ -108,10 +112,13 @@
           <step>B</step>
           <octave>4</octave>
         </pitch>
-        <duration>3</duration>
+        <duration>2</duration>
+        <tie type="stop"/>
         <voice>1</voice>
         <type>half</type>
-        <dot/>
+        <notations>
+          <tied number="1" type="stop"/>
+        </notations>
       </note>
     </part>
   </measure>

@@ -99,7 +99,7 @@
       <attributes>
         <divisions>1</divisions>
         <time>
-          <beats>2</beats>
+          <beats>3</beats>
           <beat-type>4</beat-type>
         </time>
       </attributes>
@@ -108,39 +108,10 @@
           <step>B</step>
           <octave>4</octave>
         </pitch>
-        <duration>2</duration>
-        <tie type="start"/>
+        <duration>3</duration>
         <voice>1</voice>
         <type>half</type>
-        <notations>
-          <tied number="1" type="start"/>
-        </notations>
-      </note>
-    </part>
-  </measure>
-  <measure number="4">
-    <part id="p1">
-      <attributes>
-        <divisions>1</divisions>
-      </attributes>
-      <note>
-        <pitch>
-          <step>B</step>
-          <octave>4</octave>
-        </pitch>
-        <duration>1</duration>
-        <tie type="stop"/>
-        <voice>1</voice>
-        <type>quarter</type>
-        <notations>
-          <tied number="1" type="stop"/>
-        </notations>
-      </note>
-      <note>
-        <rest/>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
+        <dot/>
       </note>
     </part>
   </measure>

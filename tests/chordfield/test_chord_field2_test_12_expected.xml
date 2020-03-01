@@ -36,10 +36,9 @@
           <step>B</step>
           <octave>4</octave>
         </pitch>
-        <duration>3</duration>
+        <duration>1</duration>
         <voice>1</voice>
-        <type>half</type>
-        <dot/>
+        <type>quarter</type>
       </note>
       <note>
         <pitch>
@@ -47,12 +46,26 @@
           <octave>4</octave>
         </pitch>
         <duration>1</duration>
-        <tie type="start"/>
         <voice>1</voice>
         <type>quarter</type>
-        <notations>
-          <tied number="1" type="start"/>
-        </notations>
+      </note>
+      <note>
+        <pitch>
+          <step>B</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>B</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
       </note>
     </part>
   </measure>
@@ -67,12 +80,8 @@
           <octave>4</octave>
         </pitch>
         <duration>1</duration>
-        <tie type="stop"/>
         <voice>1</voice>
         <type>quarter</type>
-        <notations>
-          <tied number="1" type="stop"/>
-        </notations>
       </note>
       <note>
         <pitch>
@@ -88,9 +97,18 @@
           <step>B</step>
           <octave>4</octave>
         </pitch>
-        <duration>2</duration>
+        <duration>1</duration>
         <voice>1</voice>
-        <type>half</type>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>B</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
       </note>
     </part>
   </measure>
@@ -99,7 +117,7 @@
       <attributes>
         <divisions>1</divisions>
         <time>
-          <beats>3</beats>
+          <beats>2</beats>
           <beat-type>4</beat-type>
         </time>
       </attributes>
@@ -108,10 +126,18 @@
           <step>B</step>
           <octave>4</octave>
         </pitch>
-        <duration>3</duration>
+        <duration>1</duration>
         <voice>1</voice>
-        <type>half</type>
-        <dot/>
+        <type>quarter</type>
+      </note>
+      <note>
+        <pitch>
+          <step>B</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
       </note>
     </part>
   </measure>

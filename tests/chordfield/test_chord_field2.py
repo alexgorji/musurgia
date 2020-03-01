@@ -1,11 +1,16 @@
 import os
+from itertools import cycle
+from math import ceil
 
 from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
+from musurgia.agrandom import AGRandom
 from musurgia.agunittest import AGTestCase
-from musurgia.chordfield.chordfield import ChordField2
+from musurgia.arithmeticprogression import ArithmeticProgression
+from musurgia.chordfield.chordfield import ChordField2, ShortEndingError, LongEndingError
 from musurgia.chordfield.valuegenerator import ValueGenerator
+from musurgia.interpolation import Interpolation
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
@@ -22,8 +27,8 @@ class Test(AGTestCase):
         self.score = TreeScoreTimewise()
 
     def test_1(self):
-        # chord_generator with enough chords simple
-        field = ChordField2(quarter_duration=10,
+        # chord_generator with matching quarter_duration
+        field = ChordField2(quarter_duration=11,
                             chord_generator=ValueGenerator(
                                 iter(SimpleFormat(quarter_durations=[3, 2, 1, 2, 3, 4, 5]).chords)))
         self.score.set_time_signatures(quarter_durations=field.quarter_duration)
@@ -34,55 +39,201 @@ class Test(AGTestCase):
         self.assertCompareFiles(xml_path)
 
     def test_2(self):
-        # chord_generator with not enough chords simple
+        # chord_generator with too long quarter_duration:  mode : None
+        field = ChordField2(quarter_duration=10,
+                            chord_generator=ValueGenerator(
+                                iter(SimpleFormat(quarter_durations=[3, 2, 1, 2, 3, 4, 5]).chords)))
+        with self.assertRaises(LongEndingError):
+            list(field)
+
+    def test_3(self):
+        # chord_generator with too long quarter_duration:  mode : self_extend
+        field = ChordField2(quarter_duration=10,
+                            chord_generator=ValueGenerator(
+                                iter(SimpleFormat(quarter_durations=[3, 2, 1, 2, 3, 4, 5]).chords)),
+                            long_ending_mode='self_extend')
+        sf = field.simple_format
+        self.score.set_time_signatures(quarter_durations=field.quarter_duration)
+        sf.to_stream_voice().add_to_score(self.score)
+
+        xml_path = path + '_test_3.xml'
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_4(self):
+        # chord_generator with too long quarter_duration:  mode : cut
+        field = ChordField2(quarter_duration=10,
+                            chord_generator=ValueGenerator(
+                                iter(SimpleFormat(quarter_durations=[3, 2, 1, 2, 3, 4, 5]).chords)),
+                            long_ending_mode='cut')
+        sf = field.simple_format
+        self.score.set_time_signatures(quarter_durations=field.quarter_duration)
+        sf.to_stream_voice().add_to_score(self.score)
+
+        xml_path = path + '_test_4.xml'
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_5(self):
+        # chord_generator with too long quarter_duration:  mode : omit
+        field = ChordField2(quarter_duration=10,
+                            chord_generator=ValueGenerator(
+                                iter(SimpleFormat(quarter_durations=[3, 2, 1, 2, 3, 4, 5]).chords)),
+                            long_ending_mode='omit')
+        sf = field.simple_format
+        self.score.set_time_signatures(quarter_durations=field.quarter_duration)
+        sf.to_stream_voice().add_to_score(self.score)
+
+        xml_path = path + '_test_5.xml'
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_6(self):
+        # chord_generator with too long quarter_duration:  mode : omit
+        field = ChordField2(quarter_duration=10,
+                            chord_generator=ValueGenerator(
+                                iter(SimpleFormat(quarter_durations=[3, 2, 1, 2, 3, 4, 5]).chords)),
+                            long_ending_mode='omit_and_add_rest')
+        sf = field.simple_format
+        self.score.set_time_signatures(quarter_durations=field.quarter_duration)
+        sf.to_stream_voice().add_to_score(self.score)
+
+        xml_path = path + '_test_6.xml'
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_7(self):
+        # chord_generator with too long quarter_duration:  mode : omit
+        field = ChordField2(quarter_duration=10,
+                            chord_generator=ValueGenerator(
+                                iter(SimpleFormat(quarter_durations=[3, 2, 1, 2, 3, 4, 5]).chords)),
+                            long_ending_mode='omit_and_stretch')
+        sf = field.simple_format
+        self.score.set_time_signatures(quarter_durations=field.quarter_duration)
+        sf.to_stream_voice().add_to_score(self.score)
+
+        xml_path = path + '_test_7.xml'
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_8(self):
+        # chord_generator with too short quarter_duration:  mode : None
         field = ChordField2(quarter_duration=10,
                             chord_generator=ValueGenerator(
                                 iter(SimpleFormat(quarter_durations=[3, 2]).chords)))
-        # self.score.set_time_signatures(quarter_durations=field.quarter_duration)
-        field.simple_format.to_stream_voice().add_to_score(self.score)
-        xml_path = path + '_test_2.xml'
+        with self.assertRaises(ShortEndingError):
+            list(field)
+
+    def test_9(self):
+        # chord_generator with too short quarter_duration:  mode : self_shrink
+        field = ChordField2(quarter_duration=10,
+                            chord_generator=ValueGenerator(
+                                iter(SimpleFormat(quarter_durations=[3, 2]).chords)),
+                            short_ending_mode='self_shrink')
+        sf = field.simple_format
+        self.score.set_time_signatures(quarter_durations=field.quarter_duration)
+        sf.to_stream_voice().add_to_score(self.score)
+
+        xml_path = path + '_test_9.xml'
         self.score.write(xml_path)
         self.assertCompareFiles(xml_path)
-        #
-        # def test_2(self):
-        #     field = ChordField(10)
-        #     field.duration_generator = ArithmeticProgression(a1=1, an=2)
-        #     field.simple_format.to_stream_voice().add_to_score(self.score)
-        #     xml_path = path + '_test_2.xml'
-        #     self.score.write(xml_path)
-        #     self.assertCompareFiles(xml_path)
-        #
-        # def test_3(self):
-        #     field = ChordField(10)
-        #     field.duration_generator = AGRandom(pool=[0.2, 0.4, 0.8, 1.2, 1.6, 2], periodicity=3, seed=20)
-        #     field.simple_format.to_stream_voice().add_to_score(self.score)
-        #     xml_path = path + '_test_3.xml'
-        #     self.score.write(xml_path)
-        #     self.assertCompareFiles(xml_path)
-        #
-        # def test_4(self):
-        #     field = ChordField(10, long_ending_mode='post')
-        #     field.duration_generator = duration_generator(first_duration=1, delta=0.2)
-        #     field.simple_format.to_stream_voice().add_to_score(self.score)
-        #     xml_path = path + '_test_4.xml'
-        #     self.score.write(xml_path)
-        #     self.assertCompareFiles(xml_path)
-        #
-        # def test_5(self):
-        #     field = ChordField(10, long_ending_mode='post')
-        #     field.duration_generator = AGRandom(pool=[0.2, 0.4, 0.8, 1.2, 1.6, 2], periodicity=3, seed=20)
-        #     field.midi_generator = Interpolation(start=84, end=60, duration=None, key=lambda x: int(x))
-        #     field.simple_format.to_stream_voice().add_to_score(self.score)
-        #     xml_path = path + '_test_5.xml'
-        #     self.score.write(xml_path)
-        #     self.assertCompareFiles(xml_path)
-        #
-        # def test_6(self):
-        #     field = ChordField(quarter_duration=10, duration_generator=ArithmeticProgression(a1=0.2, an=2),
-        #                        midi_generator=Interpolation(start=84, end=60, duration=None,
-        #                                                     key=lambda midi: round(midi * 2) / 2))
-        #     field.short_ending_mode = 'prolong'
-        #     field.simple_format.to_stream_voice().add_to_score(self.score)
-        #     xml_path = path + '_test_6.xml'
-        #     self.score.write(xml_path)
-        #     self.assertCompareFiles(xml_path)
+
+    def test_10(self):
+        # chord_generator with too short quarter_duration:  mode : stretch
+        field = ChordField2(quarter_duration=10,
+                            chord_generator=ValueGenerator(
+                                iter(SimpleFormat(quarter_durations=[3, 2]).chords)),
+                            short_ending_mode='stretch')
+        sf = field.simple_format
+        self.score.set_time_signatures(quarter_durations=field.quarter_duration)
+        sf.to_stream_voice().add_to_score(self.score)
+
+        xml_path = path + '_test_10.xml'
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_11(self):
+        # chord_generator with too short quarter_duration:  mode : rest
+        field = ChordField2(quarter_duration=10,
+                            chord_generator=ValueGenerator(
+                                iter(SimpleFormat(quarter_durations=[3, 2]).chords)),
+                            short_ending_mode='add_rest')
+        sf = field.simple_format
+        self.score.set_time_signatures(quarter_durations=field.quarter_duration)
+        sf.to_stream_voice().add_to_score(self.score)
+
+        xml_path = path + '_test_11.xml'
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_12(self):
+        field = ChordField2(quarter_duration=10,
+                            duration_generator=ValueGenerator(
+                                cycle([1])),
+                            midi_generator=ValueGenerator(
+                                cycle([71]))
+                            )
+        sf = field.simple_format
+        self.score.set_time_signatures(quarter_durations=field.quarter_duration)
+        sf.to_stream_voice().add_to_score(self.score)
+        xml_path = path + '_test_12.xml'
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_13(self):
+        field = ChordField2(quarter_duration=10,
+                            duration_generator=ValueGenerator(
+                                AGRandom(pool=[0.2, 0.4, 0.8, 1.2, 1.6, 2], periodicity=3, seed=20)),
+                            midi_generator=ValueGenerator(
+                                cycle([71])),
+                            long_ending_mode='self_extend'
+                            )
+        sf = field.simple_format
+        self.score.set_time_signatures(quarter_durations=ceil(field.quarter_duration))
+        sf.to_stream_voice().add_to_score(self.score)
+        xml_path = path + '_test_13.xml'
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_14(self):
+        field = ChordField2(quarter_duration=10,
+                            duration_generator=ValueGenerator(duration_generator(first_duration=1, delta=0.2)
+                                                              ),
+                            midi_generator=ValueGenerator(cycle([71])),
+                            long_ending_mode='omit_and_add_rest'
+                            )
+        sf = field.simple_format
+        self.score.set_time_signatures(quarter_durations=ceil(field.quarter_duration))
+        sf.to_stream_voice().add_to_score(self.score)
+        xml_path = path + '_test_14.xml'
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_15(self):
+        field = ChordField2(quarter_duration=10,
+                            duration_generator=ValueGenerator(
+                                AGRandom(pool=[0.2, 0.4, 0.8, 1.2, 1.6, 2], periodicity=3, seed=20)),
+                            midi_generator=ValueGenerator(
+                                Interpolation(start=84, end=60, key=lambda x: int(x))),
+                            long_ending_mode='self_extend'
+                            )
+        sf = field.simple_format
+        self.score.set_time_signatures(quarter_durations=ceil(field.quarter_duration))
+        sf.to_stream_voice().add_to_score(self.score)
+        xml_path = path + '_test_15.xml'
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_16(self):
+        field = ChordField2(quarter_duration=10,
+                            duration_generator=ValueGenerator(ArithmeticProgression(a1=0.2, an=2, correct_s=True)),
+                            midi_generator=ValueGenerator(Interpolation(start=84, end=60,
+                                                                        key=lambda midi: round(midi * 2) / 2)),
+                            short_ending_mode=None)
+
+        sf = field.simple_format
+        self.score.set_time_signatures(quarter_durations=ceil(field.quarter_duration))
+        sf.to_stream_voice().add_to_score(self.score)
+        xml_path = path + '_test_16.xml'
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)

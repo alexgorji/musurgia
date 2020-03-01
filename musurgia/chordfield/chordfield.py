@@ -22,13 +22,25 @@ class NoNextChordError(ChordFieldException):
         super().__init__(*args)
 
 
+class LongEndingError(ChordFieldException):
+    def __init__(self, delta, *args):
+        msg = 'delta={}'.format(delta)
+        super().__init__(msg, *args)
+
+
+class ShortEndingError(ChordFieldException):
+    def __init__(self, delta, *args):
+        msg = 'delta={}'.format(delta)
+        super().__init__(msg, *args)
+
+
 class ChordField(object):
     """duration_ or midi_ or chord_generator can be iterators or classes with call method which use current time
     position to output a value. If a value_generator has a duration attribute, it will be overwritten by Field.duration. The same is
     the case for sum (s) in ArithmeticProgression """
 
     def __init__(self, quarter_duration=None, duration_generator=None, midi_generator=None, chord_generator=None,
-                 long_ending_mode=None, short_ending_mode='rest', name=None, *args, **kwargs):
+                 long_ending_mode=None, short_ending_mode=None, name=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._quarter_duration = None
         self._current_duration = None
@@ -272,36 +284,28 @@ class ChordField(object):
 
 
 class ChordField2(object):
-    def __init__(self, quarter_duration=None, duration_generator=None, midi_generator=None, chord_generator=None, *args,
-                 **kwargs):
+    def __init__(self, quarter_duration=None, duration_generator=None, midi_generator=None, chord_generator=None,
+                 long_ending_mode=None, short_ending_mode=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._quarter_duration = None
         self._duration_generator = None
         self._midi_generator = None
         self._chord_generator = None
         self._chords = None
+        self._long_ending_mode = None
+        self._short_ending_mode = None
+        # self._current_duration = None
+        # self._position = 0
+        # self._exit = False
+        # self._first = True
 
         self.quarter_duration = quarter_duration
         self.duration_generator = duration_generator
         self.midi_generator = midi_generator
         self.chord_generator = chord_generator
-        # self._quarter_duration = None
-        # self._current_duration = None
-        # self._position = 0
-        # self._duration_generator = None
-        # self._midi_generator = None
-        # self._chord_generator = None
-        # self._long_ending_mode = None
-        # self._short_ending_mode = None
-        # self._exit = False
-        # self._first = True
-        # self._chords = []
-        # self.quarter_duration = quarter_duration
-        # self.duration_generator = duration_generator
-        # self.midi_generator = midi_generator
-        # self.chord_generator = chord_generator
-        # self.long_ending_mode = long_ending_mode
-        # self.short_ending_mode = short_ending_mode
+        self.long_ending_mode = long_ending_mode
+        self.short_ending_mode = short_ending_mode
+
         # self.name = name
         # self.parent_group = None
 
@@ -309,7 +313,12 @@ class ChordField2(object):
         return [value_generator for value_generator in
                 (self.chord_generator, self.duration_generator, self.midi_generator) if value_generator is not None]
 
-    def _set_up_value_generator(self, value_generator):
+    def _set_up_value_generator(self, value_generator, value_mode=None):
+        if not isinstance(value_generator, ValueGenerator) and not isinstance(value_generator, ValueGeneratorGroup):
+            raise TypeError('value_generator must be of type ValueGenerator or ValueGeneratorGroup not {}'.format(
+                type(value_generator)))
+        value_generator.value_mode = value_mode
+
         if isinstance(value_generator, ValueGenerator):
             value_generator.duration = self.quarter_duration
         elif isinstance(value_generator, ValueGeneratorGroup):
@@ -319,8 +328,6 @@ class ChordField2(object):
                     vg.duration *= factor
             else:
                 raise ValueError('value_generator of type ValueGeneratorGroup cannot have 0 duration')
-        else:
-            raise TypeError()
 
     @property
     def quarter_duration(self):
@@ -341,8 +348,7 @@ class ChordField2(object):
     def duration_generator(self, value):
         self._duration_generator = value
         if value:
-            self._set_up_value_generator(self.duration_generator)
-            self._duration_generator.value_mode = 'duration'
+            self._set_up_value_generator(self.duration_generator, 'duration')
 
     @property
     def midi_generator(self):
@@ -352,8 +358,7 @@ class ChordField2(object):
     def midi_generator(self, value):
         self._midi_generator = value
         if value:
-            self._set_up_value_generator(self.midi_generator)
-            self._duration_generator.value_mode = 'midi'
+            self._set_up_value_generator(self.midi_generator, 'midi')
 
     @property
     def chord_generator(self):
@@ -363,8 +368,54 @@ class ChordField2(object):
     def chord_generator(self, value):
         self._chord_generator = value
         if value:
-            self._set_up_value_generator(self.chord_generator)
-            self._chord_generator.value_mode = 'chord'
+            self._set_up_value_generator(self.chord_generator, 'chord')
+
+    @property
+    def position_in_duration(self):
+        if self.duration_generator:
+            return self.duration_generator.position_in_duration
+        else:
+            return self.chord_generator.position_in_duration
+
+    @property
+    def long_ending_mode(self):
+        return self._long_ending_mode
+
+    @long_ending_mode.setter
+    def long_ending_mode(self, val):
+        """
+        :param val: can be None, 'self_extend', 'cut', 'omit', 'omit_and_add_rest', 'omit_and_stretch'
+        for dealing with last chord, if it is too long and ends after self.quarter_duration
+        None: raises Error
+        self_extend: self.quarter_duration will be prolonged.
+        cut: last chord will be cut short.
+        omit: last chord will be omitted and self.quarter_duration cut short.
+        omit_and_add_rest: last chord will be omitted and rests will be added.
+        omit_and_stretch: last chord will be omitted and the new last chord  will be extended.
+        """
+        permitted = [None, 'self_extend', 'cut', 'omit', 'omit_and_add_rest', 'omit_and_stretch']
+        if val not in permitted:
+            raise ValueError('long_ending_mode.value {} must be in {}'.format(val, permitted))
+        self._long_ending_mode = val
+
+    @property
+    def short_ending_mode(self):
+        return self._short_ending_mode
+
+    @short_ending_mode.setter
+    def short_ending_mode(self, val):
+        """
+        :param val: can be None, 'self_shrink', 'add_rest', 'stretch'
+        for dealing with last chord, if it is too long and ends after self.quarter_duration
+        None: raises Error
+        self_shrink: self.quarter_duration will be shortened.
+        omit: rests will be added.
+        stretch: last chord will be prolonged.
+        """
+        permitted = [None, 'self_shrink', 'add_rest', 'stretch']
+        if val not in permitted:
+            raise ValueError('short_ending_mode.value {} must be in {}'.format(val, permitted))
+        self._short_ending_mode = val
 
     @property
     def chords(self):
@@ -386,14 +437,16 @@ class ChordField2(object):
 
     def _get_next_midi(self):
         if self.midi_generator:
+            self.midi_generator.position_in_duration = self.position_in_duration
             return self.midi_generator.__next__()
         else:
             return None
 
     def _get_next_chord(self):
         next_chord = None
-        next_duration = self._get_next_duration()
         next_midi = self._get_next_midi()
+        next_duration = self._get_next_duration()
+
         if self.chord_generator:
             next_chord = self.chord_generator.__next__()
 
@@ -403,19 +456,57 @@ class ChordField2(object):
             if next_midi:
                 next_chord.midis = next_midi
         else:
-            if not next_duration or not next_midi:
-                raise NoNextChordError()
-            next_chord = TreeChord(quarter_duration=next_duration)
+            if not next_duration:
+                raise NoNextChordError('no chord_ and duration_generator')
+            if not next_midi:
+                raise NoNextChordError('no chord_ and midi_generator')
+            next_chord = TreeChord(quarter_duration=next_duration, midis=next_midi)
         if self._chords is None:
             self._chords = []
         self._chords.append(next_chord)
         return next_chord
 
+    def _check_quarter_duration(self):
+        delta = sum([chord.quarter_duration for chord in self.chords]) - self.quarter_duration
+
+        if delta > 0:
+            if self.long_ending_mode == 'self_extend':
+                self.quarter_duration += delta
+            elif self.long_ending_mode == 'cut':
+                self.chords[-1].quarter_duration -= delta
+            elif self.long_ending_mode in ['omit', 'omit_and_add_rest', 'omit_and_stretch']:
+                self.chords.pop()
+                new_delta = self.quarter_duration - sum([chord.quarter_duration for chord in self.chords])
+                if self.long_ending_mode == 'omit_and_add_rest':
+                    self.chords.append(TreeChord(midis=0, quarter_duration=new_delta))
+                elif self.long_ending_mode == 'omit_and_stretch':
+                    self.chords[-1].quarter_duration += new_delta
+                else:
+                    self.quarter_duration -= new_delta
+            else:
+                raise LongEndingError(delta)
+
+        elif delta < 0:
+            if self.short_ending_mode == 'self_shrink':
+                self.quarter_duration += delta
+            elif self.short_ending_mode == 'add_rest':
+                self.chords.append(TreeChord(midis=0, quarter_duration=-delta))
+            elif self.short_ending_mode == 'stretch':
+                self.chords[-1].quarter_duration -= delta
+            else:
+                raise ShortEndingError(delta)
+        else:
+            pass
+
     def __iter__(self):
         return self
 
     def __next__(self):
-        return self._get_next_chord()
+        try:
+            return self._get_next_chord()
+        except StopIteration:
+            self._check_quarter_duration()
+            raise StopIteration()
 
 
 class ChordFieldGroup(object):

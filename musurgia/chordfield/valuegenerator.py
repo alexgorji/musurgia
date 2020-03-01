@@ -12,7 +12,7 @@ class ValueGeneratorException(Exception):
 class GeneratorHasNoNextError(ValueGeneratorException):
     def __init__(self, generator, *args):
         msg = 'generator {} has no __next__'.format(generator)
-        super().__init__(*args)
+        super().__init__(msg, *args)
 
 
 class GeneratorNotIterableError(ValueGeneratorException):
@@ -63,12 +63,13 @@ class ValueGenerator(object):
 
     @generator.setter
     def generator(self, val):
-        if not callable(val) and not hasattr(val, '__iter__'):
-            raise TypeError('generator must be callable or iterable')
+        if not callable(val) and not hasattr(val, '__next__'):
+            raise TypeError('generator {} must have  __call__ or __next__ attribute'.format(val))
         self._generator = val
 
     def _set_generator_duration(self):
-        if isinstance(self.generator, ArithmeticProgression):
+
+        if isinstance(self.generator, ArithmeticProgression) and self.value_mode in ['duration']:
             self.generator.s = self.duration
         elif hasattr(self.generator, 'quarter_duration'):
             self.generator.quarter_duration = self.duration
@@ -95,8 +96,7 @@ class ValueGenerator(object):
     @duration.setter
     def duration(self, val):
         self._duration = val
-        if val is not None and self.value_mode in ['duration', 'chord']:
-            self._set_generator_duration()
+        self._set_generator_duration()
 
     @property
     def position_in_duration(self):
@@ -115,7 +115,6 @@ class ValueGenerator(object):
             raise PositionError(self.position_in_duration, self.duration)
 
     def _check_value(self, value):
-
         self._check_position()
         if self.value_mode == 'duration':
             self.position_in_duration += value
@@ -125,10 +124,10 @@ class ValueGenerator(object):
 
     def __next__(self):
         if not hasattr(self.generator, '__next__'):
-            if self.value_mode == 'duration':
+            if self.value_mode in ['duration', 'chord', 'midi']:
                 try:
                     return self.__call__(self.position_in_duration)
-                except ValueError:
+                except (ValueError, PositionError):
                     raise StopIteration()
             else:
                 raise GeneratorHasNoNextError(self.generator)
