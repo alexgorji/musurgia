@@ -16,7 +16,7 @@ class Test(AGTestCase):
         self.fm.midi_generator.midi_range = [60, 67]
         self.fm.add_layer()
         self.score = TreeScoreTimewise()
-        self.score.set_time_signatures(durations=[self.fm.quarter_duration])
+        self.score.set_time_signatures(quarter_durations=[self.fm.quarter_duration])
 
     def test_1(self):
 

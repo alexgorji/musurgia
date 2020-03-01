@@ -145,7 +145,7 @@ class Test(AGTestCase):
         score = TreeScoreTimewise()
         score.add_title('reduce backwards')
         score.page_style.orientation = 'portrait'
-        score.set_time_signatures(barline_style='light-light', durations=self.fm_7.quarter_duration)
+        score.set_time_signatures(barline_style='light-light', quarter_durations=self.fm_7.quarter_duration)
         for i in range(1, 8):
             fm = self.fm_7.__deepcopy__()
             fm.generate_children(number_of_children=i, mode='reduce_backwards')
@@ -163,7 +163,7 @@ class Test(AGTestCase):
         score = TreeScoreTimewise()
         score.add_title('reduce forwards')
         score.page_style.orientation = 'portrait'
-        score.set_time_signatures(barline_style='light-light', durations=self.fm_7.quarter_duration)
+        score.set_time_signatures(barline_style='light-light', quarter_durations=self.fm_7.quarter_duration)
         for i in range(1, 8):
             fm = self.fm_7.__deepcopy__()
             fm.generate_children(number_of_children=i, mode='reduce_forwards')
@@ -181,7 +181,7 @@ class Test(AGTestCase):
         score = TreeScoreTimewise()
         score.add_title('reduce sieve')
         score.page_style.orientation = 'portrait'
-        score.set_time_signatures(barline_style='light-light', durations=self.fm_7.quarter_duration)
+        score.set_time_signatures(barline_style='light-light', quarter_durations=self.fm_7.quarter_duration)
         for i in range(1, 8):
             fm = self.fm_7.__deepcopy__()
             fm.generate_children(number_of_children=i, mode='reduce_sieve')

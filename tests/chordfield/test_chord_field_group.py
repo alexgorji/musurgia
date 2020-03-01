@@ -90,7 +90,7 @@ class Test(AGTestCase):
         cfg.add_field(cf_4)
         cfg.add_field(cf_5)
         xml_path = path + 'test_5.xml'
-        self.score.set_time_signatures(durations=times)
+        self.score.set_time_signatures(quarter_durations=times)
         cfg.simple_format.to_stream_voice().add_to_score(self.score)
 
         self.score.max_division = 5
@@ -110,7 +110,7 @@ class Test(AGTestCase):
 
         breathing.midi_generator = midi_generator
         xml_path = path + 'test_6.xml'
-        self.score.set_time_signatures(durations=breathing_durations)
+        self.score.set_time_signatures(quarter_durations=breathing_durations)
         breathing.simple_format.to_stream_voice().add_to_score(self.score)
 
         self.score.max_division = 5

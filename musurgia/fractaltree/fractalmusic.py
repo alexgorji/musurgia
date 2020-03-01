@@ -535,7 +535,7 @@ class FractalMusic(FractalTree):
                   show_metronome=True):
         if not score:
             score = self.get_score_template()
-        score.set_time_signatures(durations=self.quarter_duration)
+        score.set_time_signatures(quarter_durations=self.quarter_duration)
         if show_fractal_orders:
             for node in self.traverse():
                 try:
@@ -622,7 +622,7 @@ class FractalMusic(FractalTree):
 
         # if set_time_signatures:
         #     if layer_number == 0 or not self.get_children():
-        #         score.set_time_signatures(durations=self.quarter_duration, barline_style='light-light', times=times)
+        #         score.set_time_signatures(quarter_durations=self.quarter_duration, barline_style='light-light', times=times)
         #     else:
         #         durations = [child.quarter_duration for child in self.get_children() if child.quarter_duration != 0]
         #         score.set_time_signatures(

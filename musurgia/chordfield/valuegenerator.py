@@ -83,7 +83,7 @@ class ValueGenerator(object):
 
     @value_mode.setter
     def value_mode(self, val):
-        permitted = [None, 'duration', 'midi']
+        permitted = [None, 'duration', 'midi', 'chord']
         if val not in permitted:
             raise ValueError('value_mode.value {} must be in {}'.format(val, permitted))
         self._value_mode = val
@@ -95,7 +95,7 @@ class ValueGenerator(object):
     @duration.setter
     def duration(self, val):
         self._duration = val
-        if val is not None and self.value_mode == 'duration':
+        if val is not None and self.value_mode in ['duration', 'chord']:
             self._set_generator_duration()
 
     @property
@@ -119,6 +119,8 @@ class ValueGenerator(object):
         self._check_position()
         if self.value_mode == 'duration':
             self.position_in_duration += value
+        elif self.value_mode == 'chord':
+            self.position_in_duration += value.quarter_duration
         return value
 
     def __next__(self):
@@ -130,7 +132,10 @@ class ValueGenerator(object):
                     raise StopIteration()
             else:
                 raise GeneratorHasNoNextError(self.generator)
-        return self._check_value(self.generator.__next__())
+        try:
+            return self._check_value(self.generator.__next__())
+        except PositionError:
+            raise StopIteration()
 
     def __call__(self, x):
         self.position_in_duration = x
@@ -173,7 +178,7 @@ class ValueGeneratorGroup(object):
         try:
             return sum([vg.duration for vg in self.value_generators])
         except AttributeError:
-            return None
+            return 0
 
     def add_value_generator(self, value_generator):
         if not isinstance(value_generator, ValueGenerator):

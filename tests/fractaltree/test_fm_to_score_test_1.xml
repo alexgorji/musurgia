@@ -85,8 +85,8 @@
       </attributes>
       <attributes>
         <clef>
-          <sign>F</sign>
-          <line>4</line>
+          <sign>G</sign>
+          <line>2</line>
         </clef>
       </attributes>
       <note>
@@ -135,12 +135,6 @@
         <voice>1</voice>
         <type>half</type>
       </note>
-      <attributes>
-        <clef>
-          <sign>F</sign>
-          <line>4</line>
-        </clef>
-      </attributes>
       <note>
         <pitch>
           <step>G</step>
@@ -217,12 +211,6 @@
           <tuplet number="1" type="stop" bracket="yes" placement="above"/>
         </notations>
       </note>
-      <attributes>
-        <clef>
-          <sign>F</sign>
-          <line>4</line>
-        </clef>
-      </attributes>
       <note>
         <pitch>
           <step>G</step>
@@ -289,12 +277,6 @@
           <tuplet number="1" type="start" bracket="yes" placement="above"/>
         </notations>
       </note>
-      <attributes>
-        <clef>
-          <sign>F</sign>
-          <line>4</line>
-        </clef>
-      </attributes>
       <note>
         <pitch>
           <step>G</step>
@@ -472,12 +454,6 @@
           <tuplet number="1" type="start" bracket="yes" placement="above"/>
         </notations>
       </note>
-      <attributes>
-        <clef>
-          <sign>F</sign>
-          <line>4</line>
-        </clef>
-      </attributes>
       <note>
         <pitch>
           <step>G</step>
@@ -796,12 +772,6 @@
           <tied number="1" type="stop"/>
         </notations>
       </note>
-      <attributes>
-        <clef>
-          <sign>G</sign>
-          <line>2</line>
-        </clef>
-      </attributes>
       <note>
         <pitch>
           <step>A</step>
@@ -831,12 +801,6 @@
           <tied number="1" type="stop"/>
         </notations>
       </note>
-      <attributes>
-        <clef>
-          <sign>G</sign>
-          <line>2</line>
-        </clef>
-      </attributes>
       <note>
         <pitch>
           <step>A</step>
@@ -877,12 +841,6 @@
         <type>eighth</type>
         <beam number="1">end</beam>
       </note>
-      <attributes>
-        <clef>
-          <sign>G</sign>
-          <line>2</line>
-        </clef>
-      </attributes>
       <note>
         <pitch>
           <step>A</step>
@@ -984,12 +942,6 @@
         <beam number="1">continue</beam>
         <beam number="2">continue</beam>
       </note>
-      <attributes>
-        <clef>
-          <sign>G</sign>
-          <line>2</line>
-        </clef>
-      </attributes>
       <note>
         <pitch>
           <step>A</step>
@@ -1165,12 +1117,6 @@
         <beam number="1">continue</beam>
         <beam number="2">continue</beam>
       </note>
-      <attributes>
-        <clef>
-          <sign>G</sign>
-          <line>2</line>
-        </clef>
-      </attributes>
       <note>
         <grace/>
         <pitch>

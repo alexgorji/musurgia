@@ -1,5 +1,7 @@
 from itertools import cycle
 
+from musicscore.musicstream.streamvoice import SimpleFormat
+
 from musurgia.agunittest import AGTestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.chordfield.valuegenerator import ValueGenerator, NoDurationError, PositionError, CallConflict, \
@@ -29,7 +31,7 @@ class Test(AGTestCase):
     def test_4(self):
         vg = ValueGenerator(generator=cycle([1]), duration=20)
         vg.position_in_duration = 20
-        with self.assertRaises(PositionError):
+        with self.assertRaises(StopIteration):
             vg.__next__()
 
     def test_5(self):
@@ -79,4 +81,19 @@ class Test(AGTestCase):
 
         expected = [1, 2, 2, 4, 3]
         actual = list(vg)
+        self.assertEqual(expected, actual)
+
+    def test_13(self):
+        vg = ValueGenerator(generator=iter([1, 2, 3, 2, 1, 2, 1, 2, 2]),
+                            value_mode='duration', duration=10)
+        expected = [1, 2, 3, 2, 1, 2]
+        actual = list(vg)
+        self.assertEqual(expected, actual)
+
+    def test_14(self):
+        vg = ValueGenerator(generator=iter(SimpleFormat(quarter_durations=[1, 2, 3, 2, 1, 2, 1, 2, 2]).chords),
+                            value_mode='chord', duration=10)
+
+        expected = [1, 2, 3, 2, 1, 2]
+        actual = [ch.quarter_duration for ch in list(vg)]
         self.assertEqual(expected, actual)

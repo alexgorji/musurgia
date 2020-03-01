@@ -4,9 +4,20 @@ from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treechord import TreeChord
 
 from musurgia.arithmeticprogression import ArithmeticProgression
+from musurgia.chordfield.valuegenerator import ValueGenerator, ValueGeneratorGroup
 
 
 class BreatheException(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
+class ChordFieldException(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
+class NoNextChordError(ChordFieldException):
     def __init__(self, *args):
         super().__init__(*args)
 
@@ -96,7 +107,6 @@ class ChordField(object):
     @long_ending_mode.setter
     def long_ending_mode(self, value):
         """
-
         :param value: can be None, pre, post
         for dealing with last chord, if it is too long and ends after self.quarter_duration
         None: last chord will be cut short.
@@ -259,6 +269,153 @@ class ChordField(object):
         for chord in self.chords:
             sf.add_chord(chord)
         return sf
+
+
+class ChordField2(object):
+    def __init__(self, quarter_duration=None, duration_generator=None, midi_generator=None, chord_generator=None, *args,
+                 **kwargs):
+        super().__init__(*args, **kwargs)
+        self._quarter_duration = None
+        self._duration_generator = None
+        self._midi_generator = None
+        self._chord_generator = None
+        self._chords = None
+
+        self.quarter_duration = quarter_duration
+        self.duration_generator = duration_generator
+        self.midi_generator = midi_generator
+        self.chord_generator = chord_generator
+        # self._quarter_duration = None
+        # self._current_duration = None
+        # self._position = 0
+        # self._duration_generator = None
+        # self._midi_generator = None
+        # self._chord_generator = None
+        # self._long_ending_mode = None
+        # self._short_ending_mode = None
+        # self._exit = False
+        # self._first = True
+        # self._chords = []
+        # self.quarter_duration = quarter_duration
+        # self.duration_generator = duration_generator
+        # self.midi_generator = midi_generator
+        # self.chord_generator = chord_generator
+        # self.long_ending_mode = long_ending_mode
+        # self.short_ending_mode = short_ending_mode
+        # self.name = name
+        # self.parent_group = None
+
+    def _get_value_generators(self):
+        return [value_generator for value_generator in
+                (self.chord_generator, self.duration_generator, self.midi_generator) if value_generator is not None]
+
+    def _set_up_value_generator(self, value_generator):
+        if isinstance(value_generator, ValueGenerator):
+            value_generator.duration = self.quarter_duration
+        elif isinstance(value_generator, ValueGeneratorGroup):
+            if value_generator.duration != 0:
+                factor = self.quarter_duration / value_generator.duration
+                for vg in value_generator.value_generators:
+                    vg.duration *= factor
+            else:
+                raise ValueError('value_generator of type ValueGeneratorGroup cannot have 0 duration')
+        else:
+            raise TypeError()
+
+    @property
+    def quarter_duration(self):
+        return self._quarter_duration
+
+    @quarter_duration.setter
+    def quarter_duration(self, value):
+        if value is not None:
+            self._quarter_duration = value
+            for value_generator in self._get_value_generators():
+                self._set_up_value_generator(value_generator)
+
+    @property
+    def duration_generator(self):
+        return self._duration_generator
+
+    @duration_generator.setter
+    def duration_generator(self, value):
+        self._duration_generator = value
+        if value:
+            self._set_up_value_generator(self.duration_generator)
+            self._duration_generator.value_mode = 'duration'
+
+    @property
+    def midi_generator(self):
+        return self._midi_generator
+
+    @midi_generator.setter
+    def midi_generator(self, value):
+        self._midi_generator = value
+        if value:
+            self._set_up_value_generator(self.midi_generator)
+            self._duration_generator.value_mode = 'midi'
+
+    @property
+    def chord_generator(self):
+        return self._chord_generator
+
+    @chord_generator.setter
+    def chord_generator(self, value):
+        self._chord_generator = value
+        if value:
+            self._set_up_value_generator(self.chord_generator)
+            self._chord_generator.value_mode = 'chord'
+
+    @property
+    def chords(self):
+        return self._chords
+
+    @property
+    def simple_format(self):
+        sf = SimpleFormat()
+        list(self)
+        for chord in self.chords:
+            sf.add_chord(chord)
+        return sf
+
+    def _get_next_duration(self):
+        if self.duration_generator:
+            return self.duration_generator.__next__()
+        else:
+            return None
+
+    def _get_next_midi(self):
+        if self.midi_generator:
+            return self.midi_generator.__next__()
+        else:
+            return None
+
+    def _get_next_chord(self):
+        next_chord = None
+        next_duration = self._get_next_duration()
+        next_midi = self._get_next_midi()
+        if self.chord_generator:
+            next_chord = self.chord_generator.__next__()
+
+        if next_chord:
+            if next_duration:
+                next_chord.quarter_duration = next_duration
+            if next_midi:
+                next_chord.midis = next_midi
+        else:
+            if not next_duration or not next_midi:
+                raise NoNextChordError()
+            next_chord = TreeChord(quarter_duration=next_duration)
+        if self._chords is None:
+            self._chords = []
+        self._chords.append(next_chord)
+        return next_chord
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return self._get_next_chord()
 
 
 class ChordFieldGroup(object):
