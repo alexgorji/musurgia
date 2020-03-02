@@ -37,6 +37,8 @@ class Interpolation(object):
 
     @duration.setter
     def duration(self, val):
+        if val and not isinstance(val, Fraction):
+            val = Fraction(val)
         self._duration = val
 
     def __call__(self, x):

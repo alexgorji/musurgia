@@ -251,18 +251,9 @@ class Test(AGTestCase):
         parent_field.add_child(child_field_1)
         parent_field.add_child(child_field_2)
 
-        def print_chord():
-            print(parent_field.position_in_duration)
-            next = parent_field.__next__()
-            print(float(next.quarter_duration))
-        for i in range(6):
-            print_chord()
-        # print(parent_field.midi_generator.value_mode)
-        # sf = parent_field.simple_format
-        # print([chord.quarter_duration for chord in sf.chords])
-        # print([chord.midis[0].value for chord in sf.chords])
-        # self.score.set_time_signatures(quarter_durations=ceil(parent_field.quarter_duration))
-        # sf.to_stream_voice().add_to_score(self.score)
-        # xml_path = path + '_test_17.xml'
-        # self.score.write(xml_path)
-        # self.assertCompareFiles(xml_path)
+        sf = parent_field.simple_format
+        self.score.set_time_signatures(quarter_durations=ceil(parent_field.quarter_duration))
+        sf.to_stream_voice().add_to_score(self.score)
+        xml_path = path + '_test_17.xml'
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)

@@ -4,7 +4,7 @@ from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treechord import TreeChord
 
 from musurgia.arithmeticprogression import ArithmeticProgression
-from musurgia.chordfield.valuegenerator import ValueGenerator, ValueGeneratorGroup
+from musurgia.chordfield.valuegenerator import ValueGenerator, ValueGeneratorGroup, ValueGeneratorException
 
 
 class BreatheException(Exception):
@@ -24,13 +24,19 @@ class NoNextChordError(ChordFieldException):
 
 class LongEndingError(ChordFieldException):
     def __init__(self, delta, *args):
-        msg = 'delta={}'.format(delta)
+        msg = 'delta={}'.format(float(delta))
         super().__init__(msg, *args)
 
 
 class ShortEndingError(ChordFieldException):
     def __init__(self, delta, *args):
-        msg = 'delta={}'.format(delta)
+        msg = 'delta={}'.format(float(delta))
+        super().__init__(msg, *args)
+
+
+class ParentSetQuarterDurationError(ChordFieldException):
+    def __init__(self, *args):
+        msg = 'parent\'s quarter_duration cannot be set'
         super().__init__(msg, *args)
 
 
@@ -296,10 +302,8 @@ class ChordField2(object):
         self._short_ending_mode = None
         self._children = None
         self._parent = None
-        # self._current_duration = None
-        # self._position = 0
-        # self._exit = False
-        # self._first = True
+        self._position = 0
+        self._name = None
 
         self.quarter_duration = quarter_duration
         self.duration_generator = duration_generator
@@ -307,9 +311,6 @@ class ChordField2(object):
         self.chord_generator = chord_generator
         self.long_ending_mode = long_ending_mode
         self.short_ending_mode = short_ending_mode
-
-        # self.name = name
-        # self.parent_group = None
 
     def _get_value_generators(self):
         return [value_generator for value_generator in
@@ -320,20 +321,15 @@ class ChordField2(object):
             raise TypeError('value_generator must be of type ValueGenerator or ValueGeneratorGroup not {}'.format(
                 type(value_generator)))
         value_generator.value_mode = value_mode
-
-        if isinstance(value_generator, ValueGenerator):
-            value_generator.duration = self.quarter_duration
-        elif isinstance(value_generator, ValueGeneratorGroup):
-            if value_generator.duration != 0:
-                factor = self.quarter_duration / value_generator.duration
-                for vg in value_generator.value_generators:
-                    vg.duration *= factor
-            else:
-                raise ValueError('value_generator of type ValueGeneratorGroup cannot have 0 duration')
+        value_generator.duration = self.quarter_duration
 
     @property
     def children(self):
         return self._children
+
+    @property
+    def parent(self):
+        return self._parent
 
     def add_child(self, child):
         if not isinstance(child, ChordField2):
@@ -366,8 +362,15 @@ class ChordField2(object):
                 self.chord_generator.add_child(child.chord_generator)
             else:
                 pass
+        child._parent = self
+        self._update_durations()
 
-        self._parent = self
+    def _update_durations(self):
+        for value_generator in self._get_value_generators():
+            try:
+                value_generator.duration = self.quarter_duration
+            except ValueGeneratorException:
+                pass
 
     @property
     def quarter_duration(self):
@@ -383,13 +386,17 @@ class ChordField2(object):
     def quarter_duration(self, value):
         if value is not None:
             if self.children:
-                raise ChordFieldException('parents quarter_duration cannot be set')
-            self._quarter_duration = value
-            for value_generator in self._get_value_generators():
-                self._set_up_value_generator(value_generator, value_generator.value_mode)
+                raise ParentSetQuarterDurationError()
+            else:
+                self._quarter_duration = value
+                self._update_durations()
+                if self.parent:
+                    self.parent._update_durations()
 
     @property
     def duration_generator(self):
+        if not self._duration_generator and self.parent and self.parent.duration_generator:
+            return self.parent.duration_generator
         return self._duration_generator
 
     @duration_generator.setter
@@ -400,6 +407,8 @@ class ChordField2(object):
 
     @property
     def midi_generator(self):
+        if not self._midi_generator and self.parent and self.parent.midi_generator:
+            return self.parent.midi_generator
         return self._midi_generator
 
     @midi_generator.setter
@@ -410,6 +419,8 @@ class ChordField2(object):
 
     @property
     def chord_generator(self):
+        if not self._chord_generator and self.parent:
+            return self.parent.chord_generator
         return self._chord_generator
 
     @chord_generator.setter
@@ -419,16 +430,15 @@ class ChordField2(object):
             self._set_up_value_generator(self.chord_generator, 'chord')
 
     @property
-    def position_in_duration(self):
-        if self.duration_generator:
-            if isinstance(self.duration_generator, ValueGenerator):
-                return self.duration_generator.position_in_duration
-            else:
-                return self.duration_generator.position_in_duration
-        elif self.chord_generator:
-            return self.chord_generator.position_in_duration
-        else:
-            return None
+    def position(self):
+        return self._position
+
+    @property
+    def position_in_parent(self):
+        index = self.parent.children.index(self)
+        if index == 0:
+            return 0
+        return sum([child.quarter_duration for child in self.parent.children[:index]])
 
     @property
     def long_ending_mode(self):
@@ -476,21 +486,25 @@ class ChordField2(object):
 
     @property
     def simple_format(self):
-        sf = SimpleFormat()
         list(self)
+        sf = SimpleFormat()
         for chord in self.chords:
             sf.add_chord(chord)
         return sf
 
     def _get_next_duration(self):
         if self.duration_generator:
-            return self.duration_generator.__next__()
+            next_duration = self.duration_generator.__next__()
+            self._position += next_duration
+            return next_duration
         else:
             return None
 
     def _get_next_midi(self):
         if self.midi_generator:
-            self.midi_generator.position_in_duration = self.position_in_duration
+            # if not self.duration_generator and not self.chord_generator:
+            #     raise ChordFieldException('set duration_generator or chord_generator first')
+            self.midi_generator.position = self.position
             return self.midi_generator.__next__()
         else:
             return None
@@ -521,10 +535,12 @@ class ChordField2(object):
 
     def _check_quarter_duration(self):
         delta = sum([chord.quarter_duration for chord in self.chords]) - self.quarter_duration
-
         if delta > 0:
             if self.long_ending_mode == 'self_extend':
-                self.quarter_duration += delta
+                try:
+                    self.quarter_duration += delta
+                except ParentSetQuarterDurationError:
+                    self.children[-1].quarter_duration += delta
             elif self.long_ending_mode == 'cut':
                 self.chords[-1].quarter_duration -= delta
             elif self.long_ending_mode in ['omit', 'omit_and_add_rest', 'omit_and_stretch']:
@@ -556,7 +572,8 @@ class ChordField2(object):
 
     def __next__(self):
         try:
-            return self._get_next_chord()
+            next_chord = self._get_next_chord()
+            return next_chord
         except StopIteration:
             self._check_quarter_duration()
             raise StopIteration()
@@ -648,6 +665,15 @@ class ChordFieldGroup(object):
             self.__next__()
 
     @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, val):
+        val = str(val)
+        self._name = val
+
+    @property
     def chords(self):
         list(self)
         return self._chords
@@ -709,6 +735,112 @@ class Breathe(ChordFieldGroup):
                 elif i == 4:
                     a1, an = values[2], values[2]
                 self.fields[i].duration_generator = ArithmeticProgression(a1=a1, an=an, correct_s=True)
+        else:
+            raise BreatheException('breakpoints can only be set during initialisation')
+
+    @property
+    def repose_1(self):
+        return self.fields[0]
+
+    @property
+    def inspiration(self):
+        return self.fields[1]
+
+    @property
+    def climax(self):
+        return self.fields[2]
+
+    @property
+    def expiration(self):
+        return self.fields[3]
+
+    @property
+    def repose_2(self):
+        return self.fields[4]
+
+
+class Breathe2(ChordField2):
+    def __init__(self, proportions, breakpoints=None, quarter_duration=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._proportions = None
+        self._breakpoints = None
+        self.proportions = proportions
+        self.breakpoints = breakpoints
+        self.quarter_duration = quarter_duration
+
+    @property
+    def quarter_durations(self):
+        return [self.repose_1.quarter_duration, self.inspiration.quarter_duration, self.climax.quarter_duration,
+                self.expiration.quarter_duration, self.repose_2.quarter_duration]
+
+    def _generate_children(self, quarter_duration):
+        names = ['repose_1', 'inspiration', 'climax', 'expiration', 'repose_2']
+        fields = []
+        for index, proportion in enumerate(self.proportions):
+            child_quarter_duration = proportion * quarter_duration / sum(self.proportions)
+            field = ChordField2(quarter_duration=child_quarter_duration)
+            field.name = names[index]
+            fields.append(field)
+
+        if not self.breakpoints:
+            self.breakpoints = [0.25, 1, 0.25]
+
+        for i in range(5):
+            if i == 0:
+                a1, an = self.breakpoints[0], self.breakpoints[0]
+            elif i == 1:
+                a1, an = self.breakpoints[0], self.breakpoints[1]
+            elif i == 2:
+                a1, an = self.breakpoints[1], self.breakpoints[1]
+            elif i == 3:
+                a1, an = self.breakpoints[1], self.breakpoints[2]
+            else:
+                a1, an = self.breakpoints[2], self.breakpoints[2]
+            fields[i].duration_generator = ValueGenerator(ArithmeticProgression(a1=a1, an=an, correct_s=True))
+        for field in fields:
+            self.add_child(field)
+
+    @ChordField2.quarter_duration.setter
+    def quarter_duration(self, value):
+        if value is not None:
+            self._generate_children(value)
+        #
+        # @quarter_duration.setter
+        # def quarter_duration(self, value):
+        #     if value is not None:
+        #         if self.children:
+        #             raise ParentSetQuarterDurationError()
+        #         else:
+        #             self._quarter_duration = value
+        #             self._update_durations()
+        #             if self.parent:
+        #                 self.parent._update_durations()
+        # if value is not None:
+        #     self._generate_children(value)
+
+    @property
+    def proportions(self):
+        return self._proportions
+
+    @proportions.setter
+    def proportions(self, values):
+        if not self._proportions:
+            if len(values) != 5:
+                ValueError('quarter_durations must have 5 elements.')
+            self._proportions = values
+        else:
+            raise BreatheException('proportions can only be set during initialisation')
+
+    @property
+    def breakpoints(self):
+        return self._breakpoints
+
+    @breakpoints.setter
+    def breakpoints(self, values):
+        if not self._breakpoints:
+            if len(values) != 3:
+                ValueError('quarter_durations must have 3 elements.')
+            self._breakpoints = values
         else:
             raise BreatheException('breakpoints can only be set during initialisation')
 

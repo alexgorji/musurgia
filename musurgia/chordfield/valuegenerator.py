@@ -1,6 +1,6 @@
 from itertools import chain
 
-from musurgia.arithmeticprogression import ArithmeticProgression
+from musurgia.arithmeticprogression import ArithmeticProgression, DAndSError
 from musurgia.basic_functions import dToX
 
 
@@ -30,15 +30,26 @@ class NoDurationError(ValueGeneratorException):
         super().__init__(*args)
 
 
+class ArithmeticConflictError(ValueGeneratorException):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
 class PositionError(ValueGeneratorException):
-    def __init__(self, position_in_duration, duration, *args):
-        msg = 'position_in_duration {} must be smaller than duration {}'.format(position_in_duration, duration)
+    def __init__(self, position, duration, *args):
+        msg = 'position {} must be smaller than duration {}'.format(position, duration)
         super().__init__(msg, *args)
 
 
 class CallConflict(ValueGeneratorException):
     def __init__(self, *args):
         super().__init__(*args)
+
+
+class ChildrenValueModeConflict(ValueGeneratorException):
+    def __init__(self, children_value_modes, *args):
+        msg = 'children have more than one value_mode: {}'.format(children_value_modes)
+        super().__init__(msg, *args)
 
 
 class ValueGeneratorTypeConflict(ValueGeneratorException):
@@ -51,7 +62,7 @@ class ValueGenerator(object):
         super().__init__(*args, **kwargs)
         self._generator = None
         self._duration = None
-        self._position_in_duration = 0
+        self._position = 0
         self._children = None
         self._children_iterator = None
 
@@ -70,9 +81,12 @@ class ValueGenerator(object):
         self._generator = val
 
     def _set_generator_duration(self):
-
         if isinstance(self.generator, ArithmeticProgression) and self.value_mode in ['duration']:
-            self.generator.s = self.duration
+            try:
+                self.generator.s = self.duration
+            except DAndSError:
+                if self.generator.s != self.duration:
+                    raise ArithmeticConflictError()
         elif hasattr(self.generator, 'quarter_duration'):
             self.generator.quarter_duration = self.duration
         elif hasattr(self.generator, 'duration'):
@@ -82,6 +96,21 @@ class ValueGenerator(object):
 
     @property
     def value_mode(self):
+        if self.children:
+            if self._value_mode is None:
+                children_value_modes = list(
+                    dict.fromkeys([child.value_mode for child in self.children if child.value_mode is not None])
+                )
+                if not children_value_modes:
+                    return None
+                elif len(children_value_modes) > 1:
+                    raise ChildrenValueModeConflict(children_value_modes)
+                else:
+                    return children_value_modes[0]
+            else:
+                for child in self.children:
+                    child.value_mode = self._value_mode
+
         return self._value_mode
 
     @value_mode.setter
@@ -105,19 +134,25 @@ class ValueGenerator(object):
     def duration(self, val):
         if val is not None:
             if self.children:
-                raise ValueGeneratorException('parents duration cannot be set')
+                children_duration = [child.duration for child in self.children]
+                if None in children_duration:
+                    raise ValueGeneratorException(
+                        'ValueGenerator: parent\'s duration cannot be set if not all children have a duration.')
+                factor = val/sum(children_duration)
+                for child in self.children:
+                    child.duration *= factor
         self._duration = val
         self._set_generator_duration()
 
     @property
-    def position_in_duration(self):
-        return self._position_in_duration
+    def position(self):
+        return self._position
 
-    @position_in_duration.setter
-    def position_in_duration(self, val):
+    @position.setter
+    def position(self, val):
         if val < 0:
-            raise ValueError()
-        self._position_in_duration = val
+            raise ValueError(float(val))
+        self._position = val
 
     @property
     def children(self):
@@ -137,50 +172,48 @@ class ValueGenerator(object):
     def _check_position(self):
         if not self.duration:
             raise NoDurationError()
-        if not self.position_in_duration < self.duration:
-            raise PositionError(self.position_in_duration, self.duration)
+        if not self.position < self.duration:
+            raise PositionError(self.position, self.duration)
 
-    def _check_value(self, value):
-        self._check_position()
+    def _change_position_in_duration(self, value):
         if self.value_mode == 'duration':
-            self.position_in_duration += value
+            self.position += value
         elif self.value_mode == 'chord':
-            self.position_in_duration += value.quarter_duration
-        return value
+            self.position += value.quarter_duration
 
     def __next__(self):
-        if not self.children:
-            if not hasattr(self.generator, '__next__'):
-                if self.value_mode in ['duration', 'chord', 'midi']:
-                    try:
-                        return self.__call__(self.position_in_duration)
-                    except (ValueError, PositionError):
-                        raise StopIteration()
-                else:
-                    raise GeneratorHasNoNextError(self.generator)
-            try:
-                return self._check_value(self.generator.__next__())
-            except PositionError:
-                raise StopIteration()
-        else:
-            output = self._children_iterator.__next__()
-            return output
+        try:
+            return self.__call__(self.position)
+        except (ValueError, PositionError):
+            raise StopIteration()
+        # if not self.children:
+        #     try:
+        #         return self.__call__(self.position_in_duration)
+        #     except (ValueError, PositionError):
+        #         raise StopIteration()
+        # else:
+        #     output = self._children_iterator.__next__()
+        #     return output
 
     def __call__(self, x):
-        self.position_in_duration = x
+        self.position = x
+        self._check_position()
+        output = None
         if self.children:
             durations = [vg.duration for vg in self.children]
             duration_limits = dToX(durations)
             for i in range(len(duration_limits) - 1):
                 if duration_limits[i] <= x < duration_limits[i + 1]:
-                    return self.children[i](x - duration_limits[i])
-
+                    output = self.children[i](x - duration_limits[i])
+                    break
         elif callable(self.generator):
-            return self._check_value(self.generator.__call__(x))
+            output = self.generator.__call__(x)
         else:
-            if isinstance(self.generator, ArithmeticProgression):
-                raise CallConflict('Calling Arithmetic Progression is not allowed.')
-            return self._check_value(self.generator.__next__())
+            # if isinstance(self.generator, ArithmeticProgression):
+            #     raise CallConflict('Calling Arithmetic Progression is not allowed.')
+            output = self.generator.__next__()
+        self._change_position_in_duration(output)
+        return output
 
     def __iter__(self):
         return self

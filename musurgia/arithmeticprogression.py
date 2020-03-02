@@ -3,6 +3,17 @@ import math
 from quicktions import Fraction
 
 
+class ArithmeticProgressionError(BaseException):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
+class DAndSError(ArithmeticProgressionError):
+    def __init__(self, *args):
+        msg = 'you cannot set both d an s!'
+        super().__init__(msg, *args)
+
+
 class ArithmeticProgression(object):
     def __init__(self, a1=None, an=None, n=None, d=None, s=None, correct_s=False):
         self._a1 = None
@@ -147,8 +158,7 @@ class ArithmeticProgression(object):
             value = self._to_fraction(value)
             self._check_args('s')
             if self._d is not None:
-                err = 'you cannot set both d an s!'
-                raise AttributeError(err)
+                raise DAndSError()
         self._s = value
 
     @property
@@ -163,8 +173,7 @@ class ArithmeticProgression(object):
             value = self._to_fraction(value)
             self._check_args('d')
             if self._s is not None:
-                err = 'you cannot set both d an s!'
-                raise AttributeError(err)
+                raise DAndSError()
         self._d = value
 
     @property
