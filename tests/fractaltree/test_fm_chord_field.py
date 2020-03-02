@@ -9,7 +9,7 @@ from quicktions import Fraction
 from musurgia.agunittest import AGTestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.basic_functions import slice_list
-from musurgia.chordfield.chordfield import ChordField2, Breathe2
+from musurgia.chordfield.chordfield import ChordField, Breathe
 from musurgia.chordfield.valuegenerator import ValueGenerator
 from musurgia.fractaltree.fractalmusic import FractalMusic
 from musurgia.interpolation import Interpolation, RandomInterpolation
@@ -26,7 +26,7 @@ class Test(AGTestCase):
         fm.midi_generator.midi_range = [60, 84]
         fm.add_layer()
         sorted_children = sorted(fm.get_children(), key=lambda child: child.fractal_order)
-        chord_field = ChordField2(
+        chord_field = ChordField(
             quarter_duration=10,
             duration_generator=ValueGenerator(ArithmeticProgression(a1=0.2, an=2)),
             midi_generator=ValueGenerator(Interpolation(start=84, end=60,
@@ -41,14 +41,14 @@ class Test(AGTestCase):
 
     def test_2(self):
         def add_chord_field(child):
-            child.chord_field = ChordField2(duration_generator=ValueGenerator(ArithmeticProgression(a1=0.2, an=2)),
-                                            midi_generator=ValueGenerator(
+            child.chord_field = ChordField(duration_generator=ValueGenerator(ArithmeticProgression(a1=0.2, an=2)),
+                                           midi_generator=ValueGenerator(
                                                 Interpolation(start=child.midi_generator.midi_range[0],
                                                               end=child.midi_generator.midi_range[1],
                                                               duration=None,
                                                               key=lambda
                                                                   midi: round(midi * 2) / 2)),
-                                            short_ending_mode='stretch')
+                                           short_ending_mode='stretch')
 
         fm = FractalMusic(quarter_duration=20, tempo=80, proportions=[1, 2, 3, 4, 5],
                           tree_permutation_order=[3, 1, 5, 2, 4])
@@ -64,11 +64,11 @@ class Test(AGTestCase):
 
     def test_3(self):
         # node.chord_fields are part of a group
-        cfg = ChordField2(
+        cfg = ChordField(
             duration_generator=ValueGenerator(RandomInterpolation(start=[0.25, 0.25], end=[0.75, 1], seed=20)))
-        cf_1 = ChordField2(
+        cf_1 = ChordField(
             midi_generator=ValueGenerator(cycle([60])))
-        cf_2 = ChordField2(
+        cf_2 = ChordField(
             midi_generator=ValueGenerator(cycle([72])),
             long_ending_mode='cut')
 
@@ -85,13 +85,13 @@ class Test(AGTestCase):
         self.assertCompareFiles(xml_path)
 
     def test_4(self):
-        cf_1 = ChordField2(
+        cf_1 = ChordField(
             quarter_duration=10,
             midi_generator=ValueGenerator(cycle([60, 61, 64, 66])),
             long_ending_mode='self_extend',
             short_ending_mode='self_shrink'
         )
-        cf_2 = ChordField2(
+        cf_2 = ChordField(
             quarter_duration=3,
             midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])),
             long_ending_mode='self_extend',
@@ -102,10 +102,10 @@ class Test(AGTestCase):
         breathe_breakpoints = (5 * breathe_unit, breathe_unit, 5 * breathe_unit)
         breathe_proportions = [2, 4, 1, 7, 2]
 
-        breathe = Breathe2(proportions=breathe_proportions,
-                           quarter_duration=13,
-                           breakpoints=breathe_breakpoints)
-        cfg = ChordField2(duration_generator=breathe.duration_generator)
+        breathe = Breathe(proportions=breathe_proportions,
+                          quarter_duration=13,
+                          breakpoints=breathe_breakpoints)
+        cfg = ChordField(duration_generator=breathe.duration_generator)
         cfg.add_child(cf_1)
         cfg.add_child(cf_2)
 
@@ -127,12 +127,12 @@ class Test(AGTestCase):
 
         node_groups = slice_list(fm.get_children(), (2, 1))
 
-        cf_1 = ChordField2(
+        cf_1 = ChordField(
             midi_generator=ValueGenerator(cycle([60, 61, 64, 66])),
             long_ending_mode='self_extend',
             short_ending_mode='self_shrink'
         )
-        cf_2 = ChordField2(
+        cf_2 = ChordField(
             midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])),
             long_ending_mode='self_extend',
             short_ending_mode='self_shrink'
@@ -142,11 +142,11 @@ class Test(AGTestCase):
         breathe_breakpoints = (5 * breathe_unit, breathe_unit, 5 * breathe_unit)
         breathe_proportions = [2, 4, 1, 7, 2]
 
-        breathe = Breathe2(proportions=breathe_proportions,
-                           quarter_duration=sum([node.chord.quarter_duration for node in node_groups[0]]),
-                           breakpoints=breathe_breakpoints)
+        breathe = Breathe(proportions=breathe_proportions,
+                          quarter_duration=sum([node.chord.quarter_duration for node in node_groups[0]]),
+                          breakpoints=breathe_breakpoints)
 
-        cfg = ChordField2(duration_generator=breathe.duration_generator)
+        cfg = ChordField(duration_generator=breathe.duration_generator)
         cfg.add_child(cf_1)
         cfg.add_child(cf_2)
 

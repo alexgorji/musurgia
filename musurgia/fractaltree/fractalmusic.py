@@ -9,7 +9,7 @@ from prettytable import PrettyTable
 from quicktions import Fraction
 
 from musurgia import basic_functions, scaledvalues
-from musurgia.chordfield.chordfield import ChordField2
+from musurgia.chordfield.chordfield import ChordField
 from musurgia.fractaltree.fractaltree import FractalTree
 from musurgia.fractaltree.midigenerators import RelativeMidi, MidiGenerator
 from musurgia.permutation import permute
@@ -394,7 +394,7 @@ class FractalMusic(FractalTree):
 
     @chord_field.setter
     def chord_field(self, chord_field):
-        if chord_field is not None and not isinstance(chord_field, ChordField2):
+        if chord_field is not None and not isinstance(chord_field, ChordField):
             raise TypeError()
         if chord_field is not None:
             chord_field.quarter_duration = self.quarter_duration

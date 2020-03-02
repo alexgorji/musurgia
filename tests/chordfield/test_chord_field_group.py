@@ -8,7 +8,7 @@ from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 from musurgia.agrandom import AGRandom
 from musurgia.agunittest import AGTestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
-from musurgia.chordfield.chordfield import ChordField2, Breathe2
+from musurgia.chordfield.chordfield import ChordField, Breathe
 from musurgia.chordfield.valuegenerator import ValueGenerator
 from musurgia.interpolation import RandomInterpolation
 
@@ -22,15 +22,15 @@ class Test(AGTestCase):
     def test_1(self):
         # fields: midi_generators
         # group: no generators
-        cfg = ChordField2()
-        cf_1 = ChordField2(quarter_duration=3,
-                           midi_generator=ValueGenerator(cycle([60, 61, 64, 66])),
-                           duration_generator=ValueGenerator(cycle([1]))
-                           )
-        cf_2 = ChordField2(quarter_duration=6,
-                           midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])),
-                           duration_generator=ValueGenerator(cycle([1]))
-                           )
+        cfg = ChordField()
+        cf_1 = ChordField(quarter_duration=3,
+                          midi_generator=ValueGenerator(cycle([60, 61, 64, 66])),
+                          duration_generator=ValueGenerator(cycle([1]))
+                          )
+        cf_2 = ChordField(quarter_duration=6,
+                          midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])),
+                          duration_generator=ValueGenerator(cycle([1]))
+                          )
         cfg.add_child(cf_1)
         cfg.add_child(cf_2)
         xml_path = path + 'test_1.xml'
@@ -41,16 +41,16 @@ class Test(AGTestCase):
     def test_2(self):
         # fields: midi_generators
         # group: duration_generator with __next__
-        cfg = ChordField2(
+        cfg = ChordField(
             duration_generator=ValueGenerator(AGRandom(pool=[0.2, 0.4, 0.8, 1.6], seed=10)),
             long_ending_mode='self_extend'
         )
-        cf_1 = ChordField2(quarter_duration=3,
-                           midi_generator=ValueGenerator(cycle([60, 61, 64, 66])),
-                           )
-        cf_2 = ChordField2(quarter_duration=6,
-                           midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72]))
-                           )
+        cf_1 = ChordField(quarter_duration=3,
+                          midi_generator=ValueGenerator(cycle([60, 61, 64, 66])),
+                          )
+        cf_2 = ChordField(quarter_duration=6,
+                          midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72]))
+                          )
         # cfg = ChordFieldGroup(duration_generator=AGRandom(pool=[0.2, 0.4, 0.8, 1.6], seed=10))
         cfg.add_child(cf_1)
         cfg.add_child(cf_2)
@@ -64,18 +64,18 @@ class Test(AGTestCase):
     def test_3(self):
         # fields: both with midi_generators, one duration_generator
         # group: duration_generator with __next__ (Random)
-        cfg = ChordField2(
+        cfg = ChordField(
             duration_generator=ValueGenerator(AGRandom(pool=[0.2, 0.4, 0.8, 1.6], seed=10))
         )
 
-        cf_1 = ChordField2(quarter_duration=3,
-                           midi_generator=ValueGenerator(cycle([60, 61, 64, 66])),
-                           duration_generator=ValueGenerator(cycle([1]))
-                           )
-        cf_2 = ChordField2(quarter_duration=6,
-                           midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])),
-                           long_ending_mode='cut'
-                           )
+        cf_1 = ChordField(quarter_duration=3,
+                          midi_generator=ValueGenerator(cycle([60, 61, 64, 66])),
+                          duration_generator=ValueGenerator(cycle([1]))
+                          )
+        cf_2 = ChordField(quarter_duration=6,
+                          midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])),
+                          long_ending_mode='cut'
+                          )
 
         cfg.add_child(cf_1)
         cfg.add_child(cf_2)
@@ -93,19 +93,19 @@ class Test(AGTestCase):
     def test_4(self):
         # fields: midi_generators, first one with ending_mode 'post'
         # group: duration_generator with __next__ (Arithmetic Progression)
-        cfg = ChordField2(
+        cfg = ChordField(
             duration_generator=ValueGenerator(ArithmeticProgression(a1=0.3, an=1.5, correct_s=True))
         )
 
-        cf_1 = ChordField2(quarter_duration=3,
-                           midi_generator=ValueGenerator(cycle([60, 61, 64, 66])),
-                           long_ending_mode='self_extend'
-                           )
-        cf_2 = ChordField2(quarter_duration=6,
-                           midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])),
-                           short_ending_mode='add_rest',
+        cf_1 = ChordField(quarter_duration=3,
+                          midi_generator=ValueGenerator(cycle([60, 61, 64, 66])),
+                          long_ending_mode='self_extend'
+                          )
+        cf_2 = ChordField(quarter_duration=6,
+                          midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])),
+                          short_ending_mode='add_rest',
 
-                           )
+                          )
         cfg.add_child(cf_1)
         cfg.add_child(cf_2)
         sf = SimpleFormat()
@@ -119,23 +119,23 @@ class Test(AGTestCase):
     def test_5(self):
         # breathing manually
         times = [3, 7, 3, 10, 3]
-        cf_1 = ChordField2(quarter_duration=times[0],
-                           midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])))
-        cf_2 = ChordField2(quarter_duration=times[1],
-                           midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])))
-        cf_3 = ChordField2(quarter_duration=times[2],
-                           midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])))
-        cf_4 = ChordField2(quarter_duration=times[3],
-                           midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])))
-        cf_5 = ChordField2(quarter_duration=times[4],
-                           midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])))
+        cf_1 = ChordField(quarter_duration=times[0],
+                          midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])))
+        cf_2 = ChordField(quarter_duration=times[1],
+                          midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])))
+        cf_3 = ChordField(quarter_duration=times[2],
+                          midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])))
+        cf_4 = ChordField(quarter_duration=times[3],
+                          midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])))
+        cf_5 = ChordField(quarter_duration=times[4],
+                          midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])))
         points = [1.5, 0.2, 1.5]
         cf_1.duration_generator = ValueGenerator(ArithmeticProgression(a1=points[0], an=points[0], correct_s=True))
         cf_2.duration_generator = ValueGenerator(ArithmeticProgression(a1=points[0], an=points[1], correct_s=True))
         cf_3.duration_generator = ValueGenerator(ArithmeticProgression(a1=points[1], an=points[1], correct_s=True))
         cf_4.duration_generator = ValueGenerator(ArithmeticProgression(a1=points[1], an=points[0], correct_s=True))
         cf_5.duration_generator = ValueGenerator(ArithmeticProgression(a1=points[0], an=points[0], correct_s=True))
-        cfg = ChordField2()
+        cfg = ChordField()
         cfg.add_child(cf_1)
         cfg.add_child(cf_2)
         cfg.add_child(cf_3)
@@ -153,8 +153,8 @@ class Test(AGTestCase):
         # breathing: duration_generator automatically, midi_generator: InterpolationGroup(2 x RandomInterpolations)
         breathing_proportions = [3, 7, 3, 10, 3]
         breathing_break_points = [1.5, 0.2, 1.5]
-        breathing = Breathe2(quarter_duration=sum(breathing_proportions), proportions=breathing_proportions,
-                             breakpoints=breathing_break_points)
+        breathing = Breathe(quarter_duration=sum(breathing_proportions), proportions=breathing_proportions,
+                            breakpoints=breathing_break_points)
 
         midi_generator = ValueGenerator()
 
@@ -178,13 +178,13 @@ class Test(AGTestCase):
     def test_7(self):
         # fields: midi_generators
         # group: duration_generator with __call__ RandomInterpolation
-        cfg = ChordField2(
+        cfg = ChordField(
             duration_generator=ValueGenerator(
                 RandomInterpolation(start=[0.25, 0.25, 0.5], end=[0.5, 0.75, 1], seed=20)))
-        cf_1 = ChordField2(
+        cf_1 = ChordField(
             quarter_duration=3,
             midi_generator=ValueGenerator(cycle([60, 61, 64, 66])))
-        cf_2 = ChordField2(
+        cf_2 = ChordField(
             quarter_duration=6,
             midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])),
             long_ending_mode='self_extend')
@@ -201,14 +201,14 @@ class Test(AGTestCase):
         # group: duration_generator with __call__ RandomInterpolation
         # output of fields not group
 
-        cfg = ChordField2(
+        cfg = ChordField(
             duration_generator=ValueGenerator(
                 RandomInterpolation(start=[0.25, 0.25, 0.5], end=[0.5, 0.75, 1], seed=20)))
 
-        cf_1 = ChordField2(
+        cf_1 = ChordField(
             quarter_duration=3,
             midi_generator=ValueGenerator(cycle([60, 61, 64, 66])))
-        cf_2 = ChordField2(
+        cf_2 = ChordField(
             quarter_duration=6,
             midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])),
             long_ending_mode='self_extend')
@@ -227,13 +227,13 @@ class Test(AGTestCase):
     def test_9(self):
         # fields: duration_generators
         # group: midi_generator
-        cfg = ChordField2(
+        cfg = ChordField(
         )
-        cf_1 = ChordField2(
+        cf_1 = ChordField(
             quarter_duration=3,
             duration_generator=ValueGenerator(ArithmeticProgression(a1=0.5, an=1, correct_s=True))
         )
-        cf_2 = ChordField2(
+        cf_2 = ChordField(
             quarter_duration=6,
             duration_generator=ValueGenerator(ArithmeticProgression(a1=1, an=1, correct_s=True))
         )
@@ -258,13 +258,13 @@ class Test(AGTestCase):
             ValueGenerator(RandomInterpolation(start=[67, 69, 73, 75], end=[60, 62, 66, 68], seed=11), duration=10)
         )
 
-        cfg = ChordField2(
+        cfg = ChordField(
         )
-        cf_1 = ChordField2(
+        cf_1 = ChordField(
             quarter_duration=3,
             duration_generator=ValueGenerator(ArithmeticProgression(a1=0.5, an=1, correct_s=True))
         )
-        cf_2 = ChordField2(
+        cf_2 = ChordField(
             quarter_duration=6,
             duration_generator=ValueGenerator(ArithmeticProgression(a1=1, an=1, correct_s=True))
         )
