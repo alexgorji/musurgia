@@ -181,6 +181,7 @@ AGRandom(): bug fix
 
 v.1.10.0
 NEW: valuegenerator
-big changes: ChordField
+big changes: ChordField, Breathe
+omitted: ChordFieldGroup
 
 
