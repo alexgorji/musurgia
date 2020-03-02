@@ -179,4 +179,8 @@ v.1.9.2:
 issue #2'
 AGRandom(): bug fix
 
+v.1.10.0
+NEW: valuegenerator
+big changes: ChordField
+
 
