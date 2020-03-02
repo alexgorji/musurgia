@@ -47,11 +47,13 @@ class ValueGeneratorTypeConflict(ValueGeneratorException):
 
 
 class ValueGenerator(object):
-    def __init__(self, generator, value_mode=None, duration=None, *args, **kwargs):
+    def __init__(self, generator=None, value_mode=None, duration=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._generator = None
         self._duration = None
         self._position_in_duration = 0
+        self._children = None
+        self._children_iterator = None
 
         self.generator = generator
         self.value_mode = value_mode
@@ -63,7 +65,7 @@ class ValueGenerator(object):
 
     @generator.setter
     def generator(self, val):
-        if not callable(val) and not hasattr(val, '__next__'):
+        if val and not callable(val) and not hasattr(val, '__next__'):
             raise TypeError('generator {} must have  __call__ or __next__ attribute'.format(val))
         self._generator = val
 
@@ -91,10 +93,19 @@ class ValueGenerator(object):
 
     @property
     def duration(self):
+        if self.children:
+            children_durations = [child.duration for child in self.children]
+            if None in children_durations:
+                return None
+            else:
+                return sum(children_durations)
         return self._duration
 
     @duration.setter
     def duration(self, val):
+        if val is not None:
+            if self.children:
+                raise ValueGeneratorException('parents duration cannot be set')
         self._duration = val
         self._set_generator_duration()
 
@@ -107,6 +118,21 @@ class ValueGenerator(object):
         if val < 0:
             raise ValueError()
         self._position_in_duration = val
+
+    @property
+    def children(self):
+        return self._children
+
+    def add_child(self, child):
+        if not isinstance(child, ValueGenerator):
+            raise TypeError('child must be of type ValueGenerator not{}'.format(type(child)))
+        if self._children is None:
+            self._children = []
+        if self._children_iterator is None:
+            self._children_iterator = iter([])
+        child.parent_group = self
+        self._children.append(child)
+        self._children_iterator = chain(self._children_iterator, child)
 
     def _check_position(self):
         if not self.duration:
@@ -123,22 +149,33 @@ class ValueGenerator(object):
         return value
 
     def __next__(self):
-        if not hasattr(self.generator, '__next__'):
-            if self.value_mode in ['duration', 'chord', 'midi']:
-                try:
-                    return self.__call__(self.position_in_duration)
-                except (ValueError, PositionError):
-                    raise StopIteration()
-            else:
-                raise GeneratorHasNoNextError(self.generator)
-        try:
-            return self._check_value(self.generator.__next__())
-        except PositionError:
-            raise StopIteration()
+        if not self.children:
+            if not hasattr(self.generator, '__next__'):
+                if self.value_mode in ['duration', 'chord', 'midi']:
+                    try:
+                        return self.__call__(self.position_in_duration)
+                    except (ValueError, PositionError):
+                        raise StopIteration()
+                else:
+                    raise GeneratorHasNoNextError(self.generator)
+            try:
+                return self._check_value(self.generator.__next__())
+            except PositionError:
+                raise StopIteration()
+        else:
+            output = self._children_iterator.__next__()
+            return output
 
     def __call__(self, x):
         self.position_in_duration = x
-        if callable(self.generator):
+        if self.children:
+            durations = [vg.duration for vg in self.children]
+            duration_limits = dToX(durations)
+            for i in range(len(duration_limits) - 1):
+                if duration_limits[i] <= x < duration_limits[i + 1]:
+                    return self.children[i](x - duration_limits[i])
+
+        elif callable(self.generator):
             return self._check_value(self.generator.__call__(x))
         else:
             if isinstance(self.generator, ArithmeticProgression):

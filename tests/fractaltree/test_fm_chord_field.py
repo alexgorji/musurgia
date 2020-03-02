@@ -7,7 +7,8 @@ from quicktions import Fraction
 from musurgia.agunittest import AGTestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.basic_functions import slice_list
-from musurgia.chordfield.chordfield import ChordField, ChordFieldGroup, Breathe
+from musurgia.chordfield.chordfield import ChordField, ChordFieldGroup, Breathe, ChordField2
+from musurgia.chordfield.valuegenerator import ValueGenerator
 from musurgia.fractaltree.fractalmusic import FractalMusic
 from musurgia.interpolation import Interpolation, RandomInterpolation
 
@@ -23,10 +24,14 @@ class Test(AGTestCase):
         fm.midi_generator.midi_range = [60, 84]
         fm.add_layer()
         sorted_children = sorted(fm.get_children(), key=lambda child: child.fractal_order)
-        sorted_children[-1].chord_field = ChordField(duration_generator=ArithmeticProgression(a1=0.2, an=2),
-                                                     midi_generator=Interpolation(start=84, end=60, duration=None,
-                                                                                  key=lambda midi: round(midi * 2) / 2))
-
+        chord_field = ChordField2(
+            quarter_duration=10,
+            duration_generator=ValueGenerator(ArithmeticProgression(a1=0.2, an=2)),
+            midi_generator=ValueGenerator(Interpolation(start=84, end=60,
+                                                        key=lambda midi: round(midi * 2) / 2)),
+            short_ending_mode='add_rest'
+        )
+        sorted_children[-1].chord_field = chord_field
         score = fm.get_score(show_fractal_orders=True)
         xml_path = path + '_test_1.xml'
         score.write(xml_path)
@@ -34,13 +39,14 @@ class Test(AGTestCase):
 
     def test_2(self):
         def add_chord_field(child):
-            child.chord_field = ChordField(duration_generator=ArithmeticProgression(a1=0.2, an=2),
-                                           midi_generator=Interpolation(start=child.midi_generator.midi_range[0],
-                                                                        end=child.midi_generator.midi_range[1],
-                                                                        duration=None,
-                                                                        key=lambda
-                                                                            midi: round(midi * 2) / 2),
-                                           short_ending_mode='prolong')
+            child.chord_field = ChordField2(duration_generator=ValueGenerator(ArithmeticProgression(a1=0.2, an=2)),
+                                            midi_generator=ValueGenerator(
+                                                Interpolation(start=child.midi_generator.midi_range[0],
+                                                              end=child.midi_generator.midi_range[1],
+                                                              duration=None,
+                                                              key=lambda
+                                                                  midi: round(midi * 2) / 2)),
+                                            short_ending_mode='stretch')
 
         fm = FractalMusic(quarter_duration=20, tempo=80, proportions=[1, 2, 3, 4, 5],
                           tree_permutation_order=[3, 1, 5, 2, 4])

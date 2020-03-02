@@ -2,6 +2,7 @@ from itertools import cycle
 
 from musicscore.musicstream.streamvoice import SimpleFormat
 
+from musurgia.agrandom import AGRandom
 from musurgia.agunittest import AGTestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.chordfield.valuegenerator import ValueGenerator, NoDurationError, PositionError, CallConflict, \
@@ -97,3 +98,43 @@ class Test(AGTestCase):
         expected = [1, 2, 3, 2, 1, 2]
         actual = [ch.quarter_duration for ch in list(vg)]
         self.assertEqual(expected, actual)
+
+    def test_15(self):
+        vgg = ValueGenerator()
+        vg_1 = ValueGenerator(generator=cycle([2]), duration=5)
+        vg_2 = ValueGenerator(generator=cycle([3]), duration=10)
+        vgg.add_child(vg_1)
+        vgg.add_child(vg_2)
+        actual = vgg.__next__()
+        expected = 2
+        self.assertEqual(expected, actual)
+
+    def test_16(self):
+        vgg = ValueGenerator()
+        vg_1 = ValueGenerator(generator=cycle([2]), duration=5)
+        vg_2 = ValueGenerator(generator=cycle([3]), duration=10)
+        vgg.add_child(vg_1)
+        vgg.add_child(vg_2)
+        actual = vgg(6)
+        expected = 3
+        self.assertEqual(expected, actual)
+
+    def test_17(self):
+        vgg = ValueGenerator()
+        vg_1 = ValueGenerator(generator=ArithmeticProgression(a1=0.2, an=1, correct_s=True), duration=10,
+                              value_mode='duration')
+        vg_2 = ValueGenerator(generator=ArithmeticProgression(an=0.2, a1=1, correct_s=True), duration=5,
+                              value_mode='duration')
+        vgg.add_child(vg_1)
+        vgg.add_child(vg_2)
+        actual = [round(float(x), 3) for x in vgg]
+        expected = [0.208, 0.264, 0.319, 0.375, 0.431, 0.486, 0.542, 0.597, 0.653, 0.708, 0.764, 0.819, 0.875, 0.931,
+                    0.986, 1.042, 1.042, 0.923, 0.804, 0.685, 0.565, 0.446, 0.327, 0.208]
+        self.assertEqual(expected, actual)
+
+    def test_18(self):
+        vgg = ValueGenerator()
+        vg_1 = ValueGenerator(generator=AGRandom(pool=[1, 2, 3, 1], an=1, correct_s=True), duration=10,
+                              value_mode='duration')
+        vg_2 = ValueGenerator(generator=ArithmeticProgression(an=0.2, a1=1, correct_s=True), duration=5,
+                              value_mode='duration')

@@ -294,6 +294,8 @@ class ChordField2(object):
         self._chords = None
         self._long_ending_mode = None
         self._short_ending_mode = None
+        self._children = None
+        self._parent = None
         # self._current_duration = None
         # self._position = 0
         # self._exit = False
@@ -330,15 +332,61 @@ class ChordField2(object):
                 raise ValueError('value_generator of type ValueGeneratorGroup cannot have 0 duration')
 
     @property
+    def children(self):
+        return self._children
+
+    def add_child(self, child):
+        if not isinstance(child, ChordField2):
+            raise TypeError()
+        if self._children is None:
+            self._children = []
+
+        self._children.append(child)
+        if child.duration_generator:
+            if self.duration_generator is None:
+                self.duration_generator = ValueGenerator()
+                self.duration_generator.add_child(child.duration_generator)
+            elif self.duration_generator.children:
+                self.duration_generator.add_child(child.duration_generator)
+            else:
+                pass
+        if child.midi_generator:
+            if self.midi_generator is None:
+                self.midi_generator = ValueGenerator()
+                self.midi_generator.add_child(child.midi_generator)
+            elif self.midi_generator.children:
+                self.midi_generator.add_child(child.midi_generator)
+            else:
+                pass
+        if child.chord_generator:
+            if self.chord_generator is None:
+                self.chord_generator = ValueGenerator()
+                self.chord_generator.add_child(child.chord_generator)
+            elif self.chord_generator.children:
+                self.chord_generator.add_child(child.chord_generator)
+            else:
+                pass
+
+        self._parent = self
+
+    @property
     def quarter_duration(self):
+        if self.children:
+            children_quarter_durations = [child.quarter_duration for child in self.children]
+            if None in children_quarter_durations:
+                return None
+            else:
+                return sum(children_quarter_durations)
         return self._quarter_duration
 
     @quarter_duration.setter
     def quarter_duration(self, value):
         if value is not None:
+            if self.children:
+                raise ChordFieldException('parents quarter_duration cannot be set')
             self._quarter_duration = value
             for value_generator in self._get_value_generators():
-                self._set_up_value_generator(value_generator)
+                self._set_up_value_generator(value_generator, value_generator.value_mode)
 
     @property
     def duration_generator(self):
@@ -373,9 +421,14 @@ class ChordField2(object):
     @property
     def position_in_duration(self):
         if self.duration_generator:
-            return self.duration_generator.position_in_duration
-        else:
+            if isinstance(self.duration_generator, ValueGenerator):
+                return self.duration_generator.position_in_duration
+            else:
+                return self.duration_generator.position_in_duration
+        elif self.chord_generator:
             return self.chord_generator.position_in_duration
+        else:
+            return None
 
     @property
     def long_ending_mode(self):
