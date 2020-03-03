@@ -184,4 +184,8 @@ NEW: valuegenerator
 big changes: ChordField, Breathe
 omitted: ChordFieldGroup
 
+v.1.10.1
+Breathe: bug fix
+conflicted builds for chordfield fixed
+
 
