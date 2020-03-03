@@ -373,19 +373,6 @@ class Breathe(ChordField):
     def quarter_duration(self, value):
         if value is not None:
             self._generate_children(value)
-        #
-        # @quarter_duration.setter
-        # def quarter_duration(self, value):
-        #     if value is not None:
-        #         if self.children:
-        #             raise ParentSetQuarterDurationError()
-        #         else:
-        #             self._quarter_duration = value
-        #             self._update_durations()
-        #             if self.parent:
-        #                 self.parent._update_durations()
-        # if value is not None:
-        #     self._generate_children(value)
 
     @property
     def proportions(self):
@@ -415,20 +402,20 @@ class Breathe(ChordField):
 
     @property
     def repose_1(self):
-        return self.fields[0]
+        return self.children[0]
 
     @property
     def inspiration(self):
-        return self.fields[1]
+        return self.children[1]
 
     @property
     def climax(self):
-        return self.fields[2]
+        return self.children[2]
 
     @property
     def expiration(self):
-        return self.fields[3]
+        return self.children[3]
 
     @property
     def repose_2(self):
-        return self.fields[4]
+        return self.children[4]
