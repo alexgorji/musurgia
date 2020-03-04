@@ -327,6 +327,9 @@ class ChordField(object):
             self._check_quarter_duration()
             raise StopIteration()
 
+    def __deepcopy__(self, memodict={}):
+
+
 
 class Breathe(ChordField):
     def __init__(self, proportions, breakpoints=None, quarter_duration=None, *args, **kwargs):
