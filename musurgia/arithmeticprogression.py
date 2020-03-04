@@ -229,5 +229,14 @@ class ArithmeticProgression(object):
     def index(self):
         return self._index
 
-    def rest(self):
-        self._current = None
+    # def rest(self):
+    #     self._current = None
+
+    def __deepcopy__(self, memodict={}):
+        copy = self.__class__(correct_s=self.correct_s)
+        copy._a1 = self._a1
+        copy._an = self._an
+        copy._n = self._n
+        copy._d = self._d
+        copy._s = self._s
+        return copy

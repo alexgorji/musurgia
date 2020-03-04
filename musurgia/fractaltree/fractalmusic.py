@@ -292,7 +292,7 @@ class FractalMusic(FractalTree):
             self._children_generated_midis = []
             self._children_generated_midis = list(self._midi_iterator)
 
-        return self._children_generated_midis
+        return [midi for midi in self._children_generated_midis]
 
     @property
     def _children_midis(self):
@@ -363,12 +363,12 @@ class FractalMusic(FractalTree):
             new_midi = scale(midi)
             choral_midis.append(new_midi)
 
-        choral_midis = sorted(choral_midis)
-        choral_midis = list(set(choral_midis))
         return choral_midis
 
     def get_choral(self, range_factor=1, direction=None, last=False):
-        choral_midis = self.get_choral_midis(range_factor=range_factor, direction=direction, last=last)
+        choral_midis = list(dict.fromkeys(
+            self.get_choral_midis(range_factor=range_factor, direction=direction, last=last)
+        ))
         return TreeChord(quarter_duration=self.quarter_duration, midis=choral_midis)
 
     @property
@@ -707,4 +707,14 @@ class FractalMusic(FractalTree):
 
         if self.fertile is False:
             copied._midi_value = self._midi_value
+        return copied
+
+    def __copy__(self):
+        copied = self.__class__(proportions=self.proportions, tree_permutation_order=self.tree_permutation_order)
+        copied.duration = self.duration
+        copied.midi_generator = None
+        copied.tempo = self.tempo
+        copied.quarter_duration = self.quarter_duration
+        copied.tree_directions = self.tree_directions
+        copied.permute_directions = self.permute_directions
         return copied

@@ -1,8 +1,10 @@
 from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treechord import TreeChord
+from quicktions import Fraction
 
 from musurgia.arithmeticprogression import ArithmeticProgression
-from musurgia.chordfield.valuegenerator import ValueGenerator, ValueGeneratorGroup, ValueGeneratorException
+from musurgia.chordfield.valuegenerator import ValueGenerator, ValueGeneratorException
+from musurgia.quantize import get_quantized_values
 
 
 class BreatheException(Exception):
@@ -296,7 +298,9 @@ class ChordField(object):
                 self.chords.pop()
                 new_delta = self.quarter_duration - sum([chord.quarter_duration for chord in self.chords])
                 if self.long_ending_mode == 'omit_and_add_rest':
-                    self.chords.append(TreeChord(midis=0, quarter_duration=new_delta))
+                    new_chord = TreeChord(midis=0, quarter_duration=new_delta)
+                    new_chord.zero_mode = 'remove'
+                    self.chords.append(new_chord)
                 elif self.long_ending_mode == 'omit_and_stretch':
                     self.chords[-1].quarter_duration += new_delta
                 else:
@@ -308,7 +312,9 @@ class ChordField(object):
             if self.short_ending_mode == 'self_shrink':
                 self.quarter_duration += delta
             elif self.short_ending_mode == 'add_rest':
-                self.chords.append(TreeChord(midis=0, quarter_duration=-delta))
+                new_chord = TreeChord(midis=0, quarter_duration=-delta)
+                new_chord.zero_mode = 'remove'
+                self.chords.append(new_chord)
             elif self.short_ending_mode == 'stretch':
                 self.chords[-1].quarter_duration -= delta
             else:
@@ -328,14 +334,39 @@ class ChordField(object):
             raise StopIteration()
 
     def __deepcopy__(self, memodict={}):
+        if self.__class__ == Breathe:
+            copied = self.__class__(proportions=self.proportions, breakpoints=self.breakpoints,
+                                    quarter_duration=self.quarter_duration)
+        else:
+            copied = self.__class__(quarter_duration=self.quarter_duration)
 
+        copied.long_ending_mode = self.long_ending_mode
+        copied.short_ending_mode = self.short_ending_mode
+        for generator in self._get_value_generators():
+            if generator.value_mode == 'duration':
+                copied.duration_generator = generator.__deepcopy__()
+            elif generator.value_mode == 'midi':
+                copied.midi_generator = generator.__deepcopy__()
+            elif generator.value_mode == 'chord':
+                copied.chord_generator = generator.__deepcopy__()
+            else:
+                raise NotImplementedError()
+        if self.children:
+            copied._children = []
+            for child in self.children:
+                copied_child = child.__deepcopy__()
+                copied_child._parent = copied
+                copied._children.append(copied_child)
+        return copied
 
 
 class Breathe(ChordField):
-    def __init__(self, proportions, breakpoints=None, quarter_duration=None, *args, **kwargs):
+    def __init__(self, proportions, breakpoints=None, quarter_duration=None, quantize=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._proportions = None
         self._breakpoints = None
+        self._quantize = None
+        self.quantize = quantize
         self.proportions = proportions
         self.breakpoints = breakpoints
         self.quarter_duration = quarter_duration
@@ -348,8 +379,12 @@ class Breathe(ChordField):
     def _generate_children(self, quarter_duration):
         names = ['repose_1', 'inspiration', 'climax', 'expiration', 'repose_2']
         fields = []
-        for index, proportion in enumerate(self.proportions):
-            child_quarter_duration = proportion * quarter_duration / sum(self.proportions)
+        child_quarter_durations = [Fraction(proportion * quarter_duration, sum(self.proportions)) for proportion in
+                                   self.proportions]
+        if self.quantize:
+            child_quarter_durations = get_quantized_values(child_quarter_durations, grid_size=self.quantize)
+
+        for index, child_quarter_duration in enumerate(child_quarter_durations):
             field = ChordField(quarter_duration=child_quarter_duration)
             field.name = names[index]
             fields.append(field)
@@ -370,7 +405,8 @@ class Breathe(ChordField):
                 a1, an = self.breakpoints[2], self.breakpoints[2]
             fields[i].duration_generator = ValueGenerator(ArithmeticProgression(a1=a1, an=an, correct_s=True))
         for field in fields:
-            self.add_child(field)
+            if field.quarter_duration:
+                self.add_child(field)
 
     @ChordField.quarter_duration.setter
     def quarter_duration(self, value):

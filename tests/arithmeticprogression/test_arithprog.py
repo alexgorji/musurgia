@@ -48,3 +48,12 @@ class Test(TestCase):
         test_case = sum(list(self.arith_prog))
         expected = self.arith_prog.s
         self.assertEqual(expected, test_case)
+
+    def test_6(self):
+        self.arith_prog.n = 15
+        self.arith_prog.a1 = 1
+        self.arith_prog.d = 2
+        copy = self.arith_prog.__deepcopy__()
+        actual = {'a1': 1, 'an': 29, 'n': 15, 'd': 2, 's': 225.0}
+        expected = copy.parameters_dict
+        self.assertEqual(expected, actual)

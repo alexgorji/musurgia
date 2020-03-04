@@ -193,3 +193,4 @@ class Test(AGTestCase):
         xml_path = path + '_test_17.xml'
         score.write(xml_path)
         self.assertCompareFiles(xml_path)
+

@@ -118,3 +118,8 @@ class AGRandom(object):
         self.result.append(next_el)
 
         return next_el
+
+    def __deepcopy__(self, memodict={}):
+        copied = self.__class__(pool=self.pool, periodicity=self.periodicity, forbidden_list=self.forbidden_list,
+                                seed=self.seed)
+        return copied

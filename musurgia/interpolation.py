@@ -118,3 +118,8 @@ class RandomInterpolation(Interpolation):
         if self.key:
             return self.key(output)
         return output
+
+    def __deepcopy__(self, memodict={}):
+        copied = self.__class__(start=self.start, end=self.end, duration=self.duration, key=self.key, mode=self.mode)
+        copied._random = self._random.__deepcopy__()
+        return copied

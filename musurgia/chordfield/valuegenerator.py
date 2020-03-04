@@ -1,3 +1,4 @@
+import copy
 from itertools import chain
 
 from musurgia.arithmeticprogression import ArithmeticProgression, DAndSError
@@ -138,7 +139,7 @@ class ValueGenerator(object):
                 if None in children_duration:
                     raise ValueGeneratorException(
                         'ValueGenerator: parent\'s duration cannot be set if not all children have a duration.')
-                factor = val/sum(children_duration)
+                factor = val / sum(children_duration)
                 for child in self.children:
                     child.duration *= factor
         self._duration = val
@@ -186,14 +187,6 @@ class ValueGenerator(object):
             return self.__call__(self.position)
         except (ValueError, PositionError):
             raise StopIteration()
-        # if not self.children:
-        #     try:
-        #         return self.__call__(self.position_in_duration)
-        #     except (ValueError, PositionError):
-        #         raise StopIteration()
-        # else:
-        #     output = self._children_iterator.__next__()
-        #     return output
 
     def __call__(self, x):
         self.position = x
@@ -218,57 +211,66 @@ class ValueGenerator(object):
     def __iter__(self):
         return self
 
+    def __deepcopy__(self, memodict={}):
+        copied = self.__class__(value_mode=self.value_mode,
+                                duration=self.duration)
+        if self.generator is not None:
+            copied.generator = copy.deepcopy(self.generator)
+        if self.children is not None:
+            for child in self.children:
+                copied.add_child(child.__deepcopy__())
+        return copied
 
-class ValueGeneratorGroup(object):
-    def __init__(self, *value_generators, **kwargs):
-        super().__init__(**kwargs)
-        self._value_generators = None
-        self._value_generators_iterator = None
-        self._child_type = None
-        self._current_value_generator = None
-        self.value_generators = value_generators
-
-    @property
-    def value_generators(self):
-        return self._value_generators
-
-    @value_generators.setter
-    def value_generators(self, values):
-        try:
-            values = list(values)
-        except TypeError:
-            values = [values]
-
-        for value in values:
-            self.add_value_generator(value)
-
-    @property
-    def duration(self):
-        try:
-            return sum([vg.duration for vg in self.value_generators])
-        except AttributeError:
-            return 0
-
-    def add_value_generator(self, value_generator):
-        if not isinstance(value_generator, ValueGenerator):
-            raise TypeError('value_generators must be of type ValueGenerator not{}'.format(type(value_generator)))
-        if self._value_generators is None:
-            self._value_generators = []
-        if self._value_generators_iterator is None:
-            self._value_generators_iterator = iter([])
-        value_generator.parent_group = self
-        self._value_generators.append(value_generator)
-        self._value_generators_iterator = chain(self._value_generators_iterator, value_generator)
-
-    def __next__(self):
-        return self._value_generators_iterator.__next__()
-
-    def __iter__(self):
-        return self
-
-    def __call__(self, x):
-        durations = [vg.duration for vg in self.value_generators]
-        duration_limits = dToX(durations)
-        for i in range(len(duration_limits) - 1):
-            if duration_limits[i] <= x < duration_limits[i + 1]:
-                return self.value_generators[i](x - duration_limits[i])
+# class ValueGeneratorGroup(object):
+#     def __init__(self, *value_generators, **kwargs):
+#         super().__init__(**kwargs)
+#         self._value_generators = None
+#         self._value_generators_iterator = None
+#         self._child_type = None
+#         self._current_value_generator = None
+#         self.value_generators = value_generators
+#
+#     @property
+#     def value_generators(self):
+#         return self._value_generators
+#
+#     @value_generators.setter
+#     def value_generators(self, values):
+#         try:
+#             values = list(values)
+#         except TypeError:
+#             values = [values]
+#
+#         for value in values:
+#             self.add_value_generator(value)
+#
+#     @property
+#     def duration(self):
+#         try:
+#             return sum([vg.duration for vg in self.value_generators])
+#         except AttributeError:
+#             return 0
+#
+#     def add_value_generator(self, value_generator):
+#         if not isinstance(value_generator, ValueGenerator):
+#             raise TypeError('value_generators must be of type ValueGenerator not{}'.format(type(value_generator)))
+#         if self._value_generators is None:
+#             self._value_generators = []
+#         if self._value_generators_iterator is None:
+#             self._value_generators_iterator = iter([])
+#         value_generator.parent_group = self
+#         self._value_generators.append(value_generator)
+#         self._value_generators_iterator = chain(self._value_generators_iterator, value_generator)
+#
+#     def __next__(self):
+#         return self._value_generators_iterator.__next__()
+#
+#     def __iter__(self):
+#         return self
+#
+#     def __call__(self, x):
+#         durations = [vg.duration for vg in self.value_generators]
+#         duration_limits = dToX(durations)
+#         for i in range(len(duration_limits) - 1):
+#             if duration_limits[i] <= x < duration_limits[i + 1]:
+#                 return self.value_generators[i](x - duration_limits[i])

@@ -2,11 +2,9 @@ from itertools import cycle
 
 from musicscore.musicstream.streamvoice import SimpleFormat
 
-from musurgia.agrandom import AGRandom
 from musurgia.agunittest import AGTestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
-from musurgia.chordfield.valuegenerator import ValueGenerator, NoDurationError, PositionError, CallConflict, \
-    GeneratorHasNoNextError
+from musurgia.chordfield.valuegenerator import ValueGenerator, NoDurationError, PositionError
 from musurgia.interpolation import RandomInterpolation
 
 
@@ -164,5 +162,17 @@ class Test(AGTestCase):
         vgg.add_child(vg_1)
         vgg.add_child(vg_2)
         actual = vgg.duration
+        expected = 15
+        self.assertEqual(expected, actual)
+
+    def test_21(self):
+        vgg = ValueGenerator()
+        vg_1 = ValueGenerator(generator=cycle([2]), duration=5)
+        vg_2 = ValueGenerator(generator=cycle([3]), duration=10)
+        vgg.add_child(vg_1)
+        vgg.add_child(vg_2)
+
+        copied = vgg.__deepcopy__()
+        actual = copied.duration
         expected = 15
         self.assertEqual(expected, actual)

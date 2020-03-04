@@ -1,4 +1,5 @@
 import os
+from fractions import Fraction
 from itertools import cycle
 from math import ceil
 
@@ -273,3 +274,66 @@ class Test(AGTestCase):
         cfg.add_child(cf_2)
         cfg.midi_generator = midi_generator
         cfg.__next__()
+
+    def test_11(self):
+        cfg = ChordField(
+            duration_generator=ValueGenerator(
+                RandomInterpolation(start=[0.25, 0.25, 0.5], end=[0.5, 0.75, 1], seed=20)))
+        cf_1 = ChordField(
+            quarter_duration=3,
+            midi_generator=ValueGenerator(cycle([60, 61, 64, 66])))
+        cf_2 = ChordField(
+            quarter_duration=6,
+            midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])),
+            long_ending_mode='self_extend')
+
+        cfg.add_child(cf_1)
+        cfg.add_child(cf_2)
+        xml_path = path + 'test_11.xml'
+        copied = cfg.__deepcopy__()
+        copied.simple_format.to_stream_voice().add_to_score(self.score)
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_12(self):
+        # breathing: duration_generator automatically, midi_generator: InterpolationGroup(2 x RandomInterpolations)
+        breathing_proportions = [3, 7, 3, 10, 3]
+        breathing_break_points = [1.5, 0.2, 1.5]
+        breathing = Breathe(quarter_duration=sum(breathing_proportions), proportions=breathing_proportions,
+                            breakpoints=breathing_break_points)
+
+        midi_generator = ValueGenerator()
+
+        midi_generator.add_child(
+            ValueGenerator(RandomInterpolation(start=[60, 62, 66, 68], end=[67, 69, 73, 75], seed=10), duration=10)
+        )
+
+        midi_generator.add_child(
+            ValueGenerator(RandomInterpolation(start=[67, 69, 73, 75], end=[60, 62, 66, 68], seed=11), duration=10)
+        )
+
+        breathing.midi_generator = midi_generator
+        copied = breathing.__deepcopy__()
+        xml_path = path + 'test_12.xml'
+        self.score.set_time_signatures(quarter_durations=breathing_proportions)
+        copied.simple_format.to_stream_voice().add_to_score(self.score)
+
+        self.score.max_division = 5
+        self.score.write(xml_path)
+        self.assertCompareFiles(xml_path)
+
+    def test_13(self):
+        proportions = (1, 3, 1, 5, 1)
+        breakpoints = (1, Fraction(1, 7), 1)
+        breathe = Breathe(proportions=proportions, breakpoints=breakpoints, quarter_duration=20)
+        expected = 20
+        actual = breathe.quarter_duration
+        self.assertEqual(expected, actual)
+
+    def test_14(self):
+        proportions = (1, 3, 1, 5, 1)
+        breakpoints = (1, Fraction(1, 7), 1)
+        breathe = Breathe(proportions=proportions, breakpoints=breakpoints, quarter_duration=20, quantize=1)
+        expected = [2, 5, 2, 9, 2]
+        actual = [child.quarter_duration for child in breathe.children]
+        self.assertEqual(expected, actual)

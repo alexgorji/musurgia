@@ -188,4 +188,12 @@ v.1.10.1
 Breathe: bug fix
 conflicted builds for chordfield fixed
 
+v.1.10.2
+ArithmeticProgression().\__deepcopy__()
+ChordField().\__deepcopy__()
+ValueGenerator.\__deepcopy__()
+Breathe.quantize added
+Fractal_Music.get_choral_midis(): repetitions not eliminated
+FractalMusic(): bug fixed issue #6
+
 

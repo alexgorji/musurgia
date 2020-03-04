@@ -56,3 +56,14 @@ class Test(AGTestCase):
         score.write(path=xml_path)
 
         self.assertCompareFiles(actual_file_path=xml_path)
+
+    def test_3(self):
+        fm = FractalMusic(proportions=(1, 2, 3, 4, 5, 6, 7), tree_permutation_order=(2, 6, 4, 1, 3, 7, 5),
+                          quarter_duration=30, tempo=80)
+        fm.midi_generator.midi_range = (60, 72)
+        fm.midi_generator.microtone = 4
+        fm.add_layer()
+        fm.quantize_children(grid_size=1)
+        expected = [child.get_choral_midis() for child in fm.get_children()]
+        actual = [child.get_choral_midis() for child in fm.get_children()]
+        self.assertEqual(expected, actual)
