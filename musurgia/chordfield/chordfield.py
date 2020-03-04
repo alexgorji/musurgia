@@ -292,6 +292,12 @@ class ChordField(object):
         delta = sum([chord.quarter_duration for chord in self.chords]) - self.quarter_duration
         if delta > 0:
             if self.long_ending_mode == 'self_extend':
+                if self.parent:
+                    try:
+                        next_child = self.parent.children[self.parent.children.index(self) + 1]
+                        next_child._position = delta
+                    except IndexError:
+                        pass
                 try:
                     self.quarter_duration += delta
                 except ParentSetQuarterDurationError:
