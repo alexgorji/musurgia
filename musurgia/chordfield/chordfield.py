@@ -67,9 +67,13 @@ class ChordField(object):
         return [value_generator for value_generator in
                 (self.chord_generator, self.duration_generator, self.midi_generator) if value_generator is not None]
 
+    def _get_private_value_generators(self):
+        return [value_generator for value_generator in
+                (self._chord_generator, self._duration_generator, self._midi_generator) if value_generator is not None]
+
     def _set_up_value_generator(self, value_generator, value_mode=None):
-        if not isinstance(value_generator, ValueGenerator) and not isinstance(value_generator, ValueGeneratorGroup):
-            raise TypeError('value_generator must be of type ValueGenerator or ValueGeneratorGroup not {}'.format(
+        if not isinstance(value_generator, ValueGenerator):
+            raise TypeError('value_generator must be of type ValueGenerator  not {}'.format(
                 type(value_generator)))
         value_generator.value_mode = value_mode
         value_generator.duration = self.quarter_duration
@@ -342,13 +346,13 @@ class ChordField(object):
 
         copied.long_ending_mode = self.long_ending_mode
         copied.short_ending_mode = self.short_ending_mode
-        for generator in self._get_value_generators():
+        for generator in self._get_private_value_generators():
             if generator.value_mode == 'duration':
-                copied.duration_generator = generator.__deepcopy__()
+                copied._duration_generator = generator.__deepcopy__()
             elif generator.value_mode == 'midi':
-                copied.midi_generator = generator.__deepcopy__()
+                copied._midi_generator = generator.__deepcopy__()
             elif generator.value_mode == 'chord':
-                copied.chord_generator = generator.__deepcopy__()
+                copied._chord_generator = generator.__deepcopy__()
             else:
                 raise NotImplementedError()
         if self.children:
