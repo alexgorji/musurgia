@@ -196,4 +196,5 @@ Breathe.quantize added
 Fractal_Music.get_choral_midis(): repetitions not eliminated
 FractalMusic(): bug fixed issue #6
 
-
+v.1.10.3
+FractalMusic().simple_format: added (as alternative to ChordField)
