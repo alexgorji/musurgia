@@ -73,10 +73,17 @@ class ChordField(object):
 
     def _set_up_value_generator(self, value_generator, value_mode=None):
         if not isinstance(value_generator, ValueGenerator):
-            raise TypeError('value_generator must be of type ValueGenerator  not {}'.format(
+            raise TypeError('value_generator must be of type ValueGenerator not {}'.format(
                 type(value_generator)))
         value_generator.value_mode = value_mode
-        value_generator.duration = self.quarter_duration
+        try:
+            value_generator.duration = self.quarter_duration
+        except ValueGeneratorException:
+            if self.quarter_duration is None:
+                raise ValueGeneratorException()
+            factor = Fraction(self.quarter_duration, value_generator.duration)
+            for child in value_generator.children:
+                child.duration *= factor
 
     @property
     def children(self):
@@ -243,23 +250,25 @@ class ChordField(object):
     def simple_format(self):
         list(self)
         sf = SimpleFormat()
-        for chord in self.chords:
-            sf.add_chord(chord)
+        if self.chords:
+            for chord in self.chords:
+                sf.add_chord(chord)
         return sf
 
     def _get_next_duration(self):
         if self.duration_generator:
             next_duration = self.duration_generator.__next__()
             self._position += next_duration
+            for generator in self._get_value_generators():
+                if generator != self.duration_generator:
+                    generator._position += next_duration
             return next_duration
         else:
             return None
 
     def _get_next_midi(self):
         if self.midi_generator:
-            # if not self.duration_generator and not self.chord_generator:
-            #     raise ChordFieldException('set duration_generator or chord_generator first')
-            self.midi_generator.position = self.position
+            # self.midi_generator._position = self.position
             return self.midi_generator.__next__()
         else:
             return None
@@ -289,42 +298,49 @@ class ChordField(object):
         return next_chord
 
     def _check_quarter_duration(self):
-        delta = sum([chord.quarter_duration for chord in self.chords]) - self.quarter_duration
-        if delta > 0:
-            if self.long_ending_mode == 'self_extend':
-                try:
+        if self.chords:
+            delta = sum([chord.quarter_duration for chord in self.chords]) - self.quarter_duration
+            if delta > 0:
+                if self.long_ending_mode == 'self_extend':
+                    if self.parent:
+                        try:
+                            next_child = self.parent.children[self.parent.children.index(self) + 1]
+                            next_child._position = delta
+                        except IndexError:
+                            pass
+                    try:
+                        self.quarter_duration += delta
+                    except ParentSetQuarterDurationError:
+                        self.children[-1].quarter_duration += delta
+                elif self.long_ending_mode == 'cut':
+                    self.chords[-1].quarter_duration -= delta
+                elif self.long_ending_mode in ['omit', 'omit_and_add_rest', 'omit_and_stretch']:
+                    self.chords.pop()
+                    new_delta = self.quarter_duration - sum([chord.quarter_duration for chord in self.chords])
+                    if self.long_ending_mode == 'omit_and_add_rest':
+                        new_chord = TreeChord(midis=0, quarter_duration=new_delta)
+                        new_chord.zero_mode = 'remove'
+                        self.chords.append(new_chord)
+                    elif self.long_ending_mode == 'omit_and_stretch':
+                        self.chords[-1].quarter_duration += new_delta
+                    else:
+                        self.quarter_duration -= new_delta
+                else:
+                    raise LongEndingError(delta)
+
+            elif delta < 0:
+                if self.short_ending_mode == 'self_shrink':
                     self.quarter_duration += delta
-                except ParentSetQuarterDurationError:
-                    self.children[-1].quarter_duration += delta
-            elif self.long_ending_mode == 'cut':
-                self.chords[-1].quarter_duration -= delta
-            elif self.long_ending_mode in ['omit', 'omit_and_add_rest', 'omit_and_stretch']:
-                self.chords.pop()
-                new_delta = self.quarter_duration - sum([chord.quarter_duration for chord in self.chords])
-                if self.long_ending_mode == 'omit_and_add_rest':
-                    new_chord = TreeChord(midis=0, quarter_duration=new_delta)
+                elif self.short_ending_mode == 'add_rest':
+                    new_chord = TreeChord(midis=0, quarter_duration=-delta)
                     new_chord.zero_mode = 'remove'
                     self.chords.append(new_chord)
-                elif self.long_ending_mode == 'omit_and_stretch':
-                    self.chords[-1].quarter_duration += new_delta
+                elif self.short_ending_mode == 'stretch':
+                    self.chords[-1].quarter_duration -= delta
                 else:
-                    self.quarter_duration -= new_delta
+                    raise ShortEndingError(delta)
             else:
-                raise LongEndingError(delta)
-
-        elif delta < 0:
-            if self.short_ending_mode == 'self_shrink':
-                self.quarter_duration += delta
-            elif self.short_ending_mode == 'add_rest':
-                new_chord = TreeChord(midis=0, quarter_duration=-delta)
-                new_chord.zero_mode = 'remove'
-                self.chords.append(new_chord)
-            elif self.short_ending_mode == 'stretch':
-                self.chords[-1].quarter_duration -= delta
-            else:
-                raise ShortEndingError(delta)
-        else:
-            pass
+                pass
 
     def __iter__(self):
         return self

@@ -217,3 +217,62 @@ class Test(AGTestCase):
         xml_path = path + '_test_5.xml'
         partwise.write(xml_path)
         self.assertCompareFiles(xml_path)
+
+    def test_6(self):
+        def get_chord(node):
+            output = fm.get_choral_midis(range_factor=1)
+            transposition = node.midi_value - output[3]
+            output = [midi + transposition for midi in output]
+            # output = node.get_choral_midis(range_factor=8 - node.fractal_order)
+            return output
+
+        fm = FractalMusic(proportions=(1, 2, 3, 4, 5, 6, 7), tree_permutation_order=(2, 6, 4, 1, 3, 7, 5),
+                          quarter_duration=30, tempo=72)
+        # fm.multi = (self.fm.multi[0], self.fm.multi[1] + 1)
+        fm.midi_generator.midi_range = (62, 62 + 11)
+        fm.midi_generator.microtone = 4
+        fm.add_layer()
+        fm.quantize_children(grid_size=1)
+
+        def make_breathe(nodes, proportions, breakpoints):
+            breath_quarter_duration = sum([node.quarter_duration for node in nodes])
+            breathe = Breathe(proportions=proportions, breakpoints=breakpoints,
+                              quarter_duration=breath_quarter_duration,
+                              quantize=1)
+
+            parent_chord_field = ChordField(duration_generator=breathe.duration_generator.__deepcopy__())
+            for i in range(len(nodes)):
+                node = selected_nodes[i]
+                start_chord = get_chord(node)
+                next_node = node.next_sibling
+                if next_node:
+                    end_chord = get_chord(next_node)
+                else:
+                    end_chord = start_chord
+
+                chord_field = ChordField(
+                    quarter_duration=node.quarter_duration,
+                    midi_generator=ValueGenerator(RandomInterpolation(start=start_chord, end=end_chord, seed=10)),
+                    long_ending_mode='self_extend',
+                    short_ending_mode='self_shrink')
+                parent_chord_field.add_child(chord_field)
+
+            return parent_chord_field
+
+        selected_nodes = fm.get_children()[2:5]
+        # print(sum([node.quarter_duration for node in selected_nodes]))
+        proportions = (1, 10, 1, 7, 1)
+        breakpoints = (1, Fraction(1, 7), 1)
+        breathe = make_breathe(nodes=selected_nodes, proportions=proportions,
+                               breakpoints=breakpoints)
+        # print(breathe.quarter_duration)
+        fm.merge_children(2, 3, 2)
+        # print(fm.get_children()[1].quarter_duration)
+        fm.get_children()[1].simple_format = breathe.simple_format
+        score = fm.get_score(show_fractal_orders=True, layer_number=fm.number_of_layers)
+        score.max_division = 7
+        score.finish()
+        partwise = score.to_partwise()
+        xml_path = path + '_test_6.xml'
+        partwise.write(xml_path)
+        self.assertCompareFiles(xml_path)
