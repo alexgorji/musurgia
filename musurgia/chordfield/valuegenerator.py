@@ -135,6 +135,7 @@ class ValueGenerator(object):
     def duration(self, val):
         if val is not None:
             if self.children:
+                # raise ValueGeneratorException('parent\'s duration cannot be set')
                 children_duration = [child.duration for child in self.children]
                 if None in children_duration:
                     raise ValueGeneratorException(

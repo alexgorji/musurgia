@@ -52,7 +52,8 @@ class ArithmeticProgression(object):
 
     def _calculate_a1(self):
         if self._d is None:
-            self._a1 = (2. * self.s / self.n) - self.an
+            # self._a1 = (2. * self.s / self.n) - self.an
+            self._a1 = Fraction(2 * self.s, self.n) - self.an
         elif self._s is None:
             self._a1 = self.an - ((self.n - 1) * self.d)
 
@@ -60,14 +61,15 @@ class ArithmeticProgression(object):
         if self._s is None:
             self._an = self.a1 + (self.n - 1) * self.d
         elif self._d is None:
-            self._an = (2. * self.s / self.n) - self.a1
+            self._an = Fraction(2 * self.s, self.n) - self.a1
+            # self._an = (2. * self.s / self.n) - self.a1
 
     def _calculate_n(self):
         if self._s is None:
             self._n = ((self.an - self.a1) / self.d) + 1
         elif self._d is None:
-            self._n = 2. * self.s / (self.a1 + self.an)
-        self._n = math.floor(self._n)
+            self._n = 2 * self.s / (self.a1 + self.an)
+        self._n = Fraction(math.floor(self._n))
 
     def _calculate_d(self):
         if self.n == 1:
@@ -75,28 +77,32 @@ class ArithmeticProgression(object):
         elif self._a1 is None:
             self._calculate_a1()
             # self._d = Fraction(Fraction(self.an - self.a1), Fraction(self.n - 1))
-            self._d = (self.an - self.a1) / (self.n - 1)
+            self._d = Fraction((self.an - self.a1), (self.n - 1))
+            # self._d = (self.an - self.a1) / (self.n - 1)
         elif self._an is None:
             # self._d = Fraction(Fraction((self.s - (self.n * self.a1)) * 2), Fraction((self.n - 1) * self.n))
-            self._d = ((self.s - (self.n * self.a1)) * 2) / ((self.n - 1) * self.n)
+            self._d = Fraction((self.s - (self.n * self.a1)) * 2), ((self.n - 1) * self.n)
+            # self._d = ((self.s - (self.n * self.a1)) * 2) / ((self.n - 1) * self.n)
         elif self._n is None:
             self._calculate_n()
             # self._d = Fraction(Fraction(self.an - self.a1), Fraction(self.n - 1))
-            self._d = (self.an - self.a1) / (self.n - 1)
+            self._d = Fraction((self.an - self.a1), (self.n - 1))
+            # self._d = (self.an - self.a1) / (self.n - 1)
         else:
-            self._d = (self.an - self.a1) / (self.n - 1)
+            self._d = Fraction((self.an - self.a1), (self.n - 1))
+            # self._d = (self.an - self.a1) / (self.n - 1)
 
     def _calculate_s(self):
         if self._a1 is None:
             self._calculate_a1()
-            self._s = (self.a1 + self.an) * (self.n / 2)
+            self._s = (self.a1 + self.an) * Fraction(self.n, 2)
         elif self._an is None:
-            self._s = self.n * self.a1 + ((self.n - 1) * (self.n / 2)) * self.d
+            self._s = self.n * self.a1 + ((self.n - 1) * Fraction(self.n, 2)) * self.d
         elif self._n is None:
             self._calculate_n()
-            self._s = (self.a1 + self.an) * (self.n / 2)
+            self._s = (self.a1 + self.an) * Fraction(self.n, 2)
         else:
-            self._s = (self.a1 + self.an) * (self.n / 2)
+            self._s = (self.a1 + self.an) * Fraction(self.n, 2)
 
     @property
     def _parameters_dict(self):
