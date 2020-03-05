@@ -66,10 +66,10 @@ class ArithmeticProgression(object):
 
     def _calculate_n(self):
         if self._s is None:
-            self._n = ((self.an - self.a1) / self.d) + 1
+            self._n = Fraction((self.an - self.a1), self.d) + 1
         elif self._d is None:
-            self._n = 2 * self.s / (self.a1 + self.an)
-        self._n = Fraction(math.floor(self._n))
+            self._n = 2 * Fraction(self.s, (self.a1 + self.an))
+        self._n = Fraction(int(float(self._n)))
 
     def _calculate_d(self):
         if self.n == 1:
@@ -196,8 +196,8 @@ class ArithmeticProgression(object):
     def correction_factor(self):
         def _calculate_correction_factor():
             if self.correct_s:
-                actual_s = self.n * (self.a1 + self.an) / 2
-                factor = self.s / actual_s
+                actual_s = self.n * Fraction((self.a1 + self.an), 2)
+                factor = Fraction(self.s, actual_s)
                 return factor
             else:
                 return 1

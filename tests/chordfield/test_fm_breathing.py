@@ -260,14 +260,14 @@ class Test(AGTestCase):
             return parent_chord_field
 
         selected_nodes = fm.get_children()[2:5]
-        print(sum([node.quarter_duration for node in selected_nodes]))
+        # print(sum([node.quarter_duration for node in selected_nodes]))
         proportions = (1, 10, 1, 7, 1)
         breakpoints = (1, Fraction(1, 7), 1)
         breathe = make_breathe(nodes=selected_nodes, proportions=proportions,
                                breakpoints=breakpoints)
-        print(breathe.quarter_duration)
+        # print(breathe.quarter_duration)
         fm.merge_children(2, 3, 2)
-        print(fm.get_children()[1].quarter_duration)
+        # print(fm.get_children()[1].quarter_duration)
         fm.get_children()[1].simple_format = breathe.simple_format
         score = fm.get_score(show_fractal_orders=True, layer_number=fm.number_of_layers)
         score.max_division = 7

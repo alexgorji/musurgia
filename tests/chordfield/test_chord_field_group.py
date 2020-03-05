@@ -142,9 +142,16 @@ class Test(AGTestCase):
         cfg.add_child(cf_3)
         cfg.add_child(cf_4)
         cfg.add_child(cf_5)
+        #
+        # for child in cfg.children:
+        #     print(child.duration_generator.generator.parameters_dict)
+        #     values = [float(chord.quarter_duration) for chord in list(child)]
+        #     print(values)
+        #     print(sum(values))
+
         xml_path = path + 'test_5.xml'
         self.score.set_time_signatures(quarter_durations=times)
-        cfg.simple_format.to_stream_voice().add_to_score(self.score)
+        cfg.simple_format.to_stream_voice().add_to_score(self.score, part_number=1)
 
         self.score.max_division = 5
         self.score.write(xml_path)
