@@ -1,6 +1,8 @@
 import copy
 from itertools import chain
 
+from quicktions import Fraction
+
 from musurgia.arithmeticprogression import ArithmeticProgression, DAndSError
 from musurgia.basic_functions import dToX
 
@@ -135,14 +137,14 @@ class ValueGenerator(object):
     def duration(self, val):
         if val is not None:
             if self.children:
-                # raise ValueGeneratorException('parent\'s duration cannot be set')
-                children_duration = [child.duration for child in self.children]
-                if None in children_duration:
-                    raise ValueGeneratorException(
-                        'ValueGenerator: parent\'s duration cannot be set if not all children have a duration.')
-                factor = val / sum(children_duration)
-                for child in self.children:
-                    child.duration *= factor
+                raise ValueGeneratorException('parent\'s duration cannot be set')
+                # children_duration = [child.duration for child in self.children]
+                # if None in children_duration:
+                #     raise ValueGeneratorException(
+                #         'ValueGenerator: parent\'s duration cannot be set if not all children have a duration.')
+                # factor = Fraction(val, sum(children_duration))
+                # for child in self.children:
+                #     child.duration *= factor
         self._duration = val
         self._set_generator_duration()
 

@@ -73,10 +73,17 @@ class ChordField(object):
 
     def _set_up_value_generator(self, value_generator, value_mode=None):
         if not isinstance(value_generator, ValueGenerator):
-            raise TypeError('value_generator must be of type ValueGenerator  not {}'.format(
+            raise TypeError('value_generator must be of type ValueGenerator not {}'.format(
                 type(value_generator)))
         value_generator.value_mode = value_mode
-        value_generator.duration = self.quarter_duration
+        try:
+            value_generator.duration = self.quarter_duration
+        except ValueGeneratorException:
+            if self.quarter_duration is None:
+                raise ValueGeneratorException()
+            factor = Fraction(self.quarter_duration, value_generator.duration)
+            for child in value_generator.children:
+                child.duration *= factor
 
     @property
     def children(self):
@@ -124,8 +131,6 @@ class ChordField(object):
         for value_generator in self._get_value_generators():
             try:
                 value_generator.duration = self.quarter_duration
-                # if not(self.parent and value_generator in self.parent._get_generators()):
-                #     value_generator.duration = self.quarter_duration
             except ValueGeneratorException:
                 pass
 
