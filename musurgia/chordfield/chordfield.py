@@ -426,8 +426,12 @@ class Breathe(ChordField):
             fields[i].duration_generator = ValueGenerator(ArithmeticProgression(a1=a1, an=an, correct_s=True))
         for field in fields:
             if field.quarter_duration:
+                generator = field.duration_generator.generator
+                if generator.n == 0:
+                    raise BreatheException(
+                        'field {}: ArithmeticProgression: a1={} s={} n={}'.format(field.name, generator.a1, generator.s,
+                                                                                  generator.n))
                 self.add_child(field)
-
     @ChordField.quarter_duration.setter
     def quarter_duration(self, value):
         if value is not None:
