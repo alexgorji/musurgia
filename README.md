@@ -198,3 +198,7 @@ FractalMusic(): bug fixed issue #6
 
 v.1.10.3
 FractalMusic().simple_format: added (as alternative to ChordField)
+
+v.1.10.4
+ChordField problems: issues #6 and #7 fixed
+minor changes in ArithmeticProgression (using more fractions)
