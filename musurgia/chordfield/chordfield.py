@@ -432,6 +432,7 @@ class Breathe(ChordField):
                         'field {}: ArithmeticProgression: a1={} s={} n={}'.format(field.name, generator.a1, generator.s,
                                                                                   generator.n))
                 self.add_child(field)
+
     @ChordField.quarter_duration.setter
     def quarter_duration(self, value):
         if value is not None:

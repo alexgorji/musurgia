@@ -202,3 +202,6 @@ FractalMusic().simple_format: added (as alternative to ChordField)
 v.1.10.4
 ChordField problems: issues #6 and #7 fixed
 minor changes in ArithmeticProgression (using more fractions)
+
+v.1.10.5
+Breathe: checks fields for wrong parameters
