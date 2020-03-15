@@ -493,7 +493,11 @@ class FractalTree(Tree):
         if isinstance(number_of_children, int):
             if number_of_children == 0:
                 pass
-            if number_of_children > self.size or number_of_children < 0:
+            if number_of_children > self.size:
+                raise ValueError(
+                    'generate_children.number_of_children {} can not be a greater than size {}'.format(
+                        number_of_children, self.size))
+            if number_of_children < 0:
                 raise ValueError(
                     'generate_children.number_of_children {} must be a positive int'.format(number_of_children))
             else:
