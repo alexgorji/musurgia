@@ -282,15 +282,15 @@ class ChordField(object):
             next_chord = self.chord_generator.__next__()
 
         if next_chord:
-            if next_duration:
+            if next_duration is not None:
                 next_chord.quarter_duration = next_duration
-            if next_midi:
+            if next_midi is not None:
                 next_chord.midis = next_midi
         else:
-            if not next_duration:
-                raise NoNextChordError('no chord_ and duration_generator')
-            if not next_midi:
-                raise NoNextChordError('no chord_ and midi_generator')
+            if next_duration is None:
+                raise NoNextChordError('next_duration is None!')
+            if next_midi is None:
+                raise NoNextChordError('next_midi is None!')
             next_chord = TreeChord(quarter_duration=next_duration, midis=next_midi)
         if self._chords is None:
             self._chords = []

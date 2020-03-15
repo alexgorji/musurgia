@@ -56,13 +56,24 @@
           <step>B</step>
           <octave>4</octave>
         </pitch>
-        <duration>4</duration>
+        <duration>2</duration>
         <tie type="stop"/>
-        <tie type="start"/>
         <voice>1</voice>
-        <type>whole</type>
+        <type>half</type>
         <notations>
           <tied number="1" type="stop"/>
+        </notations>
+      </note>
+      <note>
+        <pitch>
+          <step>B</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>2</duration>
+        <tie type="start"/>
+        <voice>1</voice>
+        <type>half</type>
+        <notations>
           <tied number="1" type="start"/>
         </notations>
       </note>
@@ -80,12 +91,10 @@
         </pitch>
         <duration>4</duration>
         <tie type="stop"/>
-        <tie type="start"/>
         <voice>1</voice>
         <type>whole</type>
         <notations>
           <tied number="1" type="stop"/>
-          <tied number="1" type="start"/>
         </notations>
       </note>
     </part>
@@ -101,40 +110,16 @@
           <octave>4</octave>
         </pitch>
         <duration>4</duration>
-        <tie type="stop"/>
         <tie type="start"/>
         <voice>1</voice>
         <type>whole</type>
         <notations>
-          <tied number="1" type="stop"/>
           <tied number="1" type="start"/>
         </notations>
       </note>
     </part>
   </measure>
   <measure number="5">
-    <part id="p1">
-      <attributes>
-        <divisions>1</divisions>
-      </attributes>
-      <note>
-        <pitch>
-          <step>B</step>
-          <octave>4</octave>
-        </pitch>
-        <duration>4</duration>
-        <tie type="stop"/>
-        <tie type="start"/>
-        <voice>1</voice>
-        <type>whole</type>
-        <notations>
-          <tied number="1" type="stop"/>
-          <tied number="1" type="start"/>
-        </notations>
-      </note>
-    </part>
-  </measure>
-  <measure number="6">
     <part id="p1">
       <attributes>
         <divisions>1</divisions>
@@ -158,6 +143,19 @@
         <voice>1</voice>
         <type>half</type>
         <dot/>
+      </note>
+    </part>
+  </measure>
+  <measure number="6">
+    <part id="p1">
+      <attributes>
+        <divisions>1</divisions>
+      </attributes>
+      <note>
+        <rest/>
+        <duration>4</duration>
+        <voice>1</voice>
+        <type>whole</type>
       </note>
     </part>
   </measure>
