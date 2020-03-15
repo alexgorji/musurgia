@@ -203,5 +203,9 @@ v.1.10.4
 ChordField problems: issues #6 and #7 fixed
 minor changes in ArithmeticProgression (using more fractions)
 
-v.1.10.5
-Breathe: checks fields for wrong parameters
+v.1.10.5  
+Breathe: checks fields for wrong parameters  
+issue #11 bug fix FractalTree().generate_children(): optimise ValueError for number_of_children > ft.size  
+issue #12 bug fix FractalMusic().chord_field midi_generator generates rests (midi_value 0)  
+issue #9 FractalMusic().\__deepcopy__ tempo  
+

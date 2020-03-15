@@ -732,7 +732,7 @@ class FractalMusic(FractalTree):
 
     def __deepcopy__(self, memodict={}):
         copied = super().__deepcopy__()
-        copied.tempo = self.tempo
+        copied._tempo = self.tempo
         if self._midi_generator is not None:
             copied._midi_generator = self._midi_generator.__deepcopy__()
 
@@ -744,7 +744,7 @@ class FractalMusic(FractalTree):
         copied = self.__class__(proportions=self.proportions, tree_permutation_order=self.tree_permutation_order)
         copied.duration = self.duration
         copied.midi_generator = None
-        copied.tempo = self.tempo
+        copied._tempo = self.tempo
         copied.quarter_duration = self.quarter_duration
         copied.tree_directions = self.tree_directions
         copied.permute_directions = self.permute_directions
