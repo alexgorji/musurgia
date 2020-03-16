@@ -730,6 +730,10 @@ class FractalMusic(FractalTree):
         except TypeError:
             pass
 
+    def add_gliss(self):
+        if self.next_leaf
+        pass
+
     def __deepcopy__(self, memodict={}):
         copied = super().__deepcopy__()
         copied._tempo = self.tempo

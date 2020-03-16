@@ -237,41 +237,6 @@ class Tree(object):
                 return leaf
         return False
 
-    # def __deepcopy__(self, *args, **kwargs):
-    #     copied = self.__class__(*args, **kwargs)
-    #     for item in self.__dict__.items():
-    #         key = item[0]
-    #         value = item[1]
-    #
-    #         if key not in ('_children', '_up'):
-    #             try:
-    #                 new_value = value.__deepcopy__()
-    #             except (AttributeError, TypeError):
-    #                 new_value = value
-    #
-    #             copied.__dict__[key] = new_value
-    #
-    #     for child in self.get_children():
-    #         copied.add_child(child.__deepcopy__())
-    #
-    #     return copied
-    #
-    # def no_child_copy(self, *arguments, **kwargs):
-    #     copied = self.__class__(*arguments, **kwargs)
-    #     for item in self.__dict__.items():
-    #         key = item[0]
-    #         value = item[1]
-    #
-    #         if key not in ('_children', '_up'):
-    #             try:
-    #                 new_value = value.__copy__()
-    #             except (AttributeError, TypeError):
-    #                 new_value = value
-    #
-    #             copied.__dict__[key] = new_value
-    #
-    #     return copied
-
     @property
     def __next__(self):
         if not self.is_leaf:
