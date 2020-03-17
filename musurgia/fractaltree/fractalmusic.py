@@ -3,15 +3,20 @@ import os
 from math import ceil, floor
 
 from musicscore.musicstream.streamvoice import SimpleFormat
+from musicscore.musictree.midi import Midi
 from musicscore.musictree.treechord import TreeChord
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
+from musicscore.musicxml.elements.note import Notations, Notehead
+from musicscore.musicxml.types.complextypes.notations import Slide
 from prettytable import PrettyTable
 from quicktions import Fraction
 
 from musurgia import basic_functions, scaledvalues
 from musurgia.chordfield.chordfield import ChordField
+from musurgia.chordfield.valuegenerator import ValueGenerator
 from musurgia.fractaltree.fractaltree import FractalTree
 from musurgia.fractaltree.midigenerators import RelativeMidi, MidiGenerator
+from musurgia.interpolation import Interpolation
 from musurgia.permutation import permute
 from musurgia.quantize import get_quantized_values
 from musurgia.timing import Timing
@@ -730,9 +735,42 @@ class FractalMusic(FractalTree):
         except TypeError:
             pass
 
-    def add_gliss(self):
-        if self.next_leaf
-        pass
+    def add_gliss(self, unit=1):
+        position = self.position_in_tree
+        delta = unit - (position - int(position))
+        if delta > 0:
+            duration_generator = ValueGenerator(itertools.chain(iter([delta]), itertools.cycle([unit])))
+        else:
+            duration_generator = ValueGenerator(itertools.cycle([unit]))
+
+        chord_field = ChordField(duration_generator=duration_generator,
+                                 midi_generator=ValueGenerator(
+                                     Interpolation(start=self.midi_generator.midi_range[0],
+                                                   end=self.midi_generator.midi_range[1], grid=1)),
+                                 long_ending_mode='cut')
+        self.chord_field = chord_field
+        list(chord_field)
+        for chord in chord_field.chords[1:]:
+            chord.midis[0].notehead = Notehead('none')
+
+        if self.previous_leaf and self.previous_leaf.chord_field:
+            list(self.previous_leaf.chord_field)
+            for notation in self.previous_leaf.chord_field.chords[0].get_children_by_type(Notations):
+                for slide in notation.get_children_by_type(Slide):
+                    if slide.type == 'start':
+                        try:
+                            self.chord.add_slide('stop')
+                        except AttributeError:
+                            self.chord_field.chords[0].add_slide('stop')
+                        return
+
+        if self.next_leaf is None:
+            grace = TreeChord(midis=self.midi_generator.midi_range[1])
+            grace.add_slide('stop')
+            chord_field.chords[-1].add_grace_chords([grace], mode='post')
+
+        chord_field.chords[0].add_slide('start')
+        chord_field.chords[0].add_words('start')
 
     def __deepcopy__(self, memodict={}):
         copied = super().__deepcopy__()

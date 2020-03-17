@@ -4,16 +4,18 @@ from musurgia.agrandom import AGRandom
 
 
 class Interpolation(object):
-    def __init__(self, start, end, duration=None, key=None, mode=None, *args, **kwargs):
+    def __init__(self, start, end, duration=None, key=None, grid=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._start = None
         self._end = None
         self._duration = None
+        self._grid = None
+
         self.start = start
         self.end = end
-        self.mode = mode
         self.duration = duration
         self.key = key
+        self.grid = grid
 
     @property
     def start(self):
@@ -41,9 +43,24 @@ class Interpolation(object):
             val = Fraction(val)
         self._duration = val
 
+    @property
+    def grid(self):
+        return self._grid
+
+    @grid.setter
+    def grid(self, val):
+        self._grid = val
+
+    def _check_grid(self, val):
+        if self.grid:
+            return round(val / self.grid) * self.grid
+        else:
+            return val
+
     def __call__(self, x):
         self._check_x(x)
         output = Fraction(Fraction(x * (self.end - self.start)), self.duration) + self.start
+        output = self._check_grid(output)
         if self.key:
             return self.key(output)
         return output
@@ -120,6 +137,6 @@ class RandomInterpolation(Interpolation):
         return output
 
     def __deepcopy__(self, memodict={}):
-        copied = self.__class__(start=self.start, end=self.end, duration=self.duration, key=self.key, mode=self.mode)
+        copied = self.__class__(start=self.start, end=self.end, duration=self.duration, key=self.key)
         copied._random = self._random.__deepcopy__()
         return copied

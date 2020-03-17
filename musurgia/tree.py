@@ -1,6 +1,17 @@
 from musurgia.basic_functions import flatten
 
 
+class TreeError(BaseException):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
+class NotLeafError(TreeError):
+    def __init__(self, *args):
+        msg = '{} is not a leaf.'.format(self)
+        super().__init__(msg, *args)
+
+
 class Tree(object):
     """
     A simple Tree class
@@ -271,6 +282,34 @@ class Tree(object):
             index = siblings.index(self)
             if index != len(siblings) - 1:
                 return siblings[index + 1]
+            else:
+                return None
+        except (IndexError, AttributeError):
+            return None
+
+    @property
+    def previous_leaf(self):
+        if not self.is_leaf:
+            raise NotLeafError()
+        try:
+            leaves = flatten(self.get_root().get_leaves())
+            index = leaves.index(self)
+            if index != 0:
+                return leaves[index - 1]
+            else:
+                return None
+        except (IndexError, AttributeError):
+            return None
+
+    @property
+    def next_leaf(self):
+        if not self.is_leaf:
+            raise NotLeafError()
+        try:
+            leaves = flatten(self.get_root().get_leaves())
+            index = leaves.index(self)
+            if index != len(leaves) - 1:
+                return leaves[index + 1]
             else:
                 return None
         except (IndexError, AttributeError):

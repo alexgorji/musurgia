@@ -62,6 +62,11 @@
         </direction-type>
         <sound tempo="60"/>
       </direction>
+      <direction placement="above">
+        <direction-type>
+          <words>start</words>
+        </direction-type>
+      </direction>
       <attributes>
         <clef>
           <sign>G</sign>
@@ -73,13 +78,51 @@
           <step>C</step>
           <octave>4</octave>
         </pitch>
-        <duration>4</duration>
-        <tie type="start"/>
+        <duration>1</duration>
         <voice>1</voice>
-        <type>whole</type>
+        <type>quarter</type>
         <notations>
-          <tied number="1" type="start"/>
+          <slide number="1" type="start"/>
         </notations>
+        <lyric number="1">
+          <text>3</text>
+        </lyric>
+      </note>
+      <note>
+        <pitch>
+          <step>D</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <notehead>none</notehead>
+        <lyric number="1">
+          <text>3</text>
+        </lyric>
+      </note>
+      <note>
+        <pitch>
+          <step>E</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <notehead>none</notehead>
+        <lyric number="1">
+          <text>3</text>
+        </lyric>
+      </note>
+      <note>
+        <pitch>
+          <step>F</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <notehead>none</notehead>
         <lyric number="1">
           <text>3</text>
         </lyric>
@@ -93,31 +136,15 @@
       </attributes>
       <note>
         <pitch>
-          <step>C</step>
+          <step>G</step>
           <octave>4</octave>
         </pitch>
         <duration>3</duration>
-        <tie type="stop"/>
         <voice>1</voice>
         <type>quarter</type>
-        <notations>
-          <tied number="1" type="stop"/>
-        </notations>
-      </note>
-      <note>
-        <pitch>
-          <step>A</step>
-          <octave>4</octave>
-        </pitch>
-        <duration>3</duration>
-        <tie type="start"/>
-        <voice>1</voice>
-        <type>quarter</type>
-        <notations>
-          <tied number="1" type="start"/>
-        </notations>
+        <notehead>none</notehead>
         <lyric number="1">
-          <text>1</text>
+          <text>3</text>
         </lyric>
       </note>
       <note>
@@ -125,8 +152,22 @@
           <step>A</step>
           <octave>4</octave>
         </pitch>
+        <duration>3</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <notations>
+          <slide number="1" type="stop"/>
+        </notations>
+        <lyric number="1">
+          <text>1</text>
+        </lyric>
+      </note>
+      <note>
+        <pitch>
+          <step>B</step>
+          <octave>4</octave>
+        </pitch>
         <duration>2</duration>
-        <tie type="stop"/>
         <voice>1</voice>
         <type>quarter</type>
         <time-modification>
@@ -134,20 +175,25 @@
           <normal-notes>2</normal-notes>
           <normal-type>eighth</normal-type>
         </time-modification>
-        <notations>
-          <tied number="1" type="stop"/>
-        </notations>
+        <notehead>none</notehead>
         <notations>
           <tuplet number="1" type="start" bracket="yes" placement="above"/>
         </notations>
+        <lyric number="1">
+          <text>1</text>
+        </lyric>
       </note>
+      <direction placement="above">
+        <direction-type>
+          <words>start</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>C</step>
           <octave>5</octave>
         </pitch>
         <duration>1</duration>
-        <tie type="start"/>
         <voice>1</voice>
         <type>eighth</type>
         <time-modification>
@@ -157,7 +203,7 @@
         </time-modification>
         <beam number="1">end</beam>
         <notations>
-          <tied number="1" type="start"/>
+          <slide number="1" type="start"/>
         </notations>
         <notations>
           <tuplet number="1" type="stop" bracket="yes" placement="above"/>
@@ -168,18 +214,16 @@
       </note>
       <note>
         <pitch>
-          <step>C</step>
-          <octave>5</octave>
+          <step>B</step>
+          <octave>4</octave>
         </pitch>
         <duration>3</duration>
-        <tie type="start"/>
-        <tie type="stop"/>
         <voice>1</voice>
         <type>quarter</type>
-        <notations>
-          <tied number="1" type="start"/>
-          <tied number="1" type="stop"/>
-        </notations>
+        <notehead>none</notehead>
+        <lyric number="1">
+          <text>2</text>
+        </lyric>
       </note>
     </part>
   </measure>
@@ -197,15 +241,46 @@
       </barline>
       <note>
         <pitch>
-          <step>C</step>
-          <octave>5</octave>
+          <step>B</step>
+          <alter>-1</alter>
+          <octave>4</octave>
         </pitch>
-        <duration>2</duration>
-        <tie type="stop"/>
+        <duration>1</duration>
         <voice>1</voice>
-        <type>half</type>
+        <type>quarter</type>
+        <accidental>flat</accidental>
+        <notehead>none</notehead>
+        <lyric number="1">
+          <text>2</text>
+        </lyric>
+      </note>
+      <note>
+        <pitch>
+          <step>A</step>
+          <alter>-1</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <accidental>flat</accidental>
+        <notehead>none</notehead>
+        <lyric number="1">
+          <text>2</text>
+        </lyric>
+      </note>
+      <note>
+        <grace/>
+        <pitch>
+          <step>F</step>
+          <alter>1</alter>
+          <octave>4</octave>
+        </pitch>
+        <voice>1</voice>
+        <type>eighth</type>
+        <accidental>sharp</accidental>
         <notations>
-          <tied number="1" type="stop"/>
+          <slide number="1" type="stop"/>
         </notations>
       </note>
     </part>

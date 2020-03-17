@@ -1,6 +1,8 @@
 from unittest import TestCase
 
-from musurgia.interpolation import InterpolationGroup, RandomInterpolation
+from quicktions import Fraction
+
+from musurgia.interpolation import InterpolationGroup, RandomInterpolation, Interpolation
 
 
 class Test(TestCase):
@@ -33,4 +35,11 @@ class Test(TestCase):
         ri = RandomInterpolation(start=[60, 62, 66, 68], end=[67, 69, 73, 75], duration=13, seed=10)
         test_case = [ri.__call__(x) for x in range(0, 13)]
         expected = [60, 68, 67, 62, 66, 69, 67, 68, 66, 73, 69, 68, 73]
+        self.assertEqual(expected, test_case)
+
+    def test_4(self):
+        interpolation = Interpolation(start=0, end=12, duration=12, grid=0.5)
+        test_case = [interpolation.__call__(Fraction(x, 3)) for x in range(0, 12 * 3)]
+        expected = [0.0, 0.5, 0.5, 1.0, 1.5, 1.5, 2.0, 2.5, 2.5, 3.0, 3.5, 3.5, 4.0, 4.5, 4.5, 5.0, 5.5, 5.5, 6.0, 6.5,
+                    6.5, 7.0, 7.5, 7.5, 8.0, 8.5, 8.5, 9.0, 9.5, 9.5, 10.0, 10.5, 10.5, 11.0, 11.5, 11.5]
         self.assertEqual(expected, test_case)

@@ -209,3 +209,7 @@ issue #11 bug fix FractalTree().generate_children(): optimise ValueError for num
 issue #12 bug fix FractalMusic().chord_field midi_generator generates rests (midi_value 0)  
 issue #9 FractalMusic().\__deepcopy__ tempo  
 
+v.1.10.6
+Tree().next_leaf: new property
+Tree().previous_leaf: new property
+Interpolation().grid: new attribute
