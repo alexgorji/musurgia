@@ -3,7 +3,6 @@ import os
 from math import ceil, floor
 
 from musicscore.musicstream.streamvoice import SimpleFormat
-from musicscore.musictree.midi import Midi
 from musicscore.musictree.treechord import TreeChord
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 from musicscore.musicxml.elements.note import Notations, Notehead
@@ -736,6 +735,10 @@ class FractalMusic(FractalTree):
             pass
 
     def add_gliss(self, unit=1):
+        def get_slides(chord):
+            return [slide for notation in chord.get_children_by_type(Notations) for slide in
+                    notation.get_children_by_type(Slide)]
+
         position = self.position_in_tree
         delta = unit - (position - int(position))
         if delta > 0:
@@ -750,27 +753,24 @@ class FractalMusic(FractalTree):
                                  long_ending_mode='cut')
         self.chord_field = chord_field
         list(chord_field)
+
         for chord in chord_field.chords[1:]:
             chord.midis[0].notehead = Notehead('none')
 
         if self.previous_leaf and self.previous_leaf.chord_field:
             list(self.previous_leaf.chord_field)
-            for notation in self.previous_leaf.chord_field.chords[0].get_children_by_type(Notations):
-                for slide in notation.get_children_by_type(Slide):
-                    if slide.type == 'start':
-                        try:
-                            self.chord.add_slide('stop')
-                        except AttributeError:
-                            self.chord_field.chords[0].add_slide('stop')
-                        return
-
+            previous_slides_types = [slide.type for slide in get_slides(self.previous_leaf.chord_field.chords[0])]
+            if 'start' in previous_slides_types:
+                try:
+                    self.chord.add_slide('stop')
+                except AttributeError:
+                    self.chord_field.chords[0].add_slide('stop')
         if self.next_leaf is None:
             grace = TreeChord(midis=self.midi_generator.midi_range[1])
             grace.add_slide('stop')
             chord_field.chords[-1].add_grace_chords([grace], mode='post')
 
         chord_field.chords[0].add_slide('start')
-        chord_field.chords[0].add_words('start')
 
     def __deepcopy__(self, memodict={}):
         copied = super().__deepcopy__()

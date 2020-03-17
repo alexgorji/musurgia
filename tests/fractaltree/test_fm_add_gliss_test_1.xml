@@ -62,11 +62,6 @@
         </direction-type>
         <sound tempo="60"/>
       </direction>
-      <direction placement="above">
-        <direction-type>
-          <words>start</words>
-        </direction-type>
-      </direction>
       <attributes>
         <clef>
           <sign>G</sign>
@@ -157,6 +152,7 @@
         <type>quarter</type>
         <notations>
           <slide number="1" type="stop"/>
+          <slide number="1" type="start"/>
         </notations>
         <lyric number="1">
           <text>1</text>
@@ -183,11 +179,6 @@
           <text>1</text>
         </lyric>
       </note>
-      <direction placement="above">
-        <direction-type>
-          <words>start</words>
-        </direction-type>
-      </direction>
       <note>
         <pitch>
           <step>C</step>
@@ -203,6 +194,7 @@
         </time-modification>
         <beam number="1">end</beam>
         <notations>
+          <slide number="1" type="stop"/>
           <slide number="1" type="start"/>
         </notations>
         <notations>
