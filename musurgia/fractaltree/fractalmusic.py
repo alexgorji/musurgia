@@ -739,7 +739,7 @@ class FractalMusic(FractalTree):
             return [slide for notation in chord.get_children_by_type(Notations) for slide in
                     notation.get_children_by_type(Slide)]
 
-        position = self.position_in_tree
+        position = self.quarter_position_in_tree
         delta = unit - (position - int(position))
         if delta > 0:
             duration_generator = ValueGenerator(itertools.chain(iter([delta]), itertools.cycle([unit])))

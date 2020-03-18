@@ -215,3 +215,6 @@ Tree().previous_leaf: new property
 Interpolation().grid: new attribute
 FractalMusic().add_gliss(): new method
 musicscore 1.2.15
+
+v.1.10.7
+issue #14 bug fix FractalMusic().add_gliss(): position_in_tree changed to quarter_position_in_tree
