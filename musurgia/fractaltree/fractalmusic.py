@@ -734,14 +734,14 @@ class FractalMusic(FractalTree):
         except TypeError:
             pass
 
-    def add_gliss(self, unit=1, grid=1, show_heads=False):
+    def add_gliss(self, unit=1, grid=1, min_quarter_duration=Fraction(1, 8), show_heads=False):
         def get_slides(chord):
             return [slide for notation in chord.get_children_by_type(Notations) for slide in
                     notation.get_children_by_type(Slide)]
 
         position = self.quarter_position_in_tree
         delta = unit - (position - int(position))
-        if delta > 0:
+        if delta >= min_quarter_duration:
             duration_generator = ValueGenerator(itertools.chain(iter([delta]), itertools.cycle([unit])))
         else:
             duration_generator = ValueGenerator(itertools.cycle([unit]))
@@ -750,12 +750,16 @@ class FractalMusic(FractalTree):
                                  midi_generator=ValueGenerator(
                                      Interpolation(start=self.midi_generator.midi_range[0],
                                                    end=self.midi_generator.midi_range[1], grid=grid)),
-                                 long_ending_mode='cut')
+                                 long_ending_mode='cut',
+                                 short_ending_mode='stretch')
+
         first_chord = self.chord.__deepcopy__()
         self.chord_field = chord_field
         list(chord_field)
         first_chord.quarter_duration = chord_field.chords[0].quarter_duration
         chord_field.chords[0] = first_chord
+        if chord_field.chords[-1].quarter_duration < min_quarter_duration:
+            chord_field._chords = chord_field._chords[:-1]
 
         for chord in chord_field.chords[1:]:
             for midi in chord.midis:
