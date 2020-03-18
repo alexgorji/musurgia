@@ -214,3 +214,4 @@ Tree().next_leaf: new property
 Tree().previous_leaf: new property
 Interpolation().grid: new attribute
 FractalMusic().add_gliss(): new method
+musicscore 1.2.15

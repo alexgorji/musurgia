@@ -75,6 +75,17 @@
         </notations>
       </note>
       <note>
+        <grace/>
+        <pitch>
+          <step>F</step>
+          <alter>1</alter>
+          <octave>4</octave>
+        </pitch>
+        <voice>1</voice>
+        <type>eighth</type>
+        <accidental>sharp</accidental>
+      </note>
+      <note>
         <rest/>
         <duration>3</duration>
         <voice>1</voice>
