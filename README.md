@@ -213,3 +213,4 @@ v.1.10.6
 Tree().next_leaf: new property
 Tree().previous_leaf: new property
 Interpolation().grid: new attribute
+FractalMusic().add_gliss(): new method

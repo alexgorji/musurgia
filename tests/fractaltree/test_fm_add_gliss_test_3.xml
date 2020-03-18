@@ -47,7 +47,7 @@
   <measure number="1">
     <part id="p1">
       <attributes>
-        <divisions>1</divisions>
+        <divisions>3</divisions>
         <time>
           <beats>4</beats>
           <beat-type>4</beat-type>
@@ -70,17 +70,127 @@
       </attributes>
       <note>
         <pitch>
+          <step>E</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>3</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <notehead filled="no">diamond</notehead>
+        <notations>
+          <slide number="1" type="start"/>
+        </notations>
+        <lyric number="1">
+          <text>1</text>
+        </lyric>
+      </note>
+      <note>
+        <pitch>
+          <step>F</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>2</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <time-modification>
+          <actual-notes>3</actual-notes>
+          <normal-notes>2</normal-notes>
+          <normal-type>eighth</normal-type>
+        </time-modification>
+        <notehead>none</notehead>
+        <notations>
+          <tuplet number="1" type="start" bracket="yes" placement="above"/>
+        </notations>
+        <lyric number="1">
+          <text>1</text>
+        </lyric>
+      </note>
+      <note>
+        <pitch>
+          <step>A</step>
+          <alter>-1</alter>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>eighth</type>
+        <accidental>flat</accidental>
+        <time-modification>
+          <actual-notes>3</actual-notes>
+          <normal-notes>2</normal-notes>
+          <normal-type>eighth</normal-type>
+        </time-modification>
+        <notehead filled="no">diamond</notehead>
+        <beam number="1">end</beam>
+        <notations>
+          <slide number="1" type="stop"/>
+          <slide number="1" type="start"/>
+        </notations>
+        <notations>
+          <tuplet number="1" type="stop" bracket="yes" placement="above"/>
+        </notations>
+        <lyric number="1">
+          <text>2</text>
+        </lyric>
+      </note>
+      <note>
+        <pitch>
+          <step>G</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>3</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <notehead>none</notehead>
+        <lyric number="1">
+          <text>2</text>
+        </lyric>
+      </note>
+      <note>
+        <pitch>
+          <step>F</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>3</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <notehead>none</notehead>
+        <lyric number="1">
+          <text>2</text>
+        </lyric>
+      </note>
+    </part>
+  </measure>
+  <measure number="2">
+    <part id="p1">
+      <attributes>
+        <divisions>1</divisions>
+      </attributes>
+      <note>
+        <pitch>
+          <step>D</step>
+          <octave>4</octave>
+        </pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+        <notehead>none</notehead>
+        <lyric number="1">
+          <text>2</text>
+        </lyric>
+      </note>
+      <note>
+        <pitch>
           <step>C</step>
           <octave>4</octave>
         </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
+        <notehead filled="no">diamond</notehead>
         <notations>
+          <slide number="1" type="stop"/>
           <slide number="1" type="start"/>
-          <articulations>
-            <accent/>
-          </articulations>
         </notations>
         <lyric number="1">
           <text>3</text>
@@ -94,20 +204,7 @@
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
-        <lyric number="1">
-          <text>3</text>
-        </lyric>
-      </note>
-      <note>
-        <pitch>
-          <step>E</step>
-          <alter>-0.5</alter>
-          <octave>4</octave>
-        </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <accidental>quarter-flat</accidental>
+        <notehead>none</notehead>
         <lyric number="1">
           <text>3</text>
         </lyric>
@@ -115,115 +212,14 @@
       <note>
         <pitch>
           <step>F</step>
-          <alter>0.5</alter>
           <octave>4</octave>
         </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
-        <accidental>quarter-sharp</accidental>
+        <notehead>none</notehead>
         <lyric number="1">
           <text>3</text>
-        </lyric>
-      </note>
-    </part>
-  </measure>
-  <measure number="2">
-    <part id="p1">
-      <attributes>
-        <divisions>3</divisions>
-      </attributes>
-      <note>
-        <pitch>
-          <step>G</step>
-          <octave>4</octave>
-        </pitch>
-        <duration>3</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <lyric number="1">
-          <text>3</text>
-        </lyric>
-      </note>
-      <note>
-        <pitch>
-          <step>A</step>
-          <octave>4</octave>
-        </pitch>
-        <duration>3</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <notations>
-          <slide number="1" type="stop"/>
-          <slide number="1" type="start"/>
-          <articulations>
-            <accent/>
-          </articulations>
-        </notations>
-        <lyric number="1">
-          <text>1</text>
-        </lyric>
-      </note>
-      <note>
-        <pitch>
-          <step>B</step>
-          <octave>4</octave>
-        </pitch>
-        <duration>2</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <time-modification>
-          <actual-notes>3</actual-notes>
-          <normal-notes>2</normal-notes>
-          <normal-type>eighth</normal-type>
-        </time-modification>
-        <notations>
-          <tuplet number="1" type="start" bracket="yes" placement="above"/>
-        </notations>
-        <lyric number="1">
-          <text>1</text>
-        </lyric>
-      </note>
-      <note>
-        <pitch>
-          <step>C</step>
-          <octave>5</octave>
-        </pitch>
-        <duration>1</duration>
-        <voice>1</voice>
-        <type>eighth</type>
-        <time-modification>
-          <actual-notes>3</actual-notes>
-          <normal-notes>2</normal-notes>
-          <normal-type>eighth</normal-type>
-        </time-modification>
-        <beam number="1">end</beam>
-        <notations>
-          <slide number="1" type="stop"/>
-          <slide number="1" type="start"/>
-          <articulations>
-            <accent/>
-          </articulations>
-        </notations>
-        <notations>
-          <tuplet number="1" type="stop" bracket="yes" placement="above"/>
-        </notations>
-        <lyric number="1">
-          <text>2</text>
-        </lyric>
-      </note>
-      <note>
-        <pitch>
-          <step>C</step>
-          <alter>-0.5</alter>
-          <octave>5</octave>
-        </pitch>
-        <duration>3</duration>
-        <voice>1</voice>
-        <type>quarter</type>
-        <accidental>quarter-flat</accidental>
-        <lyric number="1">
-          <text>2</text>
         </lyric>
       </note>
     </part>
@@ -242,42 +238,39 @@
       </barline>
       <note>
         <pitch>
-          <step>A</step>
-          <alter>0.5</alter>
+          <step>G</step>
           <octave>4</octave>
         </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
-        <accidental>quarter-sharp</accidental>
+        <notehead>none</notehead>
         <lyric number="1">
-          <text>2</text>
+          <text>3</text>
         </lyric>
       </note>
       <note>
         <pitch>
-          <step>A</step>
-          <alter>-1</alter>
+          <step>B</step>
           <octave>4</octave>
         </pitch>
         <duration>1</duration>
         <voice>1</voice>
         <type>quarter</type>
-        <accidental>flat</accidental>
+        <notehead>none</notehead>
         <lyric number="1">
-          <text>2</text>
+          <text>3</text>
         </lyric>
       </note>
       <note>
         <grace/>
         <pitch>
-          <step>F</step>
-          <alter>1</alter>
-          <octave>4</octave>
+          <step>C</step>
+          <octave>5</octave>
         </pitch>
         <voice>1</voice>
         <type>eighth</type>
-        <accidental>sharp</accidental>
+        <notehead filled="no">diamond</notehead>
         <notations>
           <slide number="1" type="stop"/>
         </notations>

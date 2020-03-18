@@ -734,7 +734,7 @@ class FractalMusic(FractalTree):
         except TypeError:
             pass
 
-    def add_gliss(self, unit=1):
+    def add_gliss(self, unit=1, grid=1, show_heads=False):
         def get_slides(chord):
             return [slide for notation in chord.get_children_by_type(Notations) for slide in
                     notation.get_children_by_type(Slide)]
@@ -749,13 +749,21 @@ class FractalMusic(FractalTree):
         chord_field = ChordField(duration_generator=duration_generator,
                                  midi_generator=ValueGenerator(
                                      Interpolation(start=self.midi_generator.midi_range[0],
-                                                   end=self.midi_generator.midi_range[1], grid=1)),
+                                                   end=self.midi_generator.midi_range[1], grid=grid)),
                                  long_ending_mode='cut')
+        first_chord = self.chord.__deepcopy__()
         self.chord_field = chord_field
         list(chord_field)
+        first_chord.quarter_duration = chord_field.chords[0].quarter_duration
+        chord_field.chords[0] = first_chord
 
         for chord in chord_field.chords[1:]:
-            chord.midis[0].notehead = Notehead('none')
+            for midi in chord.midis:
+                if show_heads is False:
+                    midi.notehead = Notehead('none')
+                    alter = midi.get_pitch_rest().alter
+                    if alter:
+                        midi.transpose(-alter.value)
 
         if self.previous_leaf and self.previous_leaf.chord_field:
             list(self.previous_leaf.chord_field)
