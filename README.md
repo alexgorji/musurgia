@@ -219,3 +219,5 @@ musicscore 1.2.15
 v.1.10.7
 issue #14 bug fix FractalMusic().add_gliss(): position_in_tree changed to quarter_position_in_tree
 FractalMusic().add_gliss(): attribute min_quarter_duration added
+musicscore 1.2.16
+FractalMusic().add_gliss(): if show_heads is False: midi.accidental.force_hide = True

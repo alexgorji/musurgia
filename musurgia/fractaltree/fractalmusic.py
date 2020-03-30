@@ -768,6 +768,7 @@ class FractalMusic(FractalTree):
                     alter = midi.get_pitch_rest().alter
                     if alter:
                         midi.transpose(-alter.value)
+                    midi.accidental.force_hide = True
 
         if self.previous_leaf and self.previous_leaf.chord_field:
             list(self.previous_leaf.chord_field)
