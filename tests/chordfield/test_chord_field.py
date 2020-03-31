@@ -239,21 +239,7 @@ class Test(AGTestCase):
         self.assertCompareFiles(xml_path)
 
     def test_17(self):
-        parent_field = ChordField()
-        child_field_1 = ChordField(quarter_duration=5,
-                                   duration_generator=ValueGenerator(cycle([1])),
-                                   midi_generator=ValueGenerator(cycle([60]))
-                                   )
-        child_field_2 = ChordField(quarter_duration=10,
-                                   duration_generator=ValueGenerator(cycle([2])),
-                                   midi_generator=ValueGenerator(cycle([61]))
-                                   )
-        parent_field.add_child(child_field_1)
-        parent_field.add_child(child_field_2)
-
-        sf = parent_field.simple_format
-        self.score.set_time_signatures(quarter_durations=ceil(parent_field.quarter_duration))
-        sf.to_stream_voice().add_to_score(self.score)
-        xml_path = path + '_test_17.xml'
-        self.score.write(xml_path)
-        self.assertCompareFiles(xml_path)
+        chord_field = ChordField(quarter_duration=1)
+        actual = [chord.duration for chord in chord_field.chords]
+        expected = [1]
+        self.assertEqual(actual, expected)
