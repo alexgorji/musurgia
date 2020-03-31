@@ -54,20 +54,20 @@ class ArithmeticProgression(object):
         if self._d is None:
             # self._a1 = (2. * self.s / self.n) - self.an
             self._a1 = Fraction(2 * self.s, self.n) - self.an
-        elif self._s is None:
+        else:
             self._a1 = self.an - ((self.n - 1) * self.d)
 
     def _calculate_an(self):
         if self._s is None:
             self._an = self.a1 + (self.n - 1) * self.d
-        elif self._d is None:
+        else:
             self._an = Fraction(2 * self.s, self.n) - self.a1
             # self._an = (2. * self.s / self.n) - self.a1
 
     def _calculate_n(self):
         if self._s is None:
             self._n = Fraction((self.an - self.a1), self.d) + 1
-        elif self._d is None:
+        else:
             self._n = 2 * Fraction(self.s, (self.a1 + self.an))
         self._n = Fraction(int(float(self._n)))
 

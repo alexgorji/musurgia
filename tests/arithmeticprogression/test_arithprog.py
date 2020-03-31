@@ -65,3 +65,12 @@ class Test(TestCase):
         expected = 1
         actual = self.arith_prog.d
         self.assertEqual(expected, actual)
+
+    def test_8(self):
+        self.arith_prog.n = 5
+        self.arith_prog.a1 = 1
+        self.arith_prog.s = 15
+        self.arith_prog.d
+        expected = 5
+        actual = self.arith_prog.an
+        self.assertEqual(expected, actual)
