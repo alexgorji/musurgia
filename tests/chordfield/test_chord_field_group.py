@@ -344,3 +344,14 @@ class Test(AGTestCase):
         expected = [2, 5, 2, 9, 2]
         actual = [child.quarter_duration for child in breathe.children]
         self.assertEqual(expected, actual)
+
+    def test_15(self):
+        field = ChordField(quarter_duration=2,
+                           duration_generator=ValueGenerator(cycle([1])),
+                           midi_generator=ValueGenerator(cycle([71])))
+        print(field.chords)
+        # field = ChordField(quarter_duration=3)
+        # list(field)
+        # expected = 3 * [(1, 71)]
+        # actual = [(chord.quarter_duration, chord.midis[0].value) for chord in field.chords]
+        # self.assertEqual(expected, actual)

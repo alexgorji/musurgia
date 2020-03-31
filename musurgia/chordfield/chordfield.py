@@ -1,3 +1,5 @@
+from itertools import cycle
+
 from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treechord import TreeChord
 from quicktions import Fraction
@@ -157,6 +159,11 @@ class ChordField(object):
 
     @property
     def duration_generator(self):
+        # if not self._duration_generator:
+        #     if self.parent and self.parent.duration_generator:
+        #         return self.parent.duration_generator
+        #     else:
+        #         self.duration_generator = ValueGenerator(cycle([1]))
         if not self._duration_generator and self.parent and self.parent.duration_generator:
             return self.parent.duration_generator
         return self._duration_generator
@@ -169,6 +176,11 @@ class ChordField(object):
 
     @property
     def midi_generator(self):
+        # if not self._midi_generator:
+        #     if self.parent and self.parent.midi_generator:
+        #         return self.parent.midi_generator
+        #     else:
+        #         self.midi_generator = ValueGenerator(cycle([71]))
         if not self._midi_generator and self.parent and self.parent.midi_generator:
             return self.parent.midi_generator
         return self._midi_generator
@@ -244,11 +256,11 @@ class ChordField(object):
 
     @property
     def chords(self):
+        list(self)
         return self._chords
 
     @property
     def simple_format(self):
-        list(self)
         sf = SimpleFormat()
         if self.chords:
             for chord in self.chords:
@@ -298,8 +310,8 @@ class ChordField(object):
         return next_chord
 
     def _check_quarter_duration(self):
-        if self.chords:
-            delta = sum([chord.quarter_duration for chord in self.chords]) - self.quarter_duration
+        if self._chords:
+            delta = sum([chord.quarter_duration for chord in self._chords]) - self.quarter_duration
             if delta > 0:
                 if self.long_ending_mode == 'self_extend':
                     if self.parent:
@@ -313,16 +325,16 @@ class ChordField(object):
                     except ParentSetQuarterDurationError:
                         self.children[-1].quarter_duration += delta
                 elif self.long_ending_mode == 'cut':
-                    self.chords[-1].quarter_duration -= delta
+                    self._chords[-1].quarter_duration -= delta
                 elif self.long_ending_mode in ['omit', 'omit_and_add_rest', 'omit_and_stretch']:
-                    self.chords.pop()
-                    new_delta = self.quarter_duration - sum([chord.quarter_duration for chord in self.chords])
+                    self._chords.pop()
+                    new_delta = self.quarter_duration - sum([chord.quarter_duration for chord in self._chords])
                     if self.long_ending_mode == 'omit_and_add_rest':
                         new_chord = TreeChord(midis=0, quarter_duration=new_delta)
                         new_chord.zero_mode = 'remove'
-                        self.chords.append(new_chord)
+                        self._chords.append(new_chord)
                     elif self.long_ending_mode == 'omit_and_stretch':
-                        self.chords[-1].quarter_duration += new_delta
+                        self._chords[-1].quarter_duration += new_delta
                     else:
                         self.quarter_duration -= new_delta
                 else:
@@ -334,9 +346,9 @@ class ChordField(object):
                 elif self.short_ending_mode == 'add_rest':
                     new_chord = TreeChord(midis=0, quarter_duration=-delta)
                     new_chord.zero_mode = 'remove'
-                    self.chords.append(new_chord)
+                    self._chords.append(new_chord)
                 elif self.short_ending_mode == 'stretch':
-                    self.chords[-1].quarter_duration -= delta
+                    self._chords[-1].quarter_duration -= delta
                 else:
                     raise ShortEndingError(delta)
             else:

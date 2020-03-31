@@ -221,3 +221,6 @@ issue #14 bug fix FractalMusic().add_gliss(): position_in_tree changed to quarte
 FractalMusic().add_gliss(): attribute min_quarter_duration added
 musicscore 1.2.16
 FractalMusic().add_gliss(): if show_heads is False: midi.accidental.force_hide = True
+
+v.1.10.8
+ChordField() issue #17: calling property chords will now call list(self) first
