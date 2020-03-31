@@ -1,5 +1,3 @@
-from itertools import cycle
-
 from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treechord import TreeChord
 from quicktions import Fraction
@@ -39,6 +37,12 @@ class ShortEndingError(ChordFieldException):
 class ParentSetQuarterDurationError(ChordFieldException):
     def __init__(self, *args):
         msg = 'parent\'s quarter_duration cannot be set'
+        super().__init__(msg, *args)
+
+
+class ParentSetEndingModesError(ChordFieldException):
+    def __init__(self, *args):
+        msg = 'parent\'s endings modes cannot be set'
         super().__init__(msg, *args)
 
 
@@ -96,6 +100,10 @@ class ChordField(object):
         return self._parent
 
     def add_child(self, child):
+        if self._quarter_duration:
+            raise ParentSetQuarterDurationError()
+        if self.long_ending_mode is not None or self.short_ending_mode is not None:
+            raise ParentSetEndingModesError()
         if not isinstance(child, ChordField):
             raise TypeError()
         if self._children is None:
@@ -128,6 +136,7 @@ class ChordField(object):
                 pass
         child._parent = self
         self._update_durations()
+        return child
 
     def _update_durations(self):
         for value_generator in self._get_value_generators():
@@ -159,11 +168,6 @@ class ChordField(object):
 
     @property
     def duration_generator(self):
-        # if not self._duration_generator:
-        #     if self.parent and self.parent.duration_generator:
-        #         return self.parent.duration_generator
-        #     else:
-        #         self.duration_generator = ValueGenerator(cycle([1]))
         if not self._duration_generator and self.parent and self.parent.duration_generator:
             return self.parent.duration_generator
         return self._duration_generator
@@ -176,11 +180,6 @@ class ChordField(object):
 
     @property
     def midi_generator(self):
-        # if not self._midi_generator:
-        #     if self.parent and self.parent.midi_generator:
-        #         return self.parent.midi_generator
-        #     else:
-        #         self.midi_generator = ValueGenerator(cycle([71]))
         if not self._midi_generator and self.parent and self.parent.midi_generator:
             return self.parent.midi_generator
         return self._midi_generator
@@ -220,6 +219,8 @@ class ChordField(object):
 
     @long_ending_mode.setter
     def long_ending_mode(self, val):
+        if val is not None and self.children is not None:
+            raise ParentSetEndingModesError()
         """
         :param val: can be None, 'self_extend', 'cut', 'omit', 'omit_and_add_rest', 'omit_and_stretch'
         for dealing with last chord, if it is too long and ends after self.quarter_duration
@@ -241,6 +242,8 @@ class ChordField(object):
 
     @short_ending_mode.setter
     def short_ending_mode(self, val):
+        if val is not None and self.children is not None:
+            raise ParentSetEndingModesError()
         """
         :param val: can be None, 'self_shrink', 'add_rest', 'stretch'
         for dealing with last chord, if it is too long and ends after self.quarter_duration
@@ -256,7 +259,10 @@ class ChordField(object):
 
     @property
     def chords(self):
-        list(self)
+        if self.children:
+            self._chords = [chord for child in self.children for chord in child.chords]
+        else:
+            list(self)
         return self._chords
 
     @property

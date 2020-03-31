@@ -43,15 +43,16 @@ class Test(AGTestCase):
         # fields: midi_generators
         # group: duration_generator with __next__
         cfg = ChordField(
-            duration_generator=ValueGenerator(AGRandom(pool=[0.2, 0.4, 0.8, 1.6], seed=10)),
-            long_ending_mode='self_extend'
+            duration_generator=ValueGenerator(AGRandom(pool=[0.2, 0.4, 0.8, 1.6], seed=10))
         )
         cf_1 = ChordField(quarter_duration=3,
                           midi_generator=ValueGenerator(cycle([60, 61, 64, 66])),
+                          long_ending_mode='self_extend'
                           )
         cf_2 = ChordField(quarter_duration=6,
-                          midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72]))
-                          )
+                          midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])),
+                          long_ending_mode='self_extend')
+
         # cfg = ChordFieldGroup(duration_generator=AGRandom(pool=[0.2, 0.4, 0.8, 1.6], seed=10))
         cfg.add_child(cf_1)
         cfg.add_child(cf_2)
@@ -346,19 +347,15 @@ class Test(AGTestCase):
         self.assertEqual(expected, actual)
 
     def test_15(self):
-        field = ChordField(quarter_duration=2)
-        child_1 = ChordField(
+        field = ChordField()
+        child_1 = field.add_child(ChordField(
             midi_generator=ValueGenerator(cycle([71])),
             duration_generator=ValueGenerator(cycle([1])),
-            quarter_duration=1)
-        # field.add_child(child_1)
-        # child_2 = field.add_child(ChordField(midi_generator=ValueGenerator(cycle([71])),
-        #                                      duration_generator=ValueGenerator(cycle([1])),
-        #                                      quarter_duration=1))
-        #
-        # print([chord.quarter_duration for chord in field.chords])
-        # field = ChordField(quarter_duration=3)
-        # list(field)
-        # expected = 3 * [(1, 71)]
-        # actual = [(chord.quarter_duration, chord.midis[0].value) for chord in field.chords]
-        # self.assertEqual(expected, actual)
+            quarter_duration=1))
+        child_2 = field.add_child(ChordField(
+            midi_generator=ValueGenerator(cycle([71])),
+            duration_generator=ValueGenerator(cycle([1])),
+            quarter_duration=1))
+        actual = field.chords
+        expected = child_1.chords + child_2.chords
+        self.assertEqual(expected, actual)

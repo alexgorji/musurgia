@@ -224,3 +224,6 @@ FractalMusic().add_gliss(): if show_heads is False: midi.accidental.force_hide =
 
 v.1.10.8
 ChordField() issue #17: calling property chords will now call list(self) first
+ChordField() raises Error if you try to add_child to a ChordField with a given quarter_duration
+ChordField() add_child: return child
+ChordFiled() issue #15: parent.chords = child_1.chords + child_2.chords etc.
