@@ -346,10 +346,17 @@ class Test(AGTestCase):
         self.assertEqual(expected, actual)
 
     def test_15(self):
-        field = ChordField(quarter_duration=2,
-                           duration_generator=ValueGenerator(cycle([1])),
-                           midi_generator=ValueGenerator(cycle([71])))
-        print(field.chords)
+        field = ChordField(quarter_duration=2)
+        child_1 = ChordField(
+            midi_generator=ValueGenerator(cycle([71])),
+            duration_generator=ValueGenerator(cycle([1])),
+            quarter_duration=1)
+        # field.add_child(child_1)
+        # child_2 = field.add_child(ChordField(midi_generator=ValueGenerator(cycle([71])),
+        #                                      duration_generator=ValueGenerator(cycle([1])),
+        #                                      quarter_duration=1))
+        #
+        # print([chord.quarter_duration for chord in field.chords])
         # field = ChordField(quarter_duration=3)
         # list(field)
         # expected = 3 * [(1, 71)]
