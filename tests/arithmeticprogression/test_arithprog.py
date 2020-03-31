@@ -57,3 +57,11 @@ class Test(TestCase):
         actual = {'a1': 1, 'an': 29, 'n': 15, 'd': 2, 's': 225.0}
         expected = copy.parameters_dict
         self.assertEqual(expected, actual)
+
+    def test_7(self):
+        self.arith_prog.n = 5
+        self.arith_prog.a1 = 1
+        self.arith_prog.s = 15
+        expected = 1
+        actual = self.arith_prog.d
+        self.assertEqual(expected, actual)

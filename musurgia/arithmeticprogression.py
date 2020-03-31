@@ -81,7 +81,7 @@ class ArithmeticProgression(object):
             # self._d = (self.an - self.a1) / (self.n - 1)
         elif self._an is None:
             # self._d = Fraction(Fraction((self.s - (self.n * self.a1)) * 2), Fraction((self.n - 1) * self.n))
-            self._d = Fraction((self.s - (self.n * self.a1)) * 2), ((self.n - 1) * self.n)
+            self._d = Fraction(((self.s - (self.n * self.a1)) * 2), ((self.n - 1) * self.n))
             # self._d = ((self.s - (self.n * self.a1)) * 2) / ((self.n - 1) * self.n)
         elif self._n is None:
             self._calculate_n()
