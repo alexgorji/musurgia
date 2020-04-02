@@ -785,6 +785,55 @@ class FractalMusic(FractalTree):
 
         chord_field.chords[0].add_slide('start')
 
+    def add_info(self, *show_attributes):
+        def write_words(words, placement, relative_y):
+            if placement is None:
+                placement = 'below'
+            if relative_y is None:
+                if placement == 'below':
+                    relative_y = -15
+                else:
+                    relative_y = 15
+            try:
+                self.chord.add_words(words, placement=placement, relative_y=relative_y)
+            except AttributeError:
+                try:
+                    for chord in self.chord_field.chords:
+                        chord.add_words(words, placement=placement, relative_y=relative_y)
+                except AttributeError:
+                    for chord in self._simple_format.chords:
+                        chord.add_words(words, placement=placement, relative_y=relative_y)
+
+        def get_words(attr):
+            if attr == 'fractal_order':
+                text = [node.fractal_order for node in self.get_branch()[1:]]
+                words = ('\n'.join([str(x) for x in text]))
+            elif isinstance(attr, str):
+                words = str(getattr(self, attr))
+            elif callable(attr):
+                words = str(attr(self))
+            else:
+                raise AttributeError()
+            return words
+
+        for attr in show_attributes:
+            placement = None
+            relative_y = None
+            if isinstance(attr, tuple):
+                words = get_words(attr[0])
+                placement = attr[1]
+                try:
+                    relative_y = attr[2]
+                except IndexError:
+                    pass
+            else:
+                words = get_words(attr)
+
+            write_words(words, placement, relative_y)
+
+        for child in self.get_children():
+            child.add_info(*show_attributes)
+
     def __deepcopy__(self, memodict={}):
         copied = super().__deepcopy__()
         copied._tempo = self.tempo

@@ -231,3 +231,4 @@ ChordFiled() issue #15: parent.chords = child_1.chords + child_2.chords etc.
 v.1.10.9
 ArithmeticProgression issue #20: bug fixed for d
 ArithmeticProgression issue #21: bug fixed for an (and a1)
+FractalMusic().add_info(): new method added issue #10
