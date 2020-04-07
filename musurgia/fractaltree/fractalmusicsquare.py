@@ -179,6 +179,7 @@ class Square(object):
         self._reading_direction = None
         self._side_size = None
         self._name = None
+        self._parent_square_group = None
 
         self.duration = duration
         self.proportions = proportions
@@ -248,6 +249,13 @@ class Square(object):
                                                                                                    self.first_multi[1]))
 
     @property
+    def index_in_group(self):
+        if self.parent_square_group:
+            return self.parent_square_group.squares.index(self)
+        else:
+            return None
+
+    @property
     def modules(self):
         return self._modules
 
@@ -258,6 +266,16 @@ class Square(object):
     @name.setter
     def name(self, val):
         self._name = val
+
+    @property
+    def parent_square_group(self):
+        return self._parent_square_group
+
+    @parent_square_group.setter
+    def parent_square_group(self, val):
+        if not isinstance(val, SquareGroup):
+            raise TypeError('parent_square_group.value must be of type SquareGroup  not{}'.format(type(val)))
+        self._parent_square_group = val
 
     @property
     def proportions(self):
@@ -444,7 +462,10 @@ class SquareGroup(object):
     def __init__(self, *squares, name=None):
         super().__init__()
         self._name = None
-        self._squares = squares
+        self._squares = []
+        for square in squares:
+            self.add_square(square)
+
         self.name = name
 
     @property
@@ -458,6 +479,12 @@ class SquareGroup(object):
     @name.setter
     def name(self, val):
         self._name = val
+
+    def add_square(self, val):
+        if not isinstance(val, Square):
+            raise TypeError()
+        self._squares.append(val)
+        val.parent_square_group = self
 
     def get_all_rows(self):
         return [row for square in self.squares for row in square.rows]
