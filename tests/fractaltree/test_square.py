@@ -67,21 +67,21 @@ class Test(AGTestCase):
         self.assertCompareFiles(text_path)
 
     def test_7(self):
-        self.assertEqual(None, self.square.__name__)
+        self.assertEqual(None, self.square.name)
 
     def test_8(self):
-        self.square.__name__ = 'blue'
-        self.assertEqual('blue', self.square.__name__)
+        self.square.name = 'blue'
+        self.assertEqual('blue', self.square.name)
 
     def test_9(self):
-        self.square.__name__ = 'blue'
+        self.square.name = 'blue'
         text_path = path + '_test_9.txt'
         self.square.write_info(text_path=text_path, show_attributes=['duration'],
-                               title='square: {}'.format(self.square.__name__))
+                               title='square: {}'.format(self.square.name))
         self.assertCompareFiles(text_path)
 
     def test_10(self):
-        self.square.__name__ = 'blue'
+        self.square.name = 'blue'
         row_2 = self.square.rows[1]
         row_2.change_module_quarter_duration(2, 3)
         copied = self.square.__deepcopy__()

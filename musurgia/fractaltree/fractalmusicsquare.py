@@ -1,11 +1,10 @@
 import os
 
-from prettytable import PrettyTable
-from quicktions import Fraction
-
 from musurgia.agtable.agtable import AGTable
 from musurgia.fractaltree.fractalmusic import FractalMusic
 from musurgia.fractaltree.fractaltree import FractalTreeException
+from prettytable import PrettyTable
+from quicktions import Fraction
 
 
 class Module(FractalMusic):
@@ -188,11 +187,37 @@ class Square(object):
         self.first_multi = first_multi
         self._rows = None
         self._columns = None
-        self.__name__ = name
+        self.name = name
 
+    # //private methods
+    def _calculate_module_values(self):
+        if self.duration is not None and self.proportions is not None and self.tree_permutation_order is not None:
+            row_durations = [self.duration * prop / float(sum(self.proportions)) for prop in self.proportions]
+            for (row, column) in [(i + 1, j + 1) for i in range(self.side_size) for j in range(self.side_size)]:
+                module_durations = [row_durations[row - 1] * prop / float(sum(self.proportions)) for prop in
+                                    self.proportions]
+                multi = self.index_to_r_c(
+                    self.r_c_to_index(row, column) + self.r_c_to_index(self.first_multi[0], self.first_multi[1]))
+                module = Module(duration=module_durations[column - 1],
+                                tree_permutation_order=self.tree_permutation_order, proportions=self.proportions,
+                                multi=multi, reading_direction=self.reading_direction)
+                (module.row_number, module.column_number) = (row, column)
+                self._modules[(row, column)] = module
+                module._parent_square = self
+
+    # //public properties
     @property
-    def side_size(self):
-        return self._side_size
+    def columns(self):
+        if self._columns is None:
+            self._columns = []
+            for column_number in range(1, self.side_size + 1):
+                column = Column(square=self, number=column_number)
+                for row_number in range(1, self.side_size + 1):
+                    module = self.get_module(row_number, column_number)
+                    column._add_module(module)
+
+                self._columns.append(column)
+        return self._columns
 
     @property
     def duration(self):
@@ -207,6 +232,32 @@ class Square(object):
             raise ValueError('duration cannot be None')
         self._duration = value
         self._calculate_module_values()
+
+    @property
+    def first_multi(self):
+        return self._first_multi
+
+    @first_multi.setter
+    def first_multi(self, value):
+        self._first_multi = value
+        if self._modules != {}:
+            for key in self._modules.keys():
+                module = self._modules[key]
+                module.multi = self.index_to_r_c(
+                    self.r_c_to_index(module.row_number, module.column_number) + self.r_c_to_index(self.first_multi[0],
+                                                                                                   self.first_multi[1]))
+
+    @property
+    def modules(self):
+        return self._modules
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, val):
+        self._name = val
 
     @property
     def proportions(self):
@@ -225,40 +276,6 @@ class Square(object):
         self._calculate_module_values()
 
     @property
-    def tree_permutation_order(self):
-        return self._tree_permutation_order
-
-    @tree_permutation_order.setter
-    def tree_permutation_order(self, values):
-        if values is None:
-            raise ValueError('tree_permutation_order cannot be None')
-        if self.side_size is not None:
-            if len(values) != self.side_size:
-                raise ValueError('wrong tree_permutation_order length')
-        else:
-            self._side_size = len(values)
-        self._tree_permutation_order = values
-        self._calculate_module_values()
-
-    @property
-    def modules(self):
-        return self._modules
-
-    @property
-    def first_multi(self):
-        return self._first_multi
-
-    @first_multi.setter
-    def first_multi(self, value):
-        self._first_multi = value
-        if self._modules != {}:
-            for key in self._modules.keys():
-                module = self._modules[key]
-                module.multi = self.index_to_r_c(
-                    self.r_c_to_index(module.row_number, module.column_number) + self.r_c_to_index(self.first_multi[0],
-                                                                                                   self.first_multi[1]))
-
-    @property
     def reading_direction(self):
         return self._reading_direction
 
@@ -270,21 +287,6 @@ class Square(object):
         if val not in permitted:
             raise ValueError('reading_direction.value {} must be in {}'.format(val, permitted))
         self._reading_direction = val
-
-    @property
-    def __name__(self):
-        return self._name
-
-    @__name__.setter
-    def __name__(self, val):
-        self._name = val
-
-    def get_module(self, *args):
-        args = tuple(args)
-        return self.modules[args]
-
-    def get_all_modules(self):
-        return self.modules.values()
 
     @property
     def rows(self):
@@ -300,48 +302,42 @@ class Square(object):
         return self._rows
 
     @property
-    def columns(self):
-        if self._columns is None:
-            self._columns = []
-            for column_number in range(1, self.side_size + 1):
-                column = Column(square=self, number=column_number)
-                for row_number in range(1, self.side_size + 1):
-                    module = self.get_module(row_number, column_number)
-                    column._add_module(module)
+    def side_size(self):
+        return self._side_size
 
-                self._columns.append(column)
-        return self._columns
+    @property
+    def tree_permutation_order(self):
+        return self._tree_permutation_order
 
-    def get_row(self, row_number):
-        return self.rows[row_number - 1]
+    @tree_permutation_order.setter
+    def tree_permutation_order(self, values):
+        if values is None:
+            raise ValueError('tree_permutation_order cannot be None')
+        if self.side_size is not None:
+            if len(values) != self.side_size:
+                raise ValueError('wrong tree_permutation_order length')
+        else:
+            self._side_size = len(values)
+        self._tree_permutation_order = values
+        self._calculate_module_values()
+
+    # //public methods
+
+    # get
+    def get_all_modules(self):
+        return self.modules.values()
 
     def get_column(self, column_number):
         return self.columns[column_number - 1]
 
-    def index_to_r_c(self, index):
-        row = int(index / self.side_size) % self.side_size + 1
-        column = index % self.side_size + 1
-        return row, column
+    def get_module(self, *args):
+        args = tuple(args)
+        return self.modules[args]
 
-    def r_c_to_index(self, row, column):
-        index = ((row - 1) * self.side_size) + (column - 1)
-        return index
+    def get_row(self, row_number):
+        return self.rows[row_number - 1]
 
-    def _calculate_module_values(self):
-        if self.duration is not None and self.proportions is not None and self.tree_permutation_order is not None:
-            row_durations = [self.duration * prop / float(sum(self.proportions)) for prop in self.proportions]
-            for (row, column) in [(i + 1, j + 1) for i in range(self.side_size) for j in range(self.side_size)]:
-                module_durations = [row_durations[row - 1] * prop / float(sum(self.proportions)) for prop in
-                                    self.proportions]
-                multi = self.index_to_r_c(
-                    self.r_c_to_index(row, column) + self.r_c_to_index(self.first_multi[0], self.first_multi[1]))
-                module = Module(duration=module_durations[column - 1],
-                                tree_permutation_order=self.tree_permutation_order, proportions=self.proportions,
-                                multi=multi, reading_direction=self.reading_direction)
-                (module.row_number, module.column_number) = (row, column)
-                self._modules[(row, column)] = module
-                module._parent_square = self
-
+    # other
     def change_module_quarter_duration(self, row_number, column_number, new_quarter_duration):
         factor = Fraction(Fraction(new_quarter_duration),
                           Fraction(self.get_module(row_number, column_number).quarter_duration))
@@ -358,23 +354,18 @@ class Square(object):
         for key in self.modules:
             self.modules[key].duration = self.modules[key].duration * factor
 
+    def index_to_r_c(self, index):
+        row = int(index / self.side_size) % self.side_size + 1
+        column = index % self.side_size + 1
+        return row, column
+
     def round_quarter_durations(self):
         for module in self.modules.values():
             module.quarter_duration = round(module.quarter_duration)
 
-    def __deepcopy__(self, memodict={}):
-        copied = self.__class__(duration=self.duration, proportions=self.proportions,
-                                tree_permutation_order=self.tree_permutation_order, first_multi=self.first_multi,
-                                reading_direction=self.reading_direction, name=self.__name__)
-
-        for key in self.modules.keys():
-            copied.modules[key] = self.modules[key].__deepcopy__()
-
-        for row, copied_row in zip(self.rows, copied.rows):
-            if row.__name__:
-                copied_row.set_name(row.__name__)
-
-        return copied
+    def r_c_to_index(self, row, column):
+        index = ((row - 1) * self.side_size) + (column - 1)
+        return index
 
     def write_to_table(self, table=None, show_attributes=None):
         if not show_attributes:
@@ -433,22 +424,43 @@ class Square(object):
         file.write(table.get_string())
         file.close()
 
+    # //copy
+    def __deepcopy__(self, memodict={}):
+        copied = self.__class__(duration=self.duration, proportions=self.proportions,
+                                tree_permutation_order=self.tree_permutation_order, first_multi=self.first_multi,
+                                reading_direction=self.reading_direction, name=self.name)
+
+        for key in self.modules.keys():
+            copied.modules[key] = self.modules[key].__deepcopy__()
+
+        for row, copied_row in zip(self.rows, copied.rows):
+            if row.__name__:
+                copied_row.set_name(row.__name__)
+
+        return copied
+
 
 class SquareGroup(object):
-    def __init__(self, *squares):
+    def __init__(self, *squares, name=None):
         super().__init__()
+        self._name = None
         self._squares = squares
+        self.name = name
 
     @property
     def squares(self):
         return self._squares
 
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, val):
+        self._name = val
+
     def get_all_rows(self):
         return [row for square in self.squares for row in square.rows]
-
-    def __deepcopy__(self, memodict={}):
-        copied = self.__class__(*[square.__deepcopy__() for square in self.squares])
-        return copied
 
     def write_to_table(self, table=None, show_attributes=None):
         first_square = self.squares[0]
@@ -468,3 +480,7 @@ class SquareGroup(object):
 
         file.write(table.get_string())
         file.close()
+
+    def __deepcopy__(self, memodict={}):
+        copied = self.__class__(*[square.__deepcopy__() for square in self.squares])
+        return copied
