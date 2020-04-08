@@ -315,6 +315,27 @@ class Tree(object):
         except (IndexError, AttributeError):
             return None
 
+    def deepcopy_attributes(self, copied, copy_attribute_names):
+        def deepcopy_attribute(attribute):
+            try:
+                copied_attribute = attribute.__deepcopy__()
+            except AttributeError:
+                if not isinstance(attribute, str) and hasattr(attribute, '__iter__'):
+                    if isinstance(attribute, list):
+                        copied_attribute = []
+                        for x in attribute:
+                            copied_attribute.append(deepcopy_attribute(x))
+                    else:
+                        raise NotImplementedError(type(attribute))
+                else:
+                    copied_attribute = attribute
+            return copied_attribute
+
+        for attribute_name in copy_attribute_names:
+            attribute = getattr(self, attribute_name)
+            copied_attribute = deepcopy_attribute(attribute)
+            setattr(copied, attribute_name, copied_attribute)
+
 
 class TreeNode(Tree):
     def __init__(self, *args, **kwargs):
