@@ -232,3 +232,12 @@ v.1.10.9
 ArithmeticProgression issue #20: bug fixed for d
 ArithmeticProgression issue #21: bug fixed for an (and a1)
 FractalMusic().add_info(): new method added issue #10
+
+v.1.10.10  
+SquareGroup().add_square(): method added  
+Square().parent_square_group: property added  
+Square().\__name__: changed to name (to avoid overwriting module.\__name__ attribute)
+SquareGroup().name: property added
+issue #23 fixed:
+Tree().deepcopy_attributes(copied, attribute_names): method added
+FractalMusic().\__deepcopy__(): uses Tree().deepcopy_attributes()
