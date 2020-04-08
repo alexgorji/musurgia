@@ -21,6 +21,7 @@ class Test(AGTestCase):
         fm = self.fm_3
         fm.generate_children(number_of_children=0)
         score = fm.get_score(show_fractal_orders=True)
+        score = fm.get_score()
         xml_path = path + '_test_1.xml'
         score.write(xml_path)
         self.assertCompareFiles(xml_path)

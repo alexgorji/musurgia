@@ -327,7 +327,6 @@ class FractalMusic(FractalTree):
     def tree_directions(self):
         return self._tree_directions
 
-    # todo: setting tree_direction after setting midi_range has no effect
     @tree_directions.setter
     def tree_directions(self, val):
         if val is None:
@@ -342,6 +341,15 @@ class FractalMusic(FractalTree):
                 output.append(cycled.__next__())
             val = output
         self._tree_directions = val
+        for node in self.traverse():
+            if node._midi_generator:
+                try:
+                    if self.permute_directions and node._midi_generator.directions:
+                        node._midi_generator.directions = permute(self.tree_directions, self.permutation_order)
+                    else:
+                        node._midi_generator.directions = self.tree_directions
+                except AttributeError:
+                    pass
 
     # //public methods
     # add
@@ -606,7 +614,7 @@ class FractalMusic(FractalTree):
                 sf = self.get_simple_format(layer_number)
                 sf.auto_clef()
                 v = sf.to_stream_voice(1)
-                v.add_to_score(score, 1, part_number)
+                v.add_to_score(score, part_number=part_number)
             except ValueError:
                 print('module {}: number_of_layers={}: getting layer {} not possible'.format(self.__name__,
                                                                                              self.number_of_layers,
@@ -739,6 +747,9 @@ class FractalMusic(FractalTree):
         best_tempi = [tempi[index] for index in indices]
         return best_tempi
 
+    def inverse_tree_directions(self):
+        self.tree_directions = [direction * -1 for direction in self.tree_directions]
+
     def split(self, *proportions):
         if hasattr(proportions[0], '__iter__'):
             proportions = proportions[0]
@@ -846,7 +857,7 @@ class FractalMusic(FractalTree):
     def __deepcopy__(self, memodict={}):
         copied = super().__deepcopy__()
         copy_attribute_names = ['_chord_field', '_chord', '_midi_value', '_simple_format', '_midi_generator',
-                           '_children_generated_midis', '_tree_directions', '_permute_directions', '_tempo']
+                                '_children_generated_midis', '_tree_directions', '_permute_directions', '_tempo']
 
         self.deepcopy_attributes(copied, copy_attribute_names)
 

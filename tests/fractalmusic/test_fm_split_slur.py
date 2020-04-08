@@ -26,7 +26,7 @@ class Test(AGTestCase):
         sp[-1].chord.add_slur('stop')
         sf = self.fm.get_simple_format()
         v = sf.to_stream_voice(1)
-        v.add_to_score(self.score, 1, 1)
+        v.add_to_score(self.score, 1)
 
         xml_path = path + '_test_1.xml'
         self.score.write(path=xml_path)
@@ -50,7 +50,7 @@ class Test(AGTestCase):
 
         sf = self.fm.get_simple_format()
         v = sf.to_stream_voice(1)
-        v.add_to_score(self.score, 1, 1)
+        v.add_to_score(self.score, 1)
 
         xml_path = path + '_test_2.xml'
         self.score.write(path=xml_path)

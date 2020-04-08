@@ -22,14 +22,14 @@ class Test(AGTestCase):
         # print([leaf.fractal_order for leaf in partial_fm.traverse_leaves()])
         score = TreeScoreTimewise()
         v = partial_fm.get_simple_format(0).to_stream_voice(1)
-        v.add_to_score(score, 1, 1)
+        v.add_to_score(score, 1)
 
         v = partial_fm.get_simple_format().__deepcopy__().to_stream_voice(1)
-        v.add_to_score(score, 1, 2)
+        v.add_to_score(score, 2)
 
         partial_fm.reduce_children(condition=lambda child: child.fractal_order > 2)
         v = partial_fm.get_simple_format().__deepcopy__().to_stream_voice(1)
-        v.add_to_score(score, 1, 3)
+        v.add_to_score(score, 3)
 
         xml_path = path + '_test_1.xml'
         score.write(xml_path)
@@ -84,13 +84,13 @@ class Test(AGTestCase):
 
         simple_format = fm.get_simple_format(1)
         v = simple_format.to_stream_voice(1)
-        v.add_to_score(score, 1, 1)
+        v.add_to_score(score, 1)
 
         fm.reduce_children(lambda child: child.fractal_order in [1])
 
         simple_format = fm.get_simple_format(1)
         v = simple_format.to_stream_voice(1)
-        v.add_to_score(score, 1, 2)
+        v.add_to_score(score, 2)
 
         fm.add_layer()
 
@@ -100,7 +100,7 @@ class Test(AGTestCase):
 
         simple_format = fm.get_simple_format(2)
         v = simple_format.to_stream_voice(1)
-        v.add_to_score(score, 1, 3)
+        v.add_to_score(score, 3)
 
         text_path = path + '_test_5.txt'
         fm.write_infos(text_path)

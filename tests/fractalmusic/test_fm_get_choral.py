@@ -24,7 +24,7 @@ class Test(AGTestCase):
         sf = self.fm.get_simple_format()
 
         v = sf.to_stream_voice(1)
-        v.add_to_score(score, 1, 2)
+        v.add_to_score(score, 2)
 
         xml_path = path + '_test_1.xml'
         score.write(path=xml_path)
@@ -42,7 +42,7 @@ class Test(AGTestCase):
         sf = self.fm.get_simple_format()
 
         v = sf.to_stream_voice(1)
-        v.add_to_score(score, 1, 2)
+        v.add_to_score(score, 2)
 
         for leaf in self.fm.traverse_leaves():
             leaf.add_layer()
@@ -50,7 +50,7 @@ class Test(AGTestCase):
         sf = self.fm.get_simple_format()
 
         v = sf.to_stream_voice(1)
-        v.add_to_score(score, 1, 3)
+        v.add_to_score(score, 3)
 
         xml_path = path + '_test_2.xml'
         score.write(path=xml_path)

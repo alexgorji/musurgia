@@ -37,7 +37,7 @@ class Test(AGTestCase):
         for layer in range(self.fm.number_of_layers + 1):
             sf = self.fm.get_simple_format(layer=layer)
             v = sf.to_stream_voice(1)
-            v.add_to_score(score, 1, layer + 1)
+            v.add_to_score(score, layer + 1)
 
         xml_path = path + '_test_1.xml'
         score.write(path=xml_path)
@@ -153,7 +153,7 @@ class Test(AGTestCase):
             simple_format = fm.get_simple_format(layer_number)
 
             v = simple_format.to_stream_voice(1)
-            v.add_to_score(score, 1, layer_number + 1)
+            v.add_to_score(score, layer_number + 1)
 
         xml_path = path + '_test_7.xml'
         score.accidental_mode = 'normal'
