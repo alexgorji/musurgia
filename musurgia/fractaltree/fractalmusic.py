@@ -404,7 +404,7 @@ class FractalMusic(FractalTree):
 
         chord_field.chords[0].add_slide('start')
 
-    def add_info(self, *show_attributes):
+    def add_info(self, *show_attributes, condition=None):
         def write_words(words, placement, relative_y):
             if placement is None:
                 placement = 'below'
@@ -451,7 +451,8 @@ class FractalMusic(FractalTree):
             write_words(words, placement, relative_y)
 
         for child in self.get_children():
-            child.add_info(*show_attributes)
+            if condition is None or condition(child) is True:
+                child.add_info(*show_attributes, condition=condition)
 
     # get
 
