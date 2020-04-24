@@ -9,3 +9,7 @@ class Test(AGTestCase):
                     1, 1, 3]
         actual = gw.get_rhythm()
         self.assertEqual(actual, expected)
+
+    def test_2(self):
+        gw = GearWheels([3, 4])
+        print(gw.get_result())
