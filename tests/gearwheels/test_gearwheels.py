@@ -1,27 +1,38 @@
+import os
+
+from musicscore.basic_functions import xToD
+from musicscore.musicstream.streamvoice import SimpleFormat
+from musicscore.musictree.treescoretimewise import TreeScoreTimewise
+
 from musurgia.agunittest import AGTestCase
 from musurgia.gearwheels import GearWheels, Wheel
+
+path = str(os.path.abspath(__file__).split('.')[0])
 
 
 class Test(AGTestCase):
     def test_1(self):
         wh = Wheel(size=4, start=60)
         expected = [60, 64, 68, 72, 76]
-        actual = wh.get_positions(number_of_cycles=5)
+        actual = [position.value for position in wh.get_positions(number_of_cycles=5)]
         self.assertEqual(expected, actual)
 
-    def test_1(self):
-        wh = Wheel(size=4, start=60)
-        expected = [60, 64, 68, 72, 76]
-        actual = wh.get_positions(number_of_cycles=5)
-        self.assertEqual(expected, actual)
+    def test_2(self):
+        gw = GearWheels(wheels=[Wheel(3), Wheel(4), Wheel(5)])
+        expected = [3, 1, 1, 1, 2, 1, 1, 2, 3, 1, 2, 2, 1, 3, 1, 2, 1, 2, 2, 1, 2, 1, 3, 1, 2, 2, 1, 3, 2, 1, 1, 2, 1,
+                    1, 1, 3]
+        actual = gw.get_rhythm()
+        self.assertEqual(actual, expected)
 
-    # def test_1(self):
-    #     gw = GearWheels(wheels=[Wheel(3), Wheel(4), Wheel(5)])
-    #     expected = [3, 1, 1, 1, 2, 1, 1, 2, 3, 1, 2, 2, 1, 3, 1, 2, 1, 2, 2, 1, 2, 1, 3, 1, 2, 2, 1, 3, 2, 1, 1, 2, 1,
-    #                 1, 1, 3]
-    #     actual = gw.get_rhythm()
-    #     self.assertEqual(actual, expected)
-    #
-    # def test_2(self):
-    #     gw = GearWheels(wheels=[Wheel(3, 0), Wheel(4, 1), Wheel(5, 2)])
-    #     print(gw.get_result())
+    def test_3(self):
+        xml_path = path + '_test_3.xml'
+        score = TreeScoreTimewise()
+        gw = GearWheels(wheels=[Wheel(3), Wheel(4), Wheel(5)])
+        for wheel in gw.wheels:
+            quarter_durations = xToD(wheel.get_position_values())
+            sf = SimpleFormat(quarter_durations=quarter_durations)
+            sf.to_stream_voice().add_to_score(score, part_number=wheel.index + 1)
+        quarter_durations = xToD(gw.get_position_values())
+        sf = SimpleFormat(quarter_durations=quarter_durations)
+        sf.to_stream_voice().add_to_score(score, part_number=len(gw.wheels) + 1)
+        score.write(xml_path)
