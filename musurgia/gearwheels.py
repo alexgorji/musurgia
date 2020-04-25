@@ -1,6 +1,35 @@
 from musicscore.basic_functions import lcm, xToD
 
 
+class Wheel:
+    def __init__(self, size, start=0):
+        self._size = None
+        self._start = None
+        self.size = size
+        self.start = start
+
+    @property
+    def size(self):
+        return self._size
+
+    @size.setter
+    def size(self, val):
+        if not isinstance(val, int):
+            raise TypeError('size.value must be of type int not{}'.format(type(val)))
+        self._size = val
+
+    @property
+    def start(self):
+        return self._start
+
+    @start.setter
+    def start(self, val):
+        self._start = val
+
+    def get_positions(self, number_of_cycles):
+        return list(range(self.start, number_of_cycles * self.size + self.start, self.size))
+
+
 class GearWheels(object):
     def __init__(self, gear_sizes, *args, **kwargs):
         super().__init__(*args, **kwargs)
