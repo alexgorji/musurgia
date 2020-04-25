@@ -1,0 +1,3 @@
+[console_scripts]
+diff-pdf-visually=diff_pdf_visually:__main__.main
+
