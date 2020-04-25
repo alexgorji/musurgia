@@ -1,13 +1,9 @@
 musurgia is a library of different (personal) tools for computer aided music composition.
 
-python 3.7
+python 3.8.2
 
 **DEPENDENCIES:**  
-quicktions == 1.9
-musicscore == 1.0.1
-prettytable == 0.7.2
-fpdf2 == 2.0.3
-diff-pdf-visually == 1.4.1
+see requirements.txt (or frozenrequirements.txt)
  
 **VERSIONS** 
 
