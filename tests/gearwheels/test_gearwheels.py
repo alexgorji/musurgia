@@ -28,11 +28,14 @@ class Test(AGTestCase):
         xml_path = path + '_test_3.xml'
         score = TreeScoreTimewise()
         gw = GearWheels(wheels=[Wheel(3), Wheel(4), Wheel(5)])
-        for wheel in gw.wheels:
+        sfs = []
+        for index, wheel in enumerate(gw.wheels):
             quarter_durations = xToD(wheel.get_position_values())
-            sf = SimpleFormat(quarter_durations=quarter_durations)
-            sf.to_stream_voice().add_to_score(score, part_number=wheel.index + 1)
-        quarter_durations = xToD(gw.get_position_values())
-        sf = SimpleFormat(quarter_durations=quarter_durations)
+            midis = len(quarter_durations) * [60 + index]
+            sf = SimpleFormat(quarter_durations=quarter_durations, midis=midis)
+            sfs.append(sf)
+            sf.to_stream_voice().add_to_score(score, part_number=index + 1)
+        sf = SimpleFormat.sum(*sfs)
         sf.to_stream_voice().add_to_score(score, part_number=len(gw.wheels) + 1)
         score.write(xml_path)
+        self.assertCompareFiles(xml_path)

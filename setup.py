@@ -8,11 +8,11 @@ setuptools.setup(
     description="tools for algorithmic composition",
     url="https://github.com/alexgorji/musurgia.git",
     packages=setuptools.find_packages(),
-    install_requires=['quicktions==1.9',
-                      'musicscore==1.3.2',
-                      'prettytable==0.7.2',
-                      'fpdf2 == 2.0.3',
-                      'diff-pdf-visually == 1.4.1'
+    install_requires=['quicktions',
+                      'musicscore',
+                      'prettytable',
+                      'fpdf2',
+                      'diff-pdf-visually'
                       ],
     classifiers=[
         "Programming Language :: Python :: 3",
