@@ -6,7 +6,7 @@ from math import ceil
 from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
-from musurgia.agrandom import AGRandom
+from musurgia.random import Random
 from musurgia.agunittest import AGTestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.chordfield.chordfield import ChordField, Breathe
@@ -43,7 +43,7 @@ class Test(AGTestCase):
         # fields: midi_generators
         # group: duration_generator with __next__
         cfg = ChordField(
-            duration_generator=ValueGenerator(AGRandom(pool=[0.2, 0.4, 0.8, 1.6], seed=10))
+            duration_generator=ValueGenerator(Random(pool=[0.2, 0.4, 0.8, 1.6], seed=10))
         )
         cf_1 = ChordField(quarter_duration=3,
                           midi_generator=ValueGenerator(cycle([60, 61, 64, 66])),
@@ -53,7 +53,7 @@ class Test(AGTestCase):
                           midi_generator=ValueGenerator(cycle([72, 73, 74, 73, 72])),
                           long_ending_mode='self_extend')
 
-        # cfg = ChordFieldGroup(duration_generator=AGRandom(pool=[0.2, 0.4, 0.8, 1.6], seed=10))
+        # cfg = ChordFieldGroup(duration_generator=Random(pool=[0.2, 0.4, 0.8, 1.6], seed=10))
         cfg.add_child(cf_1)
         cfg.add_child(cf_2)
         simple_format = cfg.simple_format
@@ -67,7 +67,7 @@ class Test(AGTestCase):
         # fields: both with midi_generators, one duration_generator
         # group: duration_generator with __next__ (Random)
         cfg = ChordField(
-            duration_generator=ValueGenerator(AGRandom(pool=[0.2, 0.4, 0.8, 1.6], seed=10))
+            duration_generator=ValueGenerator(Random(pool=[0.2, 0.4, 0.8, 1.6], seed=10))
         )
 
         cf_1 = ChordField(quarter_duration=3,

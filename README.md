@@ -173,7 +173,7 @@ ArithmeticProgression().correct_s: attribute added and other minor optimisations
 
 ### v1.9.2:
 issue #2'
-AGRandom(): bug fix
+Random(): bug fix
 
 ### v1.10.0
 NEW: valuegenerator

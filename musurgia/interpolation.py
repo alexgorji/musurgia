@@ -1,6 +1,6 @@
 from quicktions import Fraction
 
-from musurgia.agrandom import AGRandom
+from musurgia.random import Random
 
 
 class Interpolation(object):
@@ -98,7 +98,7 @@ class InterpolationGroup(object):
 class RandomInterpolation(Interpolation):
     def __init__(self, periodicity=None, seed=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._random = AGRandom(periodicity=periodicity, seed=seed)
+        self._random = Random(periodicity=periodicity, seed=seed)
 
     @Interpolation.start.setter
     def start(self, val):

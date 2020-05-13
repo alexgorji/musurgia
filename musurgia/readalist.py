@@ -1,4 +1,4 @@
-from musurgia.agrandom import AGRandom
+from musurgia.random import Random
 
 
 class ReadAList(object):
@@ -42,7 +42,7 @@ class ReadAList(object):
     @property
     def random(self):
         if self._random is None:
-            self._random = AGRandom()
+            self._random = Random()
         return self._random
 
     @property

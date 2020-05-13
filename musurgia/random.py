@@ -1,4 +1,4 @@
-class AGRandom(object):
+class Random(object):
     import random
     current_random = random
 

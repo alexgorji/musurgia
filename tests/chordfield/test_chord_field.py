@@ -5,7 +5,7 @@ from math import ceil
 from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
-from musurgia.agrandom import AGRandom
+from musurgia.random import Random
 from musurgia.agunittest import AGTestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.chordfield.chordfield import ChordField, ShortEndingError, LongEndingError
@@ -183,7 +183,7 @@ class Test(AGTestCase):
     def test_13(self):
         field = ChordField(quarter_duration=10,
                            duration_generator=ValueGenerator(
-                                AGRandom(pool=[0.2, 0.4, 0.8, 1.2, 1.6, 2], periodicity=3, seed=20)),
+                                Random(pool=[0.2, 0.4, 0.8, 1.2, 1.6, 2], periodicity=3, seed=20)),
                            midi_generator=ValueGenerator(
                                 cycle([71])),
                            long_ending_mode='self_extend'
@@ -212,7 +212,7 @@ class Test(AGTestCase):
     def test_15(self):
         field = ChordField(quarter_duration=10,
                            duration_generator=ValueGenerator(
-                                AGRandom(pool=[0.2, 0.4, 0.8, 1.2, 1.6, 2], periodicity=3, seed=20)),
+                                Random(pool=[0.2, 0.4, 0.8, 1.2, 1.6, 2], periodicity=3, seed=20)),
                            midi_generator=ValueGenerator(
                                 Interpolation(start=84, end=60, key=lambda x: int(x))),
                            long_ending_mode='self_extend'

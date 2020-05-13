@@ -3,7 +3,7 @@ import itertools
 from musicscore import basic_functions
 from musicscore.musictree.midi import MidiNote
 
-from musurgia.agrandom import AGRandom
+from musurgia.random import Random
 from musurgia.quantize import get_quantized_positions
 
 
@@ -195,7 +195,7 @@ class RelativeMidi(MidiGenerator):
 class RandomMidi(MidiGenerator):
     def __init__(self, pool=None, periodicity=None, seed=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._my_random = AGRandom()
+        self._my_random = Random()
 
         self.pool = pool
         self.periodicity = periodicity
