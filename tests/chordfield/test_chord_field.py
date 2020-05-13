@@ -6,7 +6,7 @@ from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
 from musurgia.random import Random
-from musurgia.agunittest import AGTestCase
+from musurgia.unittest import TestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.chordfield.chordfield import ChordField, ShortEndingError, LongEndingError
 from musurgia.chordfield.valuegenerator import ValueGenerator
@@ -22,7 +22,7 @@ def duration_generator(first_duration=1, delta=0.5):
         current_duration += delta
 
 
-class Test(AGTestCase):
+class Test(TestCase):
     def setUp(self) -> None:
         self.score = TreeScoreTimewise()
 

@@ -2,12 +2,12 @@ import os
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
 from musurgia.fractaltree.fractalmusic import FractalMusic, MergeTempoException
-from musurgia.agunittest import AGTestCase
+from musurgia.unittest import TestCase
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(AGTestCase):
+class Test(TestCase):
     def setUp(self) -> None:
         self.fm = FractalMusic(proportions=(1, 2, 3, 4, 5), tree_permutation_order=(3, 5, 1, 2, 4))
         self.fm.duration = 10

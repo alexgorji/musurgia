@@ -2,7 +2,7 @@ import os
 
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
-from musurgia.agunittest import AGTestCase
+from musurgia.unittest import TestCase
 from musurgia.fractaltree.fractalmusic import FractalMusic
 from musurgia.fractaltree.fractalmusicsquare import Square
 
@@ -38,7 +38,7 @@ def forward_multi(module, multi_addition):
     module.multi = (m1, m2 + multi_addition)
 
 
-class Test(AGTestCase):
+class Test(TestCase):
     def setUp(self) -> None:
         self.square = Square(proportions=(1, 2, 3), tree_permutation_order=(3, 1, 2), duration=40)
         set_tempo(self.square)

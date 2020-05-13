@@ -4,13 +4,13 @@ from musicscore.basic_functions import xToD
 from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
-from musurgia.agunittest import AGTestCase
+from musurgia.unittest import TestCase
 from musurgia.gearwheels import GearWheels, Wheel
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(AGTestCase):
+class Test(TestCase):
     def test_1(self):
         wh = Wheel(size=4, start=60)
         expected = [60, 64, 68, 72, 76]

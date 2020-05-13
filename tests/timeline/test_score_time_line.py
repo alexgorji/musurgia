@@ -3,7 +3,7 @@ import os
 from musicscore.musictree.treeinstruments import Violin, Viola, Cello, Percussion, Accordion
 
 from musurgia.agpdf.pdf import Pdf, PageText
-from musurgia.agunittest import AGTestCase
+from musurgia.unittest import TestCase
 from musurgia.fractaltree.fractalmusicsquare import Square
 from musurgia.timeline.scoretimeline import ScoreTimeLine, ModuleTimeLine
 
@@ -34,7 +34,7 @@ PERCUSSION = Percussion()
 ACCORDION = Accordion()
 
 
-class Test(AGTestCase):
+class Test(TestCase):
 
     def test_1(self):
         pdf = Pdf(orientation='landscape', t_margin=25, l_margin=20)

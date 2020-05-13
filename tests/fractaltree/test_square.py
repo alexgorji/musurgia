@@ -1,13 +1,13 @@
 import os
 
-from musurgia.agunittest import AGTestCase
+from musurgia.unittest import TestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.fractaltree.fractalmusicsquare import Square
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(AGTestCase):
+class Test(TestCase):
     def setUp(self) -> None:
         self.square = Square(duration=600, tree_permutation_order=[4, 1, 2, 3], proportions=[1, 2, 3, 4])
         # for module in self.square.modules.values():

@@ -3,13 +3,13 @@ import os
 from quicktions import Fraction
 
 from musurgia.agpdf.pdf import Pdf
-from musurgia.agunittest import AGTestCase
+from musurgia.unittest import TestCase
 from musurgia.timeline.timeline import TimeLine
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(AGTestCase):
+class Test(TestCase):
     def test_1(self):
         pdf_path = path + '_test_1.pdf'
         pdf = Pdf(orientation='portrait')

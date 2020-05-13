@@ -1,11 +1,11 @@
 import os
 
-from musurgia.agunittest import AGTestCase
+from musurgia.unittest import TestCase
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(AGTestCase):
+class Test(TestCase):
     def test_1(self):
         actual_file_path = path + '_a1.pdf'
         expected_file_path = path + '_a2.pdf'

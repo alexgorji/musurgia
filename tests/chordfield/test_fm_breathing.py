@@ -5,7 +5,7 @@ from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 from quicktions import Fraction
 
-from musurgia.agunittest import AGTestCase
+from musurgia.unittest import TestCase
 from musurgia.chordfield.chordfield import Breathe, ChordField
 from musurgia.chordfield.valuegenerator import ValueGenerator
 from musurgia.fractaltree.fractalmusic import FractalMusic
@@ -14,7 +14,7 @@ from musurgia.interpolation import RandomInterpolation
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(AGTestCase):
+class Test(TestCase):
     def setUp(self) -> None:
         self.score = TreeScoreTimewise()
         self.fm = FractalMusic(quarter_duration=24, tempo=40)

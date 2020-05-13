@@ -1,8 +1,8 @@
-from musurgia.agunittest import AGTestCase
+from musurgia.unittest import TestCase
 from musurgia.fractaltree.fractalmusicsquare import SquareGroup, Square
 
 
-class Test(AGTestCase):
+class Test(TestCase):
     def setUp(self) -> None:
         self.square_group = SquareGroup(
             Square(duration=10, name='red', tree_permutation_order=(3, 1, 2), proportions=(1, 2, 3)),

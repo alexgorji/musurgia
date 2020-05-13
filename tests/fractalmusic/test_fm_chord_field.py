@@ -6,7 +6,7 @@ from musicscore.musicstream.streamvoice import SimpleFormat
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 from quicktions import Fraction
 
-from musurgia.agunittest import AGTestCase
+from musurgia.unittest import TestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.basic_functions import slice_list
 from musurgia.chordfield.chordfield import ChordField, Breathe
@@ -17,7 +17,7 @@ from musurgia.interpolation import Interpolation, RandomInterpolation
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(AGTestCase):
+class Test(TestCase):
     def setUp(self) -> None:
         self.score = TreeScoreTimewise()
 

@@ -4,7 +4,7 @@ import os
 from diff_pdf_visually import pdfdiff
 
 
-class AGTestCase(TestCase):
+class TestCase(TestCase):
     """"""
 
     def __init__(self, *args, **kwargs):

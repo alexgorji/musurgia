@@ -69,12 +69,12 @@ FractalTree().size: added
 
 ### v1.5.0  
 testcomparefiles: renamed to agtestunit
-TestCompareFiles(): renames to AGTestCase
+TestCompareFiles(): renames to TestCase
 TestCompareFiles().assertTemplate(file_path=pdf_path): changed to: self.assertCompareFiles(actual_file_path=pdf_path)
 file_path: renamed tp actual_path
 template_path: renamed to expected_path
 Tests:  
-if comparing files is needed use Test(AGTestCase)
+if comparing files is needed use Test(TestCase)
 _template.* renamed to _expected.*
 
 ### v1.5.1  

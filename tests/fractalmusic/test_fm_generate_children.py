@@ -2,13 +2,13 @@ import os
 
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
-from musurgia.agunittest import AGTestCase
+from musurgia.unittest import TestCase
 from musurgia.fractaltree.fractalmusic import FractalMusic
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(AGTestCase):
+class Test(TestCase):
     def setUp(self) -> None:
         self.fm_3 = FractalMusic(value=10)
         self.fm_3.tempo = 60

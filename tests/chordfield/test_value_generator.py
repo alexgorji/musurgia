@@ -2,13 +2,13 @@ from itertools import cycle
 
 from musicscore.musicstream.streamvoice import SimpleFormat
 
-from musurgia.agunittest import AGTestCase
+from musurgia.unittest import TestCase
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.chordfield.valuegenerator import ValueGenerator, NoDurationError, PositionError
 from musurgia.interpolation import RandomInterpolation
 
 
-class Test(AGTestCase):
+class Test(TestCase):
     def test_1(self):
         vg = ValueGenerator(generator=ArithmeticProgression(a1=0.2, an=1, s=20, correct_s=True), duration=100)
         expected = 20

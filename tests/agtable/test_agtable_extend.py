@@ -1,12 +1,12 @@
 import os
 
 from musurgia.agtable.agtable import AGTable
-from musurgia.agunittest import AGTestCase
+from musurgia.unittest import TestCase
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(AGTestCase):
+class Test(TestCase):
     def test_1(self):
         main_table = AGTable(hrules=1)
         main_table.field_names = [1, 2, 3]
