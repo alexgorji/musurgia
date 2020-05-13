@@ -3,7 +3,7 @@ import os
 from prettytable import PrettyTable
 
 
-class AGTable(PrettyTable):
+class Table(PrettyTable):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -17,7 +17,7 @@ class AGTable(PrettyTable):
         file.close()
 
     def extend(self, other_table):
-        if not isinstance(other_table, AGTable):
+        if not isinstance(other_table, Table):
             raise TypeError()
         for row in other_table._rows:
             self.add_row(row)

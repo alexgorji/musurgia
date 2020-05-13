@@ -124,7 +124,7 @@ Square().\__deepcopy__(): added
 
 ### v1.8.4:
 Square().\__deepcopy__(): bug fixed
-agtable.AGTable(): added
+agtable.Table(): added
 SquareGroup(): added
 Square().write_to_table: added
 Square().write_info: optimised

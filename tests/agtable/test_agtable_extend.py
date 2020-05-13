@@ -1,6 +1,6 @@
 import os
 
-from musurgia.agtable.agtable import AGTable
+from musurgia.table.table import Table
 from musurgia.unittest import TestCase
 
 path = str(os.path.abspath(__file__).split('.')[0])
@@ -8,10 +8,10 @@ path = str(os.path.abspath(__file__).split('.')[0])
 
 class Test(TestCase):
     def test_1(self):
-        main_table = AGTable(hrules=1)
+        main_table = Table(hrules=1)
         main_table.field_names = [1, 2, 3]
         main_table.add_row(['a', 'b', 'c'])
-        side_table = AGTable()
+        side_table = Table()
         side_table.add_row(['aa', 'bb', 'cc'])
         main_table.extend(side_table)
         table_path = path + '_test_1.txt'

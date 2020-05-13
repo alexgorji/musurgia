@@ -1,6 +1,6 @@
 import os
 
-from musurgia.agtable.agtable import AGTable
+from musurgia.table.table import Table
 from musurgia.fractaltree.fractalmusic import FractalMusic
 from musurgia.fractaltree.fractaltree import FractalTreeException
 from prettytable import PrettyTable
@@ -390,11 +390,11 @@ class Square(object):
             show_attributes = []
 
         if not table:
-            table = AGTable(hrules=1)
+            table = Table(hrules=1)
             column_numbers = [str(number) for number in range(1, self.side_size + 1)]
             table.field_names = ['row', "column:", *column_numbers]
-        elif not isinstance(table, AGTable):
-            raise TypeError('table must be of type AGTable not {}'.format(type(table)))
+        elif not isinstance(table, Table):
+            raise TypeError('table must be of type Table not {}'.format(type(table)))
 
         for row_number in range(1, self.side_size + 1):
             row = self.get_row(row_number)
