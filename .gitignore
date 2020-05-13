@@ -4,4 +4,6 @@ dist
 build
 musurgia.egg-info
 *.pdf
+!*expected.pdf
+!testpdfs*.pdf
 
