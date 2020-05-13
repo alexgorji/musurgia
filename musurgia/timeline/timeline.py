@@ -93,7 +93,7 @@ class TimeLine(DrawObject, Tree):
                 gl = LineGroup(inner_distance=self.inner_distance, bottom_distance=self.bottom_distance)
                 gl.add_line(line)
                 for voice in self.voices:
-                    gl.add_line(voice.lines[index])
+                    gl.add_line(voice.line_segments[index])
                 output.append(gl)
             self._line_groups = output
         return self._line_groups

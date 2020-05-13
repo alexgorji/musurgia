@@ -83,10 +83,10 @@ class Vertical(Positioned):
 
     def draw(self, pdf):
         if self.mode == 'start':
-            line = self.parent.ruler.lines[self.position]
+            line = self.parent.ruler.line_segments[self.position]
             x = line.x1
         elif self.mode == 'end':
-            line = self.parent.ruler.lines[self.position - 1]
+            line = self.parent.ruler.line_segments[self.position - 1]
             x = line.x2
         else:
             raise ValueError()
@@ -161,19 +161,19 @@ class ScoreTimeLine(TimeLine):
             for voice in voices:
                 module = module_time_line.module
                 segment = voice.add_voice_segment(module_time_line.start_time, module_time_line.get_end_time())
-                segment.lines[0].add_text_label(module.name, font_size=8, font_weight='bold', relative_x=1)
+                segment.line_segments[0].add_text_label(module.name, font_size=8, font_weight='bold', relative_x=1)
                 try:
-                    segment.lines[2].add_text_label('t=' + str(module.tempo), font_size=8)
+                    segment.line_segments[2].add_text_label('t=' + str(module.tempo), font_size=8)
                 except IndexError:
-                    segment.lines[0].add_text_label('t=' + str(module.tempo), font_size=4, y_offset=-4.5,
-                                                    x_offset=4)
+                    segment.line_segments[0].add_text_label('t=' + str(module.tempo), font_size=4, y_offset=-4.5,
+                                                            x_offset=4)
                 try:
-                    segment.lines[4].add_text_label('d=' + str(round(module.duration)) + '"', font_size=8)
+                    segment.line_segments[4].add_text_label('d=' + str(round(module.duration)) + '"', font_size=8)
                 except IndexError:
-                    segment.lines[0].add_text_label('d=' + str(round(module.duration)) + '"', font_size=4,
-                                                    x_offset=8, y_offset=-4.5)
+                    segment.line_segments[0].add_text_label('d=' + str(round(module.duration)) + '"', font_size=4,
+                                                            x_offset=8, y_offset=-4.5)
                 if module_time_line.text:
-                    segment.lines[0].add_text_label(module_time_line.text, font_size=4, y_offset=-4.5, x_offset=1)
+                    segment.line_segments[0].add_text_label(module_time_line.text, font_size=4, y_offset=-4.5, x_offset=1)
             self.add_vertical(position=module_time_line.start_time)
             self.add_vertical(position=module_time_line.get_end_time(), mode='end')
 

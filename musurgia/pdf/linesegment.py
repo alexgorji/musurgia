@@ -1,16 +1,14 @@
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.labeled import Labeled
+from musurgia.pdf.margined import Margined
 from musurgia.pdf.markline import MarkLine
 from musurgia.pdf.named import Named
 
 
-class LineSegment(DrawObject, Labeled, Named):
-    def __init__(self, length, factor=1, line_distance=20, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class LineSegment(DrawObject, Labeled, Named, Margined):
+    def __init__(self, length, factor=1, bottom_margin=20, *args, **kwargs):
+        super().__init__(bottom_margin=bottom_margin, *args, **kwargs)
         self._length = None
-
-        self._line_distance = None
-        self.line_distance = line_distance
         self._factor = None
         self.length = length
         self.factor = factor
@@ -53,14 +51,6 @@ class LineSegment(DrawObject, Labeled, Named):
         self._factor = val
 
     @property
-    def line_distance(self):
-        return self._line_distance
-
-    @line_distance.setter
-    def line_distance(self, val):
-        self._line_distance = val
-
-    @property
     def length(self):
         return self._length
 
@@ -88,7 +78,7 @@ class LineSegment(DrawObject, Labeled, Named):
         return self.relative_x + self.actual_length
 
     def get_relative_y2(self):
-        return max([self.start_mark_line.get_relative_y2(), self.end_mark_line.get_relative_y2(), self.line_distance])
+        return max([self.start_mark_line.get_relative_y2(), self.end_mark_line.get_relative_y2(), self.bottom_margin])
 
     def draw(self, pdf):
         x1 = pdf.x + self.relative_x

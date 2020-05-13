@@ -12,7 +12,7 @@ class Test(TestCase):
     def test_1(self):
         pdf_path = path + '_test_1.pdf'
         sl = SegmentedLine(lengths=[1, 3, 2, 5], factor=5)
-        pdf = Pdf('portrait')
+        pdf = Pdf(orientation='portrait')
         sl.draw(pdf)
         pdf.write(pdf_path)
         self.assertCompareFiles(actual_file_path=pdf_path)
@@ -20,7 +20,7 @@ class Test(TestCase):
     def test_2(self):
         pdf_path = path + '_test_2.pdf'
         sl = SegmentedLine(lengths=30 * [20])
-        pdf = Pdf('portrait')
+        pdf = Pdf(orientation='portrait')
         sl.draw(pdf)
         pdf.write(pdf_path)
         self.assertCompareFiles(actual_file_path=pdf_path)
@@ -28,7 +28,7 @@ class Test(TestCase):
     def test_3(self):
         pdf_path = path + '_test_3.pdf'
         sl = SegmentedLine(lengths=200 * [20])
-        pdf = Pdf('portrait')
+        pdf = Pdf(orientation='portrait')
         sl.draw(pdf)
         pdf.write(pdf_path)
         self.assertCompareFiles(actual_file_path=pdf_path)
@@ -37,7 +37,7 @@ class Test(TestCase):
         pdf_path = path + '_test_4.pdf'
         sl = SegmentedLine(lengths=30 * [10])
         sl.add_text_label(TextLabel('bla is bla'))
-        pdf = Pdf('portrait')
+        pdf = Pdf(orientation='portrait')
         sl.draw(pdf)
         pdf.write(pdf_path)
         self.assertCompareFiles(actual_file_path=pdf_path)
@@ -45,7 +45,7 @@ class Test(TestCase):
     def test_5(self):
         pdf_path = path + '_test_5.pdf'
         sl = SegmentedLine(lengths=30 * [10], name='vla')
-        pdf = Pdf('portrait')
+        pdf = Pdf(orientation='portrait')
         sl.draw(pdf)
         # pdf.add_draw_object(sl)
         pdf.write(pdf_path)

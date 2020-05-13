@@ -16,6 +16,7 @@ from musurgia.chordfield.valuegenerator import ValueGenerator
 from musurgia.fractaltree.fractaltree import FractalTree
 from musurgia.fractaltree.midigenerators import RelativeMidi, MidiGenerator
 from musurgia.interpolation import Interpolation
+from musurgia.pdf.segmentedline import SegmentedLine
 from musurgia.permutation import permute
 from musurgia.quantize import get_quantized_values
 from musurgia.timing import Timing
@@ -83,15 +84,16 @@ class FractalMusic(FractalTree):
 
         # super().__init__(value=duration, *args, **kwargs)
         super().__init__(*args, **kwargs)
-        self._midi_value = None
+
+        self._children_generated_midis = None
         self._chord = None
         self._chord_field = None
-        self._simple_format = None
         self._midi_generator = None
-        self._children_generated_midis = None
-        self._tree_directions = None
+        self._midi_value = None
         self._permute_directions = True
+        self._simple_format = None
         self._tempo = None
+        self._tree_directions = None
 
         self.midi_generator = midi_generator
         if duration:
@@ -127,7 +129,8 @@ class FractalMusic(FractalTree):
             if index == 0:
                 return parent.durational_position_in_tree
             else:
-                return parent.get_children()[index - 1].durational_position_in_tree + parent.get_children()[index - 1].duration
+                return parent.get_children()[index - 1].durational_position_in_tree + parent.get_children()[
+                    index - 1].duration
 
     def _check_merge_nodes(self, nodes):
         tempo = set([node.tempo for node in nodes])
@@ -740,6 +743,35 @@ class FractalMusic(FractalTree):
             except TypeError:
                 self.change_value(Fraction(Fraction(new_quarter_duration * 60), Fraction(self.tempo)))
 
+    def create_segmented_line_group(self, layers=None, *show_attributes):
+        # show_attributes: attr / (attr) / (attr, function/kwdict) / (attr, function, kwdict)
+        def add_line_text_labels():
+            for line, ch in zip(segmented_line.line_segments, self.get_children()):
+                for attr_tuple in show_attributes:
+                    attr_func = None
+                    kwdict = None
+                    if isinstance(attr_tuple, tuple):
+                        for x in attr_tuple[1:]:
+                            if isinstance(x, str):
+                                attr_func = lambda y: getattr(ch, x)
+                            if callable(x):
+                                attr_func = x
+                            elif isinstance(x, dict):
+                                kwdict = x
+                    else:
+                        attr_func = lambda child: getattr(child, x)
+
+                    label = line.start_mark_line.add_text_label(str(attr_func(ch)))
+                    if kwdict:
+                        for key in kwdict.keys():
+                            setattr(label, key, kwdict[key])
+
+        segmented_line_group = SegementedLineGroup()
+        segmented_line_group.add_segemented_line(SegmentedLine(lengths=[ch.duration for ch in self.get_children()]))
+        for segmented_line in segmented_line_group.get_segmented_lines():
+            add_line_text_labels()
+        return segmented_line_group
+
     def find_best_tempo_in_range(self, min_tempo=40, max_tempo=144):
         min_quarter_duration = ceil(Timing(duration=self.duration, tempo=min_tempo).quarter_duration)
         max_quarter_duration = floor(Timing(duration=self.duration, tempo=max_tempo).quarter_duration)
@@ -802,6 +834,9 @@ class FractalMusic(FractalTree):
         quantized_quarter_durations = get_quantized_values(quarter_durations, grid_size)
         for child, quantized_duration in zip(children, quantized_quarter_durations):
             child.change_quarter_duration(quantized_duration)
+
+    def recreate_segmented_line(self):
+        self._segmented_line = None
 
     def reduce_children(self, condition):
         super().reduce_children(condition)

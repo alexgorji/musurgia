@@ -51,7 +51,7 @@ class VoiceSegment(object):
     @property
     def lines(self):
         if not self._lines:
-            self._lines = self.parent.lines[self.start:self.stop]
+            self._lines = self.parent.line_segments[self.start:self.stop]
         return self._lines
 
     def apply_to_parent(self):
@@ -71,7 +71,7 @@ class Voice(AbstractVoice, Named):
         self.hide_all()
 
     def hide_all(self):
-        for line in self.lines:
+        for line in self.line_segments:
             line.show = False
 
     @property

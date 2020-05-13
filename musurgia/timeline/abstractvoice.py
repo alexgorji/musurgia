@@ -38,7 +38,7 @@ class AbstractVoice(SegmentedLine, Tree):
             pass
         else:
             self.unit = unit
-            for line in self.lines:
+            for line in self.line_segments:
                 line.length = unit
 
     @property
@@ -48,5 +48,5 @@ class AbstractVoice(SegmentedLine, Tree):
     @line_distance.setter
     def line_distance(self, val):
         self._line_distance = val
-        for line in self.lines:
-            line.line_distance = val
+        for line in self.line_segments:
+            line.bottom_margin = val

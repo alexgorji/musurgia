@@ -45,7 +45,7 @@ class PageNumber(PageText):
 
 class Pdf(FPDF):
 
-    def __init__(self, default_line_distance=10, r_margin=10, t_margin=10, l_margin=10, b_margin=10, *args, **kwargs):
+    def __init__(self, r_margin=10, t_margin=10, l_margin=10, b_margin=10, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.page_number = PageNumber('')
         self.r_margin = r_margin
@@ -54,7 +54,6 @@ class Pdf(FPDF):
         self.b_margin = b_margin
         self.add_page()
 
-        self.default_line_distance = default_line_distance
         self.set_font("Arial", "", 10)
 
     def add_page(self):

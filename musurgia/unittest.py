@@ -1,10 +1,14 @@
-from unittest import TestCase
 import os
+import unittest
 
 from diff_pdf_visually import pdfdiff
 
 
-class TestCase(TestCase):
+def create_path(path, test_name):
+    return path.parent.joinpath(f'{path.stem}_{test_name}')
+
+
+class TestCase(unittest.TestCase):
     """"""
 
     def __init__(self, *args, **kwargs):

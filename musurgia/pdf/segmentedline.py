@@ -7,7 +7,7 @@ from musurgia.pdf.named import Named
 class SegmentedLine(DrawObject, Labeled, Named):
     def __init__(self, lengths, factor=1, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._lines = []
+        self._line_segments = []
         self._factor = None
         self.factor = factor
         self._lengths = None
@@ -17,7 +17,7 @@ class SegmentedLine(DrawObject, Labeled, Named):
     def relative_y(self, val):
         self._relative_y = val
         try:
-            for line in self.lines:
+            for line in self.line_segments:
                 line.relative_y = val
         except AttributeError:
             pass
@@ -26,7 +26,7 @@ class SegmentedLine(DrawObject, Labeled, Named):
     def relative_x(self, val):
         self._relative_x = val
         try:
-            self.lines[-1].relative_x = val
+            self.line_segments[-1].relative_x = val
         except AttributeError:
             pass
 
@@ -39,43 +39,43 @@ class SegmentedLine(DrawObject, Labeled, Named):
         if not isinstance(val, list):
             raise TypeError('lengths.value must be of type list not{}'.format(type(val)))
         self._lengths = val
-        self._generate_lines()
+        self._generate_line_segments()
 
     @property
-    def lines(self):
-        return self._lines
+    def line_segments(self):
+        return self._line_segments
 
-    def _generate_lines(self):
-        self._lines = []
+    def _generate_line_segments(self):
+        self._line_segments = []
         for length in self.lengths:
-            line = LineSegment(length=length, relative_y=self.relative_y, factor=self.factor)
-            if not self._lines:
-                line.relative_x = self.relative_x
+            line_segement = LineSegment(length=length, relative_y=self.relative_y, factor=self.factor)
+            if not self._line_segments:
+                line_segement.relative_x = self.relative_x
             else:
-                line.relative_x = 0
+                line_segement.relative_x = 0
 
-            self._lines.append(line)
-        self._lines[-1].end_mark_line.show = True
+            self._line_segments.append(line_segement)
+        self._line_segments[-1].end_mark_line.show = True
 
     def get_relative_x2(self):
         raise Exception('SegementedLine does not have a x2 value')
 
     def get_relative_y2(self):
-        return self.lines[0].relative_y
+        return self.line_segments[0].relative_y
 
     def draw(self, pdf):
         for text_label in self._text_labels:
             text_label.draw(pdf)
 
-        for line in self.lines:
-            if line == self.lines[0]:
-                line.name = self.name
+        for line_segment in self.line_segments:
+            if line_segment == self.line_segments[0]:
+                line_segment.name = self.name
 
-            line.draw_with_break(pdf)
+            line_segment.draw_with_break(pdf)
             new_x = pdf.x
 
-            if line._line_break and self.name:
-                line.name = self.name
-                pdf.x = new_x - line.actual_length
-                line.name.draw(pdf)
+            if line_segment._line_break and self.name:
+                line_segment.name = self.name
+                pdf.x = new_x - line_segment.actual_length
+                line_segment.name.draw(pdf)
                 pdf.x = new_x

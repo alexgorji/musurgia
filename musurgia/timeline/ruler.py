@@ -21,7 +21,7 @@ class Ruler(AbstractVoice):
         self.update_show_intervals()
 
     def update_show_intervals(self):
-        for index, line in enumerate(self.lines):
+        for index, line in enumerate(self.line_segments):
             seconds = index
             line.start_mark_line.remove_text_labels()
             if seconds % self.show_interval == 0:

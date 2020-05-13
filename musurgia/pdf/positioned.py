@@ -2,6 +2,7 @@ class Positioned(object):
     def __init__(self, relative_x=None, relative_y=None, *args, **kwargs):
         self._relative_x = None
         self._relative_y = None
+
         self.relative_x = relative_x
         self.relative_y = relative_y
         super().__init__(*args, **kwargs)

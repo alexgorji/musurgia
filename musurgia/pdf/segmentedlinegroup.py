@@ -1,8 +1,8 @@
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.linesegment import LineSegment
 
-
-class LineGroup(DrawObject):
+# todo parent: DrawObjectGroup as Parent for
+class LineSegmentGroup(DrawObject):
     def __init__(self, inner_distance=None, bottom_distance=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._lines = []
@@ -11,11 +11,9 @@ class LineGroup(DrawObject):
         self._bottom_distance = None
         self.bottom_distance = bottom_distance
 
-    def set_distances(self):
-        self.set_inner_distance()
-        self.set_bottom_distance()
+    # //private methods
 
-    def set_bottom_distance(self):
+    def _set_bottom_distance(self):
         if self.bottom_distance is not None and self.lines:
             self.lines[-1].bottom_margin = self.bottom_distance
 
@@ -24,16 +22,39 @@ class LineGroup(DrawObject):
             for index, line in enumerate(self.lines):
                 line.relative_y = self.relative_y + (index * self.inner_distance)
 
-    def add_line(self, line):
-        if not isinstance(line, LineSegment):
-            raise TypeError()
-        if self.length:
-            if line.length != self.length:
-                raise ValueError('line.length {} must be {}'.format(line.length, self.length))
-        line.relative_y = self.relative_y
-        line.relative_x = self.relative_x
-        self._lines.append(line)
-        self.set_distances()
+    def _set_distances(self):
+        self.set_inner_distance()
+        self._set_bottom_distance()
+
+    # //properties
+    @property
+    def bottom_distance(self):
+        return self._bottom_distance
+
+    @bottom_distance.setter
+    def bottom_distance(self, val):
+        self._bottom_distance = val
+        self._set_bottom_distance()
+
+    @property
+    def inner_distance(self):
+        return self._inner_distance
+
+    @inner_distance.setter
+    def inner_distance(self, val):
+        self._inner_distance = val
+        self.set_inner_distance()
+
+    @property
+    def length(self):
+        try:
+            return self.lines[0].length
+        except IndexError:
+            return None
+
+    @property
+    def lines(self):
+        return self._lines
 
     @DrawObject.relative_x.setter
     def relative_x(self, val):
@@ -50,39 +71,24 @@ class LineGroup(DrawObject):
         try:
             for line in self.lines:
                 line.relative_y = self.relative_y
-            self.set_distances()
+            self._set_distances()
         except AttributeError:
             pass
 
-    @property
-    def lines(self):
-        return self._lines
+    # //public methods
+    # add
+    def add_line(self, line):
+        if not isinstance(line, LineSegment):
+            raise TypeError()
+        if self.length:
+            if line.length != self.length:
+                raise ValueError('line.length {} must be {}'.format(line.length, self.length))
+        line.relative_y = self.relative_y
+        line.relative_x = self.relative_x
+        self._lines.append(line)
+        self._set_distances()
 
-    @property
-    def length(self):
-        try:
-            return self.lines[0].length
-        except IndexError:
-            return None
-
-    @property
-    def inner_distance(self):
-        return self._inner_distance
-
-    @inner_distance.setter
-    def inner_distance(self, val):
-        self._inner_distance = val
-        self.set_inner_distance()
-
-    @property
-    def bottom_distance(self):
-        return self._bottom_distance
-
-    @bottom_distance.setter
-    def bottom_distance(self, val):
-        self._bottom_distance = val
-        self.set_bottom_distance()
-
+    # get
     def get_relative_x2(self):
         try:
             return self.lines[0].get_relative_x2()
@@ -95,6 +101,7 @@ class LineGroup(DrawObject):
         except IndexError:
             return None
 
+    # other
     def draw(self, pdf):
         old_pdf_x = pdf.x
         for line in self.lines:
