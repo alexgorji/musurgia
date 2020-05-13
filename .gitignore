@@ -3,5 +3,5 @@ venv
 dist
 build
 musurgia.egg-info
-
+*.pdf
 
