@@ -118,6 +118,17 @@ class FractalMusic(FractalTree):
         raise AttributeError('_midi_iterator cannot be set directly. Use midi-generator!')
 
     # //private methods
+    def _calculate_durational_position_in_tree(self):
+        parent = self.up
+        if self.is_root:
+            return 0
+        else:
+            index = parent.get_children().index(self)
+            if index == 0:
+                return parent.durational_position_in_tree
+            else:
+                return parent.get_children()[index - 1].durational_position_in_tree + parent.get_children()[index - 1].duration
+
     def _check_merge_nodes(self, nodes):
         tempo = set([node.tempo for node in nodes])
         if len(tempo) != 1:
@@ -182,6 +193,10 @@ class FractalMusic(FractalTree):
     @duration.setter
     def duration(self, val):
         self.value = val
+
+    @property
+    def durational_position_in_tree(self):
+        return self._calculate_durational_position_in_tree()
 
     @property
     def midi_generator(self):

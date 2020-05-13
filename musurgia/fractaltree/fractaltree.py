@@ -65,6 +65,17 @@ class FractalTree(Tree):
                     raise ValueError('proportions and tree_permutation_order should have the same length')
             return children_fractal_values
 
+    def _calculate_position_in_tree(self):
+        parent = self.up
+        if self.is_root:
+            return 0
+        else:
+            index = parent.get_children().index(self)
+            if index == 0:
+                return parent.position_in_tree
+            else:
+                return parent.get_children()[index - 1].position_in_tree + parent.get_children()[index - 1].value
+
     def _change_children_value(self, factor):
         for child in self.get_children():
             # child_delta = Fraction(delta, len(self.get_children()))
@@ -252,7 +263,7 @@ class FractalTree(Tree):
 
     @property
     def position_in_tree(self):
-        return self.calculate_position_in_tree()
+        return self._calculate_position_in_tree()
 
     @property
     def proportions(self):
@@ -419,16 +430,6 @@ class FractalTree(Tree):
             return None
 
     # other
-    def calculate_position_in_tree(self):
-        parent = self.up
-        if self.is_root:
-            return 0
-        else:
-            index = parent.get_children().index(self)
-            if index == 0:
-                return parent.position_in_tree
-            else:
-                return parent.get_children()[index - 1].position_in_tree + parent.get_children()[index - 1].value
 
     def change_value(self, new_value):
         if not new_value:
