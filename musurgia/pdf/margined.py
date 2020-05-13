@@ -1,4 +1,4 @@
-class Margined(object):
+class Margined:
     def __init__(self, top_margin=None, bottom_margin=None, left_margin=None, right_margin=None, *args, **kwargs):
         self._top_margin = None
         self._left_margin = None

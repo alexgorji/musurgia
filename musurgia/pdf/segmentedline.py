@@ -1,7 +1,180 @@
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.labeled import Labeled
-from musurgia.pdf.linesegment import LineSegment
 from musurgia.pdf.named import Named
+from musurgia.pdf.positioned import RelativeXNotSettableError
+
+
+class MarkLine(DrawObject, Labeled):
+    def __init__(self, parent, placement='start', height=3, thickness=1, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.left_margin, self.top_margin, self.right_margin, self.bottom_margin = 0, 0, 0, 0
+        self._parent = None
+        self._height = None
+        self._placement = None
+        self.parent = parent
+        self.placement = placement
+        self.height = height
+        self.position = None
+        self.thickness = thickness
+
+    @property
+    def relative_x(self):
+        if self.placement == 'start':
+            return self.parent.relative_x
+        else:
+            return self.parent.relative_x + self.parent.length
+
+    @relative_x.setter
+    def relative_x(self, val):
+        if val is not None:
+            raise RelativeXNotSettableError()
+
+    @property
+    def placement(self):
+        return self._placement
+
+    @placement.setter
+    def placement(self, val):
+        permitted = ['start', 'stop']
+        if val not in permitted:
+            raise ValueError('placement.value {} must be in {}'.format(val, permitted))
+        self._placement = val
+
+    @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, val):
+        if not isinstance(val, LineSegment):
+            raise TypeError(f"parent.value must be of type LineSegment not{type(val)}")
+        self._parent = val
+
+    @property
+    def height(self):
+        return self._height
+
+    @height.setter
+    def height(self, val):
+        self._height = val
+
+    def get_relative_x2(self):
+        return self.relative_x
+
+    def get_relative_y2(self):
+        return self.relative_y + self.height
+
+    def draw(self, pdf):
+        x1 = self.relative_x + pdf.x
+        x2 = x1
+        y1 = self.relative_y + pdf.y - self.height / 2
+        y2 = y1 + self.height
+        if self.show:
+            for i in range(self.thickness):
+                grid = 0.1
+                pdf.line(x1=x1 + i * grid, y1=y1, x2=x2 + i * grid, y2=y2)
+        self.position = (x1, y2)
+        for text_label in self.text_labels:
+            text_label.draw(pdf)
+        # pdf.x = x2
+        # pdf.y = y2
+
+
+class LineSegment(DrawObject, Labeled, Named):
+    def __init__(self, length, factor=1, bottom_margin=20, *args, **kwargs):
+        super().__init__(bottom_margin=bottom_margin, *args, **kwargs)
+        self._length = None
+        self._factor = None
+        self.length = length
+        self.factor = factor
+        self._start_mark_line = MarkLine(parent=self)
+        self._end_mark_line = MarkLine(parent=self, show=False)
+        self._x1 = None
+        self._x2 = None
+        self._y1 = None
+        self._y2 = None
+        self._page = None
+
+    @property
+    def x1(self):
+        return self._x1
+
+    @property
+    def x2(self):
+        return self._x2
+
+    @property
+    def y1(self):
+        return self._y1
+
+    @property
+    def y2(self):
+        return self._y2
+
+    @property
+    def page(self):
+        return self._page
+
+    @property
+    def factor(self):
+        if self._factor is None:
+            self._factor = 1
+        return self._factor
+
+    @factor.setter
+    def factor(self, val):
+        self._factor = val
+
+    @property
+    def length(self):
+        return self._length
+
+    @length.setter
+    def length(self, val):
+        self._length = val
+
+    @property
+    def actual_length(self):
+        return self.length * self.factor
+
+    @property
+    def start_mark_line(self):
+        self._start_mark_line.relative_x = self.relative_x
+        self._start_mark_line.relative_y = self.relative_y
+        return self._start_mark_line
+
+    @property
+    def end_mark_line(self):
+        self._end_mark_line.relative_x = self.relative_x + self.length * self.factor
+        self._end_mark_line.relative_y = self.relative_y
+        return self._end_mark_line
+
+    def get_relative_x2(self):
+        return self.relative_x + self.actual_length
+
+    def get_relative_y2(self):
+        return max([self.start_mark_line.get_relative_y2(), self.end_mark_line.get_relative_y2(), self.bottom_margin])
+
+    def draw(self, pdf):
+        x1 = pdf.x + self.relative_x
+        x2 = pdf.x + self.relative_x + self.actual_length
+        y1 = pdf.y + self.relative_y
+        y2 = y1
+
+        self._x1, self._x2, self._y1, self._y2 = x1, x2, y1, y2
+        self._page = pdf.page
+        if self.name:
+            self.name.draw(pdf)
+
+        if self.show:
+            self.start_mark_line.draw(pdf)
+            self.end_mark_line.draw(pdf)
+            pdf.line(x1=x1, y1=y1, x2=x2, y2=y2)
+            for text_label in self._text_labels:
+                text_label.draw(pdf)
+
+        pdf.x = x2
+        pdf.y += self.top_margin
 
 
 class SegmentedLine(DrawObject, Labeled, Named):

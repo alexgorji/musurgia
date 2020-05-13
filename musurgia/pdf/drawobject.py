@@ -22,7 +22,7 @@ class DrawObject(ABC, Positioned, Margined):
             if self.relative_x < 0:
                 self.relative_x = 0
 
-            pdf.y += self.get_relative_y2()
+            pdf.y += self.get_relative_y2() + self.bottom_margin
             pdf.x = pdf.l_margin
 
     def _check_page_break(self, pdf):

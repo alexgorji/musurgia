@@ -2,13 +2,12 @@ from musurgia.pdf.segmentedline import SegmentedLine
 from musurgia.tree import Tree
 
 
-class AbstractVoice(SegmentedLine, Tree):
+class AbstractVoice(SegmentedLine):
     def __init__(self, length, unit=10, *args, **kwargs):
         self._length = None
         self.length = length
         self._unit = None
         self.unit = unit
-        self._line_distance = None
         super().__init__(lengths=self.length * [self.unit], *args, **kwargs)
 
     @property
@@ -40,13 +39,3 @@ class AbstractVoice(SegmentedLine, Tree):
             self.unit = unit
             for line in self.line_segments:
                 line.length = unit
-
-    @property
-    def line_distance(self):
-        return self._line_distance
-
-    @line_distance.setter
-    def line_distance(self, val):
-        self._line_distance = val
-        for line in self.line_segments:
-            line.bottom_margin = val

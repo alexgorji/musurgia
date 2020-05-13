@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from musurgia.pdf.drawobjectgroup import DrawObjectGroup
 from musurgia.pdf.pdf import Pdf
 from musurgia.unittest import TestCase, create_path
 
@@ -12,5 +13,5 @@ class Test(TestCase):
 
     def test_draw(self):
         pdf_path = create_path(path, 'draw.pdf')
-        slg = SegmentedLineGroup()
+        slg = DrawObjectGroup()
         self.pdf.write(pdf_path)

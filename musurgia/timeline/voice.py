@@ -71,8 +71,8 @@ class Voice(AbstractVoice, Named):
         self.hide_all()
 
     def hide_all(self):
-        for line in self.line_segments:
-            line.show = False
+        for line_segment in self.line_segments:
+            line_segment.show = False
 
     @property
     def segments(self):

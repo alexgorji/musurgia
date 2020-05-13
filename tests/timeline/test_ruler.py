@@ -13,7 +13,7 @@ class Test(TestCase):
     def test_1(self):
         pdf_path = path + '_test_1.pdf'
         pdf = Pdf(orientation='portrait')
-        tl = TimeLine(length=50)
+        tl = TimeLine(length=50, bottom_margin=40)
         printable = (pdf.w - pdf.r_margin - pdf.l_margin)
         tl.unit = Fraction(Fraction(printable), Fraction(20))
         tl.show_interval = 10

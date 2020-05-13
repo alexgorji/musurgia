@@ -21,10 +21,10 @@ class Ruler(AbstractVoice):
         self.update_show_intervals()
 
     def update_show_intervals(self):
-        for index, line in enumerate(self.line_segments):
+        for index, line_segment in enumerate(self.line_segments):
             seconds = index
-            line.start_mark_line.remove_text_labels()
+            line_segment.start_mark_line.remove_text_labels()
             if seconds % self.show_interval == 0:
-                line.start_mark_line.add_text_label(
+                line_segment.start_mark_line.add_text_label(
                     TextLabel(text=Timing.get_clock(seconds, mode='ms'), relative_y=-3, font_size=9))
-                line.start_mark_line.thickness = 4
+                line_segment.start_mark_line.thickness = 4

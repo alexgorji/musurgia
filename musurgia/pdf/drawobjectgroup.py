@@ -3,10 +3,10 @@ from musurgia.pdf.drawobject import DrawObject
 
 class DrawObjectGroup(DrawObject):
     def __init__(self, inner_distance=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         self._draw_objects = []
         self._inner_distance = 0
         self.inner_distance = inner_distance
+        super().__init__(*args, **kwargs)
 
     def _get_lowest_draw_object(self):
         if self.draw_objects:
@@ -24,6 +24,7 @@ class DrawObjectGroup(DrawObject):
         index = len(self.draw_objects)
         self._set_inner_distance(draw_object, index)
         self._draw_objects.append(draw_object)
+        return draw_object
 
     @DrawObject.relative_x.setter
     def relative_x(self, val):
@@ -62,12 +63,17 @@ class DrawObjectGroup(DrawObject):
 
     def get_relative_y2(self):
         if self.draw_objects:
-            return max([do.get_relative_xy() for do in self.draw_objects])
+            return max([do.get_relative_y2() for do in self.draw_objects])
         else:
             return None
 
     def draw(self, pdf):
         old_pdf_x = pdf.x
+        old_pdf_page = pdf.page
+        old_pdf_y = pdf.y
         for draw_object in self.draw_objects:
+            pdf.page = old_pdf_page
+            pdf.page = old_pdf_page
             pdf.x = old_pdf_x
+            pdf.y = old_pdf_y
             draw_object.draw(pdf)
