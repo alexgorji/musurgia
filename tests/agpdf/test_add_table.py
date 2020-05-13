@@ -1,8 +1,8 @@
 import os
 from unittest import TestCase
 
-from musurgia.agpdf.pdf import Pdf
-from musurgia.agpdf.table import Table
+from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.table import Table
 
 path = os.path.abspath(__file__).split('.')[0]
 

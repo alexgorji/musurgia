@@ -1,8 +1,8 @@
-from musurgia.agpdf.drawobject import DrawObject
-from musurgia.agpdf.font import Font
+from musurgia.pdf.drawobject import DrawObject
+from musurgia.pdf.font import Font
 import copy
 
-from musurgia.agpdf.positioned import Positioned
+from musurgia.pdf.positioned import Positioned
 
 
 class Text(DrawObject):

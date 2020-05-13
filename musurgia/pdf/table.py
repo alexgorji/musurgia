@@ -1,8 +1,8 @@
-from musurgia.agpdf.drawobject import DrawObject
-from musurgia.agpdf.labeled import Labeled
-from musurgia.agpdf.line import Line
-from musurgia.agpdf.markline import MarkLine
-from musurgia.agpdf.named import Named
+from musurgia.pdf.drawobject import DrawObject
+from musurgia.pdf.labeled import Labeled
+from musurgia.pdf.linesegment import LineSegment
+from musurgia.pdf.markline import MarkLine
+from musurgia.pdf.named import Named
 
 
 class Cell(DrawObject):
@@ -44,8 +44,8 @@ class Cell(DrawObject):
 
     def generate_lines(self):
         if self.width and self.height:
-            # todo: Line must have an angel property
-            line_1 = Line(relative_y=self.relative_y, relative_x=self.relative_x)
+            # todo: LineSegment must have an angel property
+            line_1 = LineSegment(relative_y=self.relative_y, relative_x=self.relative_x)
 
 
 class Table(DrawObject):

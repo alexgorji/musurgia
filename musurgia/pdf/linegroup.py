@@ -1,5 +1,5 @@
-from musurgia.agpdf.drawobject import DrawObject
-from musurgia.agpdf.line import Line
+from musurgia.pdf.drawobject import DrawObject
+from musurgia.pdf.linesegment import LineSegment
 
 
 class LineGroup(DrawObject):
@@ -25,7 +25,7 @@ class LineGroup(DrawObject):
                 line.relative_y = self.relative_y + (index * self.inner_distance)
 
     def add_line(self, line):
-        if not isinstance(line, Line):
+        if not isinstance(line, LineSegment):
             raise TypeError()
         if self.length:
             if line.length != self.length:

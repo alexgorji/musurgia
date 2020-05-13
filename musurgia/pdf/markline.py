@@ -1,5 +1,5 @@
-from musurgia.agpdf.drawobject import DrawObject
-from musurgia.agpdf.labeled import Labeled
+from musurgia.pdf.drawobject import DrawObject
+from musurgia.pdf.labeled import Labeled
 
 
 class MarkLine(DrawObject, Labeled):

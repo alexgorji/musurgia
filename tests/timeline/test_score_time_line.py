@@ -2,7 +2,7 @@ import os
 
 from musicscore.musictree.treeinstruments import Violin, Viola, Cello, Percussion, Accordion
 
-from musurgia.agpdf.pdf import Pdf, PageText
+from musurgia.pdf.pdf import Pdf, PageText
 from musurgia.unittest import TestCase
 from musurgia.fractaltree.fractalmusicsquare import Square
 from musurgia.timeline.scoretimeline import ScoreTimeLine, ModuleTimeLine

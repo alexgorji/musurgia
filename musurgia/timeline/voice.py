@@ -1,4 +1,4 @@
-from musurgia.agpdf.named import Named
+from musurgia.pdf.named import Named
 from musurgia.timeline.abstractvoice import AbstractVoice
 
 

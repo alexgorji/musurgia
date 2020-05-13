@@ -2,7 +2,7 @@ import os
 
 from fpdf import FPDF
 
-from musurgia.agpdf.pdf import Pdf, PageText
+from musurgia.pdf.pdf import Pdf, PageText
 from musurgia.unittest import TestCase
 
 path = str(os.path.abspath(__file__).split('.')[0])

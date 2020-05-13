@@ -1,4 +1,4 @@
-from musurgia.agpdf.textlabel import TextLabel
+from musurgia.pdf.textlabel import TextLabel
 
 
 class Labeled(object):

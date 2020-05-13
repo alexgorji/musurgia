@@ -1,10 +1,10 @@
-from musurgia.agpdf.drawobject import DrawObject
-from musurgia.agpdf.labeled import Labeled
-from musurgia.agpdf.markline import MarkLine
-from musurgia.agpdf.named import Named
+from musurgia.pdf.drawobject import DrawObject
+from musurgia.pdf.labeled import Labeled
+from musurgia.pdf.markline import MarkLine
+from musurgia.pdf.named import Named
 
 
-class Line(DrawObject, Labeled, Named):
+class LineSegment(DrawObject, Labeled, Named):
     def __init__(self, length, factor=1, line_distance=20, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._length = None

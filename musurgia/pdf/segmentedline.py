@@ -1,7 +1,7 @@
-from musurgia.agpdf.drawobject import DrawObject
-from musurgia.agpdf.labeled import Labeled
-from musurgia.agpdf.line import Line
-from musurgia.agpdf.named import Named
+from musurgia.pdf.drawobject import DrawObject
+from musurgia.pdf.labeled import Labeled
+from musurgia.pdf.linesegment import LineSegment
+from musurgia.pdf.named import Named
 
 
 class SegmentedLine(DrawObject, Labeled, Named):
@@ -48,7 +48,7 @@ class SegmentedLine(DrawObject, Labeled, Named):
     def _generate_lines(self):
         self._lines = []
         for length in self.lengths:
-            line = Line(length=length, relative_y=self.relative_y, factor=self.factor)
+            line = LineSegment(length=length, relative_y=self.relative_y, factor=self.factor)
             if not self._lines:
                 line.relative_x = self.relative_x
             else:

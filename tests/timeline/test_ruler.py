@@ -2,7 +2,7 @@ import os
 
 from quicktions import Fraction
 
-from musurgia.agpdf.pdf import Pdf
+from musurgia.pdf.pdf import Pdf
 from musurgia.unittest import TestCase
 from musurgia.timeline.timeline import TimeLine
 

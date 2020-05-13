@@ -1,9 +1,9 @@
 import os
 from unittest import TestCase
 
-from musurgia.agpdf.line import Line
-from musurgia.agpdf.linegroup import LineGroup
-from musurgia.agpdf.pdf import Pdf
+from musurgia.pdf.linesegment import LineSegment
+from musurgia.pdf.linegroup import LineGroup
+from musurgia.pdf.pdf import Pdf
 
 path = os.path.abspath(__file__).split('.')[0]
 
@@ -16,9 +16,9 @@ class Test(TestCase):
         pdf = self.pdf
         pdf_path = path + '_test_1.pdf'
         lg = LineGroup(inner_distance=7)
-        lg.add_line(Line(length=10))
-        lg.add_line(Line(length=10))
-        lg.add_line(Line(length=10))
+        lg.add_line(LineSegment(length=10))
+        lg.add_line(LineSegment(length=10))
+        lg.add_line(LineSegment(length=10))
 
         lg.draw(pdf)
         pdf.write(pdf_path)
@@ -26,9 +26,9 @@ class Test(TestCase):
     def test_2(self):
         def make_line_group():
             lg = LineGroup(inner_distance=7, bottom_distance=30)
-            lg.add_line(Line(length=10))
-            lg.add_line(Line(length=10))
-            lg.add_line(Line(length=10))
+            lg.add_line(LineSegment(length=10))
+            lg.add_line(LineSegment(length=10))
+            lg.add_line(LineSegment(length=10))
             return lg
 
         pdf = self.pdf
@@ -41,9 +41,9 @@ class Test(TestCase):
     def test_3(self):
         def make_line_group():
             lg = LineGroup(inner_distance=7, bottom_distance=30)
-            lg.add_line(Line(length=10))
-            lg.add_line(Line(length=10))
-            lg.add_line(Line(length=10))
+            lg.add_line(LineSegment(length=10))
+            lg.add_line(LineSegment(length=10))
+            lg.add_line(LineSegment(length=10))
             return lg
 
         pdf = self.pdf
@@ -58,9 +58,9 @@ class Test(TestCase):
     def test_4(self):
         def make_line_group():
             lg = LineGroup(inner_distance=7, bottom_distance=30)
-            lg.add_line(Line(length=10))
-            lg.add_line(Line(length=10))
-            lg.add_line(Line(length=10))
+            lg.add_line(LineSegment(length=10))
+            lg.add_line(LineSegment(length=10))
+            lg.add_line(LineSegment(length=10))
             return lg
 
         pdf = self.pdf
@@ -77,10 +77,10 @@ class Test(TestCase):
     def test_5a(self):
         pdf = self.pdf
         pdf_path = path + '_test_5a.pdf'
-        line = Line(length=10)
+        line = LineSegment(length=10)
         line.draw_with_break(pdf)
 
-        line = Line(length=10)
+        line = LineSegment(length=10)
         line.relative_x = 300
         line.draw_with_break(pdf)
         pdf.write(pdf_path)
@@ -88,9 +88,9 @@ class Test(TestCase):
     def test_5(self):
         def make_line_group():
             lg = LineGroup(inner_distance=7, bottom_distance=30)
-            lg.add_line(Line(length=10))
-            lg.add_line(Line(length=10))
-            lg.add_line(Line(length=10))
+            lg.add_line(LineSegment(length=10))
+            lg.add_line(LineSegment(length=10))
+            lg.add_line(LineSegment(length=10))
             return lg
 
         pdf = self.pdf
@@ -106,9 +106,9 @@ class Test(TestCase):
     def test_6(self):
         def make_line_group():
             lg = LineGroup(inner_distance=7, bottom_distance=30)
-            lg.add_line(Line(length=10))
-            lg.add_line(Line(length=10))
-            lg.add_line(Line(length=10))
+            lg.add_line(LineSegment(length=10))
+            lg.add_line(LineSegment(length=10))
+            lg.add_line(LineSegment(length=10))
             return lg
 
         pdf = self.pdf

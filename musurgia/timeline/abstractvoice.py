@@ -1,4 +1,4 @@
-from musurgia.agpdf.segmentedline import SegmentedLine
+from musurgia.pdf.segmentedline import SegmentedLine
 from musurgia.tree import Tree
 
 

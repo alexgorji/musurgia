@@ -1,8 +1,8 @@
 import os
 
-from musurgia.agpdf.pdf import Pdf
-from musurgia.agpdf.segmentedline import SegmentedLine
-from musurgia.agpdf.textlabel import TextLabel
+from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.segmentedline import SegmentedLine
+from musurgia.pdf.textlabel import TextLabel
 from musurgia.unittest import TestCase
 
 path = str(os.path.abspath(__file__).split('.')[0])

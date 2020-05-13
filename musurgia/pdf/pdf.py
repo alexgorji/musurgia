@@ -1,6 +1,6 @@
 import os
 
-from musurgia.agpdf.textlabel import Text
+from musurgia.pdf.textlabel import Text
 from fpdf import FPDF
 
 

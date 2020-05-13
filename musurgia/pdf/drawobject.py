@@ -1,4 +1,4 @@
-from musurgia.agpdf.positioned import Positioned
+from musurgia.pdf.positioned import Positioned
 
 
 class DrawObject(Positioned):
