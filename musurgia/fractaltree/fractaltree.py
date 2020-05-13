@@ -44,6 +44,216 @@ class FractalTree(Tree):
         self.fertile = fertile
         self.reading_direction = reading_direction
 
+    # // private methods
+
+    def _calculate_children_fractal_orders(self):
+        if self.value and self.proportions:
+            children_fractal_orders = range(1, self.size + 1)
+            permutation_order = self.permutation_order
+            if permutation_order:
+                children_fractal_orders = permute(children_fractal_orders, permutation_order)
+            return children_fractal_orders
+
+    def _calculate_children_fractal_values(self):
+        value = self.value
+        if value and self.proportions:
+            children_fractal_values = [value * prop for prop in self.proportions]
+            if self.permutation_order:
+                try:
+                    children_fractal_values = permute(children_fractal_values, self.permutation_order)
+                except ValueError:
+                    raise ValueError('proportions and tree_permutation_order should have the same length')
+            return children_fractal_values
+
+    def _change_children_value(self, factor):
+        for child in self.get_children():
+            # child_delta = Fraction(delta, len(self.get_children()))
+            child._value *= factor
+            child._change_children_value(factor)
+
+    def _check_merge_nodes(self, nodes):
+        return True
+
+    def _child_multi(self, parent, index):
+        number_of_children = self.size
+        multi_first = sum(parent.multi) % number_of_children
+        if multi_first == 0:
+            multi_first = number_of_children
+        ch_multi = (multi_first, index + 1)
+        return ch_multi
+
+    def _get_merge_lengths(self, number_of_children, merge_index):
+        if 0 > merge_index > self.size - 1:
+            raise ValueError('generate_children.merge_index {} not valid'.format(merge_index))
+        if number_of_children > self.size or number_of_children < 0:
+            raise ValueError(
+                'generate_children.number_of_children {} must be a positive int'.format(number_of_children))
+        if number_of_children == 1:
+            return [self.size]
+
+        lengths = self.size * [1]
+        pointer = merge_index
+        sliced_lengths = [lengths[:pointer], lengths[pointer:]]
+
+        if not sliced_lengths[0]:
+            sliced_lengths = sliced_lengths[1:]
+
+        while len(sliced_lengths) < number_of_children and len(sliced_lengths[0]) > 1:
+            temp = sliced_lengths[0]
+            sliced_lengths[0] = temp[:-1]
+            sliced_lengths.insert(1, temp[-1:])
+
+        while len(sliced_lengths) < number_of_children and len(sliced_lengths[pointer]) > 1:
+            temp = sliced_lengths[pointer]
+            sliced_lengths[pointer] = temp[:-1]
+            sliced_lengths.insert(pointer + 1, temp[-1:])
+
+        sliced_lengths = [len(x) for x in sliced_lengths]
+
+        return sliced_lengths
+
+    def _reduce(self):
+        sisters = self.get_siblings()
+
+        if not sisters:
+            raise Exception('no reduction possible without sisters')
+        else:
+
+            non_zero_sisters = [sister for sister in sisters if sister.value != 0]
+
+            if non_zero_sisters:
+                addition = self.value / len(non_zero_sisters)
+                for sister in non_zero_sisters:
+                    if sister.value != 0:
+                        sister._value += addition
+                self._value = 0
+
+    # // properties
+    @property
+    def children_fractal_values(self):
+        if not self._children_fractal_values:
+            self._children_fractal_values = self._calculate_children_fractal_values()
+        return self._children_fractal_values
+
+    @property
+    def children_fractal_orders(self):
+        return self._calculate_children_fractal_orders()
+
+    @property
+    def fertile(self):
+        return self._fertile
+
+    @fertile.setter
+    def fertile(self, val):
+        if not isinstance(val, bool):
+            raise TypeError('fertile.value must be of type bool not{}'.format(type(val)))
+        self._fertile = val
+
+    @property
+    def fractal_order(self):
+        return self._fractal_order
+
+    @property
+    def layers(self):
+        return [self.get_layer(i) for i in range(self.number_of_layers + 1)]
+
+    @property
+    def multi(self):
+        return self._multi
+
+    @multi.setter
+    def multi(self, vals):
+        if vals is None:
+            vals = (1, 1)
+
+        elif not isinstance(vals, tuple) or len(vals) != 2:
+            raise TypeError('multi has to be a tuple with a length of 2')
+
+        m_1 = vals[0]
+        m_2 = vals[1]
+        m_1, m_2 = (((m_1 - 1) % self.size) + 1 + ((m_2 - 1) // self.size)) % self.size, (
+                (m_2 - 1) % self.size) + 1
+        if m_1 == 0:
+            m_1 = self.size
+        self._multi = (m_1, m_2)
+
+        self._permutation_order = None
+        self._children_fractal_values = None
+
+    @property
+    def name(self):
+        if self._name is None:
+            if self.is_root:
+                self._name = '0'
+            elif self.up.is_root:
+                self._name = str(self.up.get_children().index(self) + 1)
+            else:
+                self._name = self.up.name + '.' + str(self.up.get_children().index(self) + 1)
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def next(self):
+        if not self.is_leaf():
+            raise Exception('FractalTree().next property can only be used for leaves')
+        else:
+            try:
+
+                parent = self.up
+                while parent is not None:
+                    parent_leaves = list(parent.traverse_leaves())
+                    index = parent_leaves.index(self)
+                    try:
+                        return parent_leaves[index + 1]
+                    except IndexError:
+                        parent = parent.up
+                raise IndexError()
+            except IndexError:
+                return None
+
+    @property
+    def number_of_layers(self):
+        if self.get_leaves() == [self]:
+            return 0
+        else:
+            return self.get_farthest_leaf().get_distance(self)
+
+    @property
+    def permutation_order(self):
+        def _calculate_permutation_order():
+            if self.tree_permutation_order:
+                permutation = LimitedPermutation(input_list=list(range(1, self.size + 1)),
+                                                 main_permutation_order=self.tree_permutation_order, multi=self.multi,
+                                                 reading_direction=self.reading_direction)
+
+                return permutation.permutation_order
+            else:
+                raise FractalTreeException('tree_permutation_order must be set')
+
+        if self._permutation_order is None:
+            self._permutation_order = _calculate_permutation_order()
+        return self._permutation_order
+
+    @property
+    def position(self):
+        if self.is_root():
+            # return self.first_position
+            return 0
+        else:
+            siblings = self.up.children
+            index = siblings.index(self)
+            previous_siblings = siblings[:index]
+            position_in_parent = 0
+            for child in previous_siblings: position_in_parent += child.value
+            return position_in_parent + self.up.position
+
+    @property
+    def position_in_tree(self):
+        return self.calculate_position_in_tree()
+
     @property
     def proportions(self):
         return self._proportions
@@ -53,6 +263,23 @@ class FractalTree(Tree):
         if values is None:
             values = [1, 2, 3]
         self._proportions = [Fraction(Fraction(value) / Fraction(sum(values))) for value in values]
+
+    @property
+    def reading_direction(self):
+        return self._reading_direction
+
+    @reading_direction.setter
+    def reading_direction(self, val):
+        if self._reading_direction:
+            raise FractalTreeException('reading_direction can only be set during initialisation')
+        permitted = ['horizontal', 'vertical']
+        if val not in permitted:
+            raise ValueError('reading_direction.value {} must be in {}'.format(val, permitted))
+        self._reading_direction = val
+
+    @property
+    def size(self):
+        return len(self.proportions)
 
     @property
     def tree_permutation_order(self):
@@ -86,179 +313,8 @@ class FractalTree(Tree):
         if self._value == 0:
             self.fertile = False
 
-    @property
-    def multi(self):
-        return self._multi
-
-    @multi.setter
-    def multi(self, vals):
-        if vals is None:
-            vals = (1, 1)
-
-        elif not isinstance(vals, tuple) or len(vals) != 2:
-            raise TypeError('multi has to be a tuple with a length of 2')
-
-        m_1 = vals[0]
-        m_2 = vals[1]
-        m_1, m_2 = (((m_1 - 1) % self.size) + 1 + ((m_2 - 1) // self.size)) % self.size, (
-                (m_2 - 1) % self.size) + 1
-        if m_1 == 0:
-            m_1 = self.size
-        self._multi = (m_1, m_2)
-
-        self._permutation_order = None
-        self._children_fractal_values = None
-
-    @property
-    def fertile(self):
-        return self._fertile
-
-    @fertile.setter
-    def fertile(self, val):
-        if not isinstance(val, bool):
-            raise TypeError('fertile.value must be of type bool not{}'.format(type(val)))
-        self._fertile = val
-
-    @property
-    def reading_direction(self):
-        return self._reading_direction
-
-    @reading_direction.setter
-    def reading_direction(self, val):
-        if self._reading_direction:
-            raise FractalTreeException('reading_direction can only be set during initialisation')
-        permitted = ['horizontal', 'vertical']
-        if val not in permitted:
-            raise ValueError('reading_direction.value {} must be in {}'.format(val, permitted))
-        self._reading_direction = val
-
-    @property
-    def permutation_order(self):
-        def _calculate_permutation_order():
-            if self.tree_permutation_order:
-                permutation = LimitedPermutation(input_list=list(range(1, self.size + 1)),
-                                                 main_permutation_order=self.tree_permutation_order, multi=self.multi,
-                                                 reading_direction=self.reading_direction)
-
-                return permutation.permutation_order
-            else:
-                raise FractalTreeException('tree_permutation_order must be set')
-
-        if self._permutation_order is None:
-            self._permutation_order = _calculate_permutation_order()
-        return self._permutation_order
-
-    @property
-    def fractal_order(self):
-        return self._fractal_order
-
-    def calculate_position_in_tree(self):
-        parent = self.up
-        if self.is_root:
-            return 0
-        else:
-            index = parent.get_children().index(self)
-            if index == 0:
-                return parent.position_in_tree
-            else:
-                return parent.get_children()[index - 1].position_in_tree + parent.get_children()[index - 1].value
-
-    @property
-    def position_in_tree(self):
-        return self.calculate_position_in_tree()
-
-    @property
-    def number_of_layers(self):
-        if self.get_leaves() == [self]:
-            return 0
-        else:
-            return self.get_farthest_leaf().get_distance(self)
-
-    @property
-    def name(self):
-        if self._name is None:
-            if self.is_root:
-                self._name = '0'
-            elif self.up.is_root:
-                self._name = str(self.up.get_children().index(self) + 1)
-            else:
-                self._name = self.up.name + '.' + str(self.up.get_children().index(self) + 1)
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    @property
-    def __name__(self):
-        return self.name
-
-    @__name__.setter
-    def __name__(self, val):
-        self.name = val
-
-    @property
-    def position(self):
-        if self.is_root():
-            # return self.first_position
-            return 0
-        else:
-            siblings = self.up.children
-            index = siblings.index(self)
-            previous_siblings = siblings[:index]
-            position_in_parent = 0
-            for child in previous_siblings: position_in_parent += child.value
-            return position_in_parent + self.up.position
-
-    @property
-    def children_fractal_values(self):
-        if not self._children_fractal_values:
-            self._children_fractal_values = self._calculate_children_fractal_values()
-        return self._children_fractal_values
-
-    def _calculate_children_fractal_orders(self):
-        if self.value and self.proportions:
-            children_fractal_orders = range(1, self.size + 1)
-            permutation_order = self.permutation_order
-            if permutation_order:
-                children_fractal_orders = permute(children_fractal_orders, permutation_order)
-            return children_fractal_orders
-
-    @property
-    def children_fractal_orders(self):
-        return self._calculate_children_fractal_orders()
-
-    def _calculate_children_fractal_values(self):
-        value = self.value
-        if value and self.proportions:
-            children_fractal_values = [value * prop for prop in self.proportions]
-            if self.permutation_order:
-                try:
-                    children_fractal_values = permute(children_fractal_values, self.permutation_order)
-                except ValueError:
-                    raise ValueError('proportions and tree_permutation_order should have the same length')
-            return children_fractal_values
-
-    @property
-    def size(self):
-        return len(self.proportions)
-
-    def _child_multi(self, parent, index):
-        number_of_children = self.size
-        multi_first = sum(parent.multi) % number_of_children
-        if multi_first == 0:
-            multi_first = number_of_children
-        ch_multi = (multi_first, index + 1)
-        return ch_multi
-
-    def add_self(self):
-        leaves = self.get_leaves()
-        for leaf in leaves:
-            new_node = self.copy()
-            new_node._up = self
-            new_node._fractal_order = self.fractal_order
-            leaf.add_child(new_node)
-
+    # //public methods
+    # add
     def add_layer(self, *conditions):
         if self.value is None:
             raise SetValueFirst()
@@ -286,6 +342,15 @@ class FractalTree(Tree):
             else:
                 pass
 
+    def add_self(self):
+        leaves = self.get_leaves()
+        for leaf in leaves:
+            new_node = self.copy()
+            new_node._up = self
+            new_node._fractal_order = self.fractal_order
+            leaf.add_child(new_node)
+
+    # get
     def get_layer(self, layer, key=None):
         if layer <= self.get_root().number_of_layers:
             branch_distances = []
@@ -319,47 +384,13 @@ class FractalTree(Tree):
             err = 'max layer number=' + str(self.number_of_layers)
             raise ValueError(err)
 
-    def _change_children_value(self, factor):
-        for child in self.get_children():
-            # child_delta = Fraction(delta, len(self.get_children()))
-            child._value *= factor
-            child._change_children_value(factor)
-
-    def change_value(self, new_value):
-        if not new_value:
-            new_value = Fraction(new_value)
-        if not self.value:
-            self.value = new_value
-        else:
-            factor = Fraction(new_value, self.value)
-            self._value = new_value
-            for node in reversed(self.get_branch()[:-1]):
-                node._value = sum([child.value for child in node.get_children()])
-
-            self._change_children_value(factor)
-
-    @property
-    def layers(self):
-        return [self.get_layer(i) for i in range(self.number_of_layers + 1)]
-
-    @property
-    def next(self):
-        if not self.is_leaf():
-            raise Exception('FractalTree().next property can only be used for leaves')
-        else:
-            try:
-
-                parent = self.up
-                while parent is not None:
-                    parent_leaves = list(parent.traverse_leaves())
-                    index = parent_leaves.index(self)
-                    try:
-                        return parent_leaves[index + 1]
-                    except IndexError:
-                        parent = parent.up
-                raise IndexError()
-            except IndexError:
-                return None
+    def get_next_sibling(self):
+        try:
+            siblings = self.up.get_children()
+            index = siblings.index(self)
+            return siblings[index + 1]
+        except (IndexError, AttributeError):
+            return None
 
     def get_previous_leaf(self):
         if not self.is_leaf():
@@ -387,103 +418,30 @@ class FractalTree(Tree):
         except AttributeError:
             return None
 
-    def get_next_sibling(self):
-        try:
-            siblings = self.up.get_children()
-            index = siblings.index(self)
-            return siblings[index + 1]
-        except (IndexError, AttributeError):
-            return None
-
-    def split(self, *proportions):
-
-        for prop in proportions:
-            self.add_self()
-            self.get_children()[-1].value = self.value * prop / sum(proportions)
-
-    def _reduce(self):
-        sisters = self.get_siblings()
-
-        if not sisters:
-            raise Exception('no reduction possible without sisters')
+    # other
+    def calculate_position_in_tree(self):
+        parent = self.up
+        if self.is_root:
+            return 0
         else:
+            index = parent.get_children().index(self)
+            if index == 0:
+                return parent.position_in_tree
+            else:
+                return parent.get_children()[index - 1].position_in_tree + parent.get_children()[index - 1].value
 
-            non_zero_sisters = [sister for sister in sisters if sister.value != 0]
+    def change_value(self, new_value):
+        if not new_value:
+            new_value = Fraction(new_value)
+        if not self.value:
+            self.value = new_value
+        else:
+            factor = Fraction(new_value, self.value)
+            self._value = new_value
+            for node in reversed(self.get_branch()[:-1]):
+                node._value = sum([child.value for child in node.get_children()])
 
-            if non_zero_sisters:
-                addition = self.value / len(non_zero_sisters)
-                for sister in non_zero_sisters:
-                    if sister.value != 0:
-                        sister._value += addition
-                self._value = 0
-
-    def reduce_children(self, condition):
-
-        for child in self.get_children():
-            if condition(child):
-                child._reduce()
-
-        to_be_detached = [child for child in self.get_children() if condition(child)]
-        for child in to_be_detached:
-            child.detach()
-
-        self._children_fractal_values = [child.value for child in self.get_children()]
-
-    def _check_merge_nodes(self, nodes):
-        return True
-
-    def merge_children(self, *lengths):
-        children = self.get_children()
-        if not children:
-            raise Exception('there are no children to be merged')
-        if sum(lengths) != len(children):
-            raise ValueError(
-                'sum of lengths {} must be the same as length of children {}'.format(sum(lengths), len(children)))
-
-        def _merge(nodes):
-            self._check_merge_nodes(nodes)
-
-            node_values = [node.value for node in nodes]
-
-            nodes[0]._value = sum(node_values)
-            for node in nodes[1:]:
-                self.remove_child(node)
-
-        iter_children = iter(children)
-        chunks = [list(itertools.islice(iter_children, l)) for l in lengths]
-
-        for chunk in chunks:
-            _merge(chunk)
-
-    def _get_merge_lengths(self, number_of_children, merge_index):
-        if 0 > merge_index > self.size - 1:
-            raise ValueError('generate_children.merge_index {} not valid'.format(merge_index))
-        if number_of_children > self.size or number_of_children < 0:
-            raise ValueError(
-                'generate_children.number_of_children {} must be a positive int'.format(number_of_children))
-        if number_of_children == 1:
-            return [self.size]
-
-        lengths = self.size * [1]
-        pointer = merge_index
-        sliced_lengths = [lengths[:pointer], lengths[pointer:]]
-
-        if not sliced_lengths[0]:
-            sliced_lengths = sliced_lengths[1:]
-
-        while len(sliced_lengths) < number_of_children and len(sliced_lengths[0]) > 1:
-            temp = sliced_lengths[0]
-            sliced_lengths[0] = temp[:-1]
-            sliced_lengths.insert(1, temp[-1:])
-
-        while len(sliced_lengths) < number_of_children and len(sliced_lengths[pointer]) > 1:
-            temp = sliced_lengths[pointer]
-            sliced_lengths[pointer] = temp[:-1]
-            sliced_lengths.insert(pointer + 1, temp[-1:])
-
-        sliced_lengths = [len(x) for x in sliced_lengths]
-
-        return sliced_lengths
+            self._change_children_value(factor)
 
     def generate_children(self, number_of_children, mode='reduce', merge_index=0):
 
@@ -532,6 +490,49 @@ class FractalTree(Tree):
 
         else:
             raise TypeError()
+
+    def merge_children(self, *lengths):
+        children = self.get_children()
+        if not children:
+            raise Exception('there are no children to be merged')
+        if sum(lengths) != len(children):
+            raise ValueError(
+                'sum of lengths {} must be the same as length of children {}'.format(sum(lengths), len(children)))
+
+        def _merge(nodes):
+            self._check_merge_nodes(nodes)
+
+            node_values = [node.value for node in nodes]
+
+            nodes[0]._value = sum(node_values)
+            for node in nodes[1:]:
+                self.remove_child(node)
+
+        iter_children = iter(children)
+        chunks = [list(itertools.islice(iter_children, l)) for l in lengths]
+
+        for chunk in chunks:
+            _merge(chunk)
+
+    def reduce_children(self, condition):
+
+        for child in self.get_children():
+            if condition(child):
+                child._reduce()
+
+        to_be_detached = [child for child in self.get_children() if condition(child)]
+        for child in to_be_detached:
+            child.detach()
+
+        self._children_fractal_values = [child.value for child in self.get_children()]
+
+    def split(self, *proportions):
+
+        for prop in proportions:
+            self.add_self()
+            self.get_children()[-1].value = self.value * prop / sum(proportions)
+
+    # // copy
 
     def copy(self):
         return self.__class__(value=self.value, proportions=self.proportions,

@@ -570,7 +570,7 @@ class FractalMusic(FractalTree):
         score.page_style.top_system_distance = 150
         score.page_style.bottom_margin = 100
 
-        score.add_title('module: {}'.format(self.__name__))
+        score.add_title('module: {}'.format(self.name))
         rounded_duration = round(float(self.duration), 1)
         if rounded_duration == int(rounded_duration):
             rounded_duration = int(rounded_duration)
@@ -617,7 +617,7 @@ class FractalMusic(FractalTree):
                 v = sf.to_stream_voice(1)
                 v.add_to_score(score, part_number=part_number)
             except ValueError:
-                print('module {}: number_of_layers={}: getting layer {} not possible'.format(self.__name__,
+                print('module {}: number_of_layers={}: getting layer {} not possible'.format(self.name,
                                                                                              self.number_of_layers,
                                                                                              i))
 
@@ -818,7 +818,7 @@ class FractalMusic(FractalTree):
                          "midi_range", "childr_midis"]
 
         for node in self.traverse():
-            x.add_row([node.__name__, node.fractal_order, round(float(node.quarter_duration), 2),
+            x.add_row([node.name, node.fractal_order, round(float(node.quarter_duration), 2),
                        Timing(quarter_duration=float(node.quarter_duration), tempo=self.tempo).clock,
                        node.midi_value,
                        node.permutation_order, node.multi, node.midi_generator.directions,
@@ -828,7 +828,7 @@ class FractalMusic(FractalTree):
         if self.is_root:
             file.write('name: root')
         else:
-            file.write('name: {} fo: {}'.format(self.__name__, self.fractal_order))
+            file.write('name: {} fo: {}'.format(self.name, self.fractal_order))
         file.write('\n')
         file.write(
             'quarter_duration: {}, tempo: {}, duration: {}'.format(round(float(self.quarter_duration), 2),

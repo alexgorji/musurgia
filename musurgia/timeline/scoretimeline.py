@@ -161,7 +161,7 @@ class ScoreTimeLine(TimeLine):
             for voice in voices:
                 module = module_time_line.module
                 segment = voice.add_voice_segment(module_time_line.start_time, module_time_line.get_end_time())
-                segment.lines[0].add_text_label(module.__name__, font_size=8, font_weight='bold', relative_x=1)
+                segment.lines[0].add_text_label(module.name, font_size=8, font_weight='bold', relative_x=1)
                 try:
                     segment.lines[2].add_text_label('t=' + str(module.tempo), font_size=8)
                 except IndexError:

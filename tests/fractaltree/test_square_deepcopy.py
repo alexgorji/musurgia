@@ -32,6 +32,6 @@ class Test(TestCase):
         for row in self.square.rows:
             row.set_name('L {} L'.format(row.number))
         copied_square = self.square.__deepcopy__()
-        expected = [row.__name__ for row in self.square.rows]
-        result = [row.__name__ for row in copied_square.rows]
+        expected = [row.name for row in self.square.rows]
+        result = [row.name for row in copied_square.rows]
         self.assertEqual(expected, result)

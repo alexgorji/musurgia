@@ -85,9 +85,9 @@ class Test(TestCase):
         row_2 = self.square.rows[1]
         row_2.change_module_quarter_duration(2, 3)
         copied = self.square.__deepcopy__()
-        self.square.__name__ = 'red'
-        copied.__name__ = 'green'
+        self.square.name = 'red'
+        copied.name = 'green'
         text_path = path + '_test_10.txt'
         self.square.write_info(text_path=text_path, show_attributes=['tempo', 'quarter_duration', 'duration'],
-                               title='square: {}'.format(self.square.__name__))
+                               title='square: {}'.format(self.square.name))
         self.assertCompareFiles(text_path)

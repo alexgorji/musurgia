@@ -16,7 +16,7 @@ class Test(TestCase):
         self.assertEqual([-1, -1, 1], self.fm.tree_directions)
         self.fm.add_layer()
         # for node in self.fm.get_children():
-        #     print(node.__name__)
+        #     print(node.name)
         #     print(node.multi)
         #     print(node.permutation_order)
         #

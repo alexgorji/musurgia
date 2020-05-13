@@ -41,7 +41,7 @@ class Test(TestCase):
         self.assertIsNone(self.deep_copied.up)
 
     def test_2(self):
-        self.assertNotEqual(self.deep_copied.__name__, self.fm.__name__)
+        self.assertNotEqual(self.deep_copied.name, self.fm.name)
 
     def test_3(self):
         for leaf in self.fm.traverse_leaves():

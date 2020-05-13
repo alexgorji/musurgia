@@ -32,14 +32,14 @@ class Module(FractalMusic):
         self._name = value
 
     @property
-    def __name__(self):
+    def name(self):
         if self._name:
             return self._name
 
         if self.row_number and self.column_number:
             return str(self.row_number) + '_' + str(self.column_number)
         else:
-            return super().__name__
+            return super().name
 
     def write_info(self, text_path, show_quarter_durations=False):
         os.system('touch ' + text_path)
@@ -48,7 +48,7 @@ class Module(FractalMusic):
         file.write("\n")
         x = PrettyTable(hrules=1)
 
-        leaf_names = [leaf.__name__ for leaf in self.traverse_leaves()]
+        leaf_names = [leaf.name for leaf in self.traverse_leaves()]
         leaf_fractal_orders = [leaf.fractal_order for leaf in self.traverse_leaves()]
 
         leaf_durations = [leaf.duration for leaf in self.traverse_leaves()]
@@ -59,11 +59,11 @@ class Module(FractalMusic):
         rounded_quarter_durations = [round(float(dur), 2) for dur in leaf_quarter_durations]
 
         x.field_names = ["name", "info", *leaf_names, "sum"]
-        x.add_row([self.__name__, 'frac_ord', *leaf_fractal_orders, " "])
-        x.add_row([self.__name__, 'durations', *rounded_leaf_durations, round(float(sum(leaf_durations)), 2)])
+        x.add_row([self.name, 'frac_ord', *leaf_fractal_orders, " "])
+        x.add_row([self.name, 'durations', *rounded_leaf_durations, round(float(sum(leaf_durations)), 2)])
         if show_quarter_durations:
             x.add_row(
-                [self.__name__, 'quarter_dur', *rounded_quarter_durations,
+                [self.name, 'quarter_dur', *rounded_quarter_durations,
                  round(float(sum(leaf_quarter_durations)), 2)])
 
         file.write(x.get_string())
@@ -138,7 +138,7 @@ class Row(RowColumn):
         self._name = val
 
     @property
-    def __name__(self):
+    def name(self):
         return self._name
 
     def change_module_quarter_duration(self, module_number, new_quarter_duration):
@@ -405,7 +405,7 @@ class Square(object):
                     output = float(output)
                 return output
 
-            row_name = row.__name__
+            row_name = row.name
             for attr in show_attributes:
                 if attr == 'quarter_duration':
                     tempi = [module.tempo for module in row.modules]
@@ -452,8 +452,8 @@ class Square(object):
             copied.modules[key] = self.modules[key].__deepcopy__()
 
         for row, copied_row in zip(self.rows, copied.rows):
-            if row.__name__:
-                copied_row.set_name(row.__name__)
+            if row.name:
+                copied_row.set_name(row.name)
 
         return copied
 
