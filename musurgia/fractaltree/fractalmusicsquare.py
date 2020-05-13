@@ -117,7 +117,7 @@ class RowColumn(object):
         return self.modules[number - 1]
 
     @property
-    def duration(self):
+    def quarter_duration(self):
         return sum([module.quarter_duration for module in self.modules])
 
 
