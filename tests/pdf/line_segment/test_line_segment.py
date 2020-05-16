@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from musurgia.pdf.segmentedline import LineSegment
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.segmentedline import LineSegment
 from musurgia.pdf.textlabel import TextLabel
 from musurgia.unittest import TestCase, create_path
 
@@ -9,19 +9,19 @@ path = Path(__file__)
 
 
 class Test(TestCase):
-    def test_one_segment_with_factor(self):
-        pdf_path = create_path(path, 'one_segment_with_factor.pdf')
+    def test_one_segment_with_end_mark_line(self):
+        pdf_path = create_path(path, 'one_segment_with_end_mark_line.pdf')
         pdf = Pdf()
-        line = LineSegment(length=20, relative_x=0, factor=5)
+        line = LineSegment(length=60, relative_x=70)
         line.end_mark_line.show = True
         line.draw(pdf=pdf)
         pdf.write(pdf_path)
         self.assertCompareFiles(actual_file_path=pdf_path)
 
-    def test_one_segment_with_end_mark_line(self):
-        pdf_path = create_path(path, 'one_segment_with_end_mark_line.pdf')
+    def test_one_segment_with_factor(self):
+        pdf_path = create_path(path, 'one_segment_with_factor.pdf')
         pdf = Pdf()
-        line = LineSegment(length=60, relative_x=70)
+        line = LineSegment(length=20, relative_x=0, factor=5)
         line.end_mark_line.show = True
         line.draw(pdf=pdf)
         pdf.write(pdf_path)
@@ -95,4 +95,15 @@ class Test(TestCase):
         pdf.write(pdf_path)
         self.assertCompareFiles(actual_file_path=pdf_path)
 
+    def test_draw_with_break(self):
+        pdf = Pdf(orientation='p')
+        pdf_path = create_path(path, 'draw_with_break.pdf')
+        line = LineSegment(length=10)
+        line.bottom_margin = 20
+        line.draw(pdf)
 
+        line = LineSegment(length=10)
+        line.relative_x = 300
+        line.draw_with_break(pdf)
+        pdf.write(pdf_path)
+        self.assertCompareFiles(pdf_path)

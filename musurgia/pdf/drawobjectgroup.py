@@ -13,17 +13,18 @@ class DrawObjectGroup(DrawObject):
             return max(self.draw_objects, key=lambda db: db.relative_y + db._relative_y_offset)
         return None
 
-    def _set_inner_distance(self, draw_object, index):
-        if draw_object:
-            draw_object.bottom_margin = self.inner_distance * index
+    def _set_inner_distances(self):
+        if self.draw_objects:
+            for draw_object in self.draw_objects[:-1]:
+                draw_object.bottom_margin = self.inner_distance
+            self.draw_objects[-1].bottom_margin = 0
 
     def add_draw_object(self, draw_object):
         if not isinstance(draw_object, DrawObject):
             raise TypeError()
 
-        index = len(self.draw_objects)
-        self._set_inner_distance(draw_object, index)
         self._draw_objects.append(draw_object)
+        self._set_inner_distances()
         return draw_object
 
     @DrawObject.relative_x.setter
@@ -52,8 +53,7 @@ class DrawObjectGroup(DrawObject):
     @inner_distance.setter
     def inner_distance(self, val):
         self._inner_distance = val
-        for index, draw_object in enumerate(self.draw_objects):
-            self._set_inner_distance(draw_object, index)
+        self._set_inner_distances()
 
     def get_relative_x2(self):
         if self.draw_objects:
@@ -70,10 +70,11 @@ class DrawObjectGroup(DrawObject):
     def draw(self, pdf):
         old_pdf_x = pdf.x
         old_pdf_page = pdf.page
-        old_pdf_y = pdf.y
+        # old_pdf_y = pdf.y
         for draw_object in self.draw_objects:
             pdf.page = old_pdf_page
             pdf.page = old_pdf_page
             pdf.x = old_pdf_x
-            pdf.y = old_pdf_y
+            # pdf.y = old_pdf_y
             draw_object.draw(pdf)
+        pdf.y += self.bottom_margin

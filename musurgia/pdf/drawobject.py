@@ -5,8 +5,8 @@ from musurgia.pdf.positioned import Positioned
 
 
 class DrawObject(ABC, Positioned, Margined):
-    def __init__(self, show=True, bottom_margin=10, *args, **kwargs):
-        super().__init__(bottom_margin=bottom_margin, *args, **kwargs)
+    def __init__(self, show=True, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._show = None
         self._page_break = False
         self._line_break = False

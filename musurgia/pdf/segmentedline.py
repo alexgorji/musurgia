@@ -1,7 +1,7 @@
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.named import Named
-from musurgia.pdf.positioned import RelativeXNotSettableError
+from musurgia.pdf.positioned import RelativeXNotSettableError, RelativeYNotSettableError
 
 
 class MarkLine(DrawObject, Labeled):
@@ -22,7 +22,7 @@ class MarkLine(DrawObject, Labeled):
         if self.placement == 'start':
             return self.parent.relative_x
         else:
-            return self.parent.relative_x + self.parent.length
+            return self.parent.relative_x + self.parent.actual_length
 
     @relative_x.setter
     def relative_x(self, val):
@@ -30,12 +30,24 @@ class MarkLine(DrawObject, Labeled):
             raise RelativeXNotSettableError()
 
     @property
+    def relative_y(self):
+        if self.placement == 'start':
+            return self.parent.relative_y
+        else:
+            return self.parent.relative_y
+
+    @relative_y.setter
+    def relative_y(self, val):
+        if val is not None:
+            raise RelativeYNotSettableError()
+
+    @property
     def placement(self):
         return self._placement
 
     @placement.setter
     def placement(self, val):
-        permitted = ['start', 'stop']
+        permitted = ['start', 'end']
         if val not in permitted:
             raise ValueError('placement.value {} must be in {}'.format(val, permitted))
         self._placement = val
@@ -81,14 +93,14 @@ class MarkLine(DrawObject, Labeled):
 
 
 class LineSegment(DrawObject, Labeled, Named):
-    def __init__(self, length, factor=1, bottom_margin=20, *args, **kwargs):
-        super().__init__(bottom_margin=bottom_margin, *args, **kwargs)
+    def __init__(self, length, factor=1, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._length = None
         self._factor = None
         self.length = length
         self.factor = factor
-        self._start_mark_line = MarkLine(parent=self)
-        self._end_mark_line = MarkLine(parent=self, show=False)
+        self._start_mark_line = MarkLine(parent=self, placement='start')
+        self._end_mark_line = MarkLine(parent=self, placement='end', show=False)
         self._x1 = None
         self._x2 = None
         self._y1 = None
@@ -139,14 +151,10 @@ class LineSegment(DrawObject, Labeled, Named):
 
     @property
     def start_mark_line(self):
-        self._start_mark_line.relative_x = self.relative_x
-        self._start_mark_line.relative_y = self.relative_y
         return self._start_mark_line
 
     @property
     def end_mark_line(self):
-        self._end_mark_line.relative_x = self.relative_x + self.length * self.factor
-        self._end_mark_line.relative_y = self.relative_y
         return self._end_mark_line
 
     def get_relative_x2(self):
@@ -174,7 +182,7 @@ class LineSegment(DrawObject, Labeled, Named):
                 text_label.draw(pdf)
 
         pdf.x = x2
-        pdf.y += self.top_margin
+        pdf.y += self.bottom_margin
 
 
 class SegmentedLine(DrawObject, Labeled, Named):
