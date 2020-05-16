@@ -97,6 +97,7 @@ class LineSegment(DrawObject, Labeled, Named):
         super().__init__(*args, **kwargs)
         self._length = None
         self._factor = None
+        self._parent = None
         self.length = length
         self.factor = factor
         self._start_mark_line = MarkLine(parent=self, placement='start')
@@ -150,6 +151,16 @@ class LineSegment(DrawObject, Labeled, Named):
         return self.length * self.factor
 
     @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, val):
+        if not isinstance(val, SegmentedLine):
+            raise TypeError(f"parent.value must be of type SegmentedLine not{type(val)}")
+        self._parent = val
+
+    @property
     def start_mark_line(self):
         return self._start_mark_line
 
@@ -186,8 +197,8 @@ class LineSegment(DrawObject, Labeled, Named):
 
 
 class SegmentedLine(DrawObject, Labeled, Named):
-    def __init__(self, lengths, factor=1, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, lengths, bottom_margin=10, factor=1, *args, **kwargs):
+        super().__init__(bottom_margin=bottom_margin, *args, **kwargs)
         self._line_segments = []
         self._factor = None
         self.factor = factor
@@ -229,13 +240,14 @@ class SegmentedLine(DrawObject, Labeled, Named):
     def _generate_line_segments(self):
         self._line_segments = []
         for length in self.lengths:
-            line_segement = LineSegment(length=length, relative_y=self.relative_y, factor=self.factor)
-            if not self._line_segments:
-                line_segement.relative_x = self.relative_x
-            else:
-                line_segement.relative_x = 0
+            line_segment = LineSegment(length=length, relative_y=self.relative_y, factor=self.factor)
 
-            self._line_segments.append(line_segement)
+            if not self._line_segments:
+                line_segment.relative_x = self.relative_x
+            else:
+                line_segment.relative_x = 0
+            line_segment.parent = self
+            self._line_segments.append(line_segment)
         self._line_segments[-1].end_mark_line.show = True
 
     def get_relative_x2(self):
@@ -255,8 +267,9 @@ class SegmentedLine(DrawObject, Labeled, Named):
             line_segment.draw_with_break(pdf)
             new_x = pdf.x
 
-            if line_segment._line_break and self.name:
-                line_segment.name = self.name
-                pdf.x = new_x - line_segment.actual_length
-                line_segment.name.draw(pdf)
+            if line_segment._line_break:
+                if self.name:
+                    line_segment.name = self.name
+                    pdf.x = new_x - line_segment.actual_length
+                    line_segment.name.draw(pdf)
                 pdf.x = new_x

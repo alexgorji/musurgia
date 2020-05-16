@@ -10,7 +10,12 @@ class DrawObject(ABC, Positioned, Margined):
         self._show = None
         self._page_break = False
         self._line_break = False
+        self._parent = None
         self.show = show
+
+    @property
+    def parent(self):
+        return self._parent
 
     def _check_line_break(self, pdf):
         next_x2 = pdf.x + self.get_relative_x2()
@@ -22,7 +27,11 @@ class DrawObject(ABC, Positioned, Margined):
             if self.relative_x < 0:
                 self.relative_x = 0
 
-            pdf.y += self.get_relative_y2() + self.bottom_margin
+            if self.parent:
+                bottom_margin = self.parent.bottom_margin
+            else:
+                bottom_margin = self.bottom_margin
+            pdf.y += self.get_relative_y2() + bottom_margin
             pdf.x = pdf.l_margin
 
     def _check_page_break(self, pdf):
