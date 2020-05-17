@@ -3,14 +3,14 @@ from pathlib import Path
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.segmentedline import LineSegment
 from musurgia.pdf.textlabel import TextLabel
-from musurgia.unittest import TestCase, create_path
+from musurgia.unittest import TestCase, create_test_path
 
 path = Path(__file__)
 
 
 class Test(TestCase):
     def test_one_segment_with_end_mark_line(self):
-        pdf_path = create_path(path, 'one_segment_with_end_mark_line.pdf')
+        pdf_path = create_test_path(path, 'one_segment_with_end_mark_line.pdf')
         pdf = Pdf()
         line = LineSegment(length=60, relative_x=70)
         line.end_mark_line.show = True
@@ -19,7 +19,7 @@ class Test(TestCase):
         self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_one_segment_with_factor(self):
-        pdf_path = create_path(path, 'one_segment_with_factor.pdf')
+        pdf_path = create_test_path(path, 'one_segment_with_factor.pdf')
         pdf = Pdf()
         line = LineSegment(length=20, relative_x=0, factor=5)
         line.end_mark_line.show = True
@@ -28,7 +28,7 @@ class Test(TestCase):
         self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_one_segment_with_text_label(self):
-        pdf_path = create_path(path, 'one_segment_with_text_label.pdf')
+        pdf_path = create_test_path(path, 'one_segment_with_text_label.pdf')
         pdf = Pdf()
         line = LineSegment(length=60, relative_x=70)
         line.end_mark_line.show = True
@@ -38,7 +38,7 @@ class Test(TestCase):
         self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_one_segment_with_multiple_text_labels(self):
-        pdf_path = create_path(path, 'one_segment_with_multiple_text_labels.pdf')
+        pdf_path = create_test_path(path, 'one_segment_with_multiple_text_labels.pdf')
         pdf = Pdf()
         line = LineSegment(length=60, relative_x=70)
         line.end_mark_line.show = True
@@ -55,7 +55,7 @@ class Test(TestCase):
         TextLabel.DEFAULT_FONT_SIZE = 10
 
     def test_two_consecutive_segments(self):
-        pdf_path = create_path(path, 'two_consecutive_segments.pdf')
+        pdf_path = create_test_path(path, 'two_consecutive_segments.pdf')
         pdf = Pdf()
         line_1 = LineSegment(length=10)
         line_2 = LineSegment(length=20, relative_x=10)
@@ -66,7 +66,7 @@ class Test(TestCase):
         self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_two_segments_with_break(self):
-        pdf_path = create_path(path, 'two_segments_with_break.pdf')
+        pdf_path = create_test_path(path, 'two_segments_with_break.pdf')
         pdf = Pdf()
         line_1 = LineSegment(length=10, relative_x=20)
         line_2 = LineSegment(length=20, relative_x=210)
@@ -76,7 +76,7 @@ class Test(TestCase):
         pdf.write(pdf_path)
 
     def test_two_segments_with_different_y(self):
-        pdf_path = create_path(path, 'two_segments_with_different_y.pdf')
+        pdf_path = create_test_path(path, 'two_segments_with_different_y.pdf')
         pdf = Pdf(orientation='landscape')
         line_1 = LineSegment(length=10)
         line_2 = LineSegment(length=20, relative_y=10)
@@ -86,7 +86,7 @@ class Test(TestCase):
         self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_bottom_margin(self):
-        pdf_path = create_path(path, 'bottom_margin.pdf')
+        pdf_path = create_test_path(path, 'bottom_margin.pdf')
         pdf = Pdf(orientation='landscape')
         line_1 = LineSegment(length=10, bottom_margin=20)
         line_2 = LineSegment(length=20)
@@ -97,7 +97,7 @@ class Test(TestCase):
 
     def test_draw_with_break(self):
         pdf = Pdf(orientation='p')
-        pdf_path = create_path(path, 'draw_with_break.pdf')
+        pdf_path = create_test_path(path, 'draw_with_break.pdf')
         line = LineSegment(length=10)
         line.bottom_margin = 20
         line.draw(pdf)

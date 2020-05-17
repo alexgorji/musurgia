@@ -4,7 +4,7 @@ from pathlib import Path
 from musurgia.pdf.drawobjectgroup import DrawObjectGroup
 from musurgia.pdf.segmentedline import LineSegment
 from musurgia.pdf.pdf import Pdf
-from musurgia.unittest import create_path, TestCase
+from musurgia.unittest import create_test_path, TestCase
 
 path = Path(__file__)
 
@@ -23,7 +23,7 @@ class Test(TestCase):
 
     def test_inner_distance(self):
         pdf = self.pdf
-        pdf_path = create_path(path, 'inner_distance.pdf')
+        pdf_path = create_test_path(path, 'inner_distance.pdf')
         lg = make_line_group()
         lg.draw(pdf)
         pdf.write(pdf_path)
@@ -31,7 +31,7 @@ class Test(TestCase):
 
     def test_bottom_margin(self):
         pdf = self.pdf
-        pdf_path = create_path(path, 'bottom_margin.pdf')
+        pdf_path = create_test_path(path, 'bottom_margin.pdf')
         lg = make_line_group()
         lg.draw(pdf)
         new_lg = make_line_group()
@@ -41,7 +41,7 @@ class Test(TestCase):
 
     def test_change_inner_distance(self):
         pdf = self.pdf
-        pdf_path = create_path(path, 'change_inner_distance.pdf')
+        pdf_path = create_test_path(path, 'change_inner_distance.pdf')
         lg = make_line_group()
         lg.draw(pdf)
         new_lg = make_line_group()
@@ -52,7 +52,7 @@ class Test(TestCase):
 
     def test_change_position(self):
         pdf = self.pdf
-        pdf_path = create_path(path, 'change_position.pdf')
+        pdf_path = create_test_path(path, 'change_position.pdf')
         lg = make_line_group()
         lg.draw(pdf)
 
@@ -66,7 +66,7 @@ class Test(TestCase):
     def test_draw_with_line_break(self):
 
         pdf = self.pdf
-        pdf_path = create_path(path, 'draw_with_line_break.pdf')
+        pdf_path = create_test_path(path, 'draw_with_line_break.pdf')
         lg = make_line_group()
         lg.draw(pdf)
 
@@ -78,7 +78,7 @@ class Test(TestCase):
 
     def test_page_break(self):
         pdf = self.pdf
-        pdf_path = create_path(path, 'page_break.pdf')
+        pdf_path = create_test_path(path, 'page_break.pdf')
         lg = make_line_group()
         lg.draw(pdf)
         lg = make_line_group()

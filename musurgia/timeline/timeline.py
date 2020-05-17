@@ -39,7 +39,7 @@ class TimeLine(DrawObjectGroup):
         if val is not None:
             if self._length:
                 raise TimeLineError('length can only be set by instantiation')
-            self.add_draw_object(Ruler(length=val, unit=self.unit))
+            self._add_draw_object(Ruler(length=val, unit=self.unit))
             self._length = val
 
     @property
@@ -57,7 +57,10 @@ class TimeLine(DrawObjectGroup):
 
     def add_voice(self, name):
         voice = Voice(length=self.length, unit=self.unit, name=name)
-        return self.add_draw_object(voice)
+        return self._add_draw_object(voice)
+
+    def add_draw_object(self, draw_object):
+        raise TimeLineError('use add_voice instead')
 
     # @property
     # def line_groups(self):
@@ -78,8 +81,8 @@ class TimeLine(DrawObjectGroup):
     # def get_relative_y2(self):
     #     return self._segmented_line_group.get_relative_y2()
 
-    def get_height(self):
-        return self.get_relative_y2() - self.relative_y
+    # def get_height(self):
+    #     return self.get_relative_y2() - self.relative_y
     #
     # def draw(self, pdf):
     #     for voice in self._segmented_line_group:

@@ -41,14 +41,18 @@ class DrawObject(ABC, Positioned, Margined):
         diff = next_y2 - printable_y_range
         if diff > 0:
             self._page_break = True
-            self.relative_y -= printable_y_range
-            if self.relative_y < 0:
-                self.relative_y = 0
+            # self.relative_y -= printable_y_range
+            # if self.relative_y < 0:
+            #     self.relative_y = 0
 
             margins = pdf.l_margin, pdf.t_margin, pdf.r_margin, pdf.b_margin
             pdf.add_page()
             pdf.l_margin, pdf.t_margin, pdf.r_margin, pdf.b_margin = margins
-
+            # if self.parent:
+            #     top_margin = self.parent.top_margin
+            # else:
+            #     top_margin = self.top_margin
+            # pdf.y = pdf.t_margin + top_margin
             pdf.y = pdf.t_margin
             pdf.x = pdf.l_margin
 

@@ -3,7 +3,7 @@ from pathlib import Path
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.positioned import RelativeXNotSettableError
 from musurgia.pdf.segmentedline import LineSegment, MarkLine
-from musurgia.unittest import TestCase, create_path
+from musurgia.unittest import TestCase, create_test_path
 
 path = Path(__file__)
 
@@ -40,7 +40,7 @@ class Test(TestCase):
         self.assertEqual(expected, actual)
 
     def test_draw_start(self):
-        pdf_path = create_path(path, 'draw_start_mark_line.pdf')
+        pdf_path = create_test_path(path, 'draw_start_mark_line.pdf')
         mk = MarkLine(parent=self.line_segment, placement='start')
         mk.draw(self.pdf)
         self.line_segment.relative_x += 20
@@ -50,7 +50,7 @@ class Test(TestCase):
         self.assertCompareFiles(pdf_path)
 
     def test_draw_end(self):
-        pdf_path = create_path(path, 'draw_end_mark_line.pdf')
+        pdf_path = create_test_path(path, 'draw_end_mark_line.pdf')
         mk = MarkLine(parent=self.line_segment, placement='end')
         mk.draw(self.pdf)
         self.line_segment.relative_x += 20

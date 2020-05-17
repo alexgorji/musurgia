@@ -14,13 +14,16 @@ class DrawObjectGroup(DrawObject):
                 draw_object.bottom_margin = self.inner_distance
             self.draw_objects[-1].bottom_margin = 0
 
-    def add_draw_object(self, draw_object):
+    def _add_draw_object(self, draw_object):
         if not isinstance(draw_object, DrawObject):
             raise TypeError()
 
         self._draw_objects.append(draw_object)
         self._set_inner_distances()
         return draw_object
+
+    def add_draw_object(self, draw_object):
+        return self._add_draw_object(draw_object)
 
     @DrawObject.relative_x.setter
     def relative_x(self, val):
@@ -65,9 +68,10 @@ class DrawObjectGroup(DrawObject):
     def draw(self, pdf):
         old_pdf_x = pdf.x
         old_pdf_page = pdf.page
-
+        new_top_margin = 0
         for draw_object in self.draw_objects:
-
+            print(f'top_margin:{new_top_margin}')
+            draw_object.top_margin = new_top_margin
             old_pdf_y = pdf.y
             old_bottom_margin = draw_object.bottom_margin
 
@@ -75,8 +79,11 @@ class DrawObjectGroup(DrawObject):
 
             pdf.page = old_pdf_page
             pdf.x = old_pdf_x
+
             draw_object.draw(pdf)
+
             draw_object.bottom_margin = old_bottom_margin
+            new_top_margin = draw_object.get_relative_y2() + draw_object.bottom_margin
             pdf.y = old_pdf_y + draw_object.get_height() + draw_object.bottom_margin
 
         pdf.y += self.bottom_margin

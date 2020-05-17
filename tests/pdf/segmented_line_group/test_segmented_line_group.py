@@ -4,7 +4,7 @@ from musurgia.pdf.drawobjectgroup import DrawObjectGroup
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.segmentedline import SegmentedLine
 from musurgia.pdf.textlabel import TextLabel
-from musurgia.unittest import TestCase, create_path
+from musurgia.unittest import TestCase, create_test_path
 
 path = Path(__file__)
 
@@ -32,7 +32,7 @@ class Test(TestCase):
         self.assertEqual(expected, actual)
 
     def test_draw(self):
-        pdf_path = create_path(path, 'draw.pdf')
+        pdf_path = create_test_path(path, 'draw.pdf')
         slg = DrawObjectGroup(inner_distance=17)
         sl_1 = slg.add_draw_object(SegmentedLine([5, 10, 15, 20]))
         sl_2 = slg.add_draw_object(SegmentedLine([20, 10, 5, 30]))
@@ -43,7 +43,7 @@ class Test(TestCase):
         self.assertCompareFiles(pdf_path)
 
     def test_break(self):
-        pdf_path = create_path(path, 'break.pdf')
+        pdf_path = create_test_path(path, 'break.pdf')
         self.pdf.l_margin = 10
         slg = DrawObjectGroup(inner_distance=10, bottom_margin=20)
         sl_1 = slg.add_draw_object(SegmentedLine(50 * [10]))
@@ -57,12 +57,26 @@ class Test(TestCase):
         self.assertCompareFiles(pdf_path)
 
     def test_break_with_one_line(self):
-        pdf_path = create_path(path, 'break_with_one_line.pdf')
+        pdf_path = create_test_path(path, 'break_with_one_line.pdf')
         self.pdf.l_margin = 10
         slg = DrawObjectGroup(inner_distance=10, bottom_margin=20)
         sl_1 = slg.add_draw_object(SegmentedLine(50 * [10]))
         sl_1.name = 'I'
         sl_1.name.relative_x = -5
+        slg.draw(self.pdf)
+        self.pdf.write(pdf_path)
+        self.assertCompareFiles(pdf_path)
+
+    def test_page_break(self):
+        pdf_path = create_test_path(path, 'page_break.pdf')
+        self.pdf.l_margin = 10
+        slg = DrawObjectGroup(inner_distance=10, bottom_margin=20)
+        sl_1 = slg.add_draw_object(SegmentedLine(200 * [10]))
+        sl_2 = slg.add_draw_object(SegmentedLine(200 * [10]))
+        sl_1.name = 'I'
+        sl_2.name = 'II'
+        sl_1.name.relative_x = -5
+        sl_2.name.relative_x = -5
         slg.draw(self.pdf)
         self.pdf.write(pdf_path)
         self.assertCompareFiles(pdf_path)

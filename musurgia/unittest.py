@@ -4,7 +4,7 @@ import unittest
 from diff_pdf_visually import pdfdiff
 
 
-def create_path(path, test_name):
+def create_test_path(path, test_name):
     return path.parent.joinpath(f'{path.stem}_{test_name}')
 
 
