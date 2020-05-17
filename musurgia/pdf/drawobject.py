@@ -32,10 +32,11 @@ class DrawObject(ABC, Positioned, Margined):
             else:
                 bottom_margin = self.bottom_margin
             pdf.y += self.get_relative_y2() + bottom_margin
+            # pdf.y += self.get_relative_y2()
             pdf.x = pdf.l_margin
 
     def _check_page_break(self, pdf):
-        next_y2 = pdf.y + self.get_relative_y2()
+        next_y2 = pdf.y + self.get_relative_y2() + self.bottom_margin
         printable_y_range = pdf.h - pdf.b_margin
         diff = next_y2 - printable_y_range
         if diff > 0:
@@ -58,6 +59,9 @@ class DrawObject(ABC, Positioned, Margined):
     @abstractmethod
     def get_relative_y2(self):
         raise NotImplementedError()
+
+    def get_height(self):
+        return self.get_relative_y2() - self.relative_y
 
     @abstractmethod
     def draw(self, pdf):

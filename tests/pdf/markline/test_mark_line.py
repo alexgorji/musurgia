@@ -58,3 +58,10 @@ class Test(TestCase):
         mk.draw(self.pdf)
         self.pdf.write(pdf_path)
         self.assertCompareFiles(pdf_path)
+
+    def test_get_height(self):
+        self.line_segment.relative_y = 10
+        mk = MarkLine(parent=self.line_segment, placement='end')
+        actual = mk.get_height()
+        expected = mk.height
+        self.assertEqual(expected, actual)

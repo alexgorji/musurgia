@@ -49,6 +49,5 @@ class Test(TestCase):
         sl = SegmentedLine(lengths=30 * [10], name='vla')
         pdf = Pdf(orientation='portrait')
         sl.draw(pdf)
-        # pdf.add_draw_object(sl)
         pdf.write(pdf_path)
         self.assertCompareFiles(actual_file_path=pdf_path)

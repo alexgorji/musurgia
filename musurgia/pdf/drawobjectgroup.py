@@ -8,11 +8,6 @@ class DrawObjectGroup(DrawObject):
         self.inner_distance = inner_distance
         super().__init__(*args, **kwargs)
 
-    def _get_lowest_draw_object(self):
-        if self.draw_objects:
-            return max(self.draw_objects, key=lambda db: db.relative_y + db._relative_y_offset)
-        return None
-
     def _set_inner_distances(self):
         if self.draw_objects:
             for draw_object in self.draw_objects[:-1]:
@@ -63,18 +58,25 @@ class DrawObjectGroup(DrawObject):
 
     def get_relative_y2(self):
         if self.draw_objects:
-            return max([do.get_relative_y2() for do in self.draw_objects])
+            return sum([do.get_relative_y2() + do.bottom_margin for do in self.draw_objects]) + self.relative_y
         else:
             return None
 
     def draw(self, pdf):
         old_pdf_x = pdf.x
         old_pdf_page = pdf.page
-        # old_pdf_y = pdf.y
+
         for draw_object in self.draw_objects:
-            pdf.page = old_pdf_page
+
+            old_pdf_y = pdf.y
+            old_bottom_margin = draw_object.bottom_margin
+
+            draw_object.bottom_margin = self.get_height() + self.bottom_margin - draw_object.get_height()
+
             pdf.page = old_pdf_page
             pdf.x = old_pdf_x
-            # pdf.y = old_pdf_y
             draw_object.draw(pdf)
+            draw_object.bottom_margin = old_bottom_margin
+            pdf.y = old_pdf_y + draw_object.get_height() + draw_object.bottom_margin
+
         pdf.y += self.bottom_margin

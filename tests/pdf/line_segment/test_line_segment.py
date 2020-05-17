@@ -107,3 +107,12 @@ class Test(TestCase):
         line.draw_with_break(pdf)
         pdf.write(pdf_path)
         self.assertCompareFiles(pdf_path)
+
+    def test_get_height(self):
+        line = LineSegment(length=10)
+        actual = line.get_height()
+        expected = line.start_mark_line.height
+        self.assertEqual(expected, actual)
+
+
+

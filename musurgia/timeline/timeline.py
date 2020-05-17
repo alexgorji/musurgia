@@ -9,7 +9,7 @@ class TimeLineError(Exception):
 
 
 class TimeLine(DrawObjectGroup):
-    def __init__(self, length=None, unit=10, inner_distance=7, bottom_margin=10, *args, **kwargs):
+    def __init__(self, length=None, unit=10, inner_distance=10, bottom_margin=20, *args, **kwargs):
         super().__init__(inner_distance=inner_distance, bottom_margin=bottom_margin, *args, **kwargs)
         self._unit = None
         self.unit = unit

@@ -10,7 +10,7 @@ path = Path(__file__)
 
 
 def make_line_group():
-    lg = DrawObjectGroup(inner_distance=10, bottom_margin=20)
+    lg = DrawObjectGroup(inner_distance=7, bottom_margin=20)
     lg.add_draw_object(LineSegment(length=10))
     lg.add_draw_object(LineSegment(length=10))
     lg.add_draw_object(LineSegment(length=10))

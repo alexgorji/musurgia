@@ -31,10 +31,7 @@ class MarkLine(DrawObject, Labeled):
 
     @property
     def relative_y(self):
-        if self.placement == 'start':
-            return self.parent.relative_y
-        else:
-            return self.parent.relative_y
+        return self.parent.relative_y
 
     @relative_y.setter
     def relative_y(self, val):
@@ -172,7 +169,7 @@ class LineSegment(DrawObject, Labeled, Named):
         return self.relative_x + self.actual_length
 
     def get_relative_y2(self):
-        return max([self.start_mark_line.get_relative_y2(), self.end_mark_line.get_relative_y2(), self.bottom_margin])
+        return max([self.start_mark_line.get_relative_y2(), self.end_mark_line.get_relative_y2()])
 
     def draw(self, pdf):
         x1 = pdf.x + self.relative_x
@@ -254,9 +251,9 @@ class SegmentedLine(DrawObject, Labeled, Named):
         raise Exception('SegementedLine does not have a x2 value')
 
     def get_relative_y2(self):
-        return self.line_segments[0].relative_y
+        return self.line_segments[0].get_relative_y2()
 
-    def draw(self, pdf):
+    def draw_with_break(self, pdf):
         for text_label in self._text_labels:
             text_label.draw(pdf)
 
@@ -268,6 +265,26 @@ class SegmentedLine(DrawObject, Labeled, Named):
             new_x = pdf.x
 
             if line_segment._line_break:
+                # pdf.y += self.bottom_margin
+                if self.name:
+                    line_segment.name = self.name
+                    pdf.x = new_x - line_segment.actual_length
+                    line_segment.name.draw(pdf)
+                pdf.x = new_x
+
+    def draw(self, pdf):
+        for text_label in self._text_labels:
+            text_label.draw(pdf)
+        pdf.x = pdf.l_margin
+        for line_segment in self.line_segments:
+            if line_segment == self.line_segments[0]:
+                line_segment.name = self.name
+
+            line_segment.draw_with_break(pdf)
+            new_x = pdf.x
+
+            if line_segment._line_break:
+                # pdf.y += self.bottom_margin
                 if self.name:
                     line_segment.name = self.name
                     pdf.x = new_x - line_segment.actual_length
