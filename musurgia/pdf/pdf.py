@@ -1,7 +1,9 @@
 import os
 
-from musurgia.pdf.textlabel import Text
 from fpdf import FPDF
+from fpdf.php import sprintf
+
+from musurgia.pdf.textlabel import Text
 
 
 class PageText(Text):
@@ -43,6 +45,17 @@ class PageNumber(PageText):
         self.page = val
 
 
+class SavedState:
+    def __init__(self, pdf):
+        self.pdf = pdf
+
+    def __enter__(self):
+        self.pdf._push_state()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.pdf._pop_state()
+
+
 class Pdf(FPDF):
 
     def __init__(self, r_margin=10, t_margin=10, l_margin=10, b_margin=10, *args, **kwargs):
@@ -65,8 +78,39 @@ class Pdf(FPDF):
             self.page_number(page)
             self.page_number.draw(self)
 
+    def clip_rect(self, x, y, w, h):
+        self._out(sprintf('%.2f %.2f %.2f %.2f re W n',
+                          x * self.k, (self.h - y) * self.k,
+                          w * self.k, -h * self.k))
+
     def add_space(self, val):
         self.y += val
+
+    def saved_state(self):
+        ss = SavedState(self)
+        return ss
+
+    # def clip_rect(self, x, y, w, h):
+    #     ss = self.saved_state()
+    #     self.clip_rect(x, y, w, h)
+    #     return ss
+
+    def _push_state(self):
+        self._out(sprintf('q\n'))
+
+    def _pop_state(self):
+        self._out(sprintf('Q\n'))
+
+    def translate(self, dx, dy):
+        self._out(sprintf('1.0 0.0 0.0 1.0 %.2F %.2F cm',
+                          dx, dy))
+
+    # def start_clip_rect(self, x, y, w, h):
+    #     self._push_state()
+    #     self.clip_rect(x, y, w, h)
+    #
+    # def end_clip_rect(self):
+    #     self._pop_state()
 
     def write(self, path):
         self.draw_page_number()
