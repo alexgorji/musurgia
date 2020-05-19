@@ -1,5 +1,16 @@
+class MarginedOrbjectError(Exception):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
+class MarginNotSettableError(MarginedOrbjectError):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+
 class Margined:
     def __init__(self, top_margin=None, bottom_margin=None, left_margin=None, right_margin=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._top_margin = None
         self._left_margin = None
         self._bottom_margin = None
@@ -9,7 +20,7 @@ class Margined:
         self.left_margin = left_margin
         self.bottom_margin = bottom_margin
         self.right_margin = right_margin
-        super().__init__(*args, **kwargs)
+
 
     @property
     def top_margin(self):

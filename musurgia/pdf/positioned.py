@@ -3,11 +3,15 @@ class PositionedObjectError(Exception):
         super().__init__(*args)
 
 
-class RelativeXNotSettableError(PositionedObjectError):
+class RelativePositionNotSettableError(PositionedObjectError):
     pass
 
 
-class RelativeYNotSettableError(PositionedObjectError):
+class RelativeXNotSettableError(RelativePositionNotSettableError):
+    pass
+
+
+class RelativeYNotSettableError(RelativePositionNotSettableError):
     pass
 
 

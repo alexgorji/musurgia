@@ -56,6 +56,18 @@ class SavedState:
         self.pdf._pop_state()
 
 
+class AddMargins:
+    def __init__(self, pdf, draw_object):
+        self.pdf = pdf
+        self.draw_object = draw_object
+
+    def __enter__(self):
+        self.pdf.translate(self.draw_object.left_margin, self.draw_object.top_margin)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.pdf.translate(self.draw_object.right_margin, self.draw_object.bottom_margin)
+
+
 class Pdf(FPDF):
 
     def __init__(self, r_margin=10, t_margin=10, l_margin=10, b_margin=10, *args, **kwargs):
@@ -79,6 +91,7 @@ class Pdf(FPDF):
             self.page_number.draw(self)
 
     def clip_rect(self, x, y, w, h):
+        x, y, w, h = x * self.k, y * self.k, w * self.k, h * self.k
         self._out(sprintf('%.2f %.2f %.2f %.2f re W n',
                           x * self.k, (self.h - y) * self.k,
                           w * self.k, -h * self.k))
@@ -90,10 +103,9 @@ class Pdf(FPDF):
         ss = SavedState(self)
         return ss
 
-    # def clip_rect(self, x, y, w, h):
-    #     ss = self.saved_state()
-    #     self.clip_rect(x, y, w, h)
-    #     return ss
+    def add_margins(self, draw_object):
+        ma = AddMargins(self, draw_object=draw_object)
+        return ma
 
     def _push_state(self):
         self._out(sprintf('q\n'))
@@ -102,20 +114,10 @@ class Pdf(FPDF):
         self._out(sprintf('Q\n'))
 
     def translate(self, dx, dy):
+        dx, dy = dx * self.k, dy * self.k
         self._out(sprintf('1.0 0.0 0.0 1.0 %.2F %.2F cm',
-                          dx, dy))
-
-    # def start_clip_rect(self, x, y, w, h):
-    #     self._push_state()
-    #     self.clip_rect(x, y, w, h)
-    #
-    # def end_clip_rect(self):
-    #     self._pop_state()
+                          dx, -dy))
 
     def write(self, path):
         self.draw_page_number()
         self.output(path, 'F')
-
-    def show(self, path):
-        self.write(path)
-        os.system('open ' + path)

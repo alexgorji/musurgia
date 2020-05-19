@@ -55,8 +55,8 @@ class MarkLine(DrawObject, Labeled):
 
     @parent.setter
     def parent(self, val):
-        if not isinstance(val, LineSegment):
-            raise TypeError(f"parent.value must be of type LineSegment not{type(val)}")
+        # if not isinstance(val, LineSegment):
+        #     raise TypeError(f"parent.value must be of type LineSegment not{type(val)}")
         self._parent = val
 
     @property
