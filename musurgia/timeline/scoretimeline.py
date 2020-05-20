@@ -1,6 +1,6 @@
 import os
 
-from musurgia.pdf.pdf import PageText
+from musurgia.pdf.text import PageText
 from musurgia.pdf.positioned import Positioned
 from prettytable import PrettyTable
 from quicktions import Fraction

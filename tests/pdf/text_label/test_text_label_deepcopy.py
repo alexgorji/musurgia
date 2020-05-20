@@ -1,7 +1,7 @@
 import os
 
 from musurgia.pdf.pdf import Pdf
-from musurgia.pdf.textlabel import Text
+from musurgia.pdf.text import Text
 from musurgia.unittest import TestCase
 
 path = str(os.path.abspath(__file__).split('.')[0])

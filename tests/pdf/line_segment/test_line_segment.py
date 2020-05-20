@@ -2,7 +2,7 @@ from pathlib import Path
 
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.segmentedline import LineSegment
-from musurgia.pdf.textlabel import TextLabel
+from musurgia.pdf.text import TextLabel
 from musurgia.unittest import TestCase, create_test_path
 
 path = Path(__file__)

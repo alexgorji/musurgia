@@ -1,4 +1,4 @@
-from musurgia.pdf.textlabel import TextLabel
+from musurgia.pdf.text import TextLabel
 
 
 class NameLabel(TextLabel):

@@ -1,12 +1,10 @@
-import os
-
-from fpdf import FPDF
+from pathlib import Path
 
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.text import PageText
 from musurgia.unittest import TestCase
 
-path = str(os.path.abspath(__file__).split('.')[0])
+path = Path(__file__)
 
 
 class Test(TestCase):

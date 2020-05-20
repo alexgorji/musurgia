@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from musurgia.pdf.line import StraightLine, MarkLine
+from musurgia.pdf.line import MarkLine
 from musurgia.pdf.masterslave import Master
 from musurgia.pdf.pdf import Pdf
 from musurgia.unittest import TestCase
@@ -46,4 +46,11 @@ class TestMarkLine(TestCase):
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
             with self.pdf.saved_state():
                 self.ml.draw(self.pdf)
+            self.pdf.write(pdf_path)
+
+    def test_label(self):
+        self.ml.add_text_label('label')
+        with self.file_path(parent_path=path, name='label', extension='pdf') as pdf_path:
+            self.pdf.translate_margins()
+            self.ml.draw(self.pdf)
             self.pdf.write(pdf_path)

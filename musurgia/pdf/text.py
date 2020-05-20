@@ -1,8 +1,7 @@
-from musurgia.pdf.drawobject import DrawObject
-from musurgia.pdf.font import Font
 import copy
 
-from musurgia.pdf.positioned import Positioned
+from musurgia.pdf.font import Font
+from musurgia.pdf.newdrawobject import DrawObject
 
 
 class Text(DrawObject):
@@ -85,9 +84,12 @@ class Text(DrawObject):
             if self.font.weight == 'bold':
                 style += 'B'
             pdf.set_font(self.font.family, style=style, size=self.font_size)
-            pdf.text(x=pdf.x + self.relative_x, y=pdf.y + self.relative_y, txt=self.text)
 
-    def __deepcopy__(self, memodict={}):
+            pdf.translate(self.relative_x, self.relative_y)
+            with pdf.add_margins(self):
+                pdf.text(x=0, y=0, txt=self.text)
+
+    def __deepcopy__(self, memodict=None):
         copied = self.__class__(text=self.text)
         for var in vars(self):
             copied_var = copy.deepcopy(vars(self)[var])
@@ -96,38 +98,51 @@ class Text(DrawObject):
 
 
 class TextLabel(Text):
-    def __init__(self, text, parent=None, relative_y=-2, *args, **kwargs):
-        super().__init__(text=text, relative_y=relative_y, *args, **kwargs)
-        self._parent = None
-        self.parent = parent
-        # self.x_offset = x_offset
-        # self.y_offset = y_offset
+    def __init__(self, text, placement, *args, **kwargs):
+        super().__init__(text=text, *args, **kwargs)
+        self._placement = None
+        self.placement = placement
 
     @property
-    def parent(self):
-        return self._parent
+    def placement(self):
+        return self._placement
 
-    @parent.setter
-    def parent(self, val):
-        if val is not None and not isinstance(val, Positioned):
-            raise TypeError('parent.value must be of type Positioned not{}'.format(type(val)))
-        self._parent = val
+    @placement.setter
+    def placement(self, val):
+        permitted = ['above', 'below']
+        if val not in permitted:
+            raise ValueError(f'placement.value {val} must be in {permitted}')
+        self._placement = val
 
     def draw(self, pdf):
-        if not self.parent:
-            raise Exception('set parent first')
-        self.relative_x += self.parent.relative_x
-        self.relative_y += self.parent.relative_y
         super().draw(pdf)
 
-    # @DrawObject.relative_x.getter
-    # def relative_x(self):
-    #     if not self.parent:
-    #         raise Exception('set parent first')
-    #     return self.parent.relative_x + self.x_offset
-    #
-    # @DrawObject.relative_y.getter
-    # def relative_y(self):
-    #     if not self.parent:
-    #         raise Exception('set parent first')
-    #     return self.parent.relative_y + self.y_offset
+
+class PageText(Text):
+    def __init__(self, text, v_position=None, h_position=None, *args, **kwargs):
+        super().__init__(text=text, *args, **kwargs)
+        self.v_position = v_position
+        self.h_position = h_position
+
+    def get_text_physical_length(self):
+        return (len(self.text)) * self.font_size / 6
+
+    def draw(self, pdf):
+        old_x, old_y = pdf.x, pdf.y
+        if self.v_position == 'center':
+            pdf.x = (pdf.w / 2) - self.get_text_physical_length() / 2
+        elif self.v_position == 'left':
+            pdf.x = pdf.l_margin
+        elif self.v_position == 'right':
+            pdf.x = pdf.w - pdf.r_margin - self.get_text_physical_length()
+        else:
+            pass
+
+        if self.h_position == 'top':
+            pdf.y = pdf.t_margin
+        elif self.h_position == 'bottom':
+            pdf.y = pdf.h - pdf.b_margin
+        else:
+            pass
+        super().draw(pdf)
+        pdf.x, pdf.y = old_x, old_y
