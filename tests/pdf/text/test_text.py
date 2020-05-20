@@ -23,3 +23,11 @@ class TestText(TestCase):
         with self.file_path(path, 'draw_with_top_margin', 'pdf') as pdf_path:
             t.draw(self.pdf)
             self.pdf.write(pdf_path)
+
+    def test_get_height(self):
+        t = Text('fox is going to be dead.')
+        t.font_size = 14
+        t.top_margin = 3
+        expected = 7.682066666666666
+        actual = t.get_height()
+        self.assertEqual(expected, actual)

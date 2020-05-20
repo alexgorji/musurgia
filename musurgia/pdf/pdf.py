@@ -4,6 +4,22 @@ from fpdf.php import sprintf
 from musurgia.pdf.text import PageText
 
 
+def _get_k(unit):
+    k_dict = {'pt': 1, 'mm': 72 / 25.4, 'cm': 72 / 2.54, 'in': 72.}
+    k = k_dict.get(unit)
+    if k is None:
+        raise AttributeError(f'wrong unit {unit}')
+    return k
+
+
+def _get_unit(k):
+    unit_dict = {1: 'pt', 72. / 25.4: 'mm', 72. / 2.54: 'cm', 72.: 'in'}
+    unit = unit_dict.get(k)
+    if k is None:
+        raise AttributeError(f'wrong k {k}')
+    return unit
+
+
 class PageNumber(PageText):
     def __init__(self, text='none', v_position='center', h_position='bottom', *args, **kwargs):
         super().__init__(text=text, v_position=v_position, h_position=h_position, *args, **kwargs)
@@ -40,7 +56,7 @@ class Pdf(FPDF):
 
     def __init__(self, r_margin=10, t_margin=10, l_margin=10, b_margin=10, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.page_number = PageNumber('')
+        self.page_number = PageNumber('', self.unit)
         self.r_margin = r_margin
         self.t_margin = t_margin
         self.l_margin = l_margin
@@ -59,12 +75,21 @@ class Pdf(FPDF):
     @property
     def show_page_number(self):
         return self._show_page_number
-        
+
     @show_page_number.setter
     def show_page_number(self, val):
         if not isinstance(val, bool):
             raise TypeError(f"show_page_number.value must be of type bool not{type(val)}")
         self._show_page_number = val
+
+    @property
+    def unit(self):
+        return _get_unit(self.k)
+
+    @unit.setter
+    def unit(self, val):
+        self.k = _get_k(val)
+
     def add_space(self, val):
         self.y += val
 

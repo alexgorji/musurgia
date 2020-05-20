@@ -4,13 +4,21 @@ from musurgia.pdf.font import Font
 from musurgia.pdf.newdrawobject import DrawObject
 
 
+def _get_k(unit):
+    k_dict = {'pt': 1, 'mm': 72 / 25.4, 'cm': 72 / 2.54, 'in': 72.}
+    k = k_dict.get(unit)
+    if k is None:
+        raise AttributeError(f'wrong unit {unit}')
+    return k
+
+
 class Text(DrawObject):
     DEFAULT_FONT_FAMILY = 'Helvetica'
     DEFAULT_FONT_SIZE = 10
     DEFAULT_FONT_WEIGHT = 'medium'
     DEFAULT_FONT_STYLE = 'regular'
 
-    def __init__(self, text, font_family=None, font_weight=None, font_style=None,
+    def __init__(self, text, pdf_unit='mm', font_family=None, font_weight=None, font_style=None,
                  font_size=None, *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
@@ -20,6 +28,8 @@ class Text(DrawObject):
         self.font_style = font_style
         self.font_size = font_size
         self._text = None
+        self._pdf_unit = None
+        self.pdf_unit = pdf_unit
         self._pdf_k = None
         self.text = text
 
@@ -64,14 +74,14 @@ class Text(DrawObject):
         self.font.style = val
 
     @property
-    def pdf_k(self):
-        return self._pdf_k
+    def pdf_unit(self):
+        return self._pdf_unit
 
-    @pdf_k.setter
-    def pdf_k(self, val):
-        if not isinstance(val, float):
-            raise TypeError(f"pdf_k.value must be of type float not{type(val)}")
-        self._pdf_k = val
+    @pdf_unit.setter
+    def pdf_unit(self, val):
+        self._pdf_unit = val
+        self._pdf_k = _get_k(self.pdf_unit)
+        print('huhuhuhu')
 
     @property
     def text(self):
@@ -82,17 +92,17 @@ class Text(DrawObject):
         self._text = str(val)
 
     def _add_text_height_to_top_margin(self):
-        self.top_margin += self.font.get_text_pixel_height(self.text) / self.pdf_k
+        self.top_margin += self.font.get_text_pixel_height(self.text) / self._pdf_k
 
     def get_relative_x2(self):
-        return self.relative_x + self.font.get_text_pixel_width(self.text) / self.pdf_k
+        return self.relative_x + self.font.get_text_pixel_width(self.text) / self._pdf_k
 
     def get_relative_y2(self):
-        return self.relative_y
-        # + self.font.get_text_pixel_height(self.text) * self.pdf_k
+        return self.relative_y + self.font.get_text_pixel_height(self.text) / self._pdf_k
 
     def draw(self, pdf):
-        self.pdf_k = pdf.k
+        if pdf.k != self._pdf_k:
+            raise AttributeError('wrong pdf.k!')
         self._add_text_height_to_top_margin()
         if self.show:
             style = ""
@@ -116,7 +126,7 @@ class Text(DrawObject):
 
 
 class TextLabel(Text):
-    def __init__(self, text, placement, *args, **kwargs):
+    def __init__(self, text, placement='above', *args, **kwargs):
         super().__init__(text=text, *args, **kwargs)
         self._placement = None
         self.placement = placement
