@@ -3,3 +3,4 @@ musicscore
 prettytable
 fpdf2
 diff-pdf-visually
+matplotlib
