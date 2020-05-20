@@ -14,10 +14,12 @@ Pillow==6.2.2
 pkginfo==1.5.0.1
 prettytable==0.7.2
 Pygments==2.6.1
+PySide2==5.14.2.1
 quicktions==1.9
 readme-renderer==26.0
 requests==2.23.0
 requests-toolbelt==0.9.1
+shiboken2==5.14.2.1
 six==1.14.0
 tqdm==4.45.0
 twine==3.1.1

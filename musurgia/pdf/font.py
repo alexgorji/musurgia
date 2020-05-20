@@ -5,10 +5,10 @@ class FontError(Exception):
 
 class Font(object):
     _FAMILY = ['Arial']
-    _WEIGHT = ['bold', 'regular']
+    _WEIGHT = ['bold', 'normal']
     _STYLE = ['italic', 'regular']
 
-    def __init__(self, family='Arial', weight='regular', style='regular', size=10, *args, **kwargs):
+    def __init__(self, family='Arial', weight='normal', style='regular', size=10, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._family = None
         self._weight = None
@@ -57,3 +57,22 @@ class Font(object):
     @size.setter
     def size(self, val):
         self._size = val
+
+    def _get_font_weight_int(self):
+        weights = {'thin': 0, 'extra_light': 12, 'light': 25, 'normal': 50, 'medium': 57, 'demi_bold': 63, 'bold': 75,
+                   'extra_bold': 81, 'black': 87}
+
+        return weights[self.weight]
+
+    @property
+    def is_italic(self):
+        if self.style == 'italic':
+            return True
+        else:
+            return False
+
+    def get_approximate_text_pixel_width(self, val):
+        return fm.width(val)
+
+    def get_text_pixel_height(self):
+        return self.size
