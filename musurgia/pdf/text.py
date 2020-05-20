@@ -1,7 +1,7 @@
 import copy
 
 from musurgia.pdf.font import Font
-from musurgia.pdf.newdrawobject import DrawObject
+from musurgia.pdf.drawobject import DrawObject
 
 
 class Text(DrawObject):

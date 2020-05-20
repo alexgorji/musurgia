@@ -17,12 +17,3 @@ class TestHorizontalSegmentedLine(TestCase):
             self.pdf.translate(self.pdf.l_margin, self.pdf.t_margin)
             self.hsl.draw(self.pdf)
             self.pdf.write(pdf_path)
-
-    def test_labeled(self):
-        for index, segment in enumerate(self.hsl.segments):
-            segment.add_label()
-
-        with self.file_path(path, 'draw', 'pdf') as pdf_path:
-            self.pdf.translate(self.pdf.l_margin, self.pdf.t_margin)
-            self.hsl.draw(self.pdf)
-            self.pdf.write(pdf_path)

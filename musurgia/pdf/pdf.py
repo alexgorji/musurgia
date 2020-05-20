@@ -46,6 +46,7 @@ class Pdf(FPDF):
         self.l_margin = l_margin
         self.b_margin = b_margin
         self.add_page()
+        self.show_page_number = False
 
         self.set_font("Arial", "", 10)
 
@@ -55,6 +56,15 @@ class Pdf(FPDF):
     def _push_state(self):
         self._out(sprintf('q\n'))
 
+    @property
+    def show_page_number(self):
+        return self._show_page_number
+        
+    @show_page_number.setter
+    def show_page_number(self, val):
+        if not isinstance(val, bool):
+            raise TypeError(f"show_page_number.value must be of type bool not{type(val)}")
+        self._show_page_number = val
     def add_space(self, val):
         self.y += val
 
@@ -90,5 +100,6 @@ class Pdf(FPDF):
         self.translate(self.l_margin, self.t_margin)
 
     def write(self, path):
-        self.draw_page_number()
+        if self.show_page_number:
+            self.draw_page_number()
         self.output(path, 'F')

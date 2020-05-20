@@ -47,10 +47,3 @@ class TestMarkLine(TestCase):
             with self.pdf.saved_state():
                 self.ml.draw(self.pdf)
             self.pdf.write(pdf_path)
-
-    def test_label(self):
-        self.ml.add_text_label('label')
-        with self.file_path(parent_path=path, name='label', extension='pdf') as pdf_path:
-            self.pdf.translate_margins()
-            self.ml.draw(self.pdf)
-            self.pdf.write(pdf_path)

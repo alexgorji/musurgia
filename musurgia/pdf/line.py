@@ -1,6 +1,5 @@
 from quicktions import Fraction
 
-from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.masterslave import Master, Slave
 from musurgia.pdf.named import Named
 from musurgia.pdf.newdrawobject import DrawObject
@@ -71,23 +70,14 @@ class StraightLine(Slave, DrawObject):
                 pdf.line(0, 0, x2, y2)
 
 
-class MarkLine(DrawObject, Labeled):
-    def __init__(self, placement, length=3, mode='h', y_offset=0, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._straight_line = StraightLine(length=length, mode=mode)
+class MarkLine(StraightLine, DrawObject):
+    def __init__(self, placement, length=3, y_offset=0, *args, **kwargs):
+        super().__init__(length=length, *args, **kwargs)
         self._placement = None
         self._y_offset = None
 
         self.placement = placement
         self._y_offset = y_offset
-
-    @property
-    def mode(self):
-        return self._straight_line.mode
-
-    @mode.setter
-    def mode(self, val):
-        self._straight_line.mode = val
 
     @property
     def placement(self):
@@ -107,15 +97,6 @@ class MarkLine(DrawObject, Labeled):
     @y_offset.setter
     def y_offset(self, val):
         self._y_offset = val
-
-    def get_relative_x2(self):
-        return self._straight_line.get_relative_x2()
-
-    def get_relative_y2(self):
-        return self._straight_line.get_relative_y2() + self.get_lables_height()
-
-    def draw(self, pdf):
-        pass
 
 
 class LineSegment(Master, DrawObject):
@@ -233,7 +214,7 @@ class HorizontalLineSegment(LineSegment):
             NotImplementedError()
 
 
-class HorizontalSegmentedLine(DrawObject, Named):
+class HorizontalSegmentedLine(DrawObject):
     def __init__(self, lengths, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._segments = None
