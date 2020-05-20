@@ -70,7 +70,7 @@ class DrawObjectGroup(DrawObject):
         old_pdf_page = pdf.page
         new_top_margin = 0
         for draw_object in self.draw_objects:
-            print(f'top_margin:{new_top_margin}')
+            # print(f'top_margin:{new_top_margin}')
             draw_object.top_margin = new_top_margin
             old_pdf_y = pdf.y
             old_bottom_margin = draw_object.bottom_margin

@@ -5,12 +5,12 @@ from musurgia.pdf.newdrawobject import DrawObject
 
 
 class Text(DrawObject):
-    DEFAULT_FONT_FAMILY = 'Arial'
+    DEFAULT_FONT_FAMILY = 'Helvetica'
     DEFAULT_FONT_SIZE = 10
-    DEFAULT_FONT_WEIGHT = 'regular'
+    DEFAULT_FONT_WEIGHT = 'medium'
     DEFAULT_FONT_STYLE = 'regular'
 
-    def __init__(self, text, pdf_k=float(72 / 25.4), font_family=None, font_weight=None, font_style=None,
+    def __init__(self, text, font_family=None, font_weight=None, font_style=None,
                  font_size=None, *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
@@ -22,7 +22,6 @@ class Text(DrawObject):
         self._text = None
         self._pdf_k = None
         self.text = text
-        self.pdf_k = pdf_k
 
     @property
     def font_family(self):
@@ -82,19 +81,19 @@ class Text(DrawObject):
     def text(self, val):
         self._text = str(val)
 
-    def _set_default_top_margin(self):
-        self.top_margin = self.get_relative_y2() - self.relative_y
+    def _add_text_height_to_top_margin(self):
+        self.top_margin += self.font.get_text_pixel_height(self.text) / self.pdf_k
 
     def get_relative_x2(self):
-        return self.relative_x + self.font.get_approximate_text_pixel_width(self.text) * self.pdf_k
+        return self.relative_x + self.font.get_text_pixel_width(self.text) / self.pdf_k
 
     def get_relative_y2(self):
-        return self.relative_y + self.font.get_text_pixel_height() * self.pdf_k
+        return self.relative_y
+        # + self.font.get_text_pixel_height(self.text) * self.pdf_k
 
     def draw(self, pdf):
-        if self.top_margin is None:
-            self._set_default_top_margin()
         self.pdf_k = pdf.k
+        self._add_text_height_to_top_margin()
         if self.show:
             style = ""
             pdf.set_font(self.font.family, style=style, size=0)
@@ -106,7 +105,7 @@ class Text(DrawObject):
 
             pdf.translate(self.relative_x, self.relative_y)
             with pdf.add_margins(self):
-                pdf.text(x=2, y=2, txt=self.text)
+                pdf.text(x=0, y=0, txt=self.text)
 
     def __deepcopy__(self, memodict=None):
         copied = self.__class__(text=self.text)
