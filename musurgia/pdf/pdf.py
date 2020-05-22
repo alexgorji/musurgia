@@ -3,7 +3,7 @@ from fpdf.php import sprintf
 
 from musurgia.pdf.line import HorizontalSegmentedLine, VerticalSegmentedLine
 from musurgia.pdf.pdfunit import PdfUnit
-from musurgia.pdf.text import PageText
+from musurgia.pdf.text import PageText, TextLabel
 
 
 class PageNumber(PageText):
@@ -130,7 +130,11 @@ class Pdf(FPDF):
         if partial_segment_length:
             ruler.segments[-1].end_mark_line.show = False
         for index, segment in enumerate(ruler.segments[1:]):
-            segment.start_mark_line.add_text_label(index + 1)
+            tl = TextLabel(index + 1)
+            if mode in ['v', 'vertical']:
+                tl.placement = 'left'
+            segment.start_mark_line.add_text_label(tl)
+
         ruler.draw(self)
 
     def write(self, path):

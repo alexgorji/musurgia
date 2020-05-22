@@ -89,13 +89,11 @@ class MarkLine(StraightLine, Labeled):
         self._placement = val
 
     def get_middle_y(self):
-        if self.mode in ['v', 'horizontal']:
-            return self.length / 2
-        else:
-            return self.get_above_labels_height() + self.length / 2
+        return self.length / 2
 
     def draw(self, pdf):
         self.draw_above_text_labels(pdf)
+        self.draw_left_text_labels(pdf)
         super().draw(pdf)
         pdf.translate(0, self.get_height())
         self.draw_below_text_labels(pdf)
@@ -167,7 +165,6 @@ class HorizontalLineSegment(LineSegment):
             return 0
         elif margin in ['t', 'top']:
             return 0
-            # return max([ml.get_middle_y() for ml in [self.start_mark_line, self.end_mark_line]])
         elif margin in ['b', 'bottom']:
             return 0
         else:
@@ -182,7 +179,6 @@ class HorizontalLineSegment(LineSegment):
             middle_y = max([ml.get_middle_y() for ml in [self.start_mark_line, self.end_mark_line]])
             diff = middle_y - mark_line.get_middle_y()
             return diff
-            # return self._get_straight_line_margin('top') - (mark_line.length / 2 + mark_line.y_offset)
         elif margin in ['b', 'bottom']:
             return 0
         else:
@@ -275,7 +271,7 @@ class VerticalLineSegment(LineSegment):
 
     def _get_straight_line_margin(self, margin):
         if margin in ['l', 'left']:
-            return max([ml.get_middle_y() for ml in [self.start_mark_line, self.end_mark_line]])
+            return 0
         elif margin in ['r', 'right']:
             return 0
         elif margin in ['t', 'top']:
@@ -292,7 +288,6 @@ class VerticalLineSegment(LineSegment):
             return 0
         elif margin in ['t', 'top']:
             return 0
-            # return self._get_straight_line_margin('top') - (mark_line.length / 2 + mark_line.y_offset)
         elif margin in ['b', 'bottom']:
             return 0
         else:
@@ -307,15 +302,25 @@ class VerticalLineSegment(LineSegment):
             raise AttributeError(position)
 
     def _get_mark_line_position(self, position, mark_line):
-        if position == 'x':
-            return 0
-        elif position == 'y':
-            if mark_line.placement == 'start':
-                return 0
-            else:
-                return self.length
-        else:
+        if position not in ['x', 'y']:
             raise AttributeError(position)
+
+        if mark_line.mode in ['h', 'horizontal']:
+            if position == 'x':
+                return - mark_line.length / 2
+            else:
+                if mark_line.placement == 'start':
+                    return 0
+                else:
+                    return self.length
+        else:
+            if position == 'y':
+                return - mark_line.length / 2
+            else:
+                if mark_line.placement == 'start':
+                    return 0
+                else:
+                    return self.length
 
     def draw(self, pdf):
         pdf.translate(self.relative_x, self.relative_y)
@@ -355,7 +360,9 @@ class VerticalSegmentedLine(DrawObject):
         return self.relative_y + sum(self.lengths)
 
     def draw(self, pdf):
+        pdf.translate(self.relative_x, self.relative_y)
         with pdf.add_object_margins(self):
-            for segment in self.segments:
-                segment.draw(pdf)
-                pdf.translate(0, segment.get_height())
+            with pdf.saved_state():
+                for segment in self.segments:
+                    segment.draw(pdf)
+                    pdf.translate(0, segment.get_height())

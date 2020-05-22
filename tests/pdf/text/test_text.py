@@ -21,13 +21,12 @@ class TestText(TestCase):
 
     def test_draw_with_top_margin(self):
         t = Text('The fox is going to be dead.')
-        t.top_margin = 2
+        t.top_margin = 5
         with self.file_path(path, 'draw_with_top_margin', 'pdf') as pdf_path:
-            with self.pdf.saved_state():
-                HorizontalSegmentedLine(lengths=10 * [10]).draw(self.pdf)
-            with self.pdf.saved_state():
-                VerticalSegmentedLine(lengths=10 * [10]).draw(self.pdf)
             self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+            self.pdf.translate(10, 10)
             t.draw(self.pdf)
             self.pdf.write(pdf_path)
 
@@ -67,11 +66,10 @@ class TestText(TestCase):
         t2 = Text(value='What should we do??', relative_y=0)
         t3 = Text(value='What should we do??', relative_y=0)
         with self.file_path(path, 'draw_multiple', 'pdf') as pdf_path:
-            with self.pdf.saved_state():
-                HorizontalSegmentedLine(10 * [10], relative_y=1.5).draw(self.pdf)
-            with self.pdf.saved_state():
-                VerticalSegmentedLine(10 * [10]).draw(self.pdf)
             self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+            self.pdf.translate(10, 10)
             t1.draw(self.pdf)
             self.pdf.translate(0, t1.get_height())
             t2.draw(self.pdf)
@@ -81,15 +79,15 @@ class TestText(TestCase):
             self.pdf.write(pdf_path)
 
     def test_draw_multiple_saved_state(self):
-        t1 = Text(value='Fox is going to be dead.')
-        t2 = Text(value='What should we do??', relative_y=10)
-        t3 = Text(value='What should we do??', relative_y=20)
+        t1 = Text(value='Fox is going to be dead.', relative_x=10, relative_y=10)
+        t2 = Text(value='What should we do??', relative_x=10, relative_y=20)
+        t3 = Text(value='What should we do??', relative_x=10, relative_y=30)
+
         with self.file_path(path, 'draw_multiple_saved_state', 'pdf') as pdf_path:
-            with self.pdf.saved_state():
-                HorizontalSegmentedLine(10 * [10]).draw(self.pdf)
-            with self.pdf.saved_state():
-                VerticalSegmentedLine(10 * [10]).draw(self.pdf)
             self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+
             with self.pdf.saved_state():
                 t1.draw(self.pdf)
             with self.pdf.saved_state():

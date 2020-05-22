@@ -104,10 +104,6 @@ class TextLabel(PositionSlave, Text):
         super().__init__(value=text, *args, **kwargs)
         self._placement = None
         self.placement = placement
-    #
-    # @property
-    # def additional_top_margin(self):
-    #     return self.get_text_height()
 
     @property
     def placement(self):
@@ -115,17 +111,10 @@ class TextLabel(PositionSlave, Text):
 
     @placement.setter
     def placement(self, val):
-        permitted = ['above', 'below']
+        permitted = ['above', 'below', 'left']
         if val not in permitted:
             raise ValueError(f'placement.value {val} must be in {permitted}')
         self._placement = val
-
-    # def get_height(self):
-    #     return super().get_height() + self.additional_top_margin
-
-    # def draw(self, pdf):
-        # pdf.translate(0, self.additional_top_margin)
-        # super().draw(pdf)
 
 
 class PageText(Text):
