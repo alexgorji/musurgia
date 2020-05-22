@@ -166,7 +166,8 @@ class HorizontalLineSegment(LineSegment):
         elif margin in ['r', 'right']:
             return 0
         elif margin in ['t', 'top']:
-            return max([ml.get_middle_y() for ml in [self.start_mark_line, self.end_mark_line]])
+            return 0
+            # return max([ml.get_middle_y() for ml in [self.start_mark_line, self.end_mark_line]])
         elif margin in ['b', 'bottom']:
             return 0
         else:
@@ -196,15 +197,25 @@ class HorizontalLineSegment(LineSegment):
             raise AttributeError(position)
 
     def _get_mark_line_position(self, position, mark_line):
-        if position == 'x':
-            if mark_line.placement == 'start':
-                return 0
-            else:
-                return self.length
-        elif position == 'y':
-            return 0
-        else:
+        if position not in ['x', 'y']:
             raise AttributeError(position)
+
+        if mark_line.mode in ['h', 'horizontal']:
+            if position == 'x':
+                return - mark_line.length / 2
+            else:
+                if mark_line.placement == 'start':
+                    return 0
+                else:
+                    return self.length
+        else:
+            if position == 'y':
+                return - mark_line.length / 2
+            else:
+                if mark_line.placement == 'start':
+                    return 0
+                else:
+                    return self.length
 
     def draw(self, pdf):
         pdf.translate(self.relative_x, self.relative_y)
@@ -244,10 +255,12 @@ class HorizontalSegmentedLine(DrawObject):
         return self.relative_y + max([segment.get_height() for segment in self.segments])
 
     def draw(self, pdf):
+        pdf.translate(self.relative_x, self.relative_y)
         with pdf.add_object_margins(self):
-            for segment in self.segments:
-                segment.draw(pdf)
-                pdf.translate(segment.get_width(), 0)
+            with pdf.saved_state():
+                for segment in self.segments:
+                    segment.draw(pdf)
+                    pdf.translate(segment.get_width(), 0)
 
 
 class VerticalLineSegment(LineSegment):

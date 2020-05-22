@@ -68,7 +68,7 @@ class TestText(TestCase):
         t3 = Text(value='What should we do??', relative_y=0)
         with self.file_path(path, 'draw_multiple', 'pdf') as pdf_path:
             with self.pdf.saved_state():
-                HorizontalSegmentedLine(10 * [10]).draw(self.pdf)
+                HorizontalSegmentedLine(10 * [10], relative_y=1.5).draw(self.pdf)
             with self.pdf.saved_state():
                 VerticalSegmentedLine(10 * [10]).draw(self.pdf)
             self.pdf.translate_page_margins()

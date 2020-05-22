@@ -1,6 +1,7 @@
 from fpdf import FPDF
 from fpdf.php import sprintf
 
+from musurgia.pdf.line import HorizontalSegmentedLine, VerticalSegmentedLine
 from musurgia.pdf.pdfunit import PdfUnit
 from musurgia.pdf.text import PageText
 
@@ -108,6 +109,29 @@ class Pdf(FPDF):
 
     def translate_page_margins(self):
         self.translate(self.l_margin, self.t_margin)
+
+    def draw_ruler(self, mode='h'):
+        if mode in ['h', 'horizontal']:
+            number_of_units = (self.w - self.l_margin - self.r_margin) / 10
+        elif mode in ['v', 'vertical']:
+            number_of_units = (self.h - self.t_margin - self.b_margin) / 10
+        else:
+            raise AttributeError()
+
+        partial_segment_length = number_of_units - int(number_of_units)
+        lengths = int(number_of_units) * [10]
+        if partial_segment_length:
+            lengths += [partial_segment_length * 10]
+        if mode in ['h', 'horizontal']:
+            ruler = HorizontalSegmentedLine(lengths)
+        else:
+            ruler = VerticalSegmentedLine(lengths)
+
+        if partial_segment_length:
+            ruler.segments[-1].end_mark_line.show = False
+        for index, segment in enumerate(ruler.segments[1:]):
+            segment.start_mark_line.add_text_label(index + 1)
+        ruler.draw(self)
 
     def write(self, path):
         if self.show_page_number:

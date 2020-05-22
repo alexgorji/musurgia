@@ -24,7 +24,7 @@ class TestHorizontalLineSegment(TestCase):
 
     def test_start_mark_line_relative_y(self):
         actual = self.hls.start_mark_line.relative_y
-        expected = self.hls.relative_y
+        expected = -1.5
         self.assertEqual(expected, actual)
 
     def test_end_mark_line_relative_x(self):
@@ -34,12 +34,12 @@ class TestHorizontalLineSegment(TestCase):
 
     def test_end_mark_line_relative_y(self):
         actual = self.hls.end_mark_line.relative_y
-        expected = self.hls.relative_y
+        expected = -1.5
         self.assertEqual(expected, actual)
 
     def test_straight_line_top_margin(self):
         actual = self.hls.straight_line.top_margin
-        expected = max(self.hls.start_mark_line.get_middle_y(), self.hls.end_mark_line.get_middle_y())
+        expected = 0
         self.assertEqual(expected, actual)
 
     def test_start_mark_line_top_margin(self):
