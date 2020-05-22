@@ -1,4 +1,4 @@
-from musurgia.pdf.drawobject import DrawObject
+from musurgia.pdf.newdrawobject import DrawObject
 from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.named import Named
 from musurgia.pdf.positioned import RelativeXNotSettableError, RelativeYNotSettableError
@@ -48,16 +48,6 @@ class MarkLine(DrawObject, Labeled):
         if val not in permitted:
             raise ValueError('placement.value {} must be in {}'.format(val, permitted))
         self._placement = val
-
-    @property
-    def parent(self):
-        return self._parent
-
-    @parent.setter
-    def parent(self, val):
-        # if not isinstance(val, LineSegment):
-        #     raise TypeError(f"parent.value must be of type LineSegment not{type(val)}")
-        self._parent = val
 
     @property
     def height(self):

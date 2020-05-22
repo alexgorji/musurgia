@@ -1,7 +1,7 @@
 from quicktions import Fraction
 
+from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.masterslave import Master, Slave
-from musurgia.pdf.named import Named
 from musurgia.pdf.newdrawobject import DrawObject
 
 
@@ -65,19 +65,17 @@ class StraightLine(Slave, DrawObject):
         if self.show:
             pdf.translate(self.relative_x, self.relative_y)
             x2 = self.get_relative_x2() - self.relative_x
-            y2 = -(self.get_relative_y2() - self.relative_y)
-            with pdf.add_margins(self):
+            y2 = self.get_relative_y2() - self.relative_y
+            with pdf.add_object_margins(self):
                 pdf.line(0, 0, x2, y2)
 
 
-class MarkLine(StraightLine, DrawObject):
-    def __init__(self, placement, length=3, y_offset=0, *args, **kwargs):
+class MarkLine(StraightLine, Labeled):
+    def __init__(self, placement, length=3, *args, **kwargs):
         super().__init__(length=length, *args, **kwargs)
         self._placement = None
-        self._y_offset = None
 
         self.placement = placement
-        self._y_offset = y_offset
 
     @property
     def placement(self):
@@ -90,13 +88,17 @@ class MarkLine(StraightLine, DrawObject):
             raise ValueError(f'placement.value {val} must be in {permitted}')
         self._placement = val
 
-    @property
-    def y_offset(self):
-        return self._y_offset
+    def get_middle_y(self):
+        if self.mode in ['v', 'horizontal']:
+            return self.length / 2
+        else:
+            return self.get_above_labels_height() + self.length / 2
 
-    @y_offset.setter
-    def y_offset(self, val):
-        self._y_offset = val
+    def draw(self, pdf):
+        self.draw_above_text_labels(pdf)
+        super().draw(pdf)
+        pdf.translate(0, self.get_height())
+        self.draw_below_text_labels(pdf)
 
 
 class LineSegment(Master, DrawObject):
@@ -127,11 +129,25 @@ class LineSegment(Master, DrawObject):
     def length(self):
         return self.straight_line.length
 
-    def draw(self, pdf):
-        with pdf.add_margins(self):
-            self.straight_line.draw(pdf)
-            self.start_mark_line.draw(pdf)
-            self.end_mark_line.draw(pdf)
+    def get_slave_margin(self, slave, margin):
+        if slave.name == 'straight_line':
+            return self._get_straight_line_margin(margin)
+        elif slave.name == 'start_mark_line':
+            return self._get_mark_line_margin(margin, slave)
+        elif slave.name == 'end_mark_line':
+            return self._get_mark_line_margin(margin, slave)
+        else:
+            raise AttributeError(slave)
+
+    def get_slave_position(self, slave, position):
+        if slave.name == 'straight_line':
+            return self._get_straight_line_position(position)
+        elif slave.name == 'start_mark_line':
+            return self._get_mark_line_position(position, slave)
+        elif slave.name == 'end_mark_line':
+            return self._get_mark_line_position(position, slave)
+        else:
+            raise AttributeError(slave)
 
 
 class HorizontalLineSegment(LineSegment):
@@ -139,10 +155,10 @@ class HorizontalLineSegment(LineSegment):
         super().__init__(mode='horizontal', length=length, *args, **kwargs)
 
     def get_relative_x2(self):
-        return self.left_margin + self.length + self.right_margin
+        return self.relative_x + self.length
 
     def get_relative_y2(self):
-        return self.top_margin + self.straight_line.top_margin + self.straight_line.bottom_margin + self.bottom_margin
+        return self.relative_y + max([ml.get_height() for ml in [self.start_mark_line, self.end_mark_line]])
 
     def _get_straight_line_margin(self, margin):
         if margin in ['l', 'left']:
@@ -150,9 +166,9 @@ class HorizontalLineSegment(LineSegment):
         elif margin in ['r', 'right']:
             return 0
         elif margin in ['t', 'top']:
-            return max([ml.length / 2 + ml.y_offset for ml in [self.start_mark_line, self.end_mark_line]])
+            return max([ml.get_middle_y() for ml in [self.start_mark_line, self.end_mark_line]])
         elif margin in ['b', 'bottom']:
-            return max([ml.length / 2 - ml.y_offset for ml in [self.start_mark_line, self.end_mark_line]])
+            return 0
         else:
             raise AttributeError(margin)
 
@@ -162,9 +178,12 @@ class HorizontalLineSegment(LineSegment):
         elif margin in ['r', 'right']:
             return 0
         elif margin in ['t', 'top']:
-            return self._get_straight_line_margin('top') - (mark_line.length / 2 + mark_line.y_offset)
+            middle_y = max([ml.get_middle_y() for ml in [self.start_mark_line, self.end_mark_line]])
+            diff = middle_y - mark_line.get_middle_y()
+            return diff
+            # return self._get_straight_line_margin('top') - (mark_line.length / 2 + mark_line.y_offset)
         elif margin in ['b', 'bottom']:
-            return self._get_straight_line_margin('bottom') - (mark_line.length / 2 - mark_line.y_offset)
+            return 0
         else:
             raise AttributeError(margin)
 
@@ -187,31 +206,15 @@ class HorizontalLineSegment(LineSegment):
         else:
             raise AttributeError(position)
 
-    def get_slave_margin(self, slave, margin):
-        if self.mode in ['h', 'horizontal']:
-            if slave.name == 'straight_line':
-                return self._get_straight_line_margin(margin)
-            elif slave.name == 'start_mark_line':
-                return self._get_mark_line_margin(margin, slave)
-            elif slave.name == 'end_mark_line':
-                return self._get_mark_line_margin(margin, slave)
-            else:
-                raise AttributeError(slave)
-        else:
-            raise NotImplementedError()
-
-    def get_slave_position(self, slave, position):
-        if self.mode in ['h', 'horizontal']:
-            if slave.name == 'straight_line':
-                return self._get_straight_line_position(position)
-            elif slave.name == 'start_mark_line':
-                return self._get_mark_line_position(position, slave)
-            elif slave.name == 'end_mark_line':
-                return self._get_mark_line_position(position, slave)
-            else:
-                raise AttributeError(slave)
-        else:
-            NotImplementedError()
+    def draw(self, pdf):
+        pdf.translate(self.relative_x, self.relative_y)
+        with pdf.add_object_margins(self):
+            with pdf.saved_state():
+                self.start_mark_line.draw(pdf)
+            with pdf.saved_state():
+                self.straight_line.draw(pdf)
+            with pdf.saved_state():
+                self.end_mark_line.draw(pdf)
 
 
 class HorizontalSegmentedLine(DrawObject):
@@ -241,144 +244,105 @@ class HorizontalSegmentedLine(DrawObject):
         return self.relative_y + max([segment.get_height() for segment in self.segments])
 
     def draw(self, pdf):
-        with pdf.add_margins(self):
+        with pdf.add_object_margins(self):
             for segment in self.segments:
                 segment.draw(pdf)
-                pdf.translate(segment.get_width(), -segment.get_height())
+                pdf.translate(segment.get_width(), 0)
 
-# class HorizontalLine(DrawObject, Labeled, Named):
-#     def __init__(self, length, factor=1, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self._length = None
-#         self._factor = None
-#         self.length = length
-#         self.factor = factor
-#         self._start_mark_line = MarkLine(parent=self, placement='start')
-#         self._end_mark_line = MarkLine(parent=self, placement='end', show=False)
-#
-#     @property
-#     def factor(self):
-#         if self._factor is None:
-#             self._factor = 1
-#         return self._factor
-#
-#     @factor.setter
-#     def factor(self, val):
-#         self._factor = val
-#
-#     @property
-#     def length(self):
-#         return self._length
-#
-#     @length.setter
-#     def length(self, val):
-#         self._length = val
-#
-#     @property
-#     def actual_length(self):
-#         return self.length * self.factor
-#
-#     @property
-#     def start_mark_line(self):
-#         return self._start_mark_line
-#
-#     @property
-#     def end_mark_line(self):
-#         return self._end_mark_line
-#
-#     def get_relative_x2(self):
-#         return self.relative_x + self.actual_length + self.left_margin + self.right_margin
-#
-#     def get_relative_y2(self):
-#         return max([ml.get_height() + self.top_margin + self.bottom_margin for ml in
-#                     [self.start_mark_line, self.end_mark_line]])
-#
-#     @DrawObject.relative_y.getter
-#     def relative_y(self):
-#         if self.parent:
-#             return self.parent.relative_y
-#         else:
-#             return self._relative_y
-#
-#     @DrawObject.relative_y.setter
-#     def relative_y(self, val):
-#         if self.parent:
-#             raise RelativeYNotSettableError()
-#         self._relative_y = val
-#
-#     def draw(self, pdf, translate=True):
-#         if translate:
-#             pdf.translate(self.relative_x, -self.relative_y)
-#             x1 = 0
-#             y = 0
-#         else:
-#             x1 = self.relative_x
-#             y = self.relative_y
-#
-#         pdf.translate(self.left_margin, -self.top_margin)
-#         x2 = self.actual_length
-#
-#         if self.name:
-#             self.name.draw(pdf)
-#
-#         if self.show:
-#             self.start_mark_line.draw(pdf)
-#             self.end_mark_line.draw(pdf)
-#             pdf.line(x1=x1, y1=y, x2=x2, y2=y)
-#             for text_label in self._text_labels:
-#                 text_label.draw(pdf)
-#         pdf.translate(self.right_margin, -self.bottom_margin)
-#
-#
-# class SegmentedHorizontalLine(DrawObject, Labeled, Named):
-#     def __init__(self, lengths, factor=1, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self._segments = []
-#         self._factor = None
-#         self.factor = factor
-#         self._set_lengths(lengths)
-#
-#     def _add_length(self, length):
-#         segment = HorizontalLine(length=length)
-#         segment.parent = self
-#         self._segments.append(segment)
-#
-#     def _set_lengths(self, lengths):
-#         for length in lengths:
-#             self._add_length(length)
-#
-#     @property
-#     def actual_lengths(self):
-#         return [segment.acutal_length for segment in self.segments]
-#
-#     @property
-#     def factor(self):
-#         return self._factor
-#
-#     @factor.setter
-#     def factor(self, val):
-#         for segment in self.segments:
-#             segment.factor = val
-#         self._factor = val
-#
-#     @property
-#     def actual_length(self):
-#         return sum([segment.acutal_length for segment in self.segments])
-#
-#     @property
-#     def segments(self):
-#         return self._segments
-#
-#     def get_relative_x2(self):
-#         return self.relative_x + self.actual_length
-#
-#     def get_relative_y2(self):
-#         return max([segment.get_relative_y2() for segment in self.segments])
-#
-#     def draw(self, pdf):
-#         pdf.translate(self.relative_x, self.relative_y)
-#         pdf.translate(self.left_margin, -self.top_margin)
-#         for segment in self.segments:
-#             segment.draw(pdf)
-#             pdf.translate(segment.actual_length, 0)
-#         pdf.translate(self.right_margin, self.bottom_margin)
+
+class VerticalLineSegment(LineSegment):
+    def __init__(self, length, *args, **kwargs):
+        super().__init__(mode='vertical', length=length, *args, **kwargs)
+
+    def get_relative_x2(self):
+        return self.relative_x
+
+    def get_relative_y2(self):
+        return self.relative_y + self.length
+
+    def _get_straight_line_margin(self, margin):
+        if margin in ['l', 'left']:
+            return max([ml.get_middle_y() for ml in [self.start_mark_line, self.end_mark_line]])
+        elif margin in ['r', 'right']:
+            return 0
+        elif margin in ['t', 'top']:
+            return 0
+        elif margin in ['b', 'bottom']:
+            return 0
+        else:
+            raise AttributeError(margin)
+
+    def _get_mark_line_margin(self, margin, mark_line):
+        if margin in ['l', 'left']:
+            return 0
+        elif margin in ['r', 'right']:
+            return 0
+        elif margin in ['t', 'top']:
+            return 0
+            # return self._get_straight_line_margin('top') - (mark_line.length / 2 + mark_line.y_offset)
+        elif margin in ['b', 'bottom']:
+            return 0
+        else:
+            raise AttributeError(margin)
+
+    def _get_straight_line_position(self, position):
+        if position == 'x':
+            return 0
+        elif position == 'y':
+            return 0
+        else:
+            raise AttributeError(position)
+
+    def _get_mark_line_position(self, position, mark_line):
+        if position == 'x':
+            return 0
+        elif position == 'y':
+            if mark_line.placement == 'start':
+                return 0
+            else:
+                return self.length
+        else:
+            raise AttributeError(position)
+
+    def draw(self, pdf):
+        pdf.translate(self.relative_x, self.relative_y)
+        with pdf.add_object_margins(self):
+            with pdf.saved_state():
+                self.start_mark_line.draw(pdf)
+            with pdf.saved_state():
+                self.straight_line.draw(pdf)
+            with pdf.saved_state():
+                self.end_mark_line.draw(pdf)
+
+
+class VerticalSegmentedLine(DrawObject):
+    def __init__(self, lengths, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._segments = None
+        self._make_segments(lengths)
+
+    @property
+    def lengths(self):
+        return [segment.length for segment in self.segments]
+
+    @property
+    def segments(self):
+        return self._segments
+
+    def _make_segments(self, lengths):
+        if not lengths:
+            raise AttributeError('lengths must be set.')
+        self._segments = [VerticalLineSegment(length) for length in lengths]
+        self._segments[-1].end_mark_line.show = True
+
+    def get_relative_x2(self):
+        return self.relative_x + max([segment.get_height() for segment in self.segments])
+
+    def get_relative_y2(self):
+        return self.relative_y + sum(self.lengths)
+
+    def draw(self, pdf):
+        with pdf.add_object_margins(self):
+            for segment in self.segments:
+                segment.draw(pdf)
+                pdf.translate(0, segment.get_height())

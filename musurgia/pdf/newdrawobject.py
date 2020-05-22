@@ -7,7 +7,6 @@ from musurgia.pdf.positioned import Positioned
 class DrawObject(ABC, Positioned, Margined):
     def __init__(self, *args, **kwargs):
         self._show = True
-        self._parent = None
         super().__init__(*args, **kwargs)
 
     @property
@@ -19,14 +18,6 @@ class DrawObject(ABC, Positioned, Margined):
         if not isinstance(val, bool):
             raise TypeError(f"show.value must be of type bool not{type(val)}")
         self._show = val
-
-    @property
-    def parent(self):
-        return self._parent
-
-    @parent.setter
-    def parent(self, val):
-        self._parent = val
 
     @abstractmethod
     def get_relative_x2(self):
@@ -45,3 +36,12 @@ class DrawObject(ABC, Positioned, Margined):
     @abstractmethod
     def draw(self, pdf):
         raise NotImplementedError()
+
+    def get_relative_position(self):
+        return {'relative_x': self.relative_x, 'relative_y': self.relative_y}
+
+    def get_margins(self):
+        return {'left_margin': self.left_margin, 'top_margin': self.top_margin, 'right_margin': self.right_margin,
+                'bottom_margin': self.bottom_margin}
+
+

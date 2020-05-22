@@ -39,9 +39,9 @@ class Test(TestCase):
 
     def test_1(self):
         pdf = Pdf(orientation='landscape', t_margin=25, l_margin=20)
-        title = PageText(text='t e s t', v_position='center', h_position='top', relative_y=-14, font_size=18,
+        title = PageText(value='t e s t', v_position='center', h_position='top', relative_y=-14, font_size=18,
                          font_weight='bold')
-        composer = PageText(text='A. G. 2019', v_position='right', h_position='top', relative_y=-14)
+        composer = PageText(value='A. G. 2019', v_position='right', h_position='top', relative_y=-14)
 
         pdf_path = path + '_test_1.pdf'
         stl = ScoreTimeLine(instruments=[VIOLIN, VIOLA, CELLO, PERCUSSION, ACCORDION], units_per_line=60)

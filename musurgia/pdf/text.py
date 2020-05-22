@@ -1,15 +1,7 @@
-import copy
-
 from musurgia.pdf.font import Font
+from musurgia.pdf.masterslave import PositionSlave
 from musurgia.pdf.newdrawobject import DrawObject
-
-
-def _get_k(unit):
-    k_dict = {'pt': 1, 'mm': 72 / 25.4, 'cm': 72 / 2.54, 'in': 72.}
-    k = k_dict.get(unit)
-    if k is None:
-        raise AttributeError(f'wrong unit {unit}')
-    return k
+from musurgia.pdf.pdfunit import PdfUnit
 
 
 class Text(DrawObject):
@@ -18,7 +10,7 @@ class Text(DrawObject):
     DEFAULT_FONT_WEIGHT = 'medium'
     DEFAULT_FONT_STYLE = 'regular'
 
-    def __init__(self, text, pdf_unit='mm', font_family=None, font_weight=None, font_style=None,
+    def __init__(self, value, font_family=None, font_weight=None, font_style=None,
                  font_size=None, *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
@@ -27,11 +19,8 @@ class Text(DrawObject):
         self.font_weight = font_weight
         self.font_style = font_style
         self.font_size = font_size
-        self._text = None
-        self._pdf_unit = None
-        self.pdf_unit = pdf_unit
-        self._pdf_k = None
-        self.text = text
+        self._value = None
+        self.value = value
 
     @property
     def font_family(self):
@@ -74,36 +63,28 @@ class Text(DrawObject):
         self.font.style = val
 
     @property
-    def pdf_unit(self):
-        return self._pdf_unit
+    def value(self):
+        return self._value
 
-    @pdf_unit.setter
-    def pdf_unit(self, val):
-        self._pdf_unit = val
-        self._pdf_k = _get_k(self.pdf_unit)
-        print('huhuhuhu')
+    @value.setter
+    def value(self, val):
+        self._value = str(val)
 
-    @property
-    def text(self):
-        return self._text
+    def get_text_width(self):
+        return self.font.get_text_pixel_width(self.value) / PdfUnit.get_k()
 
-    @text.setter
-    def text(self, val):
-        self._text = str(val)
-
-    def _add_text_height_to_top_margin(self):
-        self.top_margin += self.font.get_text_pixel_height(self.text) / self._pdf_k
+    def get_text_height(self):
+        return self.font.get_text_pixel_height(self.value) / PdfUnit.get_k()
 
     def get_relative_x2(self):
-        return self.relative_x + self.font.get_text_pixel_width(self.text) / self._pdf_k
+        return self.relative_x + self.get_text_width()
 
     def get_relative_y2(self):
-        return self.relative_y + self.font.get_text_pixel_height(self.text) / self._pdf_k
+        return self.relative_y + self.get_text_height()
 
     def draw(self, pdf):
-        if pdf.k != self._pdf_k:
+        if pdf.k != PdfUnit.get_k():
             raise AttributeError('wrong pdf.k!')
-        self._add_text_height_to_top_margin()
         if self.show:
             style = ""
             pdf.set_font(self.font.family, style=style, size=0)
@@ -114,22 +95,19 @@ class Text(DrawObject):
             pdf.set_font(self.font.family, style=style, size=self.font_size)
 
             pdf.translate(self.relative_x, self.relative_y)
-            with pdf.add_margins(self):
-                pdf.text(x=0, y=0, txt=self.text)
-
-    def __deepcopy__(self, memodict=None):
-        copied = self.__class__(text=self.text)
-        for var in vars(self):
-            copied_var = copy.deepcopy(vars(self)[var])
-            copied.__setattr__(var, copied_var)
-        return copied
+            with pdf.add_object_margins(self):
+                pdf.text(x=0, y=0, txt=self.value)
 
 
-class TextLabel(Text):
+class TextLabel(PositionSlave, Text):
     def __init__(self, text, placement='above', *args, **kwargs):
-        super().__init__(text=text, *args, **kwargs)
+        super().__init__(value=text, *args, **kwargs)
         self._placement = None
         self.placement = placement
+
+    @property
+    def additional_top_margin(self):
+        return self.get_text_height()
 
     @property
     def placement(self):
@@ -142,13 +120,17 @@ class TextLabel(Text):
             raise ValueError(f'placement.value {val} must be in {permitted}')
         self._placement = val
 
+    def get_height(self):
+        return super().get_height() + self.additional_top_margin
+
     def draw(self, pdf):
+        pdf.translate(0, self.additional_top_margin)
         super().draw(pdf)
 
 
 class PageText(Text):
-    def __init__(self, text, v_position=None, h_position=None, *args, **kwargs):
-        super().__init__(text=text, *args, **kwargs)
+    def __init__(self, value, v_position=None, h_position=None, *args, **kwargs):
+        super().__init__(value=value, *args, **kwargs)
         self.v_position = v_position
         self.h_position = h_position
 
@@ -156,13 +138,12 @@ class PageText(Text):
         return (len(self.text)) * self.font_size / 6
 
     def draw(self, pdf):
-        old_x, old_y = pdf.x, pdf.y
         if self.v_position == 'center':
             pdf.x = (pdf.w / 2) - self.get_text_physical_length() / 2
         elif self.v_position == 'left':
             pdf.x = pdf.l_margin
         elif self.v_position == 'right':
-            pdf.x = pdf.w - pdf.r_margin - self.get_text_physical_length()
+            pdf.x = pdf.w - pdf.r_margin - self.get_width()
         else:
             pass
 
@@ -173,4 +154,3 @@ class PageText(Text):
         else:
             pass
         super().draw(pdf)
-        pdf.x, pdf.y = old_x, old_y

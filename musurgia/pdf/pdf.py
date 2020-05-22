@@ -1,28 +1,13 @@
 from fpdf import FPDF
 from fpdf.php import sprintf
 
+from musurgia.pdf.pdfunit import PdfUnit
 from musurgia.pdf.text import PageText
 
 
-def _get_k(unit):
-    k_dict = {'pt': 1, 'mm': 72 / 25.4, 'cm': 72 / 2.54, 'in': 72.}
-    k = k_dict.get(unit)
-    if k is None:
-        raise AttributeError(f'wrong unit {unit}')
-    return k
-
-
-def _get_unit(k):
-    unit_dict = {1: 'pt', 72. / 25.4: 'mm', 72. / 2.54: 'cm', 72.: 'in'}
-    unit = unit_dict.get(k)
-    if k is None:
-        raise AttributeError(f'wrong k {k}')
-    return unit
-
-
 class PageNumber(PageText):
-    def __init__(self, text='none', v_position='center', h_position='bottom', *args, **kwargs):
-        super().__init__(text=text, v_position=v_position, h_position=h_position, *args, **kwargs)
+    def __init__(self, value='none', v_position='center', h_position='bottom', *args, **kwargs):
+        super().__init__(value=value, v_position=v_position, h_position=h_position, *args, **kwargs)
 
     def __call__(self, val):
         self.text = val
@@ -56,7 +41,7 @@ class Pdf(FPDF):
 
     def __init__(self, r_margin=10, t_margin=10, l_margin=10, b_margin=10, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.page_number = PageNumber('', self.unit)
+        self.page_number = PageNumber('')
         self.r_margin = r_margin
         self.t_margin = t_margin
         self.l_margin = l_margin
@@ -64,7 +49,7 @@ class Pdf(FPDF):
         self.add_page()
         self.show_page_number = False
 
-        self.set_font("Arial", "", 10)
+        self.set_font("Helvetica", "", 10)
 
     def _pop_state(self):
         self._out(sprintf('Q\n'))
@@ -83,12 +68,12 @@ class Pdf(FPDF):
         self._show_page_number = val
 
     @property
-    def unit(self):
-        return _get_unit(self.k)
+    def k(self):
+        return PdfUnit.get_k()
 
-    @unit.setter
-    def unit(self, val):
-        self.k = _get_k(val)
+    @k.setter
+    def k(self, val):
+        pass
 
     def add_space(self, val):
         self.y += val
@@ -96,7 +81,7 @@ class Pdf(FPDF):
     def add_page(self):
         super().add_page(orientation=self.cur_orientation)
 
-    def add_margins(self, draw_object):
+    def add_object_margins(self, draw_object):
         ma = AddMargins(self, draw_object=draw_object)
         return ma
 
@@ -121,7 +106,7 @@ class Pdf(FPDF):
         self._out(sprintf('1.0 0.0 0.0 1.0 %.2F %.2F cm',
                           dx, -dy))
 
-    def translate_margins(self):
+    def translate_page_margins(self):
         self.translate(self.l_margin, self.t_margin)
 
     def write(self, path):
