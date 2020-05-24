@@ -24,7 +24,7 @@ class TestHorizontalLineSegment(TestCase):
 
     def test_start_mark_line_relative_y(self):
         actual = self.hls.start_mark_line.relative_y
-        expected = -1.5
+        expected = 0
         self.assertEqual(expected, actual)
 
     def test_end_mark_line_relative_x(self):
@@ -34,7 +34,7 @@ class TestHorizontalLineSegment(TestCase):
 
     def test_end_mark_line_relative_y(self):
         actual = self.hls.end_mark_line.relative_y
-        expected = -1.5
+        expected = 0
         self.assertEqual(expected, actual)
 
     def test_straight_line_top_margin(self):
@@ -47,9 +47,17 @@ class TestHorizontalLineSegment(TestCase):
         expected = 0
         self.assertEqual(expected, actual)
 
+    def test_get_height(self):
+        actual = self.hls.get_height()
+        expected = 3
+        self.assertEqual(expected, actual)
+
     def test_draw(self):
         with self.file_path(parent_path=path, name='draw', extension='pdf') as pdf_path:
             self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+            self.pdf.translate(10, 10)
             self.hls.end_mark_line.show = True
             self.hls.draw(self.pdf)
             self.pdf.write(pdf_path)
@@ -59,10 +67,25 @@ class TestHorizontalLineSegment(TestCase):
         segments[-1].end_mark_line.show = True
         with self.file_path(parent_path=path, name='draw_list', extension='pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            # with self.pdf.saved_state():
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+            self.pdf.translate(10, 10)
             for segment in segments:
                 segment.draw(self.pdf)
                 self.pdf.translate(segment.get_width(), 0)
 
             self.pdf.write(pdf_path)
 
+    def test_draw_with_top_margin(self):
+        self.hls.top_margin = 15
+
+        with self.file_path(parent_path=path, name='draw_with_top_margin', extension='pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+            self.pdf.translate(10, 10)
+
+            self.hls.end_mark_line.show = True
+            self.hls.draw(self.pdf)
+
+            self.pdf.write(pdf_path)

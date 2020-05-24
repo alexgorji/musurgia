@@ -138,13 +138,13 @@ class ValueGenerator(object):
         if val is not None:
             if self.children:
                 raise ValueGeneratorException('parent\'s duration cannot be set')
-                # children_duration = [child.duration for child in self.children]
+                # children_duration = [fractal_tree.duration for fractal_tree in self.children]
                 # if None in children_duration:
                 #     raise ValueGeneratorException(
                 #         'ValueGenerator: parent\'s duration cannot be set if not all children have a duration.')
                 # factor = Fraction(val, sum(children_duration))
-                # for child in self.children:
-                #     child.duration *= factor
+                # for fractal_tree in self.children:
+                #     fractal_tree.duration *= factor
         self._duration = val
         self._set_generator_duration()
 
@@ -164,7 +164,7 @@ class ValueGenerator(object):
 
     def add_child(self, child):
         if not isinstance(child, ValueGenerator):
-            raise TypeError('child must be of type ValueGenerator not{}'.format(type(child)))
+            raise TypeError('fractal_tree must be of type ValueGenerator not{}'.format(type(child)))
         if self._children is None:
             self._children = []
         if self._children_iterator is None:

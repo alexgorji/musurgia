@@ -6,8 +6,8 @@ fm = FractalMusic(quarter_duration=10, tempo=60)
 fm.midi_generator.midi_range = (60, 72)
 fm.add_layer()
 #
-# expected = [child.children_generated_midis for child in fm.get_children()]
-# actual = [child.children_generated_midis for child in fm.get_children()]
+# expected = [fractal_tree.children_generated_midis for fractal_tree in fm.get_children()]
+# actual = [fractal_tree.children_generated_midis for fractal_tree in fm.get_children()]
 children_midis_1 = [child.children_generated_midis for child in fm.get_children()]
 choral_midis_1 = [child.get_choral_midis() for child in fm.get_children()]
 choral_midis_2 = [child.get_choral_midis() for child in fm.get_children()]

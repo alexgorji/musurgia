@@ -88,8 +88,8 @@ class TimeLine(DrawObjectGroup):
     #     for voice in self._segmented_line_group:
     #         voice.
     #         if line_group == self.line_groups[0]:
-    #             for child, line in zip(self.get_children()[1:], line_group.lines[1:]):
-    #                 line.name = child.name
+    #             for fractal_tree, line in zip(self.get_children()[1:], line_group.lines[1:]):
+    #                 line.name = fractal_tree.name
     #                 if line.name:
     #                     line.name.relative_y = line.relative_y
     #
@@ -97,9 +97,9 @@ class TimeLine(DrawObjectGroup):
     #         new_x = pdf.x
     #
     #         if line_group._line_break:
-    #             for child, line in zip(self.get_children(), line_group.lines):
+    #             for fractal_tree, line in zip(self.get_children(), line_group.lines):
     #                 pdf.x = new_x - line_group.length
-    #                 line.name = child.name
+    #                 line.name = fractal_tree.name
     #
     #                 if line.name:
     #                     line.name.draw(pdf)

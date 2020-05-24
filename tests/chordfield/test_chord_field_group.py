@@ -144,9 +144,9 @@ class Test(TestCase):
         cfg.add_child(cf_4)
         cfg.add_child(cf_5)
         #
-        # for child in cfg.children:
-        #     print(child.duration_generator.generator.parameters_dict)
-        #     values = [float(chord.quarter_duration) for chord in list(child)]
+        # for fractal_tree in cfg.children:
+        #     print(fractal_tree.duration_generator.generator.parameters_dict)
+        #     values = [float(chord.quarter_duration) for chord in list(fractal_tree)]
         #     print(values)
         #     print(sum(values))
 

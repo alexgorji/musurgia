@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from musurgia.pdf.line import HorizontalLineSegment, HorizontalSegmentedLine, VerticalSegmentedLine
+from musurgia.pdf.line import HorizontalLineSegment
 from musurgia.pdf.pdf import Pdf
 from musurgia.unittest import TestCase
 
@@ -57,10 +57,14 @@ class TestMarkLineLabels(TestCase):
             self.pdf.write(pdf_path)
 
     def test_draw_left(self):
-        self.ls.relative_x = 40
         ml = self.ls.start_mark_line
         ml.add_text_label('first text label left', placement='left')
         ml.add_text_label('second text label left left left', placement='left')
+        ml.add_text_label('third text label left left left', placement='left')
+        for text_label in ml.left_text_labels:
+            text_label.right_margin = 2
+            text_label.top_margin = -2
+        ml.left_text_labels[1].font.size = 8
         self.ls.relative_x = 40
         self.ls.relative_y = 10
         with self.file_path(path, 'draw_left', 'pdf') as pdf_path:

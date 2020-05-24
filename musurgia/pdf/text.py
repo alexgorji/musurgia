@@ -86,16 +86,14 @@ class Text(DrawObject):
         if pdf.k != PdfUnit.get_k():
             raise AttributeError('wrong pdf.k!')
         if self.show:
-            style = ""
-            pdf.set_font(self.font.family, style=style, size=0)
-            if self.font.style == 'italic':
-                style += 'I'
-            if self.font.weight == 'bold':
-                style += 'B'
-            pdf.set_font(self.font.family, style=style, size=self.font_size)
-
-            pdf.translate(self.relative_x, self.relative_y)
-            with pdf.add_object_margins(self):
+            with pdf.prepare_draw_object(self):
+                style = ""
+                pdf.set_font(self.font.family, style=style, size=0)
+                if self.font.style == 'italic':
+                    style += 'I'
+                if self.font.weight == 'bold':
+                    style += 'B'
+                pdf.set_font(self.font.family, style=style, size=self.font_size)
                 pdf.text(x=0, y=0, txt=self.value)
 
 

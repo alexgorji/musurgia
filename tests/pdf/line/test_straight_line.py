@@ -44,6 +44,8 @@ class TestStraightLine(TestCase):
 
     def test_draw(self):
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
-            with self.pdf.saved_state():
-                self.sl.draw(self.pdf)
+            self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+            self.sl.draw(self.pdf)
             self.pdf.write(pdf_path)

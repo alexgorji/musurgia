@@ -44,7 +44,7 @@ class TempoIsAlreadySet(FractalMusicException):
 
 class ChildTempoIsAlreadySet(FractalMusicException):
     def __init__(self, *args):
-        super().__init__('FractalMusic().tempo of parent can not be set after setting tempo of child', *args)
+        super().__init__('FractalMusic().tempo of parent can not be set after setting tempo of fractal_tree', *args)
 
 
 class MergeException(FractalMusicException):
@@ -561,7 +561,7 @@ class FractalMusic(FractalTree):
         #     if layer_number == 0 or not self.get_children():
         #         score.set_time_signatures(quarter_durations=self.quarter_duration, barline_style='light-light', times=times)
         #     else:
-        #         durations = [child.quarter_duration for child in self.get_children() if child.quarter_duration != 0]
+        #         durations = [fractal_tree.quarter_duration for fractal_tree in self.get_children() if fractal_tree.quarter_duration != 0]
         #         score.set_time_signatures(
         #             durations=durations, barline_style='light-light', times=times)
         # else:

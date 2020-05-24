@@ -69,7 +69,7 @@ class Tree(object):
 
     def add_child(self, child):
         if not isinstance(child, Tree):
-            raise TypeError('child must be of type Tree and not {}'.format(type(child)))
+            raise TypeError('fractal_tree must be of type Tree and not {}'.format(type(child)))
         self._children.append(child)
         child._up = self
         return child

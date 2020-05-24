@@ -42,7 +42,7 @@ class Test(TestCase):
     #     fm.add_layer()
     #     print(fm.children_generated_midis)
     #     print(fm.children_fractal_values)
-    #     fm.reduce_children(lambda child: child.fractal_order == 2)
+    #     fm.reduce_children(lambda fractal_tree: fractal_tree.fractal_order == 2)
     #     print(fm.children_fractal_values)
     #     print(fm.midi_generator.proportions)
     #     print(fm.midi_generator.directions)
@@ -64,9 +64,9 @@ class Test(TestCase):
     #     fm.add_layer()
     #     part_fm = fm.get_children()[6]
     #     part_fm.add_layer()
-    #     print([child.fractal_order for child in part_fm.get_children()])
-    #     part_fm.reduce_children(lambda child: child.fractal_order < 5)
-    #     print([child.fractal_order for child in part_fm.get_children()])
+    #     print([fractal_tree.fractal_order for fractal_tree in part_fm.get_children()])
+    #     part_fm.reduce_children(lambda fractal_tree: fractal_tree.fractal_order < 5)
+    #     print([fractal_tree.fractal_order for fractal_tree in part_fm.get_children()])
     #     print([round(float(duration), 2) for duration in part_fm.simple_format.durations])
 
     # fm.reduce_leaves(lambda leaf: leaf.fractal_order == 2)

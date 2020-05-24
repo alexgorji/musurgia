@@ -37,13 +37,13 @@ breathe.simple_format.to_stream_voice().add_to_score(score=score, part_number=1)
 parent_chord_field.simple_format.to_stream_voice().add_to_score(score=score, part_number=2)
 
 
-# print(sum([child.quarter_duration for child in copy_parent_chord_field.children]))
+# print(sum([fractal_tree.quarter_duration for fractal_tree in copy_parent_chord_field.children]))
 # # print(copy_parent_chord_field.children[0].simple_format.quarter_duration)
-# print(([float(child.quarter_duration) for child in copy_parent_chord_field.children]))
+# print(([float(fractal_tree.quarter_duration) for fractal_tree in copy_parent_chord_field.children]))
 # print(float(copy_parent_chord_field.children[0].simple_format.quarter_duration))
-# print(([float(child.quarter_duration) for child in copy_parent_chord_field.children]))
+# print(([float(fractal_tree.quarter_duration) for fractal_tree in copy_parent_chord_field.children]))
 # print(float(copy_parent_chord_field.children[1].simple_format.quarter_duration))
-# print(([float(child.quarter_duration) for child in copy_parent_chord_field.children]))
+# print(([float(fractal_tree.quarter_duration) for fractal_tree in copy_parent_chord_field.children]))
 def iterate(chord_field):
     while True:
         try:

@@ -26,16 +26,18 @@ class SavedState:
         self.pdf._pop_state()
 
 
-class AddMargins:
+class PrepareDrawObject:
     def __init__(self, pdf, draw_object):
         self.pdf = pdf
         self.draw_object = draw_object
 
     def __enter__(self):
+        self.pdf._push_state()
+        self.pdf.translate(self.draw_object.relative_x, self.draw_object.relative_y)
         self.pdf.translate(self.draw_object.left_margin, self.draw_object.top_margin)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.pdf.translate(self.draw_object.right_margin, self.draw_object.bottom_margin)
+        self.pdf._pop_state()
 
 
 class Pdf(FPDF):
@@ -82,9 +84,13 @@ class Pdf(FPDF):
     def add_page(self):
         super().add_page(orientation=self.cur_orientation)
 
-    def add_object_margins(self, draw_object):
-        ma = AddMargins(self, draw_object=draw_object)
-        return ma
+    def prepare_draw_object(self, draw_object):
+        pdo = PrepareDrawObject(self, draw_object=draw_object)
+        return pdo
+
+    # def add_object_margins(self, draw_object):
+    #     ma = AddMargins(self, draw_object=draw_object)
+    #     return ma
 
     def clip_rect(self, x, y, w, h):
         x, y, w, h = x * self.k, y * self.k, w * self.k, h * self.k
@@ -123,9 +129,9 @@ class Pdf(FPDF):
         if partial_segment_length:
             lengths += [partial_segment_length * 10]
         if mode in ['h', 'horizontal']:
-            ruler = HorizontalSegmentedLine(lengths)
+            ruler = HorizontalSegmentedLine(lengths, top_margin=-1.5)
         else:
-            ruler = VerticalSegmentedLine(lengths)
+            ruler = VerticalSegmentedLine(lengths, left_margin=-1.5)
 
         if partial_segment_length:
             ruler.segments[-1].end_mark_line.show = False
@@ -133,9 +139,14 @@ class Pdf(FPDF):
             tl = TextLabel(index + 1)
             if mode in ['v', 'vertical']:
                 tl.placement = 'left'
+                tl.right_margin = 1
+                tl.top_margin = -2
+            else:
+                tl.bottom_margin = 1
             segment.start_mark_line.add_text_label(tl)
 
-        ruler.draw(self)
+        with self.saved_state():
+            ruler.draw(self)
 
     def write(self, path):
         if self.show_page_number:

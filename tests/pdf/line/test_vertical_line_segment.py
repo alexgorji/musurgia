@@ -19,7 +19,7 @@ class TestVerticalLineSegment(TestCase):
 
     def test_start_mark_line_relative_x(self):
         actual = self.hls.start_mark_line.relative_x
-        expected = -1.5
+        expected = 0
         self.assertEqual(expected, actual)
 
     def test_start_mark_line_relative_y(self):
@@ -34,7 +34,7 @@ class TestVerticalLineSegment(TestCase):
 
     def test_end_mark_line_relative_x(self):
         actual = self.hls.end_mark_line.relative_x
-        expected = -1.5
+        expected = 0
         self.assertEqual(expected, actual)
 
     def test_start_mark_line_top_margin(self):
@@ -45,6 +45,9 @@ class TestVerticalLineSegment(TestCase):
     def test_draw(self):
         with self.file_path(parent_path=path, name='draw', extension='pdf') as pdf_path:
             self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+            self.pdf.translate(10, 10)
             self.hls.end_mark_line.show = True
             self.hls.draw(self.pdf)
             self.pdf.write(pdf_path)
