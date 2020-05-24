@@ -10,22 +10,29 @@ path = Path(__file__)
 
 
 def fill_tree_with_columns(fractal_tree, factor=1):
+    max_large_ml = 6
+    min_large_ml = 3
     for node in fractal_tree.traverse():
         node.graphic = DrawObjectColumn()
-        node.graphic.add_draw_object(HorizontalLineSegment(length=node.value * factor))
+        segment = node.graphic.add_draw_object(HorizontalLineSegment(length=node.value * factor))
+        ml_length = (max_large_ml - (
+                node.get_distance() * (max_large_ml - min_large_ml) / fractal_tree.number_of_layers)) / 2
+        segment.start_mark_line.length = ml_length
+        segment.end_mark_line.length = ml_length
         if node.get_children():
-            node.children_graphics_row = node.graphic.add_draw_object(DrawObjectRow(top_margin=5))
+            node.children_graphics_row = node.graphic.add_draw_object(DrawObjectRow(top_margin=3))
         if node.up:
             node.up.children_graphics_row.add_draw_object(node.graphic)
         if not node.up or node.up.get_children().index(node) == len(node.up.get_children()) - 1:
             node.graphic.draw_objects[0].end_mark_line.show = True
-            # node.graphic.draw_objects[0].end_mark_line.length = 5
-            # node.graphic.draw_objects[0].start_mark_line.length = 5
+            node.graphic.draw_objects[0].end_mark_line.length *= 2
+        if not node.up or node.up.get_children().index(node) == 0:
+            node.graphic.draw_objects[0].start_mark_line.length *= 2
 
 
 class TestFractal(TestCase):
     def setUp(self) -> None:
-        self.pdf = Pdf()
+        self.pdf = Pdf(orientation='l')
         self.ft = FractalTree(value=20)
         self.ft.add_layer()
         self.factor = 2
@@ -47,7 +54,7 @@ class TestFractal(TestCase):
         leaf_start_mark_line = leaf.graphic.draw_objects[0].start_mark_line
         leaf_start_mark_line.add_label('bla')
         l = leaf_start_mark_line.add_label('blue')
-        l.bottom_margin = 2
+        # l.bottom_margin = 2
         row = self.ft.graphic.draw_objects[1]
         row.top_margin = max(
             [do.draw_objects[0].start_mark_line.get_above_text_labels_height() for do in row.draw_objects])

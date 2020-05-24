@@ -129,9 +129,9 @@ class Pdf(FPDF):
         if partial_segment_length:
             lengths += [partial_segment_length * 10]
         if mode in ['h', 'horizontal']:
-            ruler = HorizontalSegmentedLine(lengths, top_margin=-1.5)
+            ruler = HorizontalSegmentedLine(lengths, top_margin=0)
         else:
-            ruler = VerticalSegmentedLine(lengths, left_margin=-1.5)
+            ruler = VerticalSegmentedLine(lengths, left_margin=0)
 
         if partial_segment_length:
             ruler.segments[-1].end_mark_line.show = False

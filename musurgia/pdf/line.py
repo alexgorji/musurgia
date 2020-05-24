@@ -159,10 +159,12 @@ class LineSegment(Master, DrawObject):
             if position == 'x':
                 return 0
             elif position == 'y':
-                return max([ml.get_middle_y() for ml in [self.start_mark_line, self.end_mark_line]])
+                return 0
+                # return max([ml.get_middle_y() for ml in [self.start_mark_line, self.end_mark_line]])
         else:
             if position == 'x':
-                return max([ml.get_middle_y() for ml in [self.start_mark_line, self.end_mark_line]])
+                return 0
+                # return max([ml.get_middle_y() for ml in [self.start_mark_line, self.end_mark_line]])
             elif position == 'y':
                 return 0
 
@@ -172,8 +174,8 @@ class LineSegment(Master, DrawObject):
 
         if mark_line.mode in ['h', 'horizontal']:
             if position == 'x':
-                return 0
-                # return -mark_line.length / 2
+                # return 0
+                return -mark_line.length / 2
             else:
                 if mark_line.placement == 'start':
                     return 0
@@ -181,8 +183,8 @@ class LineSegment(Master, DrawObject):
                     return self.length
         else:
             if position == 'y':
-                return 0
-                # return -mark_line.length / 2
+                # return 0
+                return -mark_line.length / 2
             else:
                 if mark_line.placement == 'start':
                     return 0
