@@ -73,3 +73,10 @@ class TestMarkLineLabels(TestCase):
             self.pdf.draw_ruler('v')
             self.ls.draw(self.pdf)
             self.pdf.write(pdf_path)
+
+    # def test_get_height(self):
+    #     ml = self.ls.start_mark_line
+    #     ml.add_text_label('first text label above')
+    #     ml.add_text_label('second text label above')
+    #     print(ml.get_height())
+

@@ -250,11 +250,11 @@ class FractalTree(Tree):
 
     @property
     def position(self):
-        if self.is_root():
+        if self.is_root:
             # return self.first_position
             return 0
         else:
-            siblings = self.up.children
+            siblings = self.up.get_children()
             index = siblings.index(self)
             previous_siblings = siblings[:index]
             position_in_parent = 0
