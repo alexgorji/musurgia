@@ -141,7 +141,6 @@ class Pdf(FPDF):
             if mode in ['v', 'vertical']:
                 tl.placement = 'left'
                 tl.right_margin = 1
-                tl.top_margin = -2
             else:
                 tl.bottom_margin = 1
             segment.start_mark_line.add_text_label(tl)
