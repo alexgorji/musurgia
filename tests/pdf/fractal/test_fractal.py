@@ -36,8 +36,6 @@ class TestFractal(TestCase):
         self.ft = FractalTree(value=20)
         self.ft.add_layer()
         self.factor = 2
-        # fractal_tree_to_column(self.ft, self.factor)
-        # self.ft_graphic = fractal_tree_to_column(self.ft, self.factor)
         fill_tree_with_columns(self.ft, self.factor)
 
     def test_draw(self):
@@ -53,8 +51,7 @@ class TestFractal(TestCase):
         leaf = self.ft.get_leaves()[1]
         leaf_start_mark_line = leaf.graphic.draw_objects[0].start_mark_line
         leaf_start_mark_line.add_label('bla')
-        l = leaf_start_mark_line.add_label('blue')
-        # l.bottom_margin = 2
+        leaf_start_mark_line.add_label('blue')
         row = self.ft.graphic.draw_objects[1]
         row.top_margin = max(
             [do.draw_objects[0].start_mark_line.get_above_text_labels_height() for do in row.draw_objects])
@@ -72,11 +69,35 @@ class TestFractal(TestCase):
         ft.add_layer()
         ft.get_children()[1].add_layer()
         fill_tree_with_columns(ft, 2)
-        # for node in ft.traverse():
-        #     print(node.index)
-        #     print(node.graphic.draw_objects)
 
         with self.file_path(path, 'draw_filled_tree', 'pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+            self.pdf.translate(10, 10)
+            ft.graphic.draw(self.pdf)
+            self.pdf.write(pdf_path)
+
+    def test_draw_unpruned_tree_with_some_text(self):
+        ft = FractalTree(value=20)
+        ft.add_layer()
+        ft.get_children()[0].add_layer()
+        ft.get_children()[-1].add_layer()
+        fill_tree_with_columns(ft, 2)
+        selected_node = ft.select_index([1])
+        child_1 = selected_node.get_children()[1]
+        child_2 = selected_node.get_children()[2]
+        lb1 = child_1.graphic.draw_objects[0].start_mark_line.add_label(1, font_size=8, bottom_margin=1)
+        lb2 = child_1.graphic.draw_objects[0].start_mark_line.add_label(2, font_size=8, bottom_margin=1)
+        lb3 = child_2.graphic.draw_objects[0].start_mark_line.add_label(3, font_size=8, bottom_margin=1)
+
+        for child in ft.get_children():
+            try:
+                child.graphic.draw_objects[1].top_margin += 2
+            except IndexError:
+                pass
+
+        with self.file_path(path, 'draw_unpruned_tree_with_some_text', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
             self.pdf.draw_ruler('h')
             self.pdf.draw_ruler('v')

@@ -224,6 +224,9 @@ class Tree(object):
 
         return self.goto(index[:1]).goto(index[1:])
 
+    def select_index(self, index):
+        return self.goto(index)
+
     def replace_node(self, new_node):
         if self.is_root:
             raise Exception('root cannot be replaced')

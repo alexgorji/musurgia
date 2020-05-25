@@ -12,22 +12,6 @@ class TestMarkLineLabels(TestCase):
         self.pdf = Pdf()
         self.ls = HorizontalLineSegment(length=20)
 
-    # def test_position_x_above(self):
-    #     ml = self.ls.end_mark_line
-    #     tl = ml.add_text_label('first value label above')
-    #     actual = tl.relative_x
-    #     expected = ml.relative_x
-    #     self.assertEqual(expected, actual)
-
-    # def test_position_y_second_above(self):
-    #     ml = self.ls.end_mark_line
-    #     tl1 = ml.add_text_label('first value label above')
-    #     tl2 = ml.add_text_label('second value label above')
-    #     actual = tl1.relative_y
-    #     expected = ml.relative_y
-    #
-    #     self.assertEqual(expected, actual)
-
     def test_draw_above(self):
         ml = self.ls.start_mark_line
         ml.add_text_label('first text label above')
@@ -74,9 +58,30 @@ class TestMarkLineLabels(TestCase):
             self.ls.draw(self.pdf)
             self.pdf.write(pdf_path)
 
-    # def test_get_height(self):
-    #     ml = self.ls.start_mark_line
-    #     ml.add_text_label('first text label above')
-    #     ml.add_text_label('second text label above')
-    #     print(ml.get_height())
+    def test_different_sizes(self):
+        ml = self.ls.start_mark_line
+        ml.add_text_label('first text label above', font_size=7, bottom_margin=2)
+        ml.add_text_label('second text label above', font_size=8, bottom_margin=4)
+        ml.add_text_label('third text label above', font_size=9)
+        with self.file_path(path, 'different_sizes', 'pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+            self.pdf.translate(10, 20)
+            self.ls.draw(self.pdf)
+            self.pdf.write(pdf_path)
+
+    def test_font_size_8(self):
+        ml = self.ls.start_mark_line
+        ml.add_text_label('first text label above', font_size=8, bottom_margin=2)
+        ml.add_text_label('second text label above', font_size=8, bottom_margin=4)
+        ml.add_text_label('third text label above', font_size=8)
+        with self.file_path(path, 'font_size_8', 'pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+            self.pdf.translate(10, 20)
+            self.ls.draw(self.pdf)
+            self.pdf.write(pdf_path)
+
 

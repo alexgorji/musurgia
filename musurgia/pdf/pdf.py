@@ -88,9 +88,10 @@ class Pdf(FPDF):
         pdo = PrepareDrawObject(self, draw_object=draw_object)
         return pdo
 
-    # def add_object_margins(self, draw_object):
-    #     ma = AddMargins(self, draw_object=draw_object)
-    #     return ma
+    def reset_font(self):
+        self._out(sprintf('BT /F%d %.2f Tf ET',
+                          self.current_font['i'],
+                          self.font_size_pt))
 
     def clip_rect(self, x, y, w, h):
         x, y, w, h = x * self.k, y * self.k, w * self.k, h * self.k
