@@ -36,6 +36,20 @@ class StraightLine(Slave, DrawObject):
             raise TypeError(f"length.value must be of type float, int or Fraction  not{type(val)}")
         self._length = val
 
+    @property
+    def is_vertical(self):
+        if self.mode in ['v', 'vertical']:
+            return True
+        else:
+            return False
+
+    @property
+    def is_horizontal(self):
+        if self.mode in ['h', 'horizontal']:
+            return True
+        else:
+            return False
+
     @staticmethod
     def get_opposite_mode(mode):
         if mode == 'h':
@@ -94,12 +108,24 @@ class MarkLine(StraightLine, Labeled):
             self.draw_above_text_labels(pdf)
             if self.left_text_labels:
                 with pdf.saved_state():
-                    pdf.translate(0, -self.length/2)
+                    # pdf.translate(0, -self.length / 2)
                     self.draw_left_text_labels(pdf)
             super().draw(pdf)
             if self.below_text_labels:
-                pdf.translate(0, 2)
+                # pdf.translate(0, 2)
                 self.draw_below_text_labels(pdf)
+
+    # def get_slave_position(self, slave, position):
+    #     if self.is_vertical:
+    #         if position == 'y':
+    #             return self.relative_y + self.length / 2
+    #         else:
+    #             return self.relative_x
+    #     else:
+    #         if position == 'x':
+    #             return self.relative_x + self.length / 2
+    #         else:
+    #             return self.relative_y
 
 
 class LineSegment(Master, DrawObject):

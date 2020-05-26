@@ -89,3 +89,16 @@ class TestHorizontalLineSegment(TestCase):
             self.hls.draw(self.pdf)
 
             self.pdf.write(pdf_path)
+
+    def test_end_mark_line_labels(self):
+        self.hls.end_mark_line.add_label('end mark line')
+        with self.file_path(parent_path=path, name='end_mark_line_labels', extension='pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+            self.pdf.translate(10, 10)
+
+            self.hls.end_mark_line.show = True
+            self.hls.draw(self.pdf)
+
+            self.pdf.write(pdf_path)
