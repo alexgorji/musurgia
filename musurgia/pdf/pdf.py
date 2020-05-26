@@ -117,33 +117,40 @@ class Pdf(FPDF):
     def translate_page_margins(self):
         self.translate(self.l_margin, self.t_margin)
 
-    def draw_ruler(self, mode='h'):
+    def draw_ruler(self, mode='h', unit=10, first_label=0, show_first_label=False, label_show_interval=1,
+                   label_attribute_function=None):
         if mode in ['h', 'horizontal']:
-            number_of_units = (self.w - self.l_margin - self.r_margin) / 10
+            number_of_units = (self.w - self.l_margin - self.r_margin) / unit
         elif mode in ['v', 'vertical']:
-            number_of_units = (self.h - self.t_margin - self.b_margin) / 10
+            number_of_units = (self.h - self.t_margin - self.b_margin) / unit
         else:
             raise AttributeError()
 
         partial_segment_length = number_of_units - int(number_of_units)
-        lengths = int(number_of_units) * [10]
+        lengths = int(number_of_units) * [unit]
         if partial_segment_length:
-            lengths += [partial_segment_length * 10]
+            lengths += [partial_segment_length * unit]
         if mode in ['h', 'horizontal']:
-            ruler = HorizontalSegmentedLine(lengths, top_margin=0)
+            ruler = HorizontalSegmentedLine(lengths)
         else:
-            ruler = VerticalSegmentedLine(lengths, left_margin=0)
+            ruler = VerticalSegmentedLine(lengths)
 
         if partial_segment_length:
             ruler.segments[-1].end_mark_line.show = False
-        for index, segment in enumerate(ruler.segments[1:]):
-            tl = TextLabel(index + 1)
-            if mode in ['v', 'vertical']:
-                tl.placement = 'left'
-                tl.right_margin = 1
+        for index, segment in enumerate(ruler.segments):
+            if not show_first_label and index == 0:
+                pass
             else:
-                tl.bottom_margin = 1
-            segment.start_mark_line.add_text_label(tl)
+                if index % label_show_interval == 0:
+                    tl = TextLabel(index + first_label)
+                    if mode in ['v', 'vertical']:
+                        tl.placement = 'left'
+                        tl.right_margin = 1
+                    else:
+                        tl.bottom_margin = 1
+                    if label_attribute_function:
+                        label_attribute_function(tl)
+                    segment.start_mark_line.add_text_label(tl)
 
         with self.saved_state():
             ruler.draw(self)

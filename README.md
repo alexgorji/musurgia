@@ -244,3 +244,6 @@ FractalMusic(): changing tree_directions changes directions in midi_generators
 musicscore 1.3.2 installed and needed changes applied to tests
 FractalMusic().add_info(): argument condition added
 gearwheels: new module with new structure (Wheel, Position, etc.)
+
+### v2.0.beta
+restructuring pdf. time_line does not work yet.

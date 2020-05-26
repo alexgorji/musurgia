@@ -3,6 +3,9 @@ import itertools
 from quicktions import Fraction
 
 from musurgia.arithmeticprogression import ArithmeticProgression
+from musurgia.pdf.line import HorizontalLineSegment
+from musurgia.pdf.newdrawobject import DrawObject
+from musurgia.pdf.rowcolumn import DrawObjectColumn, DrawObjectRow
 from musurgia.permutation import LimitedPermutation, permute
 from musurgia.tree import Tree
 
@@ -22,6 +25,103 @@ class SetValueFirst(FractalTreeException):
         super().__init__('FractalTree().value must be set before add_layer()', *args)
 
 
+class _Graphic(DrawObject):
+    def __init__(self, fractal_tree, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._draw_object_column = None
+        self._fractal_tree = fractal_tree
+        self._factor = 1
+        self._large_mark_line_max_length = 6
+        self._large_mark_line_min_length = 3
+
+    def update_draw_object_columns(self):
+        factor = self.factor
+        max_large_ml = self.large_mark_line_max_length
+        min_large_ml = self.large_mark_line_min_length
+
+        def _make_segment():
+            segment = HorizontalLineSegment(length=node.value * factor)
+            ml_length = (max_large_ml - (
+                    node.get_distance() * (max_large_ml - min_large_ml) / self._fractal_tree.number_of_layers)) / 2
+            segment.start_mark_line.length = ml_length
+            segment.end_mark_line.length = ml_length
+            return segment
+
+        for node in self._fractal_tree.traverse():
+            node.graphic._draw_object_column = DrawObjectColumn()
+            node.graphic._draw_object_column.add_draw_object(_make_segment())
+
+            if node.get_children():
+                node.graphic._draw_object_column.add_draw_object(DrawObjectRow(top_margin=3))
+            if node.up:
+                node.up.graphic._draw_object_column.draw_objects[1].add_draw_object(node.graphic)
+            if not node.up or node.up.get_children().index(node) == len(node.up.get_children()) - 1:
+                node.graphic._draw_object_column.draw_objects[0].end_mark_line.show = True
+                node.graphic._draw_object_column.draw_objects[0].end_mark_line.length *= 2
+            if not node.up or node.up.get_children().index(node) == 0:
+                node.graphic._draw_object_column.draw_objects[0].start_mark_line.length *= 2
+
+    @property
+    def factor(self):
+        return self._factor
+
+    @factor.setter
+    def factor(self, val):
+        self._factor = val
+
+    @property
+    def large_mark_line_max_length(self):
+        return self._large_mark_line_max_length
+
+    @large_mark_line_max_length.setter
+    def large_mark_line_max_length(self, val):
+        self._large_mark_line_max_length = val
+
+    @property
+    def large_mark_line_min_length(self):
+        return self._large_mark_line_min_length
+
+    @large_mark_line_min_length.setter
+    def large_mark_line_min_length(self, val):
+        self._large_mark_line_min_length = val
+
+    @property
+    def draw_object_column(self):
+        if self._draw_object_column is None:
+            self.update_draw_object_columns()
+        return self._draw_object_column
+
+    def add_labels(self, function, **kwargs):
+        for node in self._fractal_tree.traverse():
+            node.graphic.get_start_mark_line().add_label(function(node), **kwargs)
+
+    def get_start_mark_line(self):
+        return self.draw_object_column.draw_objects[0].start_mark_line
+
+    def get_end_mark_line(self):
+        return self.draw_object_column.draw_objects[0].end_mark_line
+
+    def get_relative_x2(self):
+        return self.draw_object_column.get_relative_x2()
+
+    def get_relative_y2(self):
+        return self.draw_object_column.get_relative_y2()
+
+    def get_line_segment(self):
+        return self.draw_object_column.draw_objects[0]
+
+    def get_children_draw_object_row(self):
+        return self.draw_object_column.draw_objects[1]
+
+    def change_segment_attributes(self, **kwargs):
+        for node in self._fractal_tree.traverse():
+            for key in kwargs:
+                setattr(node.graphic.get_line_segment(), key, kwargs[key])
+
+    def draw(self, pdf):
+        self.draw_object_column.draw(pdf)
+
+
 class FractalTree(Tree):
     def __init__(self, value=None, proportions=None, tree_permutation_order=None, multi=None, fertile=True,
                  reading_direction='horizontal', *args, **kwargs):
@@ -36,6 +136,7 @@ class FractalTree(Tree):
         self._fractal_order = None
         self._children_fractal_values = None
         self._name = None
+        self._graphic = _Graphic(self)
 
         self.proportions = proportions
         self.tree_permutation_order = tree_permutation_order
@@ -78,7 +179,6 @@ class FractalTree(Tree):
 
     def _change_children_value(self, factor):
         for child in self.get_children():
-            # child_delta = Fraction(delta, len(self.get_children()))
             child._value *= factor
             child._change_children_value(factor)
 
@@ -231,6 +331,12 @@ class FractalTree(Tree):
             return 0
         else:
             return self.get_farthest_leaf().get_distance(self)
+
+    @property
+    def graphic(self):
+        # if self._graphic is None:
+        #     self._update_pdf_columns()
+        return self._graphic
 
     @property
     def permutation_order(self):

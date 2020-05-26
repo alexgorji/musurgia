@@ -95,7 +95,7 @@ class MarkLine(StraightLine, Labeled):
             self.draw_left_text_labels(pdf)
             super().draw(pdf)
             if self.below_text_labels:
-                pdf.translate(0, self.get_height())
+                pdf.translate(0, 2)
                 self.draw_below_text_labels(pdf)
 
 
