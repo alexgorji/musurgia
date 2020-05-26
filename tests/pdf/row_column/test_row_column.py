@@ -96,22 +96,13 @@ class TestRowColumn(TestCase):
             c.draw(self.pdf)
             self.pdf.write(pdf_path)
 
-    # def test_draw_row_column_with_text(self):
-    #     row_1 = DrawObjectRow()
-    #
-    #     row_1.add_draw_object(HorizontalLineSegment(30))
-    #     row_1.add_draw_object(HorizontalLineSegment(10))
-    #     row_1.add_draw_object(HorizontalLineSegment(20))
-    #
-    #     row_2 = DrawObjectRow()
-    #     row_2.add_draw_object(HorizontalLineSegment(30))
-    #     row_2.add_draw_object(HorizontalLineSegment(10))
-    #     row_2.add_draw_object(HorizontalLineSegment(20))
-    #
-    #     with self.file_path(path, 'draw_row_column_with_text', 'pdf') as pdf_path:
-    #         self.pdf.translate_page_margins()
-    #         self.pdf.draw_ruler('h')
-    #         self.pdf.draw_ruler('v')
-    #         self.pdf.translate(10, 10)
-    #         row_1.draw(self.pdf)
-    #         self.pdf.write(pdf_path)
+    def test_add_label(self):
+        with self.file_path(path, 'add_label', 'pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+            self.pdf.translate(20, 20)
+            c = self.column
+            c.add_label('test label', placement='left')
+            c.draw(self.pdf)
+            self.pdf.write(pdf_path)

@@ -1,7 +1,8 @@
+from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.newdrawobject import DrawObject
 
 
-class DrawObjectContainer(DrawObject):
+class DrawObjectContainer(DrawObject, Labeled):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._draw_objects = []
@@ -27,9 +28,14 @@ class DrawObjectRow(DrawObjectContainer):
 
     def draw(self, pdf):
         with pdf.prepare_draw_object(self):
+            self.draw_above_text_labels(pdf)
+            self.draw_left_text_labels(pdf)
             for do in self.draw_objects:
                 do.draw(pdf)
                 pdf.translate(do.get_width(), 0)
+            if self.below_text_labels:
+                pdf.translate(0, 2)
+                self.draw_below_text_labels(pdf)
 
 
 class DrawObjectColumn(DrawObjectContainer):
@@ -41,6 +47,11 @@ class DrawObjectColumn(DrawObjectContainer):
 
     def draw(self, pdf):
         with pdf.prepare_draw_object(self):
+            self.draw_above_text_labels(pdf)
+            self.draw_left_text_labels(pdf)
             for do in self.draw_objects:
                 do.draw(pdf)
                 pdf.translate(0, do.get_height())
+            if self.below_text_labels:
+                pdf.translate(0, 2)
+                self.draw_below_text_labels(pdf)

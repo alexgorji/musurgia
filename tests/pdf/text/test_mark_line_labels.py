@@ -45,9 +45,6 @@ class TestMarkLineLabels(TestCase):
         ml.add_text_label('first text label left', placement='left')
         ml.add_text_label('second text label left left left', placement='left')
         ml.add_text_label('third text label left left left', placement='left')
-        # for text_label in ml.left_text_labels:
-        # text_label.right_margin = 2
-        # text_label.top_margin = -2
         ml.left_text_labels[1].font.size = 8
         self.ls.relative_x = 40
         self.ls.relative_y = 10

@@ -92,7 +92,10 @@ class MarkLine(StraightLine, Labeled):
     def draw(self, pdf):
         with pdf.saved_state():
             self.draw_above_text_labels(pdf)
-            self.draw_left_text_labels(pdf)
+            if self.left_text_labels:
+                with pdf.saved_state():
+                    pdf.translate(0, -self.length/2)
+                    self.draw_left_text_labels(pdf)
             super().draw(pdf)
             if self.below_text_labels:
                 pdf.translate(0, 2)

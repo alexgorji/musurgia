@@ -104,3 +104,5 @@ class TestFractal(TestCase):
             self.pdf.translate(10, 10)
             ft.manual_graphic.draw(self.pdf)
             self.pdf.write(pdf_path)
+
+    
