@@ -247,3 +247,7 @@ gearwheels: new module with new structure (Wheel, Position, etc.)
 
 ### v2.0.beta
 restructuring pdf. time_line does not work yet.
+
+### v2.0.1beta
+left text labels position corrected
+DrawObjectContainer inherits from Labeled
