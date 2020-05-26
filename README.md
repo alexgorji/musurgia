@@ -251,3 +251,6 @@ restructuring pdf. time_line does not work yet.
 ### v2.0.1beta
 left text labels position corrected
 DrawObjectContainer inherits from Labeled
+
+### v2.0.2beta
+label position corrected
