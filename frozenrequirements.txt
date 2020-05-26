@@ -1,0 +1,15 @@
+cycler==0.10.0
+diff-pdf-visually==1.4.1
+fpdf2==2.0.5
+future==0.18.2
+kiwisolver==1.2.0
+lxml==4.5.1
+matplotlib==3.2.1
+musicscore==1.3.5
+numpy==1.18.4
+Pillow==6.2.2
+prettytable==0.7.2
+pyparsing==2.4.7
+python-dateutil==2.8.1
+quicktions==1.11
+six==1.15.0
