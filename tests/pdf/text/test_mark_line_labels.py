@@ -108,3 +108,18 @@ class TestMarkLineLabels(TestCase):
             self.pdf.translate(10, 10)
             vsl.draw(self.pdf)
             self.pdf.write(pdf_path)
+
+    def test_draw_above_with_different_bottom_margins(self):
+        ml = self.ls.start_mark_line
+        ml.add_text_label('first text label above', bottom_margin=2)
+        ml.add_text_label('second text label above', bottom_margin=4)
+        ml.add_text_label('third  text label above', bottom_margin=15)
+        self.ls.relative_x = 10
+        self.ls.relative_y = 40
+        with self.file_path(path, 'draw_above_with_different_bottom_margins', 'pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+
+            self.ls.draw(self.pdf)
+            self.pdf.write(pdf_path)

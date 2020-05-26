@@ -47,7 +47,7 @@ class Labeled(PositionMaster):
         if self.above_text_labels:
             with pdf.saved_state():
                 # pdf.translate(self.relative_x, self.relative_y - self.get_above_text_labels_height())
-                pdf.translate(0, -self.get_above_text_labels_height() + self.above_text_labels[-1].get_height())
+                pdf.translate(0, -self.get_above_text_labels_height() + self.above_text_labels[-1].get_text_height())
                 for text_label in self.above_text_labels:
                     text_label.draw(pdf)
                     pdf.translate(0, text_label.get_height())
