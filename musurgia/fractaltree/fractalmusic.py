@@ -607,15 +607,16 @@ class FractalMusic(FractalTree):
         score.set_time_signatures(quarter_durations=self.quarter_duration)
         if show_fractal_orders:
             for node in self.traverse():
-                try:
-                    node.chord.add_lyric(node.fractal_order)
-                except AttributeError:
+                if node.fractal_order is not None:
                     try:
-                        for chord in node.chord_field.chords:
-                            chord.add_lyric(node.fractal_order)
+                        node.chord.add_lyric(node.fractal_order)
                     except AttributeError:
-                        for chord in node._simple_format.chords:
-                            chord.add_lyric(node.fractal_order)
+                        try:
+                            for chord in node.chord_field.chords:
+                                chord.add_lyric(node.fractal_order)
+                        except AttributeError:
+                            for chord in node._simple_format.chords:
+                                chord.add_lyric(node.fractal_order)
         if show_midis:
             for node in self.traverse():
                 try:

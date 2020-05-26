@@ -16,7 +16,8 @@ class Test(TestCase):
         self.fm.get_children()[0].midi_value = 80
         self.fm.add_layer()
         for node in self.fm.traverse():
-            node.chord.add_lyric(node.fractal_order)
+            if node.fractal_order is not None:
+                node.chord.add_lyric(node.fractal_order)
         score = self.fm.get_score()
         score.max_division = 7
 
@@ -40,7 +41,8 @@ class Test(TestCase):
         self.fm.add_layer()
 
         for node in self.fm.traverse():
-            node.chord.add_lyric(node.fractal_order)
+            if node.fractal_order is not None:
+                node.chord.add_lyric(node.fractal_order)
         score = self.fm.get_score()
         score.max_division = 7
 
