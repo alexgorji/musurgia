@@ -94,9 +94,8 @@ class Pdf(FPDF):
                           self.font_size_pt))
 
     def clip_rect(self, x, y, w, h):
-        x, y, w, h = x * self.k, y * self.k, w * self.k, h * self.k
         self._out(sprintf('%.2f %.2f %.2f %.2f re W n',
-                          x * self.k, (self.h - y) * self.k,
+                          x * self.k, (self.h-y) * self.k,
                           w * self.k, -h * self.k))
 
     def draw_page_number(self):
