@@ -142,9 +142,9 @@ class ValueGenerator(object):
                 # if None in children_duration:
                 #     raise ValueGeneratorException(
                 #         'ValueGenerator: parent\'s duration cannot be set if not all children have a duration.')
-                # factor = Fraction(val, sum(children_duration))
+                # unit = Fraction(val, sum(children_duration))
                 # for fractal_tree in self.children:
-                #     fractal_tree.duration *= factor
+                #     fractal_tree.duration *= unit
         self._duration = val
         self._set_generator_duration()
 

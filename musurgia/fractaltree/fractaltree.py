@@ -3,7 +3,8 @@ import itertools
 from quicktions import Fraction
 
 from musurgia.arithmeticprogression import ArithmeticProgression
-from musurgia.pdf.line import HorizontalLineSegment
+from musurgia.basic_functions import flatten
+from musurgia.pdf.line import HorizontalLineSegment, HorizontalSegmentedLine
 from musurgia.pdf.newdrawobject import DrawObject
 from musurgia.pdf.rowcolumn import DrawObjectColumn, DrawObjectRow
 from musurgia.permutation import LimitedPermutation, permute
@@ -30,17 +31,17 @@ class _Graphic(DrawObject):
         super().__init__(*args, **kwargs)
         self._draw_object_column = None
         self._fractal_tree = fractal_tree
-        self._factor = 1
+        self._unit = 1
         self._large_mark_line_max_length = 6
         self._large_mark_line_min_length = 3
 
     def update_draw_object_columns(self):
-        factor = self.factor
+        unit = self.unit
         max_large_ml = self.large_mark_line_max_length
         min_large_ml = self.large_mark_line_min_length
 
         def _make_segment():
-            segment = HorizontalLineSegment(length=node.value * factor)
+            segment = HorizontalLineSegment(length=node.value * unit)
             ml_length = (max_large_ml - (
                     node.get_distance() * (max_large_ml - min_large_ml) / self._fractal_tree.number_of_layers)) / 2
             segment.start_mark_line.length = ml_length
@@ -62,12 +63,12 @@ class _Graphic(DrawObject):
                 node.graphic._draw_object_column.draw_objects[0].start_mark_line.length *= 2
 
     @property
-    def factor(self):
-        return self._factor
+    def unit(self):
+        return self._unit
 
-    @factor.setter
-    def factor(self, val):
-        self._factor = val
+    @unit.setter
+    def unit(self, val):
+        self._unit = val
 
     @property
     def large_mark_line_max_length(self):
@@ -93,13 +94,16 @@ class _Graphic(DrawObject):
 
     def add_labels(self, function, **kwargs):
         for node in self._fractal_tree.traverse():
-            node.graphic.get_start_mark_line().add_label(function(node), **kwargs)
+            node.graphic.get_straight_line().add_label(function(node), **kwargs)
 
     def get_start_mark_line(self):
         return self.draw_object_column.draw_objects[0].start_mark_line
 
     def get_end_mark_line(self):
         return self.draw_object_column.draw_objects[0].end_mark_line
+
+    def get_straight_line(self):
+        return self.draw_object_column.draw_objects[0].straight_line
 
     def get_relative_x2(self):
         return self.draw_object_column.get_relative_x2()
@@ -334,8 +338,6 @@ class FractalTree(Tree):
 
     @property
     def graphic(self):
-        # if self._graphic is None:
-        #     self._update_pdf_columns()
         return self._graphic
 
     @property
@@ -597,6 +599,36 @@ class FractalTree(Tree):
 
         else:
             raise TypeError()
+
+    def generate_layer_segmented_line(self, layer_number, unit, max_mark_line=6, shrink_factor=0.7):
+        def get_segmented_line(layer_number):
+            if layer_number > self.number_of_layers:
+                layer_number = self.number_of_layers
+            layer_nodes = flatten(self.get_layer(layer_number))
+            lengths = [node.value * unit for node in layer_nodes]
+            hsl = HorizontalSegmentedLine(lengths)
+            for segment, node in zip(hsl.segments, layer_nodes):
+                segment.node = node
+                segment.start_mark_line.length = get_ml_length(node)
+            return hsl
+
+        def get_ml_length(node):
+            if not node.up:
+                return max_mark_line
+            else:
+                if node.up.get_children().index(node) == 0:
+                    return get_ml_length(node.up)
+                else:
+                    return max_mark_line * shrink_factor / node.get_distance()
+
+        def set_last_mark_line_length(row):
+            last_mark_line = row.draw_objects[-1].end_mark_line
+            last_mark_line.length = max_mark_line
+            last_mark_line.show = True
+
+        hls = get_segmented_line(layer_number)
+        set_last_mark_line_length(hls)
+        return hls
 
     def merge_children(self, *lengths):
         children = self.get_children()

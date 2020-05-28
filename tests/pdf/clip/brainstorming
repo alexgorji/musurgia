@@ -1,0 +1,56 @@
+inputs:
+    object
+        draw()
+        get_height()
+        get_width()
+
+    clip.l_margin
+    clip.t_margin
+    clip.r_margin
+    clip.b_margin
+
+    clip_l_adjust
+    clip_t_adjust
+    clip_r_adjust
+    clip_b_adjust
+
+    clip_height = object.get_height()
+    clip_width = pdf.w - clip.l_margin - clip.r_margin
+
+    get_number_of_clip_rows():
+        return math.ceil(object.get_width()/clip_width)
+
+    get_max_rows_per_page()
+
+
+class Clip:
+    self.pdf = pdf
+    self.draw_object = draw_object
+    self.l_margin
+    self.t_margin
+    self.r_margin
+    self.b_margin
+
+    self.l_adjust
+    self.t_adjust
+    self.r_adjust
+    self.b_adjust
+
+    def get_row_height():
+        pass
+
+    def get_row_width():
+        pass
+
+    def draw():
+        pass
+
+with pdf.clip(object):
+    object.draw(pdf)
+
+
+
+
+
+
+

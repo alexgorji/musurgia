@@ -114,30 +114,26 @@ class TextLabel(PositionSlave, Text):
             raise ValueError(f'placement.value {val} must be in {permitted}')
         self._placement = val
 
-
 class PageText(Text):
     def __init__(self, value, v_position=None, h_position=None, *args, **kwargs):
         super().__init__(value=value, *args, **kwargs)
         self.v_position = v_position
         self.h_position = h_position
 
-    def get_text_physical_length(self):
-        return (len(self.text)) * self.font_size / 6
-
     def draw(self, pdf):
         if self.v_position == 'center':
-            pdf.x = (pdf.w / 2) - self.get_text_physical_length() / 2
+            self.relative_x = ((pdf.w - pdf.l_margin - pdf.r_margin) / 2) - self.get_width() / 2
         elif self.v_position == 'left':
-            pdf.x = pdf.l_margin
+            self.relative_x = pdf.l_margin
         elif self.v_position == 'right':
-            pdf.x = pdf.w - pdf.r_margin - self.get_width()
+            self.relative_x = pdf.w - pdf.r_margin - self.get_width()
         else:
             pass
 
         if self.h_position == 'top':
-            pdf.y = pdf.t_margin
+            self.relative_y = 0
         elif self.h_position == 'bottom':
-            pdf.y = pdf.h - pdf.b_margin
+            self.relative_y = pdf.h - pdf.b_margin
         else:
             pass
         super().draw(pdf)
