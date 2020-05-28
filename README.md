@@ -249,8 +249,17 @@ gearwheels: new module with new structure (Wheel, Position, etc.)
 restructuring pdf. time_line does not work yet.
 
 ### v2.0.1beta
-left text labels position corrected
-DrawObjectContainer inherits from Labeled
+pdf left text labels position corrected
+pdf DrawObjectContainer inherits from Labeled
 
 ### v2.0.2beta
-label position corrected
+pdf label position corrected
+
+### v2.1.0beta
+pdf SegmentedLines as Containers
+pdf Ruler
+pdf DrawObject.clipped_draw
+pdf.absolute_positions
+pdf.reset_position()
+pdf.draw_page_numbers()
+
