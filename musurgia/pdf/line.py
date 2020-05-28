@@ -317,19 +317,27 @@ class AbstractRuler(AbstractSegmentedLine):
         return sum([s.length for s in self.segments])
 
     def _set_labels(self):
+        def _add_label(mark_line, txt):
+            tl = TextLabel(txt)
+            if isinstance(self, VerticalSegmentedLine):
+                tl.placement = 'left'
+                tl.right_margin = 1
+                tl.top_margin = 0
+            else:
+                tl.bottom_margin = 1
+            mark_line.add_text_label(tl)
+
         for index, segment in enumerate(self.segments):
             if not self.show_first_label and index == 0:
                 pass
             else:
                 if index % self.label_show_interval == 0:
-                    tl = TextLabel(index + self.first_label)
-                    if isinstance(self, VerticalSegmentedLine):
-                        tl.placement = 'left'
-                        tl.right_margin = 1
-                        tl.top_margin = 0
-                    else:
-                        tl.bottom_margin = 1
-                    segment.start_mark_line.add_text_label(tl)
+                    mark_line = segment.start_mark_line
+                    _add_label(mark_line, index + self.first_label)
+
+        last_segment_end_mark_line = self.segments[-1].end_mark_line
+        if last_segment_end_mark_line.show and (len(self.segments)) % self.label_show_interval == 0:
+            _add_label(last_segment_end_mark_line, len(self.segments) + self.first_label)
 
 
 class HorizontalRuler(AbstractRuler, HorizontalSegmentedLine):
