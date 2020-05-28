@@ -46,7 +46,8 @@ class Labeled(PositionMaster):
     def draw_above_text_labels(self, pdf):
         if self.above_text_labels:
             with pdf.saved_state():
-                pdf.translate(0, -self.get_above_text_labels_height() + self.above_text_labels[-1].get_text_height())
+                translate_y = -self.get_above_text_labels_height() + self.above_text_labels[-1].get_text_height()
+                pdf.translate(0, translate_y)
                 for text_label in self.above_text_labels:
                     text_label.draw(pdf)
                     pdf.translate(0, text_label.get_height())
@@ -62,10 +63,7 @@ class Labeled(PositionMaster):
     def draw_left_text_labels(self, pdf):
         if self.left_text_labels:
             with pdf.saved_state():
-                # pdf.translate(self.relative_x, 0)
-                # pdf.translate(self.relative_x, -self.get_left_text_labels_height() / 2)
                 pdf.translate(0, -self.get_left_text_labels_height() / 2)
-                pdf.translate(0, self.get_height() / 2)
                 for text_label in self.left_text_labels:
                     pdf.translate(0, text_label.get_height())
                     with pdf.saved_state():
@@ -74,9 +72,11 @@ class Labeled(PositionMaster):
 
     def get_slave_position(self, slave, position):
         if position == 'x':
-            return self.relative_x
+            return 0
         elif position == 'y':
-            return self.relative_y
+            if slave.placement in ['l', 'left']:
+                return self.get_height() / 2
+            return 0
         else:
             raise AttributeError(position)
 

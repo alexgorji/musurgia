@@ -21,3 +21,9 @@ class TestHorizontalSegmentedLine(TestCase):
                 self.pdf.translate(10, 10)
                 self.hsl.draw(self.pdf)
                 self.pdf.write(pdf_path)
+
+    def test_get_height(self):
+        self.hsl.segments[1].start_mark_line.length = 5
+        actual = self.hsl.get_height()
+        expected = 5
+        self.assertEqual(expected, actual)

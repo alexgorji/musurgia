@@ -1,9 +1,9 @@
 from fpdf import FPDF
 from fpdf.php import sprintf
 
-from musurgia.pdf.line import HorizontalSegmentedLine, VerticalSegmentedLine
+from musurgia.pdf.line import HorizontalRuler, VerticalRuler
 from musurgia.pdf.pdfunit import PdfUnit
-from musurgia.pdf.text import PageText, TextLabel
+from musurgia.pdf.text import PageText
 
 
 class PageNumber(PageText):
@@ -95,7 +95,7 @@ class Pdf(FPDF):
 
     def clip_rect(self, x, y, w, h):
         self._out(sprintf('%.2f %.2f %.2f %.2f re W n',
-                          x * self.k, (self.h-y) * self.k,
+                          x * self.k, (self.h - y) * self.k,
                           w * self.k, -h * self.k))
 
     def draw_page_number(self):
@@ -116,44 +116,22 @@ class Pdf(FPDF):
     def translate_page_margins(self):
         self.translate(self.l_margin, self.t_margin)
 
-    def draw_ruler(self, mode='h', unit=10, first_label=0, show_first_label=False, label_show_interval=1,
-                   label_attribute_function=None):
+    def draw_ruler(self, mode='h'):
+        unit = 10
+        first_label = 0
+        show_first_label = False
+        label_show_interval = 1
         if mode in ['h', 'horizontal']:
-            number_of_units = (self.w - self.l_margin - self.r_margin) / unit
+            length = self.w - self.l_margin - self.r_margin
+            ruler = HorizontalRuler(length=length, unit=unit, first_label=first_label,
+                                    show_first_label=show_first_label, label_show_interval=label_show_interval)
         elif mode in ['v', 'vertical']:
-            number_of_units = (self.h - self.t_margin - self.b_margin) / unit
+            length = self.h - self.t_margin - self.b_margin
+            ruler = VerticalRuler(length=length, unit=unit, first_label=first_label,
+                                  show_first_label=show_first_label, label_show_interval=label_show_interval)
         else:
             raise AttributeError()
-
-        partial_segment_length = number_of_units - int(number_of_units)
-        lengths = int(number_of_units) * [unit]
-        if partial_segment_length:
-            lengths += [partial_segment_length * unit]
-        if mode in ['h', 'horizontal']:
-            ruler = HorizontalSegmentedLine(lengths)
-        else:
-            ruler = VerticalSegmentedLine(lengths)
-
-        if partial_segment_length:
-            ruler.segments[-1].end_mark_line.show = False
-        for index, segment in enumerate(ruler.segments):
-            if not show_first_label and index == 0:
-                pass
-            else:
-                if index % label_show_interval == 0:
-                    tl = TextLabel(index + first_label)
-                    if mode in ['v', 'vertical']:
-                        tl.placement = 'left'
-                        tl.right_margin = 1
-                        tl.top_margin = 0
-                    else:
-                        tl.bottom_margin = 1
-                    if label_attribute_function:
-                        label_attribute_function(tl)
-                    segment.start_mark_line.add_text_label(tl)
-
-        with self.saved_state():
-            ruler.draw(self)
+        ruler.draw(self)
 
     def write(self, path):
         if self.show_page_number:

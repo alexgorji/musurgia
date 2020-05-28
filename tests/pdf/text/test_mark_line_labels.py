@@ -27,6 +27,19 @@ class TestMarkLineLabels(TestCase):
             self.ls.draw(self.pdf)
             self.pdf.write(pdf_path)
 
+    def test_draw_one_above(self):
+        ml = self.ls.start_mark_line
+        ml.length = 20
+        ml.add_text_label('first text label above')
+
+        with self.file_path(path, 'draw_one_above', 'pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            # self.pdf.draw_ruler('h')
+            # self.pdf.draw_ruler('v')
+            self.pdf.translate(30, 30)
+            self.ls.draw(self.pdf)
+            self.pdf.write(pdf_path)
+
     def test_draw_below(self):
         ml = self.ls.start_mark_line
         ml.add_text_label('first text label below', placement='below')
@@ -121,5 +134,23 @@ class TestMarkLineLabels(TestCase):
             self.pdf.draw_ruler('h')
             self.pdf.draw_ruler('v')
 
+            self.ls.draw(self.pdf)
+            self.pdf.write(pdf_path)
+
+    def test_left_position(self):
+        ml = self.ls.start_mark_line
+        # print(ml.get_relative_position())
+        # print(ml.get_height())
+        left_l = ml.add_text_label('left one', placement='left')
+        # print(left_l.get_relative_position())
+        left_l = ml.add_text_label('left two', placement='left')
+        left_l = ml.add_text_label('left three', placement='left')
+        left_l = ml.add_text_label('left four', placement='left')
+
+        with self.file_path(path, 'left_position', 'pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+            self.pdf.translate(30, 30)
             self.ls.draw(self.pdf)
             self.pdf.write(pdf_path)

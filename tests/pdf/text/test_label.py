@@ -68,10 +68,16 @@ class TestTextLabel(TestCase):
             self.pdf.write(pdf_path)
 
     def test_left_labels(self):
-        unit = 5
+        unit = 1
         length = 40
 
         lvl = LabeledVerticalLine(lengths=int(length / unit) * [unit])
+        for index, segment in enumerate(lvl.segments):
+            if index % 10 == 0:
+                segment.start_mark_line.length = 3
+            else:
+                segment.start_mark_line.length = 1.5
+
         lvl.add_label('first one one', placement='left', font_size=8)
         lvl.add_label('second two two', placement='left')
         lvl.add_label('third three three', placement='left', font_size=12)
