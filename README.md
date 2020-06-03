@@ -263,3 +263,9 @@ pdf.absolute_positions
 pdf.reset_position()
 pdf.draw_page_numbers()
 
+### v2.2.0beta
+quantize.get_best_quantized_values(values, units): added
+unit_test.file_path: bug fix to use different file extensions
+classes ProportionalChordField and Wave() added to chord_field
+
+
