@@ -96,13 +96,13 @@ class TestRowColumn(TestCase):
             c.draw(self.pdf)
             self.pdf.write(pdf_path)
 
-    def test_add_label(self):
-        with self.file_path(path, 'add_label', 'pdf') as pdf_path:
-            self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
-            self.pdf.translate(20, 20)
-            c = self.column
-            c.add_label('test label', placement='left')
-            c.draw(self.pdf)
-            self.pdf.write(pdf_path)
+    # def test_column_add_label_left(self):
+    #     with self.file_path(path, 'column_add_label_left', 'pdf') as pdf_path:
+    #         self.pdf.translate_page_margins()
+    #         self.pdf.draw_ruler('h')
+    #         self.pdf.draw_ruler('v')
+    #         self.pdf.translate(20, 20)
+    #         c = self.column
+    #         c.add_label('test label', placement='left')
+    #         c.draw(self.pdf)
+    #         self.pdf.write(pdf_path)

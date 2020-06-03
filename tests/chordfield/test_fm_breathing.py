@@ -14,7 +14,7 @@ from musurgia.interpolation import RandomInterpolation
 path = str(os.path.abspath(__file__).split('.')[0])
 
 
-class Test(TestCase):
+class TestFMBreathing(TestCase):
     def setUp(self) -> None:
         self.score = TreeScoreTimewise()
         self.fm = FractalMusic(quarter_duration=24, tempo=40)
@@ -223,12 +223,10 @@ class Test(TestCase):
             output = fm.get_choral_midis(range_factor=1)
             transposition = node.midi_value - output[3]
             output = [midi + transposition for midi in output]
-            # output = node.get_choral_midis(range_factor=8 - node.fractal_order)
             return output
 
         fm = FractalMusic(proportions=(1, 2, 3, 4, 5, 6, 7), tree_permutation_order=(2, 6, 4, 1, 3, 7, 5),
                           quarter_duration=30, tempo=72)
-        # fm.multi = (self.fm.multi[0], self.fm.multi[1] + 1)
         fm.midi_generator.midi_range = (62, 62 + 11)
         fm.midi_generator.microtone = 4
         fm.add_layer()

@@ -3,8 +3,9 @@ from musicscore.musictree.treechord import TreeChord
 from quicktions import Fraction
 
 from musurgia.arithmeticprogression import ArithmeticProgression
+from musurgia.basic_functions import dToX
 from musurgia.chordfield.valuegenerator import ValueGenerator, ValueGeneratorException
-from musurgia.quantize import get_quantized_values
+from musurgia.quantize import get_quantized_values, find_best_quantized_values
 
 
 class BreatheException(Exception):
@@ -501,3 +502,231 @@ class Breathe(ChordField):
     @property
     def repose_2(self):
         return self.children[4]
+
+
+class ProportionalChordField(ChordField):
+    def __init__(self, quarter_duration, proportions=None, direction='up', min_midi=60, max_midi=72,
+                 duration_units=None, midi_grid=1,
+                 show_last_note=False,
+                 *args, **kwargs):
+        super().__init__(quarter_duration=quarter_duration, *args, **kwargs)
+        self._proportions = None
+        self._min_midi = None
+        self._max_midi = None
+        self._units = None
+        self._midi_grid = None
+        self._show_last_note = None
+        self._midi_values = None
+        self._quarter_durations = None
+        self._direction = None
+
+        self.min_midi = min_midi
+        self.max_midi = max_midi
+        self.direction = direction
+        self.duration_units = duration_units
+        self.midi_grid = midi_grid
+        self.proportions = proportions
+        self.show_last_note = show_last_note
+
+    def _calculate_quarter_durations(self):
+        if self.proportions:
+            quarter_durations = [
+                (Fraction(Fraction(p), Fraction(sum(self.proportions)))) * Fraction(self.quarter_duration) for p in
+                self.proportions]
+
+            if self.duration_units:
+                quarter_durations = find_best_quantized_values(values=quarter_durations, units=self.duration_units,
+                                                               check_sum=True)
+            if self.direction == 'down':
+                quarter_durations = quarter_durations[::-1]
+            self._quarter_durations = quarter_durations
+        if self.quarter_durations:
+            self._duration_generator = ValueGenerator(iter(self.quarter_durations), duration=self.quarter_duration,
+                                                      value_mode='duration')
+        else:
+            self._duration_generator = None
+
+    def _calculate_midi_values(self):
+        if self.proportions:
+            midi_intervals = [(p / sum(self.proportions)) * (self.max_midi - self.min_midi) for p in self.proportions]
+            if self.direction == 'up':
+                midi_values = get_quantized_values(dToX(midi_intervals, first_element=self.min_midi),
+                                                   grid_size=self.midi_grid)
+            else:
+                midi_intervals = reversed(midi_intervals)
+                midi_intervals = [-1 * interval for interval in midi_intervals]
+                midi_values = get_quantized_values(dToX(midi_intervals, first_element=self.max_midi),
+                                                   grid_size=self.midi_grid)
+            midi_values = [float(midi) for midi in midi_values]
+
+            self._midi_values = midi_values
+        if self.midi_values:
+            self._midi_generator = ValueGenerator(iter(self.midi_values), value_mode='midi',
+                                                  duration=self.quarter_duration)
+        else:
+            self._midi_generator = None
+
+    @property
+    def chords(self):
+        if not self.proportions:
+            raise AttributeError('set proportions first')
+        return super().chords
+
+    @property
+    def direction(self):
+        return self._direction
+
+    @direction.setter
+    def direction(self, val):
+        permitted = ['up', 'down']
+        if val not in permitted:
+            raise ValueError(f'direction.value {val} must be in {permitted}')
+        self._direction = val
+        self._calculate_midi_values()
+
+    @property
+    def duration_units(self):
+        return self._duration_units
+
+    @duration_units.setter
+    def duration_units(self, val):
+        self._duration_units = val
+        self._calculate_quarter_durations()
+
+    @property
+    def midi_grid(self):
+        return self._midi_grid
+
+    @midi_grid.setter
+    def midi_grid(self, val):
+        self._midi_grid = val
+        self._calculate_midi_values()
+
+    @property
+    def midi_values(self):
+        return self._midi_values
+
+    @property
+    def max_midi(self):
+        return self._max_midi
+
+    @max_midi.setter
+    def max_midi(self, value):
+        if self.min_midi and value < self.min_midi:
+            raise AttributeError(f'max_midi cannot be smaller than min_midi{self.min_midi}')
+        self._max_midi = value
+        self._calculate_midi_values()
+
+    @property
+    def min_midi(self):
+        return self._min_midi
+
+    @min_midi.setter
+    def min_midi(self, value):
+        if self.max_midi and value > self.max_midi:
+            raise AttributeError(f'min_midi cannot be bigger than max_midi{self.max_midi}')
+        self._min_midi = value
+        self._calculate_midi_values()
+
+    @property
+    def proportions(self):
+        return self._proportions
+
+    @proportions.setter
+    def proportions(self, val):
+        self._proportions = val
+        self._calculate_quarter_durations()
+        self._calculate_midi_values()
+
+    @property
+    def quarter_durations(self):
+        return self._quarter_durations
+
+    @property
+    def show_last_note(self):
+        return self._show_last_note
+
+    @show_last_note.setter
+    def show_last_note(self, val):
+        if not isinstance(val, bool):
+            raise TypeError(f"show_last_note.value must be of type bool not{type(val)}")
+        self._show_last_note = val
+
+    @property
+    def simple_format(self):
+        output = super().simple_format
+        if self.show_last_note:
+            if self.direction == 'up':
+                grace_chord = TreeChord(midis=self.max_midi)
+            else:
+                grace_chord = TreeChord(midis=self.min_midi)
+            output.chords[-1].add_grace_chords(grace_chord, mode='post')
+        return output
+
+
+class HalfWave(ProportionalChordField):
+    pass
+
+
+class Wave(ChordField):
+    def __init__(self, quarter_duration, field_proportions, show_last_note=False, direction='up', *args, **kwargs):
+        super().__init__(quarter_duration=quarter_duration, *args, **kwargs)
+        self._quarter_duration = None
+        self._field_proportions = None
+        self._show_last_note = None
+        self._direction = None
+        self.direction = direction
+        self.show_last_note = show_last_note
+
+        self._rising_field = HalfWave(
+            quarter_duration=quarter_duration * (field_proportions[0] / sum(field_proportions)), direction='up')
+        self._falling_field = HalfWave(
+            quarter_duration=quarter_duration * (field_proportions[1] / sum(field_proportions)), direction='down')
+        if self.direction == 'up':
+            self.add_child(self._rising_field)
+            self.add_child(self._falling_field)
+        else:
+            self.add_child(self._falling_field)
+            self.add_child(self._rising_field)
+
+    @property
+    def rising_field(self):
+        return self._rising_field
+
+    @property
+    def direction(self):
+        return self._direction
+
+    @direction.setter
+    def direction(self, val):
+        if self._direction:
+            raise AttributeError('direction can only be set by initialization')
+        permitted = ['up', 'down']
+        if val not in permitted:
+            raise ValueError(f'direction.value {val} must be in {permitted}')
+        self._direction = val
+
+    @property
+    def falling_field(self):
+        return self._falling_field
+
+    @property
+    def simple_format(self):
+        output = super().simple_format
+        if self.show_last_note:
+            if self.direction == 'up':
+                grace_chord = TreeChord(midis=self.falling_field.min_midi)
+            else:
+                grace_chord = TreeChord(midis=self.rising_field.max_midi)
+            output.chords[-1].add_grace_chords(grace_chord, mode='post')
+        return output
+
+    @property
+    def show_last_note(self):
+        return self._show_last_note
+
+    @show_last_note.setter
+    def show_last_note(self, val):
+        if not isinstance(val, bool):
+            raise TypeError(f"show_last_note.value must be of type bool not{type(val)}")
+        self._show_last_note = val

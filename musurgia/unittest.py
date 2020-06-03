@@ -43,7 +43,7 @@ class TestFilePath:
         self._parent_path = val
 
     def __enter__(self):
-        self.out_path = create_test_path(self.parent_path, self.name + '.pdf')
+        self.out_path = create_test_path(self.parent_path, self.name + '.' + self.extension)
         return self.out_path
 
     def __exit__(self, exc_type, exc_val, exc_tb):

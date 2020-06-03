@@ -1,4 +1,5 @@
 from math import floor, ceil
+
 from quicktions import Fraction
 
 
@@ -54,7 +55,28 @@ def get_quantized_values(vals, grid_size):
     quantized_positions = get_quantized_positions(positions, grid_size)
     quantized_vals = []
     for index, val in enumerate(vals):
-        quantized_val = Fraction(quantized_positions[index + 1] - quantized_positions[index]).limit_denominator(100)
+        quantized_val = Fraction(quantized_positions[index + 1] - quantized_positions[index]).limit_denominator(1000)
         quantized_vals.append(quantized_val)
 
     return quantized_vals
+
+
+def find_best_quantized_values(values, units, check_sum=True):
+    if check_sum:
+        new_units = []
+        for unit in units:
+            if sum(values) % unit == 0:
+                new_units.append(unit)
+        if not new_units:
+            raise AttributeError('all duration_units failed check_sum')
+    else:
+        new_units = units
+    output = values
+    old_delta = None
+    for unit in new_units:
+        quantized_values = get_quantized_values(values, unit)
+        new_delta = sum([abs(quantized - original) for quantized, original in zip(quantized_values, values)])
+        if old_delta is None or new_delta < old_delta:
+            old_delta = new_delta
+            output = quantized_values
+    return output
