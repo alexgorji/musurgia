@@ -1,14 +1,15 @@
-from unittest import TestCase
+
 
 from musurgia.tree import Tree
+from musurgia.unittest import TestCase
 
 
-class Test(TestCase):
-    def test_1(self):
+class TestNextLeaf(TestCase):
+    def test_of_root(self):
         t = Tree()
         self.assertIsNone(t.next_leaf)
 
-    def test_2(self):
+    def test_of_last_leaf(self):
         t = Tree()
         t.add_child(Tree())
         t.add_child(Tree())

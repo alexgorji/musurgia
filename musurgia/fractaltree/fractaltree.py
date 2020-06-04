@@ -665,12 +665,28 @@ class FractalTree(Tree):
 
         self._children_fractal_values = [child.value for child in self.get_children()]
 
+    # def split(self, *proportions):
+    #
+    #     for prop in proportions:
+    #         self.add_self()
+    #         new_value = self.value * prop / sum(proportions)
+    #         self.get_children()[-1].change_value(new_value)
+
     def split(self, *proportions):
+        if hasattr(proportions[0], '__iter__'):
+            proportions = proportions[0]
+
+        proportions = [Fraction(prop) for prop in proportions]
 
         for prop in proportions:
-            self.add_self()
-            self.get_children()[-1].value = self.value * prop / sum(proportions)
+            value = self.value * prop / sum(proportions)
+            new_node = self.copy()
+            new_node.multi = self.multi
+            new_node.change_value(value)
+            new_node._fractal_order = self.fractal_order
+            self.add_child(new_node)
 
+        return self.get_children()
     # // copy
 
     def copy(self):
