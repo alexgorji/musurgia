@@ -14,10 +14,10 @@ class LabeledVerticalLine(VerticalSegmentedLine, Labeled):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def draw(self, pdf):
-        self.draw_above_text_labels(pdf)
-        self.draw_left_text_labels(pdf)
-        super().draw(pdf)
+    # def draw(self, pdf):
+        # self.draw_above_text_labels(pdf)
+        # self.draw_left_text_labels(pdf)
+        # super().draw(pdf)
 
     # def get_slave_position(self, slave, position):
     #     if isinstance(slave, TextLabel):
@@ -49,11 +49,16 @@ class TestTextLabel(TestCase):
             t.draw(self.pdf)
             self.pdf.write(pdf_path)
 
+    # def test_multiple_positions(self):
+    #     t1 = TextLabel(master=DummyPositionMaster(), name='t1', text='first.')
+    #     t2 = TextLabel(master=DummyPositionMaster(), name='t2', text='second.')
+    #     t3 = TextLabel(master=DummyPositionMaster(), name='t3', text='third.')
+
     def test_draw_multiple(self):
         t1 = TextLabel(master=DummyPositionMaster(), name='t1', text='Fox is going to be dead.')
-        t1.top_margin = -5
-        t2 = TextLabel(master=DummyPositionMaster(), name='t2', text='What should we do??')
-        t3 = TextLabel(master=DummyPositionMaster(), name='t3', text='What should we do??')
+        # t1.top_margin = -5
+        t2 = TextLabel(master=DummyPositionMaster(), name='t2', text='What should we do 1??')
+        t3 = TextLabel(master=DummyPositionMaster(), name='t3', text='What should we do 2??')
         with self.file_path(path, 'draw_multiple', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
             self.pdf.draw_ruler('h')
@@ -87,6 +92,7 @@ class TestTextLabel(TestCase):
         lvl.add_label('seventh seven seven', placement='left')
         with self.file_path(path, 'left_labels', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
+            # self.pdf.translate(0, lvl.lef)
             self.pdf.draw_ruler('h')
             self.pdf.draw_ruler('v')
             self.pdf.translate(30, 10)

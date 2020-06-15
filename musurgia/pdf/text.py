@@ -98,10 +98,12 @@ class Text(DrawObject):
 
 
 class TextLabel(PositionSlave, Text):
-    def __init__(self, text, placement='above', *args, **kwargs):
+    def __init__(self, text, placement='above', value_name=None, *args, **kwargs):
         super().__init__(value=text, *args, **kwargs)
         self._placement = None
+        self._value_name = None
         self.placement = placement
+        self.value_name = value_name
 
     @property
     def placement(self):
@@ -113,6 +115,25 @@ class TextLabel(PositionSlave, Text):
         if val not in permitted:
             raise ValueError(f'placement.value {val} must be in {permitted}')
         self._placement = val
+
+    @property
+    def text(self):
+        return self.value
+
+    @text.setter
+    def text(self, val):
+        self.value = val
+
+    @property
+    def value_name(self):
+        return self._value_name
+
+    @value_name.setter
+    def value_name(self, val):
+        if val is not None and not isinstance(val, str):
+            raise TypeError(f"value_name.value must be of type str not{type(val)}")
+        self._value_name = val
+
 
 class PageText(Text):
     def __init__(self, value, v_position=None, h_position=None, *args, **kwargs):

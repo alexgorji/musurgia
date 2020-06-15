@@ -317,12 +317,13 @@ class AbstractRuler(AbstractSegmentedLine):
         return sum([s.length for s in self.segments])
 
     def _set_labels(self):
+
         def _add_label(mark_line, txt):
-            tl = TextLabel(txt)
+            tl = TextLabel(txt, value_name='ruler_value')
             if isinstance(self, VerticalSegmentedLine):
                 tl.placement = 'left'
                 tl.right_margin = 1
-                tl.top_margin = 0
+                # tl.bottom_margin = -tl.get_text_height() / 2
             else:
                 tl.bottom_margin = 1
             mark_line.add_text_label(tl)

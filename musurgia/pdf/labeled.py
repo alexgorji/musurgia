@@ -45,30 +45,32 @@ class Labeled(PositionMaster):
 
     def draw_above_text_labels(self, pdf):
         if self.above_text_labels:
-            with pdf.saved_state():
-                translate_y = -self.get_above_text_labels_height() + self.above_text_labels[-1].get_text_height()
-                pdf.translate(0, translate_y)
-                for text_label in self.above_text_labels:
+            for text_label in self.above_text_labels:
+                with pdf.saved_state():
+                    pdf.translate(0, -text_label.bottom_margin)
                     text_label.draw(pdf)
-                    pdf.translate(0, text_label.get_height())
 
     def draw_below_text_labels(self, pdf):
         if self.below_text_labels:
-            with pdf.saved_state():
-                pdf.translate(self.relative_x, self.get_height())
-                for text_label in self.below_text_labels:
-                    pdf.translate(0, text_label.get_height())
+            for text_label in self.below_text_labels:
+                with pdf.saved_state():
+                    pdf.translate(0, self.get_height())
+                    # pdf.translate(0, text_label.get_text_height())
                     text_label.draw(pdf)
 
     def draw_left_text_labels(self, pdf):
         if self.left_text_labels:
-            with pdf.saved_state():
-                pdf.translate(0, -self.get_left_text_labels_height() / 2)
-                for text_label in self.left_text_labels:
-                    pdf.translate(0, text_label.get_height())
-                    with pdf.saved_state():
-                        pdf.translate(-(text_label.get_width()), 0)
-                        text_label.draw(pdf)
+            copied_labels_list = self.left_text_labels[::-1]
+            drawn_labels = []
+            for i in range(len(copied_labels_list)):
+                with pdf.saved_state():
+                    text_label = copied_labels_list.pop()
+                    translate_y = -(self.get_left_text_labels_height() / 2) + sum(
+                        [tl.get_height() for tl in drawn_labels]) + text_label.get_text_height()
+                    pdf.translate(0, translate_y)
+                    pdf.translate(-(text_label.get_width()), 0)
+                    text_label.draw(pdf)
+                    drawn_labels.append(text_label)
 
     def get_slave_position(self, slave, position):
         if position == 'x':
@@ -80,8 +82,9 @@ class Labeled(PositionMaster):
         else:
             raise AttributeError(position)
 
-    def get_above_text_labels_height(self):
-        return sum([tl.get_height() for tl in self.above_text_labels])
-
+    #
+    # def get_above_text_labels_height(self):
+    #     return sum([tl.get_height() for tl in self.above_text_labels])
+    #
     def get_left_text_labels_height(self):
         return sum([tl.get_height() for tl in self.left_text_labels])

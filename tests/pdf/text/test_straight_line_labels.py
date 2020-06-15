@@ -78,9 +78,13 @@ class TestStraightLineLabels(TestCase):
             self.pdf.write(pdf_path)
 
     def test_vertical_below(self):
-        self.vls.straight_line.add_text_label('one below', placement='below')
-        self.vls.straight_line.add_text_label('two below', placement='below')
-        self.vls.straight_line.add_text_label('three below', placement='below')
+        t1 = self.vls.straight_line.add_text_label('one below', placement='below')
+        t2 = self.vls.straight_line.add_text_label('two below', placement='below')
+        t3 = self.vls.straight_line.add_text_label('three below', placement='below')
+        t1.top_margin = t1.get_text_height()
+        t2.top_margin = sum([t.get_text_height() for t in [t1, t2]])
+        t3.top_margin = sum([t.get_text_height() for t in [t1, t2, t3]])
+
         with self.file_path(path, 'test_vertical_below', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
             self.pdf.draw_ruler('h')

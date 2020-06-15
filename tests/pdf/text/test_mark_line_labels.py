@@ -14,9 +14,11 @@ class TestMarkLineLabels(TestCase):
 
     def test_draw_above(self):
         ml = self.ls.start_mark_line
-        ml.add_text_label('first text label above')
-        ml.add_text_label('second text label above')
-        ml.add_text_label('third  text label above')
+        t1 = ml.add_text_label('first text label above')
+        t2 = ml.add_text_label('second text label above')
+        t3 = ml.add_text_label('third  text label above')
+        t2.bottom_margin = t3.get_text_height()
+        t1.bottom_margin = t3.get_text_height() + t2.get_text_height()
         self.ls.relative_x = 10
         self.ls.relative_y = 20
         with self.file_path(path, 'draw_above', 'pdf') as pdf_path:
@@ -40,10 +42,25 @@ class TestMarkLineLabels(TestCase):
             self.ls.draw(self.pdf)
             self.pdf.write(pdf_path)
 
+    def test_draw_one_below(self):
+        ml = self.ls.start_mark_line
+        t1 = ml.add_text_label('first text label below', placement='below')
+        t1.top_margin = t1.get_text_height()
+        self.ls.relative_x = 10
+        self.ls.relative_y = 20
+        with self.file_path(path, 'draw_one_below', 'pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            self.pdf.draw_ruler('h')
+            self.pdf.draw_ruler('v')
+            self.ls.draw(self.pdf)
+            self.pdf.write(pdf_path)
+
     def test_draw_below(self):
         ml = self.ls.start_mark_line
-        ml.add_text_label('first text label below', placement='below')
-        ml.add_text_label('second text label below', placement='below')
+        t1 = ml.add_text_label('first text label below', placement='below')
+        t2 = ml.add_text_label('second text label below', placement='below')
+        t1.top_margin = t1.get_text_height()
+        t2.top_margin = t1.get_text_height() + t2.get_text_height()
         self.ls.relative_x = 10
         self.ls.relative_y = 20
         with self.file_path(path, 'draw_below', 'pdf') as pdf_path:
@@ -124,16 +141,17 @@ class TestMarkLineLabels(TestCase):
 
     def test_draw_above_with_different_bottom_margins(self):
         ml = self.ls.start_mark_line
-        ml.add_text_label('first text label above', bottom_margin=2)
-        ml.add_text_label('second text label above', bottom_margin=4)
-        ml.add_text_label('third  text label above', bottom_margin=15)
+        t1 = ml.add_text_label('first text label above', bottom_margin=2)
+        t2 = ml.add_text_label('second text label above', bottom_margin=4)
+        t3 = ml.add_text_label('third  text label above', bottom_margin=15)
+        t2.bottom_margin = t1.get_text_height()
+        t3.bottom_margin = t1.get_text_height() + t2.get_text_height()
         self.ls.relative_x = 10
         self.ls.relative_y = 40
         with self.file_path(path, 'draw_above_with_different_bottom_margins', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
             self.pdf.draw_ruler('h')
             self.pdf.draw_ruler('v')
-
             self.ls.draw(self.pdf)
             self.pdf.write(pdf_path)
 
