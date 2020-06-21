@@ -207,7 +207,7 @@ class FractalMusic(FractalTree):
             try:
                 if not self.duration:
                     raise SetDurationFirstException()
-                self._midi_generator = RelativeMidi(midi_range=[71, 71], proportions=self.children_fractal_values,
+                self._midi_generator = RelativeMidi(midi_range=None, proportions=self.children_fractal_values,
                                                     directions=None)
                 self._midi_generator.node = self
             except AttributeError:
@@ -846,6 +846,12 @@ class FractalMusic(FractalTree):
             self.change_midis()
         except TypeError:
             pass
+
+    def reset_midis(self):
+        for node in self.traverse():
+            node.midi_value = None
+            node.midi_generator = None
+            node._children_generated_midis = None
 
     def round_leaves(self):
         #     quantizing quarter_durations!

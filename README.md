@@ -268,4 +268,9 @@ quantize.get_best_quantized_values(values, units): added
 unit_test.file_path: bug fix to use different file extensions
 classes ProportionalChordField and Wave() added to chord_field
 
+### v2.2.1beta
+FractalMusic:
+bug fix if FM.midi_generator is None
+reset_midis() added
+
 

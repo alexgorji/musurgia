@@ -2,8 +2,8 @@ import os
 
 from musicscore.musictree.treescoretimewise import TreeScoreTimewise
 
-from musurgia.unittest import TestCase
 from musurgia.fractaltree.fractalmusic import FractalMusic
+from musurgia.unittest import TestCase
 
 path = str(os.path.abspath(__file__).split('.')[0])
 
@@ -232,3 +232,17 @@ class Test(TestCase):
         xml_path = path + '_test_10.xml'
         score.write(xml_path)
         self.assertCompareFiles(xml_path)
+
+    def test_change_midi_range_afterwards(self):
+
+        fm = FractalMusic(proportions=[1, 2, 3], tree_permutation_order=[3, 1, 2])
+        fm.tempo = 60
+        fm.duration = 10
+        fm.midi_generator.midi_range = [40, 50]
+        fm.add_layer()
+        fm.add_layer()
+        fm.reset_midis()
+        fm.midi_generator.midi_range = [60, 70]
+        expected = [62.0, 65.0, 60.0, 67.0, 69.0, 70.0, 67.0, 65.0, 69.0]
+        actual = [l.midi_value for l in fm.traverse_leaves()]
+        self.assertEqual(expected, actual)
