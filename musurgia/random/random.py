@@ -1,3 +1,11 @@
+from typing import Optional
+
+from musurgia.random.errors import RandomPoolError
+
+
+# __all__ = ['Random']
+
+
 class Random:
     """
     Random is a class for creating pseudo random series of elements. Elements are chosen from a list of elements
@@ -23,16 +31,24 @@ class Random:
 
     # periodicity None will sets the periodicity always to len(pool)-2
     @property
-    def pool(self):
+    def pool(self) -> Optional[list]:
+        """
+        Set and get ``pool`` property. This property defines the list of possible elements to be randomly chosen from.
+        Duplicates will be omitted without chaining the order of each element's first appearances.
+        :return: ``None`` or ``list``
+        """
         return self._pool
 
     @pool.setter
     def pool(self, values):
+        if not hasattr(values, '__iter__'):
+            raise RandomPoolError('Random.pool must be iterable.')
         if values is not None:
-            try:
-                self._pool = list(dict.fromkeys(values))
-            except TypeError:
-                self._pool = [values]
+            self._pool = list(dict.fromkeys(values))
+            # try:
+            #     self._pool = list(dict.fromkeys(values))
+            # except TypeError:
+            #     self._pool = [values]
 
     @property
     def periodicity(self):
