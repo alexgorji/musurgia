@@ -1,8 +1,8 @@
 class Random:
     """
-    Random is a class for creating pseudo random series of elements. Elements are chosen from a set of elements
-    called a 'pool'. The property 'periodicity' defines the minimum number of other elements which must be given out
-    before an element can appear again.
+    Random is a class for creating pseudo random series of elements. Elements are chosen from a list of elements
+    called a 'pool' which does not contain any duplicates. The property 'periodicity' defines the minimum number of
+    other elements which must be given out before an element can appear again.
     """
     import random
     current_random = random
@@ -30,7 +30,7 @@ class Random:
     def pool(self, values):
         if values is not None:
             try:
-                self._pool = list(set(values))
+                self._pool = list(dict.fromkeys(values))
             except TypeError:
                 self._pool = [values]
 
@@ -123,9 +123,9 @@ class Random:
         self.result.append(next_el)
 
         return next_el
-    #
-    # def __deepcopy__(self, memodict={}):
-    #     copied = self.__class__(pool=self.pool, periodicity=self.periodicity,
-    #                             forbidden_list=deepcopy(self.forbidden_list),
-    #                             seed=self.seed)
-    #     return copied
+
+    def __deepcopy__(self, memodict={}):
+        copied = self.__class__(pool=self.pool, periodicity=self.periodicity,
+                                forbidden_list=self.forbidden_list,
+                                seed=self.seed)
+        return copied
