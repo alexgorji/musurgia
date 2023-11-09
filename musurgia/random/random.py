@@ -1,16 +1,23 @@
 from typing import Optional
 
-from musurgia.random.errors import RandomPoolError
+from musurgia.random.errors import RandomPoolError, RandomPeriodicityError
 
+__all__ = ['Random']
 
-# __all__ = ['Random']
+from musurgia.utils import check_type, MusurgiaTypeError
 
 
 class Random:
     """
+    .. code-block:: python
+
+        from musurgia.random import Random
+
     Random is a class for creating pseudo random series of elements. Elements are chosen from a list of elements
     called a 'pool' which does not contain any duplicates. The property 'periodicity' defines the minimum number of
     other elements which must be given out before an element can appear again.
+
+
     """
     import random
     current_random = random
@@ -41,7 +48,7 @@ class Random:
 
     @pool.setter
     def pool(self, values):
-        if not hasattr(values, '__iter__'):
+        if values is not None and not hasattr(values, '__iter__'):
             raise RandomPoolError('Random.pool must be iterable.')
         if values is not None:
             self._pool = list(dict.fromkeys(values))
@@ -51,16 +58,24 @@ class Random:
             #     self._pool = [values]
 
     @property
-    def periodicity(self):
+    def periodicity(self) -> Optional[int]:
+        """
+        Set and get ``periodicity`` property of types ``None`` or ``non-negative int``. This property defines the
+        minimum distance between two appearances of an element. If ``0`` immediate repetitions are permitted,
+        if ``1`` at least one other element must be given out before this can appear again and so on.
+
+        :return:
+        """
         return self._periodicity
 
     @periodicity.setter
     def periodicity(self, value):
         if value is not None:
-            if isinstance(value, int) and value >= 0:
+            try:
+                check_type(t='non_negative_int', v=value, argument_name='value', method_name='periodicity', obj=self)
                 self._periodicity = value
-            else:
-                raise ValueError()
+            except MusurgiaTypeError as err:
+                raise RandomPeriodicityError(err.msg)
 
     @property
     def forbidden_list(self):
@@ -95,7 +110,7 @@ class Random:
     def iterator(self):
 
         if not self.pool:
-            raise AttributeError('set pool')
+            raise RandomPoolError('pool is not set!')
 
         while True:
             periodicity = self.periodicity

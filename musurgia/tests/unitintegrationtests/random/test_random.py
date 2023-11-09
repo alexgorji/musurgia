@@ -1,9 +1,19 @@
 from unittest import TestCase, skip
 
-from musurgia.random import Random
+from musurgia.random import Random, RandomPoolError
 
 
 class TestRandom(TestCase):
+
+    def test_pool_error(self):
+        with self.assertRaises(RandomPoolError):
+            Random(pool=3)
+
+    def test_pool_none(self):
+        r = Random(pool=None)
+        with self.assertRaises(RandomPoolError):
+            r.__next__()
+
     def test_periodicity_and_seed(self):
         pool = [1, 3, 2, 4, 5]
         r = Random(pool=pool, periodicity=2, seed=20)
