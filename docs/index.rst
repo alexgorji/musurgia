@@ -1,5 +1,5 @@
 .. musurgia documentation master file, created by
-   sphinx-quickstart on Wed Nov  8 20:27:50 2023.
+   sphinx-quickstart on Thu Nov  9 11:45:41 2023.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
