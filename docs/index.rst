@@ -1,20 +1,11 @@
-.. musurgia documentation master file, created by
-   sphinx-quickstart on Thu Nov  9 11:45:41 2023.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Content
+=======
 
-Welcome to musurgia's documentation!
-====================================
+.. warning::
+   This library and its documentation are still under construction!
+
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   musurgia_intro
