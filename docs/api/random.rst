@@ -6,6 +6,7 @@ random
    :undoc-members:
    :show-inheritance:
    :inherited-members:
+   :exclude-members: random, current_random
 
 .. automodule:: musurgia.random.errors
    :members:

@@ -1,10 +1,12 @@
-from typing import Optional
+from typing import Optional, TypeAlias
 
 from musurgia.random.errors import RandomPoolError, RandomPeriodicityError
 
 __all__ = ['Random']
 
 from musurgia.utils import check_type, MusurgiaTypeError
+
+NonNegativeInteger: TypeAlias = int
 
 
 class Random:
@@ -52,24 +54,30 @@ class Random:
             raise RandomPoolError('Random.pool must be iterable.')
         if values is not None:
             self._pool = list(dict.fromkeys(values))
-            # try:
-            #     self._pool = list(dict.fromkeys(values))
-            # except TypeError:
-            #     self._pool = [values]
 
     @property
-    def periodicity(self) -> Optional[int]:
+    def periodicity(self) -> Optional['NonNegativeInteger']:
         """
         Set and get ``periodicity`` property of types ``None`` or ``non-negative int``. This property defines the
-        minimum distance between two appearances of an element. If ``0`` immediate repetitions are permitted,
-        if ``1`` at least one other element must be given out before this can appear again and so on.
+        minimum distance between two appearances of an element.
+        If set to ``0`` immediate repetitions are permitted,
+        if set to ``1`` at least one other element must be given out before this element can be chosen again an so on.
+        If set to ``len(self.pool) - 1`` a random permutation of elements will be repeated.
 
-        :return:
+        If set to ``None``, ``len(self.pool) - 2`` is returned. If len(self.pool) is ``1``, ``0`` is returned.
+        If set to a value equal or greater than ``len(self.pool)``, ``len(self.pool) - 1`` is returned.
         """
+        if self.pool:
+            if self._periodicity is None:
+                output = len(self.pool) - 2
+                return output if output >= 0 else 0
+
+            if self._periodicity >= len(self.pool):
+                return len(self.pool) - 1
         return self._periodicity
 
     @periodicity.setter
-    def periodicity(self, value):
+    def periodicity(self, value: Optional[int]):
         if value is not None:
             try:
                 check_type(t='non_negative_int', v=value, argument_name='value', method_name='periodicity', obj=self)
@@ -78,17 +86,31 @@ class Random:
                 raise RandomPeriodicityError(err.msg)
 
     @property
-    def forbidden_list(self):
+    def forbidden_list(self) -> list:
+        """
+        Set and get ``forbidden_list`` property which is used internally to keep trace of previous elements and has
+        maximum length of :obj:`periodicity`. All elements in this list are forbidden to be chosen from. After
+        randomly choose a permitted element, this will be added to the forbidden list and the first element of this
+        list will be removed. This is a naive mechanism which guaranties the appropriate distance between two
+        appearances of an element according for :obj:`periodicity`
+
+        The ``forbidden_list`` can also be set manually. In this case if its length is larger than
+        :obj:`periodicity`, :obj:`iterator` will remove so many elements from the beginning of this list until the
+        right length is achieved.
+        """
         if not self._forbidden_list:
             self._forbidden_list = []
         return self._forbidden_list
 
     @forbidden_list.setter
-    def forbidden_list(self, values):
+    def forbidden_list(self, values: Optional[list]):
         self._forbidden_list = values
 
     @property
     def seed(self):
+        """
+        Get and set ``seed`` of python random which is used to randomly choose an element.
+        """
         return self._seed
 
     @seed.setter
@@ -108,45 +130,35 @@ class Random:
 
     @property
     def iterator(self):
-
         if not self.pool:
             raise RandomPoolError('pool is not set!')
-
         while True:
-            periodicity = self.periodicity
-            if self.periodicity is None:
-                periodicity = len(self.pool) - 2
-
-            elif self.periodicity >= len(self.pool):
-                periodicity = len(self.pool) - 1
-
-            if periodicity < 0: periodicity = 0
-
-            def check(x):
-
-                def forbid_element(x):
-                    if len(self.forbidden_list) >= periodicity:
+            def check(element):
+                def forbid_element(el):
+                    if len(self.forbidden_list) >= self.periodicity:
                         self.forbidden_list.pop(0)
-                    self.forbidden_list.append(x)
+                    self.forbidden_list.append(el)
 
-                if periodicity != 0:
-                    if x in self.forbidden_list:
+                if self.periodicity != 0:
+                    if element in self.forbidden_list:
                         return False
                     else:
-                        forbid_element(x)
+                        forbid_element(element)
                         return True
                 else:
                     return True
 
-            if len(self.forbidden_list) > periodicity:
-                # print "self.periodicity", self.periodicity
-                self.forbidden_list = self.forbidden_list[(-1 * periodicity):]
+            if len(self.forbidden_list) > self.periodicity:
+                self.forbidden_list = self.forbidden_list[(-1 * self.periodicity):]
 
             random_element = self.pool[self.current_random.randrange(len(self.pool))]
             while check(random_element) is False:
                 random_element = self.pool[self.current_random.randrange(len(self.pool))]
 
             yield random_element
+
+    def __iter__(self):
+        return self.iterator
 
     def __next__(self):
         next_el = self.iterator.__next__()
