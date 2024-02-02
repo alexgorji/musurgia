@@ -4,7 +4,7 @@ from quicktions import Fraction
 
 from musurgia.pdf.pdf import Pdf
 from musurgia.timeline.timeline import TimeLine
-from musurgia.unittest import TestCase, create_test_path
+from musurgia.tests.unitintegrationtests.test_utils  import TestCase, create_test_path
 
 path = Path(__file__)
 

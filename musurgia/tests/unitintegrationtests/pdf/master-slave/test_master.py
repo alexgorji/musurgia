@@ -1,5 +1,5 @@
 from musurgia.pdf.masterslave import Master, PositionMaster, MarginMaster
-from musurgia.unittest import TestCase
+from musurgia.tests.unitintegrationtests.test_utils  import TestCase
 
 
 class DummyMaster(Master):

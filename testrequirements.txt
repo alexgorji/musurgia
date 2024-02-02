@@ -1,3 +1,4 @@
 pytest==7.4.3
 coverage==7.3.2
 musicscore==2.0.1
+diff_pdf_visually==1.8.0

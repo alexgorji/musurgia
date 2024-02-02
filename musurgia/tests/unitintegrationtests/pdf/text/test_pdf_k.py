@@ -1,5 +1,5 @@
 from musurgia.pdf.pdfunit import PdfUnit
-from musurgia.unittest import TestCase
+from musurgia.tests.unitintegrationtests.test_utils  import TestCase
 
 
 class TestPdfK(TestCase):

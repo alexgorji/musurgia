@@ -1,5 +1,5 @@
 from musurgia.pdf.font import Font
-from musurgia.unittest import TestCase
+from musurgia.tests.unitintegrationtests.test_utils  import TestCase
 
 
 class TestFont(TestCase):

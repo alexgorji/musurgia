@@ -6,7 +6,7 @@ from musurgia.pdf.newdrawobject import ClippingArea
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.rowcolumn import DrawObjectColumn
 from musurgia.pdf.text import PageText
-from musurgia.unittest import TestCase, create_test_path
+from musurgia.tests.unitintegrationtests.test_utils  import TestCase, create_test_path
 
 path = Path(__file__)
 

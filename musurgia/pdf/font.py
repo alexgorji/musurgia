@@ -1,8 +1,10 @@
 from pathlib import Path
 
 import matplotlib as mpl
-from matplotlib.afm import AFM
+from matplotlib._afm import AFM
 
+
+# better to use matplotlib.fontmanager?
 
 class FontError(Exception):
     def __init__(self, *args, **kwargs):

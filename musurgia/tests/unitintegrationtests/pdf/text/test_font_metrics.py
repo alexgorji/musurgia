@@ -1,9 +1,9 @@
 from pathlib import Path
 
 import matplotlib as mpl
-from matplotlib.afm import AFM
+from matplotlib._afm import AFM
 
-from musurgia.unittest import TestCase
+from musurgia.tests.unitintegrationtests.test_utils  import TestCase
 
 afm_path = Path(mpl.get_data_path(), 'fonts', 'afm', 'ptmr8a.afm')
 

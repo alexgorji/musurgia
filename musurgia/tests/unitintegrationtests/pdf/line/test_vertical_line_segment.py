@@ -2,7 +2,7 @@ from pathlib import Path
 
 from musurgia.pdf.line import VerticalLineSegment
 from musurgia.pdf.pdf import Pdf
-from musurgia.unittest import TestCase
+from musurgia.tests.unitintegrationtests.test_utils  import TestCase
 
 path = Path(__file__)
 

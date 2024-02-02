@@ -4,7 +4,7 @@ from musurgia.fractaltree.fractaltree import FractalTree
 from musurgia.pdf.line import HorizontalLineSegment
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.rowcolumn import DrawObjectColumn, DrawObjectRow
-from musurgia.unittest import TestCase
+from musurgia.tests.unitintegrationtests.test_utils  import TestCase
 
 path = Path(__file__)
 

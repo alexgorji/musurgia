@@ -1,5 +1,5 @@
 from musurgia.pdf.pdf import Pdf
-from musurgia.unittest import TestCase
+from musurgia.tests.unitintegrationtests.test_utils  import TestCase
 
 
 class TestRowContainer(TestCase):

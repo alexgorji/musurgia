@@ -4,7 +4,7 @@ from musicscore.musictree.treeinstruments import Violin, Viola, Cello, Percussio
 
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.text import PageText
-from musurgia.unittest import TestCase
+from musurgia.tests.unitintegrationtests.test_utils  import TestCase
 from musurgia.fractaltree.fractalmusicsquare import Square
 from musurgia.timeline.scoretimeline import ScoreTimeLine, ModuleTimeLine
 
