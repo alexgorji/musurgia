@@ -1,5 +1,5 @@
 from musurgia.pdf.masterslave import Master, PositionMaster, MarginMaster, Slave, PositionSlave, MarginSlave
-from musurgia.pdf.newdrawobject import DrawObject
+from musurgia.pdf.drawobject import DrawObject
 from musurgia.tests.unitintegrationtests.test_utils  import TestCase
 
 

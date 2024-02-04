@@ -1,5 +1,5 @@
-from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.labeled import Labeled
+from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.segmentedline import MarkLine, LineSegment
 from musurgia.pdf.named import Named
 

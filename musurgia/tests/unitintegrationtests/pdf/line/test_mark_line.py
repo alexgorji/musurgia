@@ -49,7 +49,7 @@ class TestMarkLine(TestCase):
             self.pdf.draw_ruler('h')
             self.pdf.draw_ruler('v')
             self.ml.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_multiple(self):
         self.ml.master.get_slave_position = lambda slave, position: 0
@@ -62,4 +62,4 @@ class TestMarkLine(TestCase):
             self.ml.draw(self.pdf)
             self.ml.master.get_slave_margin = lambda slave, margin: 5 if margin in ['l', 'left'] else 0
             self.ml.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)

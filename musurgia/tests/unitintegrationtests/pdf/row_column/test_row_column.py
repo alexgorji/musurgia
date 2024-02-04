@@ -3,7 +3,7 @@ from pathlib import Path
 from musurgia.pdf.line import HorizontalLineSegment, VerticalSegmentedLine
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn
-from musurgia.tests.unitintegrationtests.test_utils  import TestCase
+from musurgia.tests.unitintegrationtests.test_utils import TestCase
 
 path = Path(__file__)
 
@@ -38,7 +38,7 @@ class TestRowColumn(TestCase):
             self.pdf.translate(10, 10)
             r = self.row
             r.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_row_of_segments(self):
         r = DrawObjectRow()
@@ -51,7 +51,7 @@ class TestRowColumn(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 10)
             r.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_column_of_row_of_segments(self):
         r = DrawObjectRow()
@@ -68,7 +68,7 @@ class TestRowColumn(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 10)
             c.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_row_of_column_of_segments(self):
         c = DrawObjectColumn()
@@ -84,7 +84,7 @@ class TestRowColumn(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 10)
             c.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_column(self):
         with self.file_path(path, 'draw_column', 'pdf') as pdf_path:
@@ -94,7 +94,7 @@ class TestRowColumn(TestCase):
             self.pdf.translate(10, 10)
             c = self.column
             c.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     # def test_column_add_label_left(self):
     #     with self.file_path(path, 'column_add_label_left', 'pdf') as pdf_path:
@@ -105,4 +105,4 @@ class TestRowColumn(TestCase):
     #         c = self.column
     #         c.add_label('test label', placement='left')
     #         c.draw(self.pdf)
-    #         self.pdf.write(pdf_path)
+    #         self.pdf.write_to_path(pdf_path)

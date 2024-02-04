@@ -47,7 +47,7 @@ class TestTextLabel(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 10)
             t.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_multiple(self):
         t1 = TextLabel(master=DummyPositionMaster(), name='t1', text='Fox is going to be dead.')
@@ -65,7 +65,7 @@ class TestTextLabel(TestCase):
             self.pdf.translate(0, t2.get_height())
             t3.draw(self.pdf)
             self.pdf.translate(0, t3.get_height())
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_left_labels(self):
         unit = 1
@@ -91,4 +91,4 @@ class TestTextLabel(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(30, 10)
             lvl.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)

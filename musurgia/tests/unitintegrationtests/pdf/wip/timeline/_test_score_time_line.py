@@ -72,5 +72,5 @@ class Test(TestCase):
             pdf.page = page
             title.draw(pdf)
             composer.draw(pdf)
-        pdf.write(pdf_path)
+        pdf.write_to_path(pdf_path)
         self.assertCompareFiles(actual_file_path=pdf_path)

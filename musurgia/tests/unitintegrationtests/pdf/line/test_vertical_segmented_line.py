@@ -19,7 +19,7 @@ class TestVerticalSegmentedLine(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 10)
             self.vsl.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_get_width(self):
         self.vsl.segments[1].start_mark_line.length = 5

@@ -55,4 +55,4 @@ class TestVerticalLineSegment(TestCase):
             self.pdf.translate(10, 10)
             self.vls.end_mark_line.show = True
             self.vls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)

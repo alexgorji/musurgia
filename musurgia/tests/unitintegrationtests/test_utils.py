@@ -2,13 +2,11 @@ from unittest import TestCase
 
 from musurgia.utils import MusurgiaTypeError, check_type
 
-
 import os
 import unittest
 from pathlib import Path
 
-from diff_pdf_visually import pdfdiff
-
+from diff_pdf_visually import pdf_similar
 
 
 class TestErrors(TestCase):
@@ -36,6 +34,7 @@ class TestCheckType(TestCase):
         check_type(t='non_negative_int', v=3)
         with self.assertRaises(MusurgiaTypeError):
             check_type(t='non_negative_int', v='3')
+
 
 def create_test_path(path, test_name):
     return path.parent.joinpath(f'{path.stem}_{test_name}')
@@ -89,7 +88,7 @@ class TestCase(unittest.TestCase):
         super().__init__(*args, **kwargs)
 
     def _compare_pdfs(self, actual_file_path, expected_file_path, verbosity):
-        self.assertTrue(pdfdiff(actual_file_path, expected_file_path, verbosity=verbosity))
+        self.assertTrue(pdf_similar(actual_file_path, expected_file_path, verbosity=verbosity))
 
     def _compare_contents(self, actual_file_path, expected_file_path):
         with open(actual_file_path, 'r') as myfile:

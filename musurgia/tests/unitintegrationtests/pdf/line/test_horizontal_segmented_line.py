@@ -20,7 +20,7 @@ class TestHorizontalSegmentedLine(TestCase):
                 self.pdf.draw_ruler('v')
                 self.pdf.translate(10, 10)
                 self.hsl.draw(self.pdf)
-                self.pdf.write(pdf_path)
+                self.pdf.write_to_path(pdf_path)
 
     def test_get_height(self):
         self.hsl.segments[1].start_mark_line.length = 5
@@ -44,4 +44,4 @@ class TestHorizontalSegmentedLine(TestCase):
         # print(self.hsl.get_relative_y2())
         # print(self.hsl.get_height())
         with self.file_path(path, 'add_label_left', 'pdf') as pdf_path:
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)

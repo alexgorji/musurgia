@@ -4,7 +4,7 @@ from quicktions import Fraction
 
 from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.masterslave import Master, Slave
-from musurgia.pdf.newdrawobject import DrawObject
+from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn, DrawObjectContainer
 from musurgia.pdf.text import TextLabel
 

@@ -1,5 +1,5 @@
 from musurgia.pdf.labeled import Labeled
-from musurgia.pdf.newdrawobject import DrawObject
+from musurgia.pdf.drawobject import DrawObject
 
 
 class DrawObjectContainer(DrawObject, Labeled):

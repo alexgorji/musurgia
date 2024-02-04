@@ -19,7 +19,7 @@ class Test(TestCase):
         scene.add_draw_object(SegmentedHorizontalLine(name='I', lengths=[3, 10, 5, 15]))
         scene.add_draw_object(SegmentedHorizontalLine(name='II', lengths=[3, 10, 5, 15, 20]))
         scene.draw(self.pdf)
-        self.pdf.write(pdf_path)
+        self.pdf.write_to_path(pdf_path)
         # self.assertCompareFiles(pdf_path)
 
     def test_draw_with_margins(self):

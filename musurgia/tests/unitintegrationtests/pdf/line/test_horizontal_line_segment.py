@@ -60,7 +60,7 @@ class TestHorizontalLineSegment(TestCase):
             self.pdf.translate(10, 10)
             self.hls.end_mark_line.show = True
             self.hls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_list(self):
         segments = [HorizontalLineSegment(length) for length in range(10, 30, 5)]
@@ -74,7 +74,7 @@ class TestHorizontalLineSegment(TestCase):
                 segment.draw(self.pdf)
                 self.pdf.translate(segment.get_width(), 0)
 
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_with_top_margin(self):
         self.hls.top_margin = 15
@@ -88,7 +88,7 @@ class TestHorizontalLineSegment(TestCase):
             self.hls.end_mark_line.show = True
             self.hls.draw(self.pdf)
 
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_end_mark_line_labels(self):
         self.hls.end_mark_line.add_label('end mark line')
@@ -101,4 +101,4 @@ class TestHorizontalLineSegment(TestCase):
             self.hls.end_mark_line.show = True
             self.hls.draw(self.pdf)
 
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)

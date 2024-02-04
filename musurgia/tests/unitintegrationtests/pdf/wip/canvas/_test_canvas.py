@@ -15,5 +15,5 @@ class TestCanvas(TestCase):
         pdf_path = create_test_path(path, 'empty_draw.pdf')
         canvas = Canvas()
         canvas.draw(self.pdf)
-        self.pdf.write(pdf_path)
+        self.pdf.write_to_path(pdf_path)
         self.assertCompareFiles(pdf_path)

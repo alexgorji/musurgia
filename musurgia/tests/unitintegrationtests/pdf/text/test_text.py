@@ -20,7 +20,7 @@ class TestText(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 10)
             t.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_with_top_margin(self):
         t = Text('The fox is going to be dead.')

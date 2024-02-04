@@ -1,4 +1,4 @@
-from musurgia.pdf.newdrawobject import DrawObject
+from musurgia.pdf.drawobject import DrawObject
 
 
 class Scene(DrawObject):

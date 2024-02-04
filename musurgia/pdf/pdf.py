@@ -1,9 +1,13 @@
+import inspect
+
 from fpdf import FPDF
-from fpdf.php import sprintf
 
 from musurgia.pdf.line import HorizontalRuler, VerticalRuler
 from musurgia.pdf.pdfunit import PdfUnit
 from musurgia.pdf.text import PageText
+
+
+def sprintf(fmt, *args): return fmt % args
 
 
 class SavedState:
@@ -32,6 +36,9 @@ class PrepareDrawObject:
 
 
 class Pdf(FPDF):
+    """
+    Child of fpdf.FPDF class
+    """
 
     def __init__(self, r_margin=10, t_margin=10, l_margin=10, b_margin=10, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,14 +53,25 @@ class Pdf(FPDF):
 
         self.set_font("Helvetica", "", 10)
 
+    # private methods
+    # def _out(self, s):
+    #     # caller_frame = inspect.getframeinfo(inspect.currentframe().f_back)
+    #     # print(f'_out is called by: {caller_frame[0], caller_frame[2]}')
+    #     # print(f'_out before: s: {s}, state: {self.state}, pages: {self.pages}')
+    #     super()._out(s)
+    #     # print(f'_out after: pages: {self.pages}')
+
     def _pop_state(self):
+        # https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf
         self._state.pop()
         self._out(sprintf('Q\n'))
 
     def _push_state(self):
+        # https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf
         self._state.append('push')
         self._out(sprintf('q\n'))
 
+    # public properties
     @property
     def absolute_positions(self):
         return self._absolute_positions
@@ -74,26 +92,18 @@ class Pdf(FPDF):
     def k(self, val):
         pass
 
-    def add_space(self, val):
-        self.y += val
+    # public methods
 
     def add_page(self):
         super().add_page(orientation=self.cur_orientation)
         self._absolute_positions[self.page] = [0, 0]
 
-    def prepare_draw_object(self, draw_object):
-        pdo = PrepareDrawObject(self, draw_object=draw_object)
-        return pdo
-
-    def reset_font(self):
-        self._out(sprintf('BT /F%d %.2f Tf ET',
-                          self.current_font['i'],
-                          self.font_size_pt))
-
-    def reset_position(self):
-        self.translate(-self.absolute_x, -self.absolute_y)
+    def add_space(self, val):
+        self.y += val
 
     def clip_rect(self, x, y, w, h):
+        # https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf
+
         self._out(sprintf('%.2f %.2f %.2f %.2f re W n',
                           x * self.k, (self.h - y) * self.k,
                           w * self.k, -h * self.k))
@@ -104,21 +114,6 @@ class Pdf(FPDF):
             self.reset_position()
             page_number = PageText(page, **kwargs)
             page_number.draw(self)
-
-    def saved_state(self):
-        ss = SavedState(self)
-        return ss
-
-    def translate(self, dx, dy):
-        if not self._state:
-            self._absolute_positions[self.page][0] += dx
-            self._absolute_positions[self.page][1] += dy
-        dx, dy = dx * self.k, dy * self.k
-        self._out(sprintf('1.0 0.0 0.0 1.0 %.2F %.2F cm',
-                          dx, -dy))
-
-    def translate_page_margins(self):
-        self.translate(self.l_margin, self.t_margin)
 
     def draw_ruler(self, mode='h', unit=10, first_label=0, show_first_label=False, label_show_interval=1):
         if mode in ['h', 'horizontal']:
@@ -133,7 +128,41 @@ class Pdf(FPDF):
             raise AttributeError()
         ruler.draw(self)
 
-    def write(self, path):
-        # if self.show_page_number:
-        #     self.draw_page_number()
+    def prepare_draw_object(self, draw_object):
+        return PrepareDrawObject(self, draw_object=draw_object)
+
+    def reset_font(self):
+        # https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf
+        self._out(sprintf('BT /F%d %.2f Tf ET',
+                          self.current_font['i'],
+                          self.font_size_pt))
+
+    def reset_position(self):
+        self.translate(-self.absolute_x, -self.absolute_y)
+
+    def saved_state(self):
+        return SavedState(self)
+
+    def translate(self, dx, dy):
+        # https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf
+        if not self._state:
+            self._absolute_positions[self.page][0] += dx
+            self._absolute_positions[self.page][1] += dy
+        dx, dy = dx * self.k, dy * self.k
+        self._out(sprintf('1.0 0.0 0.0 1.0 %.2F %.2F cm',
+                          dx, -dy))
+
+    def translate_page_margins(self):
+        self.translate(self.l_margin, self.t_margin)
+
+    def write_to_path(self, path):
+        # FPDF.close() is called inside output to write to buffer first before writing it to file.
+        # print('############')
+        # print('writing to path, output buffer is:', self.buffer)
+        # print('')
+        # print('############')
         self.output(path, 'F')
+        # print('############')
+        # print('written to path, output buffer is:', self.buffer)
+        # print('')
+        # print('############')

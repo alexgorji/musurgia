@@ -4,8 +4,6 @@ import matplotlib as mpl
 from matplotlib._afm import AFM
 
 
-# better to use matplotlib.fontmanager?
-
 class FontError(Exception):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -51,13 +49,25 @@ def _make_afm_path_dictionary():
 
 
 class Font:
-    __AFM_PATH_DICTIONARY = _make_afm_path_dictionary()
+    """
+    Class representing a font. It is used in class Text to set font family, weight, style and size.
+    It accesses matplotlib._afm.AFM class (Adobe Font Metrics) to be able to determine the exact height and width of
+    the text in pixels via two methods: :obj:`get_text_pixel_height()` and :obj:`get_text_pixel_width()`
 
+    Attributes:
+        family: Default value is ``Helvetica``.
+        weight: Default value is ``medium``
+        style: Default value is ``regular``
+        size: Default value is `10`
+    """
+
+    __AFM_PATH_DICTIONARY = _make_afm_path_dictionary()
     _FAMILY = ['Helvetica', 'Courier', 'Times']
     _WEIGHT = ['bold', 'medium']
     _STYLE = ['italic', 'regular']
 
-    def __init__(self, family='Helvetica', weight='medium', style='regular', size=10, *args, **kwargs):
+    def __init__(self, family: str = 'Helvetica', weight: str = 'medium', style: str = 'regular', size: int = 10, *args,
+                 **kwargs):
         super().__init__(*args, **kwargs)
         self._family = None
         self._weight = None
@@ -75,48 +85,82 @@ class Font:
             self._afm = self.__AFM_PATH_DICTIONARY[self.family, self.weight, self.style]
 
     @property
-    def family(self):
+    def family(self) -> str:
+        """
+        Set and get font family. Currently valid values are [``Helvetica``, ``Courier``, ``Times``]
+        """
         return self._family
 
     @family.setter
     def family(self, val):
         if val not in self._FAMILY:
-            raise FontError(f'{val} not a valid value: current valid families are: {self._FAMILY}')
+            raise FontError(f'{val} not a valid value: Current valid families are: :obj:~{self._FAMILY}')
         self._family = val
         self._set_afm()
 
     @property
-    def weight(self):
-        return self._weight
-
-    @weight.setter
-    def weight(self, val):
-        if val not in self._WEIGHT:
-            raise FontError('{} not a valid value: {}'.format(val, self._WEIGHT))
-        self._weight = val
-        self._set_afm()
-
-    @property
-    def style(self):
-        return self._style
-
-    @style.setter
-    def style(self, val):
-        if val not in self._STYLE:
-            raise FontError('{} not a valid value: {}'.format(val, self._STYLE))
-        self._style = val
-        self._set_afm()
-
-    @property
     def size(self):
+        """
+        Set and get font size
+        """
         return self._size
 
     @size.setter
     def size(self, val):
         self._size = val
 
-    def get_text_pixel_width(self, val):
+    @property
+    def style(self):
+        """
+        Set and get font style. Valid values are [``italic``, ``regular``]
+        """
+        return self._style
+
+    @style.setter
+    def style(self, val):
+        if val not in self._STYLE:
+            raise FontError(f'{val} not a valid value: {self._STYLE}')
+        self._style = val
+        self._set_afm()
+
+    @property
+    def weight(self):
+        """
+        Set and get font weight. Valid values are [``bold``, ``medium``]
+        """
+        return self._weight
+
+    @weight.setter
+    def weight(self, val):
+        if val not in self._WEIGHT:
+            raise FontError(f'{val} not a valid value: {self._WEIGHT}')
+        self._weight = val
+        self._set_afm()
+
+    def get_text_pixel_width(self, val: str) -> float:
+        """
+        :param val: text as str
+        :return: width of text in pixels
+
+        >>> Font().get_text_pixel_width('Test')
+        18.25
+        >>> Font(size=12).get_text_pixel_width('Test')
+        21.9
+        >>> Font(size=12, weight='bold', style='italic').get_text_pixel_width('Test')
+        23.951999999999998
+        """
         return (self._afm.string_width_height(val)[0] / 1000) * self.size
 
-    def get_text_pixel_height(self, val):
+    def get_text_pixel_height(self, val: str) -> float:
+        """
+        :param val: text as str
+        :return: height of text in pixels
+
+        >>> Font().get_text_pixel_height('Test')
+        7.33
+        >>> Font(size=12).get_text_pixel_height('Test')
+        8.796
+        >>> Font(size=12, weight='bold', style='italic').get_text_pixel_height('Test')
+        8.783999999999999
+        """
         return (self._afm.string_width_height(val)[1] / 1000) * self.size

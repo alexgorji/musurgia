@@ -48,4 +48,4 @@ class TestStraightLine(TestCase):
             self.pdf.draw_ruler('h')
             self.pdf.draw_ruler('v')
             self.sl.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)

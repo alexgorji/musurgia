@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from math import ceil
+from typing import List
 
 from musurgia.pdf.margined import Margined
 from musurgia.pdf.positioned import Positioned
@@ -12,17 +13,17 @@ class DrawObject(ABC, Positioned, Margined):
         super().__init__(*args, **kwargs)
 
     @property
-    def clipping_area(self):
+    def clipping_area(self) -> 'ClippingArea':
         return self._clipping_area
 
     @property
-    def show(self):
+    def show(self) -> bool:
         return self._show
 
     @show.setter
-    def show(self, val):
+    def show(self, val: bool):
         if not isinstance(val, bool):
-            raise TypeError(f"show.value must be of type bool not{type(val)}")
+            raise TypeError(f"show.value must be of type bool not {type(val)}")
         self._show = val
 
     @abstractmethod
@@ -47,10 +48,10 @@ class DrawObject(ABC, Positioned, Margined):
         self.clipping_area.pdf = pdf
         self.clipping_area.draw()
 
-    def get_relative_position(self):
+    def get_relative_position(self) -> dict:
         return {'relative_x': self.relative_x, 'relative_y': self.relative_y}
 
-    def get_margins(self):
+    def get_margins(self) -> dict:
         return {'left_margin': self.left_margin, 'top_margin': self.top_margin, 'right_margin': self.right_margin,
                 'bottom_margin': self.bottom_margin}
 
@@ -63,21 +64,7 @@ class ClippingArea:
         self.right_margin = right_margin
         self.top_margin = top_margin
 
-    @property
-    def row_width(self):
-        if not self.pdf:
-            raise AttributeError('set pdf first!')
-        return self.pdf.w - self.pdf.l_margin - self.pdf.r_margin - self.left_margin - self.right_margin
-
-    def row_height(self):
-        if not self.pdf:
-            raise AttributeError('set pdf first!')
-        return self.draw_object.get_height()
-
-    def _prepare_page(self):
-        self.pdf.translate_page_margins()
-        self.pdf.translate(self.left_margin, self.top_margin)
-
+    # private methods
     def _add_page(self):
         self.pdf.add_page()
         self._prepare_page()
@@ -88,10 +75,25 @@ class ClippingArea:
             self.pdf.translate(index * -self.row_width, 0)
             self.draw_object.draw(self.pdf)
 
-    def get_number_of_rows(self):
-        return int(ceil(self.draw_object.get_width() / self.row_width))
+    def _prepare_page(self):
+        self.pdf.translate_page_margins()
+        self.pdf.translate(self.left_margin, self.top_margin)
 
-    def draw(self):
+    # public properties
+    def row_height(self):
+        if not self.pdf:
+            raise AttributeError('set pdf first!')
+        return self.draw_object.get_height()
+
+    @property
+    def row_width(self):
+        if not self.pdf:
+            raise AttributeError('set pdf first!')
+        return self.pdf.w - self.pdf.l_margin - self.pdf.r_margin - self.left_margin - self.right_margin
+
+    # public methods
+
+    def draw(self) -> None:
         self.pdf.translate(self.left_margin, self.top_margin)
         for index in range(self.get_number_of_rows()):
             if index != 0:
@@ -99,3 +101,6 @@ class ClippingArea:
             if self.pdf.absolute_y > self.pdf.h - self.pdf.b_margin:
                 self._add_page()
             self._draw_with_clip(index)
+
+    def get_number_of_rows(self):
+        return int(ceil(self.draw_object.get_width() / self.row_width))

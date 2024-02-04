@@ -25,7 +25,7 @@ class TestStraightLineLabels(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(20, 20)
             self.hls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_horizontal_below(self):
         self.hls.straight_line.add_text_label('one below', placement='below')
@@ -37,7 +37,7 @@ class TestStraightLineLabels(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(20, 20)
             self.hls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_horizontal_left(self):
         self.hls.straight_line.add_text_label('one left', placement='left')
@@ -49,7 +49,7 @@ class TestStraightLineLabels(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(20, 20)
             self.hls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_vertical_above(self):
         self.vls.straight_line.add_text_label('one above')
@@ -61,7 +61,7 @@ class TestStraightLineLabels(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(20, 20)
             self.vls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_vertical_above_with_relative_y(self):
         self.vls.relative_y = -10
@@ -75,7 +75,7 @@ class TestStraightLineLabels(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(20, 20)
             self.vls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_vertical_below(self):
         self.vls.straight_line.add_text_label('one below', placement='below')
@@ -87,7 +87,7 @@ class TestStraightLineLabels(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(20, 20)
             self.vls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_vertical_left(self):
         self.vls.straight_line.add_text_label('one left', placement='left')
@@ -99,7 +99,7 @@ class TestStraightLineLabels(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(20, 20)
             self.vls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_vertical_left_with_top_margin(self):
         self.vls.top_margin = 20
@@ -112,4 +112,4 @@ class TestStraightLineLabels(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(20, 20)
             self.vls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)

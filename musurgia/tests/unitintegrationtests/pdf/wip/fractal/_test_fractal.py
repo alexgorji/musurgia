@@ -45,7 +45,7 @@ class TestFractal(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 10)
             self.ft.manual_graphic.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_with_text(self):
         leaf = self.ft.get_leaves()[1]
@@ -62,7 +62,7 @@ class TestFractal(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 10)
             self.ft.manual_graphic.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_filled_tree(self):
         ft = FractalTree(value=20)
@@ -76,7 +76,7 @@ class TestFractal(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 10)
             ft.manual_graphic.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_unpruned_tree_with_some_text(self):
         ft = FractalTree(value=20)
@@ -103,6 +103,6 @@ class TestFractal(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 10)
             ft.manual_graphic.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     

@@ -1,6 +1,6 @@
 from musurgia.pdf.font import Font
 from musurgia.pdf.masterslave import PositionSlave
-from musurgia.pdf.newdrawobject import DrawObject
+from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.pdfunit import PdfUnit
 
 
@@ -113,6 +113,7 @@ class TextLabel(PositionSlave, Text):
         if val not in permitted:
             raise ValueError(f'placement.value {val} must be in {permitted}')
         self._placement = val
+
 
 class PageText(Text):
     def __init__(self, value, v_position=None, h_position=None, *args, **kwargs):

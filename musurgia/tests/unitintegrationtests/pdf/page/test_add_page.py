@@ -34,7 +34,7 @@ class TestAddPage(TestCase):
         # print(self.pdf.absolute_positions)
         vsl.draw(self.pdf)
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_page_number(self):
         for i in range(3):
@@ -42,7 +42,7 @@ class TestAddPage(TestCase):
         self.pdf.draw_page_numbers(v_position='center', h_position='bottom')
 
         with self.file_path(path, 'page_number', 'pdf') as pdf_path:
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_in_reversed_order(self):
         self.pdf.translate(30, 30)
@@ -66,4 +66,4 @@ class TestAddPage(TestCase):
         self.pdf.draw_page_numbers(v_position='center', h_position='bottom')
 
         with self.file_path(path, 'draw_in_reversed_order', 'pdf') as pdf_path:
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)

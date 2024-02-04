@@ -1,4 +1,4 @@
-from musurgia.pdf.newdrawobject import DrawObject
+from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.named import Named
 from musurgia.pdf.positioned import RelativeXNotSettableError, RelativeYNotSettableError

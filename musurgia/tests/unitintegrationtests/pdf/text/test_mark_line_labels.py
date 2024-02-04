@@ -25,7 +25,7 @@ class TestMarkLineLabels(TestCase):
             self.pdf.draw_ruler('v')
 
             self.ls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_one_above(self):
         ml = self.ls.start_mark_line
@@ -38,7 +38,7 @@ class TestMarkLineLabels(TestCase):
             # self.pdf.draw_ruler('v')
             self.pdf.translate(30, 30)
             self.ls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_below(self):
         ml = self.ls.start_mark_line
@@ -51,7 +51,7 @@ class TestMarkLineLabels(TestCase):
             self.pdf.draw_ruler('h')
             self.pdf.draw_ruler('v')
             self.ls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_left(self):
         ml = self.ls.start_mark_line
@@ -66,7 +66,7 @@ class TestMarkLineLabels(TestCase):
             self.pdf.draw_ruler('h')
             self.pdf.draw_ruler('v')
             self.ls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_different_sizes(self):
         ml = self.ls.start_mark_line
@@ -79,7 +79,7 @@ class TestMarkLineLabels(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 20)
             self.ls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_font_size_8(self):
         ml = self.ls.start_mark_line
@@ -92,7 +92,7 @@ class TestMarkLineLabels(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 20)
             self.ls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_below_with_different_mark_line_lengths(self):
         hsl = HorizontalSegmentedLine(lengths=[10, 15, 20])
@@ -106,7 +106,7 @@ class TestMarkLineLabels(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 10)
             hsl.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_vertical_with_left_text_labels(self):
         vsl = VerticalSegmentedLine(lengths=[10, 15, 20])
@@ -120,7 +120,7 @@ class TestMarkLineLabels(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 10)
             vsl.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_above_with_different_bottom_margins(self):
         ml = self.ls.start_mark_line
@@ -135,7 +135,7 @@ class TestMarkLineLabels(TestCase):
             self.pdf.draw_ruler('v')
 
             self.ls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_left_position(self):
         ml = self.ls.start_mark_line
@@ -153,4 +153,4 @@ class TestMarkLineLabels(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(30, 30)
             self.ls.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)

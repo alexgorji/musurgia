@@ -28,7 +28,7 @@ class Test(TestCase):
         tl.unit = Fraction(Fraction(printable), Fraction(20))
         tl.show_interval = 10
         tl.draw(pdf)
-        pdf.write(pdf_path)
+        pdf.write_to_path(pdf_path)
         self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_draw_ruler_with_break(self):
@@ -39,7 +39,7 @@ class Test(TestCase):
         tl.unit = Fraction(Fraction(printable), Fraction(20))
         tl.show_interval = 10
         tl.draw(pdf)
-        pdf.write(pdf_path)
+        pdf.write_to_path(pdf_path)
         self.assertCompareFiles(actual_file_path=pdf_path)
 
     def test_time_line_with_voices(self):
@@ -51,4 +51,4 @@ class Test(TestCase):
         #     segment.show = True
 
         tl.draw(self.pdf)
-        self.pdf.write(pdf_path)
+        self.pdf.write_to_path(pdf_path)

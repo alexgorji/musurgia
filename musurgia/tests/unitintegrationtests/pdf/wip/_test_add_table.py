@@ -15,4 +15,4 @@ class Test(TestCase):
         # pdf = Pdf()
         # table = Table(number_of_rows=20, relative_x=70)
         # table.draw(pdf=pdf)
-        # pdf.write(pdf_path)
+        # pdf.write_to_path(pdf_path)

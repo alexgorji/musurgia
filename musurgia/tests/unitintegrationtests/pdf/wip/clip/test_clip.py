@@ -2,7 +2,7 @@ from math import ceil
 from pathlib import Path
 
 from musurgia.pdf.line import HorizontalRuler, HorizontalSegmentedLine
-from musurgia.pdf.newdrawobject import ClippingArea
+from musurgia.pdf.drawobject import ClippingArea
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.rowcolumn import DrawObjectColumn
 from musurgia.pdf.text import PageText
@@ -20,7 +20,7 @@ class TestClip(TestCase):
         self.pdf.rect(0, 0, 50, 50)
         self.pdf.clip_rect(0, 0, 50, 50)
         self.pdf.line(10, 20, 100, 100)
-        self.pdf.write(pdf_path)
+        self.pdf.write_to_path(pdf_path)
         self.assertCompareFiles(pdf_path)
 
     def test_line_break(self):
@@ -38,7 +38,7 @@ class TestClip(TestCase):
                 if index != 0:
                     self.pdf.translate(0, 30)
                 draw_with_clip(index)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_column_line_break(self):
         def draw_with_clip(index):
@@ -58,7 +58,7 @@ class TestClip(TestCase):
                 if index != 0:
                     self.pdf.translate(0, c.get_height())
                 draw_with_clip(index)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_column_page_break(self):
         self.pdf.t_margin = 15
@@ -98,7 +98,7 @@ class TestClip(TestCase):
                 if self.pdf.absolute_y > self.pdf.h - self.pdf.b_margin:
                     _add_page()
                 draw_with_clip(index)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_with_clipping_area(self):
         c = DrawObjectColumn()
@@ -109,7 +109,7 @@ class TestClip(TestCase):
         self.pdf.translate_page_margins()
         ca.draw()
         with self.file_path(path, 'with_clipping_area', 'pdf') as pdf_path:
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_clipped_draw(self):
         c = DrawObjectColumn()
@@ -129,4 +129,4 @@ class TestClip(TestCase):
             self.pdf.draw_ruler('h')
             self.pdf.draw_ruler('v')
         with self.file_path(path, 'clipped_draw', 'pdf') as pdf_path:
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
