@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Name: musurgia
+Version: 1.0b0
+Summary: Tools for algorithmic composition.
+Home-page: https://github.com/alexgorji/musurgia.git
+Author: Alex Gorji
+Author-email: aligorji@hotmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/x-rst
+Requires-Dist: musicscore
