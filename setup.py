@@ -10,7 +10,7 @@ setuptools.setup(
     description="Tools for algorithmic composition.",
     url="https://github.com/alexgorji/musurgia.git",
     packages=setuptools.find_packages(),
-    install_requires=['musicscore'],
+    install_requires=['matplotlib==3.8.2', 'fpdf==1.7.2'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",

@@ -9,3 +9,4 @@ Content
    :maxdepth: 2
 
    musurgia_intro
+   api/musurgia
