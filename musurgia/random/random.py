@@ -15,9 +15,9 @@ class Random:
 
         from musurgia.random import Random
 
-    Random is a class for creating pseudo random series of elements. Elements are chosen from a list of elements
+    Random is a class for creating pseudo random series of values. Values are chosen from a list of values
     called a 'pool' which does not contain any duplicates. The property 'periodicity' defines the minimum number of
-    other elements which must be given out before an element can appear again.
+    other values which must be given out before a value can appear again.
 
 
     """
@@ -107,29 +107,31 @@ class Random:
         self._forbidden_list = values
 
     @property
-    def seed(self):
+    def counter(self) -> int:
         """
-        Get and set ``seed`` of python random which is used to randomly choose an element.
+        Keeps track of the number of times :obj:`iterator` is called
+
+        :return: NoneNegativeInteger
         """
-        return self._seed
-
-    @seed.setter
-    def seed(self, value):
-        self._seed = value
-        self.current_random.seed(value)
-
-    @property
-    def counter(self):
         return self._counter
 
     @property
-    def result(self):
+    def result(self) -> list:
+        """
+        :return: list of all randomly chosen values
+        """
         if self._result is None:
             self._result = []
         return self._result
 
     @property
     def iterator(self):
+        """
+        The core methode of Random. This is a generator which can be called directly or via :obj:`__iter__` method to
+        generate random values. :obj:`__next__` method calls :obj:`iterator.__next__`.
+
+        :return: a random value out of :obj:`pool` considering :obj:`seed`, :obj:`periodicity` and :obj:`forbidden_list`
+        """
         if not self.pool:
             raise RandomPoolError('pool is not set!')
         while True:
@@ -154,18 +156,36 @@ class Random:
             random_element = self.pool[self.current_random.randrange(len(self.pool))]
             while check(random_element) is False:
                 random_element = self.pool[self.current_random.randrange(len(self.pool))]
-
+            self._counter += 1
+            self.result.append(random_element)
             yield random_element
 
+    @property
+    def seed(self):
+        """
+        Set and get ``seed.a`` value of python random function which is used to randomly choose an element.
+
+        .. seealso:: https://docs.python.org/3/library/random.html#random.seed
+
+        """
+        return self._seed
+
+    @seed.setter
+    def seed(self, value):
+        self._seed = value
+        self.current_random.seed(value)
+
     def __iter__(self):
+        """
+        :return: :obj:`iterator`
+        """
         return self.iterator
 
     def __next__(self):
-        next_el = self.iterator.__next__()
-        self._counter += 1
-        self.result.append(next_el)
-
-        return next_el
+        """
+        :return: :obj:`iterator.__next__`
+        """
+        return self.iterator.__next__()
 
     def __deepcopy__(self, memodict={}):
         copied = self.__class__(pool=self.pool, periodicity=self.periodicity,
