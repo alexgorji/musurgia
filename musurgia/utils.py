@@ -1,3 +1,10 @@
+from pprint import pprint
+
+
+class NoneNegativeInteger(type):
+    pass
+
+
 class MusurgiaTypeError(TypeError):
     """
     :param t: ``type``
