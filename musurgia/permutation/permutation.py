@@ -1,184 +1,276 @@
 from itertools import cycle
+from pprint import pprint
+
+from musurgia.utils import transpose_3d_vertically, transpose_3d_half_diagonally, transpose_3d_diagonally, \
+    MusurgiaTypeError
 
 
-def permute(input_list: list, permutation_order: list[int]) -> list:
+def permute(input_list: list, permutation_order: tuple[int, ...]) -> list:
     """
     Permutes a list of values by reference to another list named permutation_order.
     :param input_list: A list of values to permute
-    :param permutation_order: A list consisting of all integers between 1 without duplications.
+    :param permutation_order: A tuple consisting of all integers between 1 and lenght of input_list - 1 without duplications.
     :return: permuted list of values
 
     >>> permute([10, 20, 30, 40], [3, 2, 4, 1])
+    Traceback (most recent call last):
+       ...
+    TypeError: permutation_order must be of type tuple
+
+    >>> permute(None, [3, 2, 4, 1])
+    Traceback (most recent call last):
+       ...
+    TypeError: input_list must be of type list
+
+    >>> permute([10, 20, 30, 40], None)
+    Traceback (most recent call last):
+       ...
+    TypeError: permutation_order must be of type tuple
+
+    >>> permute([10, 20, 30, 40], (3, 2, 4))
+    Traceback (most recent call last):
+       ...
+    ValueError: Invalid permutation_order (3, 2, 4) for input_list [10, 20, 30, 40]: wrong length
+
+    >>> permute([10, 20, 30, 40], (3, 2, 4, 1, 3))
+    Traceback (most recent call last):
+       ...
+    ValueError: Invalid permutation_order (3, 2, 4, 1, 3) for input_list [10, 20, 30, 40]: wrong length
+
+    >>> permute([10, 20, 30, 40], (3, 2, 4, 5))
+    Traceback (most recent call last):
+       ...
+    ValueError: Invalid permutation_order (3, 2, 4, 5) for input_list [10, 20, 30, 40]: {2, 3, 4, 5} != {1, 2, 3, 4}
+
+    >>> permute([10, 20, 30, 40], (3, 2, 4, 1))
     [30, 20, 40, 10]
     """
-    if input_list is None:
-        raise ValueError('input_list cannot be None')
-    if permutation_order is None:
-        raise ValueError('permutation_order cannot be None')
+
+    if not isinstance(input_list, list):
+        raise TypeError('input_list must be of type list')
+
+    if not isinstance(permutation_order, tuple):
+        raise TypeError('permutation_order must be of type tuple')
+
+    if len(permutation_order) != len(input_list):
+        raise ValueError(f'Invalid permutation_order {permutation_order} for input_list {input_list}: wrong length')
+
     if set(permutation_order) != set(range(1, len(input_list) + 1)):
         raise ValueError(
             f'Invalid permutation_order {permutation_order} for input_list {input_list}: {set(permutation_order)} != {set(range(1, len(input_list) + 1))}')
-    if len(permutation_order) != len(input_list):
-        raise ValueError(f'Invalid permutation_order {permutation_order} for input_list {input_list}: wrong length')
+
     return [input_list[m - 1] for m in permutation_order]
 
 
-def self_permute(permutation_order: list[int]) -> list[list[int]]:
+def get_self_permutation_2d(permutation_order: tuple[int, ...]) -> list[tuple[int, ...]]:
     """
     This is a function for applying the `permutation_order` to itself.
 
-    :param permutation_order: A list consisting of all integers between 1 and a higher integer
+    :param permutation_order: A tuple consisting of all integers between 1 and a higher integer
 
-    :return: A list of `permutations_orders` as a result of applying the `permutation_order` to itself recursively. The
+    :return: A list of `permutations_orders`  as a result of applying the `permutation_order` to itself recursively. The
     result has always a length equal to `len(permutation_order)`.
     Each permuted permutation order will be permuted again. If all integers of the original permuation are not in their
-    natural order (`[1, 2, 3, 4, ...])` the resulted list will be distinctive. Otherwise there will be duplicates.
+    natural order (natural orders=`(1, 2, 3, 4, ...)`) the resulted list will be distinctive. Otherwise there will be duplicates.
 
-    >>> self_permute([4, 2, 3, 1])
-    [[4, 2, 3, 1], [1, 2, 3, 4], [4, 2, 3, 1], [1, 2, 3, 4]]
+    >>> get_self_permutation_2d([4, 2, 3, 1])
+    Traceback (most recent call last):
+       ...
+    TypeError: permutation_order must be tuple
 
-    >>> self_permute([1, 3, 2])
-    [[1, 3, 2], [1, 2, 3], [1, 3, 2]]
+    >>> get_self_permutation_2d((3, 1, 2))
+    [(3, 1, 2), (2, 3, 1), (1, 2, 3)]
 
-    >>> self_permute([1, 2, 3])
-    [[1, 2, 3], [1, 2, 3], [1, 2, 3]]
+    >>> get_self_permutation_2d((1, 3, 2))
+    [(1, 3, 2), (1, 2, 3), (1, 3, 2)]
+
+    >>> get_self_permutation_2d((1, 2, 3))
+    [(1, 2, 3), (1, 2, 3), (1, 2, 3)]
+
+    >>> get_self_permutation_2d((3, 1, 4, 2))
+    [(3, 1, 4, 2), (4, 3, 2, 1), (2, 4, 1, 3), (1, 2, 3, 4)]
+
+    >>> get_self_permutation_2d((4, 2, 3, 1))
+    [(4, 2, 3, 1), (1, 2, 3, 4), (4, 2, 3, 1), (1, 2, 3, 4)]
 
     """
+    if not isinstance(permutation_order, tuple):
+        raise TypeError('permutation_order must be tuple')
+
     output = [permutation_order]
 
     for i in range(1, len(permutation_order)):
-        output.append(permute(output[i - 1], permutation_order))
+        output.append(tuple(permute(list(output[i - 1]), permutation_order)))
 
     return output
 
 
-def get_self_multiplied_permutation(permutation_order):
+def get_self_permutation_3d(permutation_order: tuple[int, ...]) -> list[list[tuple[int, ...]]]:
     """
-    This is a function for applying the `permutation_order` to itself in a higher order compared to :obj:`self_permute`.
-    If :obj:`self_permute` is a two dimensional reflexive operation, :obj:`get_self_multiplied_permutation` is a three
+    This is a function for applying the `permutation_order` to itself in a higher order compared to :obj:`get_self_permutation_2d`.
+    If :obj:`get_self_permutation_2d` is a two dimensional reflexive operation, :obj:`get_self_permutation_3d` is a three
     dimensional one. 
     
     :param permutation_order: A list consisting of all integers between 1 and a higher integer
     
     :return:
 
+    >>> get_self_permutation_3d([4, 2, 3, 1])
+    Traceback (most recent call last):
+       ...
+    TypeError: permutation_order must be tuple
 
-    >>> get_self_multiplied_permutation([3, 1, 2])
-    [[[1, 2, 3], [3, 1, 2], [2, 3, 1]], [[2, 3, 1], [1, 2, 3], [3, 1, 2]], [[3, 1, 2], [2, 3, 1], [1, 2, 3]]]
+    >>> pprint(get_self_permutation_3d((3, 1, 2)))
+    [[(3, 1, 2), (2, 3, 1), (1, 2, 3)],
+     [(1, 2, 3), (3, 1, 2), (2, 3, 1)],
+     [(2, 3, 1), (1, 2, 3), (3, 1, 2)]]
 
-    >>> get_self_multiplied_permutation([2, 1, 3])
-    [[[1, 2, 3], [2, 1, 3], [2, 1, 3]], [[2, 1, 3], [1, 2, 3], [2, 1, 3]], [[1, 2, 3], [2, 1, 3], [2, 1, 3]]]
-    
-    >>> get_self_multiplied_permutation([4, 2, 1, 3])
-    [[[4, 2, 1, 3], [3, 2, 4, 1], [4, 2, 1, 3], [1, 2, 3, 4]], [[1, 2, 3, 4], [3, 2, 4, 1], [4, 2, 1, 3], [4, 2, 1, 3]], [[4, 2, 1, 3], [3, 2, 4, 1], [1, 2, 3, 4], [4, 2, 1, 3]], [[4, 2, 1, 3], [3, 2, 4, 1], [4, 2, 1, 3], [1, 2, 3, 4]]]
+    >>> pprint(get_self_permutation_3d((1, 3, 2)))
+    [[(1, 3, 2), (1, 2, 3), (1, 3, 2)],
+     [(1, 3, 2), (1, 3, 2), (1, 2, 3)],
+     [(1, 3, 2), (1, 2, 3), (1, 3, 2)]]
 
+    >>> pprint(get_self_permutation_3d((1, 2, 3)))
+    [[(1, 2, 3), (1, 2, 3), (1, 2, 3)],
+     [(1, 2, 3), (1, 2, 3), (1, 2, 3)],
+     [(1, 2, 3), (1, 2, 3), (1, 2, 3)]]
 
+    >>> pprint(get_self_permutation_3d((3, 1, 4, 2)))
+    [[(3, 1, 4, 2), (4, 3, 2, 1), (2, 4, 1, 3), (1, 2, 3, 4)],
+     [(2, 4, 1, 3), (3, 1, 4, 2), (1, 2, 3, 4), (4, 3, 2, 1)],
+     [(1, 2, 3, 4), (2, 4, 1, 3), (4, 3, 2, 1), (3, 1, 4, 2)],
+     [(4, 3, 2, 1), (1, 2, 3, 4), (3, 1, 4, 2), (2, 4, 1, 3)]]
+
+    >>> pprint(get_self_permutation_3d((3, 4, 2, 1)))
+    [[(3, 4, 2, 1), (2, 1, 4, 3), (4, 3, 1, 2), (1, 2, 3, 4)],
+     [(4, 3, 1, 2), (1, 2, 3, 4), (2, 1, 4, 3), (3, 4, 2, 1)],
+     [(2, 1, 4, 3), (3, 4, 2, 1), (1, 2, 3, 4), (4, 3, 1, 2)],
+     [(1, 2, 3, 4), (4, 3, 1, 2), (3, 4, 2, 1), (2, 1, 4, 3)]]
+
+    >>> pprint(get_self_permutation_3d((4, 2, 3, 1)))
+    [[(4, 2, 3, 1), (1, 2, 3, 4), (4, 2, 3, 1), (1, 2, 3, 4)],
+     [(1, 2, 3, 4), (1, 2, 3, 4), (4, 2, 3, 1), (4, 2, 3, 1)],
+     [(4, 2, 3, 1), (1, 2, 3, 4), (4, 2, 3, 1), (1, 2, 3, 4)],
+     [(1, 2, 3, 4), (1, 2, 3, 4), (4, 2, 3, 1), (4, 2, 3, 1)]]
     """
-    self_permuted_order = self_permute(permutation_order)
-    multiplied = [permute(self_permuted_order, current_order) for current_order in self_permuted_order]
-    return multiplied
 
+    self_permuted_order = get_self_permutation_2d(permutation_order)
+    output = [self_permuted_order]
 
-def get_reordered_self_multiplied_permutation(permutation_order):
-    def _reorder(matrix):
-        index_of_first_row = None
-        for index_of_first_row in range(len(matrix)):
-            if matrix[index_of_first_row][0] == permutation_order:
-                break
-        output = []
-        for i in range(index_of_first_row, index_of_first_row + len(matrix)):
-            output.append(matrix[i % len(matrix)])
-        return output
-
-    multiplied = get_self_multiplied_permutation(permutation_order)
-    return _reorder(multiplied)
-
-
-def get_vertical_self_multiplied_permutation(permutation_order):
-    def _transpose(matrix):
-        output = []
-        for i in range(len(matrix)):
-            temp = []
-            for j in range(len(matrix)):
-                temp2 = []
-                for k in range(len(matrix)):
-                    temp2.append(matrix[i][k][j])
-                temp.append(temp2)
-            output.append(temp)
-        return output
-
-    multiplied = get_self_multiplied_permutation(permutation_order)
-    return _transpose(multiplied)
-
-
-def permute_matrix_rowwise(matrix, main_permutation_order):
-    lp = LimitedPermutation(main_permutation_order=main_permutation_order, input_list=[1, 2, 3, 4, 5, 6, 7])
-    output = []
-    for row in matrix:
-        permutation_order = lp.__next__()
-        output.append(permute(input_list=row, permutation_order=permutation_order))
+    for i in range(1, len(self_permuted_order)):
+        output.append(permute(list(output[i - 1]), permutation_order))
     return output
 
 
-def invert_matrix(matrix):
-    return [x for x in zip(*matrix)]
+# def permute_matrix_rowwise(matrix, main_permutation_order):
+#     lp = LimitedPermutation(main_permutation_order=main_permutation_order, input_list=[1, 2, 3, 4, 5, 6, 7])
+#     output = []
+#     for row in matrix:
+#         permutation_order = lp.__next__()
+#         output.append(permute(input_list=row, permutation_order=permutation_order))
+#     return output
+#
 
-
-def permute_matrix_columnwise(matrix, main_permutation_order):
-    inverted_matrix = invert_matrix(matrix)
-    inverted_matrix = permute_matrix_rowwise(inverted_matrix, main_permutation_order)
-    return invert_matrix(inverted_matrix)
-
-
-def permute_matrix(matrix, main_permutation_order):
-    output = permute_matrix_rowwise(matrix, main_permutation_order)
-    return permute_matrix_columnwise(output, main_permutation_order)
+#
+#
+# def invert_matrix(matrix):
+#     return [x for x in zip(*matrix)]
+#
+#
+# def permute_matrix_columnwise(matrix, main_permutation_order):
+#     inverted_matrix = invert_matrix(matrix)
+#     inverted_matrix = permute_matrix_rowwise(inverted_matrix, main_permutation_order)
+#     return invert_matrix(inverted_matrix)
+#
+#
+# def permute_matrix(matrix, main_permutation_order):
+#     output = permute_matrix_rowwise(matrix, main_permutation_order)
+#     return permute_matrix_columnwise(output, main_permutation_order)
 
 
 class LimitedPermutation:
+    """
+    LimitedPermutation is inspired from Gérard Grisey's permutation technique.
+    >>> lp = LimitedPermutation(('a', 'b', 'c'), (3, 1, 2))
+    Traceback (most recent call last):
+       ...
+    musurgia.utils.MusurgiaTypeError: LimitedPermutation.input_list: Value ('a', 'b', 'c') must be of type list not tuple.
+
+    >>> lp = LimitedPermutation(['a', 'b', 'c'], [3, 1, 2])
+    Traceback (most recent call last):
+       ...
+    TypeError: permutation_order must be tuple
+
+    >>> lp = LimitedPermutation(['a', 'b', 'c'], (3, 1, 2))
+    >>> pprint(lp.get_permutation_orders())
+    [[(3, 1, 2), (2, 3, 1), (1, 2, 3)],
+     [(1, 2, 3), (3, 1, 2), (2, 3, 1)],
+     [(2, 3, 1), (1, 2, 3), (3, 1, 2)]]
+    >>> elements = [next(lp) for _ in range(6)]
+    >>> [(el.value, el.order) for el in elements]
+    [('c', 3), ('a', 1), ('b', 2), ('b', 2), ('c', 3), ('a', 1)]
+
+    >>> lp = LimitedPermutation(['a', 'b', 'c'], (3, 1, 2), first_index=(3, 2))
+    >>> elements = [next(lp) for _ in range(9)]
+    >>> [(el.value, el.order) for el in elements]
+    [('a', 1), ('b', 2), ('c', 3), ('c', 3), ('a', 1), ('b', 2), ('c', 3), ('a', 1), ('b', 2)]
+    """
+
     class Element:
         def __init__(self, value, order):
             self.value = value
             '''order of element in the original input_list'''
             self.order = order
 
-    def __init__(self, input_list, main_permutation_order, multi=(1, 1), reading_direction='horizontal'):
+    def __init__(self, input_list: list, main_permutation_order: tuple, first_index: tuple = (1, 1),
+                 reading_direction: str = 'horizontal'):
 
-        self._iterator = None
+        self._input_list = None
+        self._main_permutation_order = None
+        self._permutation_order_iterator = None
         self._element_generator = None
-        self._multiplied_orders = None
-        self._multi = None
+        self._permutation_orders = None
+
+        self._first_index = None
         self._reading_direction = None
 
         self.input_list = input_list
-        self.main_permutation_order = list(main_permutation_order)
-        self.multi = multi
+        self.main_permutation_order = main_permutation_order
         self.reading_direction = reading_direction
 
-    @staticmethod
-    def get_next_multi(multi, input_length):
-        m_1 = multi[0]
-        m_2 = multi[1] + 1
-        m_1, m_2 = ((m_1 - 1) % input_length) + 1, ((m_2 - 1) % input_length) + 1
-        return m_1, m_2
+        self.first_index = first_index
 
+    # private methods
+    def _get_flatten_permutation_orders(self):
+        return [order for orders in self.get_permutation_orders() for order in orders]
+
+    def _populate_permutation_orders(self):
+        self._permutation_orders = get_self_permutation_3d(self.main_permutation_order)
+        if self.reading_direction == 'vertical':
+            self._permutation_orders = transpose_3d_vertically(self._permutation_orders)
+        elif self.reading_direction == 'diagonal':
+            self._permutation_orders = transpose_3d_diagonally(self._permutation_orders)
+        elif self.reading_direction == 'half-diagonal':
+            self._permutation_orders = transpose_3d_half_diagonally(self._permutation_orders)
+        else:
+            pass
+
+    # properties
     @property
-    def reading_direction(self):
-        return self._reading_direction
+    def first_index(self):
+        """
+        >>> lp = LimitedPermutation(input_list=['a', 'b', 'c'], main_permutation_order=(3, 1, 2), first_index=(6, 5))
+        >>> lp.first_index
+        (1, 2)
 
-    @reading_direction.setter
-    def reading_direction(self, val):
-        if val not in ('horizontal', 'vertical'):
-            raise ValueError()
-        self._multiplied_orders = None
-        self._reading_direction = val
+        :return:
+        """
+        return self._first_index
 
-    @property
-    def multi(self):
-        return self._multi
-
-    @multi.setter
-    def multi(self, val):
+    @first_index.setter
+    def first_index(self, val):
+        if not isinstance(val, tuple):
+            raise TypeError(f"{val} must be of type tuple")
         m_1 = val[0]
         m_2 = val[1]
         input_length = len(self.input_list)
@@ -186,58 +278,104 @@ class LimitedPermutation:
                 (m_2 - 1) % input_length) + 1
         if m_1 == 0:
             m_1 = len(self.input_list)
-        self._multi = (m_1, m_2)
+        self._first_index = (m_1, m_2)
 
     @property
-    def multiplied_orders(self):
-        if self._multiplied_orders is None:
-            if self.reading_direction == 'horizontal':
-                multiplied = get_reordered_self_multiplied_permutation(self.main_permutation_order)
-            else:
-                multiplied = get_vertical_self_multiplied_permutation(self.main_permutation_order)
+    def input_list(self):
+        return self._input_list
 
-            self._multiplied_orders = [order for orders in multiplied for order in orders]
-        return self._multiplied_orders
-
-    @property
-    def permutation_order(self):
-        index = (self.multi[0] - 1) * len(self.input_list) + self.multi[1] - 1
-        return self.multiplied_orders[index]
+    @input_list.setter
+    def input_list(self, val):
+        if not isinstance(val, list):
+            raise MusurgiaTypeError(t='list', v=val, class_name='LimitedPermutation', property_name='input_list')
+        self._input_list = val
 
     @property
-    def iterator(self):
-        if self._iterator is None:
-            self._iterator = cycle(self.multiplied_orders)
-            if self.multi is None:
-                raise Exception('multi must be set first')
+    def main_permutation_order(self):
+        return self._main_permutation_order
 
-            first_index = (self.multi[0] - 1) * len(self.main_permutation_order) + (self.multi[1] - 1)
-            for i in range(first_index):
-                self._iterator.__next__()
-
-        return self._iterator
-
-    def __next__(self):
-        return self.iterator.__next__()
+    @main_permutation_order.setter
+    def main_permutation_order(self, val):
+        self._main_permutation_order = val
+        if self.reading_direction:
+            self._populate_permutation_orders()
 
     @property
-    def element_generator(self):
+    def reading_direction(self):
+        """
+        >>> lp = LimitedPermutation(['a', 'b', 'c'], (3, 1, 2))
+        >>> pprint(lp.get_permutation_orders())
+        [[(3, 1, 2), (2, 3, 1), (1, 2, 3)],
+         [(1, 2, 3), (3, 1, 2), (2, 3, 1)],
+         [(2, 3, 1), (1, 2, 3), (3, 1, 2)]]
+
+        >>> lp = LimitedPermutation(['a', 'b', 'c'], (3, 1, 2), reading_direction='vertical')
+        >>> pprint(lp.get_permutation_orders())
+        [[(3, 1, 2), (1, 2, 3), (2, 3, 1)],
+         [(2, 3, 1), (3, 1, 2), (1, 2, 3)],
+         [(1, 2, 3), (2, 3, 1), (3, 1, 2)]]
+
+        >>> lp = LimitedPermutation(['a', 'b', 'c'], (3, 1, 2), reading_direction='diagonal')
+        >>> pprint(lp.get_permutation_orders())
+        [[(3, 2, 1), (1, 3, 1), (2, 3, 2)],
+         [(2, 1, 3), (3, 2, 3), (1, 2, 1)],
+         [(1, 3, 2), (2, 1, 2), (3, 1, 3)]]
+
+        >>> lp = LimitedPermutation(['a', 'b', 'c'], (3, 1, 2), reading_direction='half-diagonal')
+        >>> pprint(lp.get_permutation_orders())
+        [[(3, 2, 1), (1, 3, 2), (2, 1, 3)],
+         [(2, 1, 3), (3, 2, 1), (1, 3, 2)],
+         [(1, 3, 2), (2, 1, 3), (3, 2, 1)]]
+
+        """
+
+        return self._reading_direction
+
+    @reading_direction.setter
+    def reading_direction(self, val):
+        permitted = ['horizontal', 'vertical', 'diagonal', 'half-diagonal']
+        if val not in permitted:
+            raise ValueError(f"Invalid reading direction: {val}. Permitted values are: {permitted}")
+        self._permutation_orders = None
+        self._reading_direction = val
+        if self.main_permutation_order:
+            self._populate_permutation_orders()
+
+    # methods
+    def get_element_generator(self):
         if self._element_generator is None:
             def gen():
-                next_permutations = self.__next__()
+                next_permutations = self.get_permutation_order_iterator().__next__()
                 while True:
                     for order in next_permutations:
                         yield self.Element(value=self.input_list[order - 1], order=order)
 
-                    next_permutations = self.__next__()
+                    next_permutations = self.get_permutation_order_iterator().__next__()
 
             self._element_generator = gen()
 
         return self._element_generator
 
-    def next_element(self):
-        return self.element_generator.__next__()
+    def get_permutation_order_iterator(self):
+        if self._permutation_order_iterator is None:
+            self._permutation_order_iterator = cycle(self._get_flatten_permutation_orders())
+            if self.first_index is None:
+                raise Exception('first_index must be set first')
 
-    @property
-    def next_multi(self):
-        return self.get_next_multi(self.multi, len(self.input_list))
+            first_index = (self.first_index[0] - 1) * len(self.input_list) + (self.first_index[1] - 1)
+            for i in range(first_index):
+                self._permutation_order_iterator.__next__()
+
+        return self._permutation_order_iterator
+
+    def get_permutation_orders(self):
+        """
+        >>> pprint(LimitedPermutation(input_list=['a', 'b', 'c'], main_permutation_order=(3, 1, 2)).get_permutation_orders())
+        [[(3, 1, 2), (2, 3, 1), (1, 2, 3)],
+         [(1, 2, 3), (3, 1, 2), (2, 3, 1)],
+         [(2, 3, 1), (1, 2, 3), (3, 1, 2)]]
+        """
+        return self._permutation_orders
+
+    def __next__(self):
+        return self.get_element_generator().__next__()

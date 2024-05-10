@@ -17,24 +17,27 @@ class MusurgiaTypeError(TypeError):
     If ``method_name`` is not set ``obj`` has no impact.
     """
 
-    def __init__(self, t, v, argument_name=None, method_name=None, obj=None):
-        if argument_name and method_name and obj:
-            msg = f'{obj}.{method_name}: Value of {argument_name}={v} must be of type {t} not {type(v)}.'
+    def __init__(self, t, v, argument_name=None, method_name=None, class_name=None, property_name=None):
+        if property_name and class_name:
+            msg = f'{class_name}.{property_name}: Value {v} must be of type {t.__name__} not {v.__class__.__name__}.'
 
-        elif argument_name and method_name and not obj:
-            msg = f'{method_name}: Value of {argument_name}={v} must be of type {t} not {type(v)}.'
+        elif argument_name and method_name and class_name:
+            msg = f'{class_name}.{method_name}: Value of {argument_name}={v} must be of type {t.__name__} not {v.__class__.__name__}.'
 
-        elif argument_name and not method_name and not obj:
-            msg = f'Value of {argument_name}={v} must be of type {t} not {type(v)}.'
+        elif argument_name and method_name and not class_name:
+            msg = f'{method_name}: Value of {argument_name}={v} must be of type {t.__name__} not {v.__class__.__name__}.'
+
+        elif argument_name and not method_name and not class_name:
+            msg = f'Value of {argument_name}={v} must be of type {t.__name__} not {v.__class__.__name__}.'
         else:
-            msg = f'{v} must be of type {t} not {type(v)}.'
+            msg = f'{v} must be of type {t.__name__} not {v.__class__.__name__}.'
         self.msg = msg
         super().__init__(msg)
 
 
-def check_type(t, v, argument_name=None, method_name=None, obj=None):
+def check_type(t, v, argument_name=None, method_name=None, class_name=None, property_name=None):
     """
-    :param t: ``type``. Possible types are: [``non_negative_int``]
+    :param t: ``type``.
     :param v: ``value`` to be checked.
     :param argument_name: see :obj:`MusurgiaTypeError`
     :param method_name: see :obj:`MusurgiaTypeError`
@@ -42,6 +45,96 @@ def check_type(t, v, argument_name=None, method_name=None, obj=None):
 
     :raise: :obj:`MusurgiaTypeError`
     """
-    if t == 'non_negative_int':
+    if t == NoneNegativeInteger:
         if not isinstance(v, int) or v < 0:
-            raise MusurgiaTypeError(t, v, argument_name, method_name, obj)
+            raise MusurgiaTypeError(t, v, argument_name, method_name, class_name, property_name)
+    else:
+        if not isinstance(v, t):
+            raise MusurgiaTypeError(t, v, argument_name, method_name, class_name, property_name)
+
+
+def transpose_3d_vertically(matrix):
+    """
+    [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')],
+     [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')],
+     [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
+    >>> m = [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')], [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')], [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
+    >>> pprint(transpose_3d_vertically(m))
+    [[('a1', 'a2', 'a3'), ('b1', 'b2', 'b3'), ('c1', 'c2', 'c3')],
+     [('d1', 'd2', 'd3'), ('e1', 'e2', 'e3'), ('f1', 'f2', 'f3')],
+     [('g1', 'g2', 'g3'), ('h1', 'h2', 'h3'), ('i1', 'i2', 'i3')]]
+
+
+    :param matrix:
+    :return:
+    """
+    output = []
+    for column in range(len(matrix)):
+        row_list = []
+        for element in range(len(matrix)):
+            tmp = []
+            for row in range(len(matrix)):
+                tmp.append(matrix[row][column][element])
+            row_list.append(tuple(tmp))
+        output.append(row_list)
+    return output
+
+
+def transpose_3d_half_diagonally(matrix):
+    """
+    [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')],
+     [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')],
+     [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
+    >>> m = [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')], [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')], [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
+    >>> pprint(transpose_3d_half_diagonally(m))
+    [[('a1', 'b2', 'c3'), ('b1', 'c2', 'a3'), ('c1', 'a2', 'b3')],
+     [('d1', 'e2', 'f3'), ('e1', 'f2', 'd3'), ('f1', 'd2', 'e3')],
+     [('g1', 'h2', 'i3'), ('h1', 'i2', 'g3'), ('i1', 'g2', 'h3')]]
+
+
+    :param matrix:
+    :return:
+    """
+    output = []
+    for i in range(len(matrix)):
+        row_list = []
+        for j in range(len(matrix)):
+            tmp = []
+            for k in range(len(matrix)):
+                row = k
+                column = i
+                element = (j + k) % len(matrix)
+                tmp.append(matrix[row][column][element])
+            row_list.append(tuple(tmp))
+        output.append(row_list)
+    return output
+
+
+def transpose_3d_diagonally(matrix):
+    """
+    [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')],
+     [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')],
+     [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
+    >>> m = [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')], [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')], [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
+    >>> pprint(transpose_3d_diagonally(m))
+    [[('a1', 'b2', 'c3'), ('b1', 'c2', 'd3'), ('c1', 'd2', 'e3')],
+     [('d1', 'e2', 'f3'), ('e1', 'f2', 'g3'), ('f1', 'g2', 'h3')],
+     [('g1', 'h2', 'i3'), ('h1', 'i2', 'a3'), ('i1', 'a2', 'b3')]]
+
+
+    :param matrix:
+    :return:
+    """
+    output = []
+    for i in range(len(matrix)):
+        row_list = []
+        for j in range(len(matrix)):
+            tmp = []
+            for k in range(len(matrix)):
+                row = k
+                column = (i + (j + k) // len(matrix)) % len(matrix)
+                element = (j + k) % len(matrix)
+                tmp.append(matrix[row][column][element])
+            row_list.append(tuple(tmp))
+        output.append(row_list)
+    return output
