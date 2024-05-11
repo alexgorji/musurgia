@@ -9,6 +9,7 @@ musurgia API
 
    random
    utils
+   fractal
    pdf
 
 
