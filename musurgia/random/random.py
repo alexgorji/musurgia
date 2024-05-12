@@ -1,10 +1,8 @@
-from typing import Optional, TypeAlias
+from typing import Optional
 
-from musurgia.utils import check_type, MusurgiaTypeError, NoneNegativeInteger
+from musurgia.utils import check_type, MusurgiaTypeError, NonNegativeInteger
 
 __all__ = ['Random']
-
-NonNegativeInteger: TypeAlias = int
 
 
 class Random:
@@ -54,7 +52,7 @@ class Random:
         """
         Keeps track of the number of times :obj:`permutation_order_iterator` is called
 
-        :return: NoneNegativeInteger
+        :return: NonNegativeInteger
 
         >>> r = Random(pool=['a', 'b', 'c'], periodicity=1, seed=20)
         >>> r.counter
@@ -135,12 +133,12 @@ class Random:
         >>> Random(pool=[1, 2, 3], periodicity=-1)
         Traceback (most recent call last):
            ...
-        TypeError: Random.periodicity: Value -1 must be of type NoneNegativeInteger not int.
+        TypeError: Random.periodicity: Value -1 must be of type NonNegativeInteger not int.
 
         >>> Random(pool=[1, 2, 3], periodicity=1.6)
         Traceback (most recent call last):
            ...
-        TypeError: Random.periodicity: Value 1.6 must be of type NoneNegativeInteger not float.
+        TypeError: Random.periodicity: Value 1.6 must be of type NonNegativeInteger not float.
 
         >>> Random(pool=[1, 2, 3, 4]).periodicity
         2
@@ -163,7 +161,7 @@ class Random:
     def periodicity(self, value: Optional[int]):
         if value is not None:
             try:
-                check_type(t=NoneNegativeInteger, v=value, property_name='periodicity',
+                check_type(t=NonNegativeInteger, v=value, property_name='periodicity',
                            class_name=self.__class__.__name__)
                 self._periodicity = value
             except MusurgiaTypeError as err:

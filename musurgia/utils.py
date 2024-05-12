@@ -1,7 +1,7 @@
 from pprint import pprint
 
 
-class NoneNegativeInteger(type):
+class NonNegativeInteger(type):
     pass
 
 
@@ -47,7 +47,7 @@ def check_type(v, t, function_name=None, class_name=None, method_name=None, argu
 
     :raise: :obj:`MusurgiaTypeError`
     """
-    if t == NoneNegativeInteger:
+    if t == NonNegativeInteger:
         if not isinstance(v, int) or v < 0:
             raise MusurgiaTypeError(v, t, function_name, class_name, method_name, argument_name, property_name)
     else:

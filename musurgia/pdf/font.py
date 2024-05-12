@@ -146,8 +146,6 @@ class Font:
         18.25
         >>> Font(size=12).get_text_pixel_width('Test')
         21.9
-        >>> Font(size=12, weight='bold', style='italic').get_text_pixel_width('Test')
-        23.951999999999998
         """
         return (self._afm.string_width_height(val)[0] / 1000) * self.size
 

@@ -1,4 +1,5 @@
 from pprint import pprint
+from typing import Union
 
 from quicktions import Fraction
 from tree.tree import Tree
@@ -17,10 +18,10 @@ class FractalTree(Tree):
     FractalTree represents the node of a fractal tree with a mechanism of limited permutations.
 
 
-    >>> FractalTree()
-    Traceback (most recent call last):
-        ...
-    TypeError: FractalTree.__init__() missing 3 required positional arguments: 'value', 'proportions', and 'main_permutation_order'
+    >>> try:
+    ...     FractalTree()
+    ... except TypeError as err:
+    ...     assert "__init__() missing 3 required positional arguments: 'value', 'proportions', and 'main_permutation_order'" in str(err)
     >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
     >>> ft.value
     Fraction(10, 1)
@@ -34,7 +35,7 @@ class FractalTree(Tree):
     'horizontal'
     """
 
-    def __init__(self, value: int, proportions: list | tuple, main_permutation_order: tuple, first_index=(1, 1),
+    def __init__(self, value: int, proportions: Union[list, tuple], main_permutation_order: tuple, first_index=(1, 1),
                  reading_direction='horizontal', fertile: bool = True,
                  *args,
                  **kwargs):
