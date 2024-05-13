@@ -240,43 +240,45 @@ class FractalTree(Tree):
         >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
         >>> ft.change_value(20)
         >>> ft.get_value()
-        20
+        Fraction(20, 1)
+        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
+        >>> ft.add_layer()
+        >>> ft.get_children()[0].change_value(10)
+        >>> ft. get_value()
+        Fraction(15, 1)
+        >>> [child.get_value() for child in ft.get_children()]
+        [Fraction(10, 1), Fraction(5, 3), Fraction(10, 3)]
+        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
+        >>> ft.add_layer()
+        >>> ft.change_value(15)
+        >>> [child.get_value() for child in ft.get_children()]
+        [Fraction(15, 2), Fraction(5, 2), Fraction(5, 1)]
 
+        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
+        >>> ft.add_layer()
+        >>> ft.add_layer()
+        >>> ft.get_children()[0].change_value(10)
+        >>> print(ft.get_tree_representation(key=lambda node: node.get_value()))
+        └── 15
+            ├── 10
+            │   ├── 5
+            │   ├── 5/3
+            │   └── 10/3
+            ├── 5/3
+            │   ├── 5/9
+            │   ├── 5/6
+            │   └── 5/18
+            └── 10/3
+                ├── 5/9
+                ├── 10/9
+                └── 5/3
+        <BLANKLINE>
 
-    def test_2(self):
-        self.ft.add_layer()
-        self.ft.get_children()[0].change_value(10)
-        expected = 15
-        self.assertEqual(expected, self.ft.value)
-
-    def test_3(self):
-        self.ft.add_layer()
-        self.ft.get_children()[0].change_value(10)
-        expected = [Fraction(10, 1), Fraction(5, 3), Fraction(10, 3)]
-        self.assertEqual(expected, [child.get_value() for child in self.ft.get_children()])
-
-    def test_4(self):
-        self.ft.add_layer()
-        self.ft.change_value(15)
-        expected = [Fraction(15, 2), Fraction(5, 2), Fraction(5, 1)]
-        self.assertEqual(expected, [child.get_value() for child in self.ft.get_children()])
-
-    def test_5(self):
-        self.ft.add_layer()
-        self.ft.add_layer()
-        self.ft.get_children()[0].change_value(10)
-        expected = [[Fraction(15, 1)],
-                    [10, Fraction(5, 3), Fraction(10, 3)],
-                    [[Fraction(5, 3), Fraction(10, 3), Fraction(5, 1)],
-                     [Fraction(5, 6), Fraction(5, 18), Fraction(5, 9)],
-                     [Fraction(10, 9), Fraction(5, 3), Fraction(5, 9)]]]
-        self.assertEqual(expected,
-                         [self.ft.get_layer(layer=i, key='value') for i in range(self.ft.number_of_layers + 1)])
         :param new_value:
         :return:
         """
         factor = Fraction(new_value, self.get_value())
-        self._value = new_value
+        self._set_value(new_value)
         for node in reversed(self.get_branch()[:-1]):
             node._value = sum([child.get_value() for child in node.get_children()])
 
@@ -516,5 +518,25 @@ class FractalTree(Tree):
 
     # copy
     def __copy__(self):
+        """
+        :return:
+
+        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), reading_direction='vertical')
+        >>> ft.add_layer()
+        >>> ft.add_layer()
+        >>> node = ft.get_children()[1]
+        >>> copied_node = node.__copy__()
+        >>> for n, cp in zip(node.traverse(), copied_node.traverse()):
+        ...    if n == cp:
+        ...        raise Exception('n == cp')
+        ...    if n.get_value() != cp.get_value():
+        ...        raise Exception('n.get_value() != cp.get_value()')
+        ...    for attr in ['proportions', 'main_permutation_order', 'reading_direction', 'fertile']:
+        ...        if getattr(node, attr) != getattr(copied_node, attr):
+        ...            raise Exception(f'n.{attr} != cp.{attr}')
+        >>> copied_node.is_root, copied_node.is_leaf
+        (True, True)
+        """
+
         return self.__class__(value=self._value, proportions=self.proportions,
                               main_permutation_order=self.main_permutation_order, fertile=self.fertile)
