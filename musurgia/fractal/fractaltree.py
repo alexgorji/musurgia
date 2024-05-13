@@ -2,7 +2,7 @@ from pprint import pprint
 from typing import Union
 
 from quicktions import Fraction
-from tree.tree import Tree
+from verysimpletree.tree import Tree
 
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.permutation.permutation import LimitedPermutation, permute
@@ -230,9 +230,6 @@ class FractalTree(Tree):
                 for i in range(leaf.get_size()):
                     new_node = leaf.__copy__()
                     new_node.value = leaf.get_children_fractal_values()[i]
-                    # if self.is_root:
-                    #     new_node.first_index = self.first_index
-                    # else:
                     new_node.first_index = self._get_child_first_index(leaf, i)
                     leaf.add_child(new_node)
                     new_node._fractal_order = leaf.get_children_fractal_orders()[i]
@@ -249,6 +246,14 @@ class FractalTree(Tree):
         self._change_children_value(factor)
 
     def get_fractal_order(self):
+        """
+        :return:
+
+        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
+        >>> ft.add_layer()
+        >>> [node.get_fractal_order() for node in ft.traverse()]
+        [None, 3, 1, 2]
+        """
         return self._fractal_order
 
     def get_children_fractal_values(self):
@@ -355,8 +360,33 @@ class FractalTree(Tree):
 
         >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
         >>> ft.generate_children(number_of_children=((1, 3), 2, (1, (1, 3), 3)))
-        >>> ft.get_leaves(key=lambda leaf: leaf.get_fractal_order())
-        [[[1, 2, 3], [3], [[3], [3, 1, 2]]], [[3], [1, 2, 3]], [2, 3]]
+        >>> print(ft.get_tree_representation(key=lambda node: str(node.get_fractal_order())))
+        └── None
+            ├── 3
+            │   ├── 3
+            │   │   ├── 1
+            │   │   ├── 2
+            │   │   └── 3
+            │   ├── 1
+            │   │   └── 3
+            │   └── 2
+            │       ├── 2
+            │       │   └── 3
+            │       └── 3
+            │           ├── 3
+            │           ├── 1
+            │           └── 2
+            ├── 1
+            │   ├── 2
+            │   │   └── 3
+            │   └── 3
+            │       ├── 1
+            │       ├── 2
+            │       └── 3
+            └── 2
+                ├── 2
+                └── 3
+        <BLANKLINE>
         """
 
         if self.get_children():
