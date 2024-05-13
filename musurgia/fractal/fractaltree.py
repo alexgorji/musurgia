@@ -23,7 +23,7 @@ class FractalTree(Tree):
     ... except TypeError as err:
     ...     assert "__init__() missing 3 required positional arguments: 'value', 'proportions', and 'main_permutation_order'" in str(err)
     >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
-    >>> ft.value
+    >>> ft.get_value()
     Fraction(10, 1)
     >>> ft.proportions
     [Fraction(1, 6), Fraction(1, 3), Fraction(1, 2)]
@@ -50,7 +50,7 @@ class FractalTree(Tree):
         self._fractal_order = None
         self._children_fractal_values = None
         self._permutation_order = None
-        self.value = value
+        self._set_value(value)
         self.proportions = proportions
         self.main_permutation_order = main_permutation_order
         self.first_index = first_index
@@ -75,8 +75,8 @@ class FractalTree(Tree):
 
     def _calculate_children_fractal_values(self):
         if self.is_root:
-            permute([self.value * prop for prop in self.proportions], self.main_permutation_order)
-        return permute([self.value * prop for prop in self.proportions], self.get_permutation_order())
+            permute([self.get_value() * prop for prop in self.proportions], self.main_permutation_order)
+        return permute([self.get_value() * prop for prop in self.proportions], self.get_permutation_order())
 
     def _change_children_value(self, factor):
         for child in self.get_children():
@@ -171,22 +171,20 @@ class FractalTree(Tree):
         self._reading_direction = value
         self._set_permutation_order()
 
-    @property
-    def value(self):
+    def _set_value(self, val):
+        if not isinstance(val, Fraction):
+            val = Fraction(val)
+        self._value = val
+
+    def get_value(self):
         """
         >>> ft = FractalTree(value='10', proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
-        >>> ft.value
+        >>> ft.get_value()
         Fraction(10, 1)
 
         :return:
         """
         return self._value
-
-    @value.setter
-    def value(self, val):
-        if not isinstance(val, Fraction):
-            val = Fraction(val)
-        self._value = val
 
     def add_layer(self, *conditions):
         """
@@ -196,12 +194,12 @@ class FractalTree(Tree):
         [3, 1, 2]
         >>> ft.get_leaves(key=lambda leaf: leaf.first_index)
         [(1, 1), (1, 2), (1, 3)]
-        >>> ft.get_leaves(key=lambda leaf: round(float(leaf.value), 2))
+        >>> ft.get_leaves(key=lambda leaf: round(float(leaf.get_value() ), 2))
         [5.0, 1.67, 3.33]
         >>> ft.add_layer()
         >>> ft.get_leaves(key=lambda leaf: leaf.get_fractal_order())
         [[3, 1, 2], [2, 3, 1], [1, 2, 3]]
-        >>> ft.get_leaves(key=lambda leaf: round(float(leaf.value), 2))
+        >>> ft.get_leaves(key=lambda leaf: round(float(leaf.get_value() ), 2))
         [[2.5, 0.83, 1.67], [0.56, 0.83, 0.28], [0.56, 1.11, 1.67]]
 
 
@@ -210,7 +208,7 @@ class FractalTree(Tree):
         >>> ft.get_children()[0].add_layer()
         >>> ft.get_leaves(key=lambda leaf: leaf.get_fractal_order())
         [[3, 1, 2], 1, 2]
-        >>> ft.get_leaves(key=lambda leaf: round(float(leaf.value), 2))
+        >>> ft.get_leaves(key=lambda leaf: round(float(leaf.get_value() ), 2))
         [[2.5, 0.83, 1.67], 1.67, 3.33]
         """
 
@@ -229,7 +227,7 @@ class FractalTree(Tree):
             if leaf.fertile is True:
                 for i in range(leaf.get_size()):
                     new_node = leaf.__copy__()
-                    new_node.value = leaf.get_children_fractal_values()[i]
+                    new_node._value = leaf.get_children_fractal_values()[i]
                     new_node.first_index = self._get_child_first_index(leaf, i)
                     leaf.add_child(new_node)
                     new_node._fractal_order = leaf.get_children_fractal_orders()[i]
@@ -238,10 +236,49 @@ class FractalTree(Tree):
                 pass
 
     def change_value(self, new_value):
-        factor = Fraction(new_value, self.value)
+        """
+        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
+        >>> ft.change_value(20)
+        >>> ft.get_value()
+        20
+
+
+    def test_2(self):
+        self.ft.add_layer()
+        self.ft.get_children()[0].change_value(10)
+        expected = 15
+        self.assertEqual(expected, self.ft.value)
+
+    def test_3(self):
+        self.ft.add_layer()
+        self.ft.get_children()[0].change_value(10)
+        expected = [Fraction(10, 1), Fraction(5, 3), Fraction(10, 3)]
+        self.assertEqual(expected, [child.get_value() for child in self.ft.get_children()])
+
+    def test_4(self):
+        self.ft.add_layer()
+        self.ft.change_value(15)
+        expected = [Fraction(15, 2), Fraction(5, 2), Fraction(5, 1)]
+        self.assertEqual(expected, [child.get_value() for child in self.ft.get_children()])
+
+    def test_5(self):
+        self.ft.add_layer()
+        self.ft.add_layer()
+        self.ft.get_children()[0].change_value(10)
+        expected = [[Fraction(15, 1)],
+                    [10, Fraction(5, 3), Fraction(10, 3)],
+                    [[Fraction(5, 3), Fraction(10, 3), Fraction(5, 1)],
+                     [Fraction(5, 6), Fraction(5, 18), Fraction(5, 9)],
+                     [Fraction(10, 9), Fraction(5, 3), Fraction(5, 9)]]]
+        self.assertEqual(expected,
+                         [self.ft.get_layer(layer=i, key='value') for i in range(self.ft.number_of_layers + 1)])
+        :param new_value:
+        :return:
+        """
+        factor = Fraction(new_value, self.get_value())
         self._value = new_value
         for node in reversed(self.get_branch()[:-1]):
-            node._value = sum([child.value for child in node.get_children()])
+            node._value = sum([child.get_value() for child in node.get_children()])
 
         self._change_children_value(factor)
 
@@ -391,7 +428,7 @@ class FractalTree(Tree):
 
         if self.get_children():
             raise ValueError(
-                f'FractalTree.generate_children: node has already children: {[ch.value for ch in self.get_children()]}')
+                f'FractalTree.generate_children: node has already children: {[ch.get_value() for ch in self.get_children()]}')
 
         permitted_modes = ['reduce', 'reduce_backwards', 'reduce_forwards', 'reduce_sieve', 'merge']
         if mode not in permitted_modes:
@@ -462,7 +499,6 @@ class FractalTree(Tree):
         :return:
 
 
-
         """
         if not self.get_children():
             raise ValueError(f'{self} has no children to be reduced')
@@ -470,15 +506,15 @@ class FractalTree(Tree):
         for child in to_be_removed:
             child.up._children.remove(child)
             del child
-        reduced_value = sum([child.value for child in self.get_children()])
-        factor = self.value / reduced_value
+        reduced_value = sum([child.get_value() for child in self.get_children()])
+        factor = self.get_value() / reduced_value
         for child in self.get_children():
-            new_value = child.value * factor
+            new_value = child.get_value() * factor
             child.change_value(new_value)
 
-        self._children_fractal_values = [child.value for child in self.get_children()]
+        self._children_fractal_values = [child.get_value() for child in self.get_children()]
 
     # copy
     def __copy__(self):
-        return self.__class__(value=self.value, proportions=self.proportions,
+        return self.__class__(value=self._value, proportions=self.proportions,
                               main_permutation_order=self.main_permutation_order, fertile=self.fertile)

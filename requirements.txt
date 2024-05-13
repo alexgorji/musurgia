@@ -1,3 +1,4 @@
 matplotlib==3.8.2
 fpdf==1.7.2
+verysimpletree==0.1.0b0
 musicscore==2.0.1
