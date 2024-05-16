@@ -176,6 +176,15 @@ class FractalTree(Tree):
         self._set_permutation_order()
 
     @property
+    def main_permutation_order(self) -> tuple[int, ...]:
+        return self._main_permutation_order  # type: ignore
+
+    @main_permutation_order.setter
+    def main_permutation_order(self, value: tuple[int, ...]) -> None:
+        self._main_permutation_order = value
+        self._set_permutation_order()
+
+    @property
     def proportions(self) -> List[Fraction]:
         return self._proportions
 
@@ -186,15 +195,6 @@ class FractalTree(Tree):
         self._proportions = [Fraction(value, total) for value in converted_values]
 
     @property
-    def main_permutation_order(self) -> tuple[int, ...]:
-        return self._main_permutation_order  # type: ignore
-
-    @main_permutation_order.setter
-    def main_permutation_order(self, value: tuple[int, ...]) -> None:
-        self._main_permutation_order = value
-        self._set_permutation_order()
-
-    @property
     def reading_direction(self) -> ReadingDirection:
         return self._reading_direction
 
@@ -203,6 +203,7 @@ class FractalTree(Tree):
         self._reading_direction = value
         self._set_permutation_order()
 
+    # public methods
     def add_layer(self, *conditions: Optional[Callable[['_TREE_TYPE'], bool]]) -> None:
         """
         >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
@@ -218,7 +219,6 @@ class FractalTree(Tree):
         [[3, 1, 2], [2, 3, 1], [1, 2, 3]]
         >>> ft.get_leaves(key=lambda leaf: round(float(leaf.get_value() ), 2))
         [[2.5, 0.83, 1.67], [0.56, 0.83, 0.28], [0.56, 1.11, 1.67]]
-
 
         >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
         >>> ft.add_layer()
