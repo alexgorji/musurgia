@@ -1,22 +1,35 @@
+import itertools
 from typing import Union, Optional, List, TypeVar, Callable, NewType, Literal, Any, Tuple
 
 from fractions import Fraction
-from verysimpletree.tree import Tree, NodeReturnValue
+from verysimpletree.tree import Tree
 
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.permutation.permutation import LimitedPermutation, permute
 
+_TREE_TYPE = TypeVar('_TREE_TYPE', bound='FractalTree')
+
 NonNegativeInt = NewType('NonNegativeInt', int)
 ReadingDirection = Literal['horizontal', 'vertical', 'diagonal', 'half-diagonal']
-
-_TREE_TYPE = TypeVar('_TREE_TYPE', bound='FractalTree')
-GenerateChildrenMode = Literal['reduce', 'reduce_backwards', 'reduce_forwards', 'reduce_sieve', 'merge']
+ReduceChildrenMode = Literal['backwards', 'forwards', 'sieve', 'merge']
 
 
 def check_non_negative_int(value: int) -> NonNegativeInt:
     if value < 0:
         raise ValueError(f"NonNegativeInt value must be non-negative, got {value}")
     return NonNegativeInt(value)
+
+
+def check_read_direction(value: str) -> None:
+    permitted = ['horizontal', 'vertical', 'diagonal', 'half-diagonal']
+    if value not in permitted:
+        raise ValueError(f"ReadingDirection value must be in {permitted}, got {value}")
+
+
+def check_reduce_children_mode(value: str) -> None:
+    permitted = ['backwards', 'forwards', 'sieve', 'merge']
+    if value not in permitted:
+        raise ValueError(f"ReadingDirection value must be in {permitted}, got {value}")
 
 
 class FractalTreeException(Exception):
@@ -99,6 +112,31 @@ class FractalTree(Tree):
         if first_index_x == 0:
             first_index_x = self.get_size()
         return first_index_x, index + 1
+
+    def _get_merge_lengths(self, size, merge_index):
+        if size == 1:
+            return [self.get_size()]
+
+        lengths = self.get_size() * [1]
+        pointer = merge_index
+        sliced_lengths = [lengths[:pointer], lengths[pointer:]]
+
+        if not sliced_lengths[0]:
+            sliced_lengths = sliced_lengths[1:]
+
+        while len(sliced_lengths) < size and len(sliced_lengths[0]) > 1:
+            temp = sliced_lengths[0]
+            sliced_lengths[0] = temp[:-1]
+            sliced_lengths.insert(1, temp[-1:])
+
+        while len(sliced_lengths) < size and len(sliced_lengths[pointer]) > 1:
+            temp = sliced_lengths[pointer]
+            sliced_lengths[pointer] = temp[:-1]
+            sliced_lengths.insert(pointer + 1, temp[-1:])
+
+        sliced_lengths = [len(x) for x in sliced_lengths]
+
+        return sliced_lengths
 
     def _set_permutation_order(self) -> None:
         if self.main_permutation_order and self.first_index and self.reading_direction:
@@ -245,7 +283,7 @@ class FractalTree(Tree):
                 └── 5/3
         <BLANKLINE>
         """
-        factor = Fraction(new_value, self.get_value())  # type: ignore
+        factor = Fraction(Fraction(new_value), self.get_value())  # type: ignore
         self._set_value(new_value)
         for node in self.get_reversed_path_to_root()[1:]:
             node._value = sum([child.get_value() for child in node.get_children()])
@@ -308,14 +346,14 @@ class FractalTree(Tree):
             raise ValueError(f'FractalTree.get_layer: max layer number={self.get_number_of_layers()}')
         else:
             if layer == 0:
-                return NodeReturnValue(self, key).get_return_value()
+                return self.get_with_key(key)
             else:
                 if self.is_leaf:
                     return self.get_layer(layer=layer - 1, key=key)
                 output = []
                 for child in self.get_children():
                     if child.get_farthest_leaf().get_distance() == 1:
-                        output.append(NodeReturnValue(child, key).get_return_value())
+                        output.append(child.get_with_key(key))
                     else:
                         output.append(child.get_layer(layer - 1, key))
                 return output
@@ -340,7 +378,7 @@ class FractalTree(Tree):
         """
         return len(self.proportions)
 
-    def generate_children(self, number_of_children: Union[int, tuple], mode: GenerateChildrenMode = 'reduce',
+    def generate_children(self, number_of_children: Union[int, tuple], reduce_mode: ReduceChildrenMode = 'backwards',
                           merge_index: int = 0) -> None:
         """
         :param number_of_children:
@@ -377,14 +415,15 @@ class FractalTree(Tree):
                 └── 3
         <BLANKLINE>
         """
-
+        # check_generate_children_mode(reduce_mode)
+        # this error must be moved to add_layer()
         if self.get_children():
             raise ValueError(
                 f'FractalTree.generate_children: node has already children: {[ch.get_value() for ch in self.get_children()]}')
-
-        permitted_modes = ['reduce', 'reduce_backwards', 'reduce_forwards', 'reduce_sieve', 'merge']
-        if mode not in permitted_modes:
-            raise ValueError(f'generate_children.mode {mode} must be in {permitted_modes}')
+        #
+        # permitted_modes = ['reduce', 'reduce_backwards', 'reduce_forwards', 'reduce_sieve', 'merge']
+        # if mode not in permitted_modes:
+        #     raise ValueError(f'generate_children.mode {mode} must be in {permitted_modes}')
 
         if isinstance(number_of_children, int):
             if number_of_children > self.get_size():
@@ -397,43 +436,82 @@ class FractalTree(Tree):
                 pass
             else:
                 self.add_layer()
-                if mode in ['reduce', 'reduce_backwards']:
-                    self.reduce_children(
-                        lambda child: child.get_fractal_order() < self.get_size() - number_of_children + 1)
-                elif mode == 'reduce_forwards':
-                    self.reduce_children(
-                        lambda child: child.get_fractal_order() > number_of_children)
-                elif mode == 'reduce_sieve':
-                    if number_of_children == 1:
-                        self.reduce_children(condition=lambda child: child.get_fractal_order() not in [1])
-                    else:
-                        ap = ArithmeticProgression(a1=1, an=self.get_size(), n=number_of_children)
-                        selection = [int(round(x)) for x in ap]
-                        self.reduce_children(condition=lambda child: child.get_fractal_order() not in selection)
-                else:
-                    merge_lengths = self._get_merge_lengths(number_of_children, merge_index)
-                    self.merge_children(*merge_lengths)
+                self.reduce_children_by_size(size=number_of_children, mode=reduce_mode, merge_index=merge_index)
+                # if mode in ['reduce', 'reduce_backwards']:
+                #     self.reduce_children_by_condition(
+                #         lambda child: child.get_fractal_order() < self.get_size() - number_of_children + 1)
+                # elif mode == 'reduce_forwards':
+                #     self.reduce_children_by_condition(
+                #         lambda child: child.get_fractal_order() > number_of_children)
+                # elif mode == 'reduce_sieve':
+                #     if number_of_children == 1:
+                #         self.reduce_children_by_condition(condition=lambda child: child.get_fractal_order() not in [1])
+                #     else:
+                #         ap = ArithmeticProgression(a1=1, an=self.get_size(), n=number_of_children)
+                #         selection = [int(round(x)) for x in ap]
+                #         self.reduce_children_by_condition(
+                #             condition=lambda child: child.get_fractal_order() not in selection)
+                # else:
+                #     merge_lengths = self._get_merge_lengths(number_of_children, merge_index)
+                #     self.merge_children(*merge_lengths)
 
         elif isinstance(number_of_children, tuple):
-            self.generate_children(len(number_of_children), mode=mode, merge_index=merge_index)
+            self.generate_children(len(number_of_children), reduce_mode=reduce_mode, merge_index=merge_index)
 
             for index, child in enumerate(self.get_children()):
-                if mode == 'reduce':
+                if reduce_mode == 'backwards':
                     number_of_grand_children = number_of_children[
                         child.get_fractal_order() - child.get_size() + len(number_of_children) - 1]
                 else:
                     number_of_grand_children = number_of_children[index]
-                child.generate_children(number_of_grand_children, mode=mode, merge_index=merge_index)
+                child.generate_children(number_of_grand_children, reduce_mode=reduce_mode, merge_index=merge_index)
 
         else:
             raise TypeError('generate_children.number_of_children must be of type int or tuple')
 
-    def reduce_children(self, condition: Callable[['_TREE_TYPE'], bool]) -> None:
+    def merge_children(self, *lengths):
+        """
+
+        :param lengths:
+        :return:
+
+        >>> ft = FractalTree(proportions=(1, 2, 3, 4, 5), main_permutation_order=(3, 5, 1, 2, 4), value=10)
+        >>> ft.add_layer()
+        >>> ft.get_leaves(key=lambda leaf: leaf.get_fractal_order())
+        [3, 5, 1, 2, 4]
+        >>> ft.get_leaves(key=lambda leaf: round(float(leaf.get_value()), 2))
+        [2.0, 3.33, 0.67, 1.33, 2.67]
+        >>> ft.merge_children(1, 2, 2)
+        >>> ft.get_leaves(key=lambda leaf: leaf.get_fractal_order())
+        [3, 5, 2]
+        >>> ft.get_leaves(key=lambda leaf: round(float(leaf.get_value()), 2))
+        [2.0, 4.0, 4.0]
+        """
+        children = self.get_children()
+        if not children:
+            raise Exception('FractalTree.merge_children:There are no children to be merged')
+        if sum(lengths) != len(children):
+            raise ValueError(
+                f'FractalTree.merge_children: Sum of lengths {sum(lengths)} must be the same as length of children {len(children)}')
+
+        def _merge(nodes):
+            node_values = [node.get_value() for node in nodes]
+            new_value = sum(node_values)
+            for node in nodes[1:]:
+                self.remove(node)
+            nodes[0].change_value(new_value)
+
+        iter_children = iter(children)
+        chunks = [list(itertools.islice(iter_children, l)) for l in lengths]
+
+        for chunk in chunks:
+            _merge(chunk)
+
+    def reduce_children_by_condition(self, condition: Callable[['_TREE_TYPE'], bool]) -> None:
         if not self.get_children():
             raise ValueError(f'{self} has no children to be reduced')
-        to_be_removed = [child for child in self.get_children() if condition(child)]
-        for child in to_be_removed:
-            child.up._children.remove(child)
+        for child in [child for child in self.get_children() if condition(child)]:
+            self.remove(child)
             del child
         reduced_value = sum([child.get_value() for child in self.get_children()])
         factor = self.get_value() / reduced_value
@@ -442,6 +520,39 @@ class FractalTree(Tree):
             child.change_value(new_value)
 
         self._children_fractal_values = [child.get_value() for child in self.get_children()]
+
+    def reduce_children_by_size(self, size, mode: ReduceChildrenMode = 'backwards', merge_index=None):
+        check_reduce_children_mode(mode)
+        if mode == 'merge':
+            if merge_index is None:
+                raise TypeError(f'reduce_children.merge_index must be set for mode merge')
+            if 0 > merge_index > self.get_size() - 1:
+                raise ValueError(
+                    f'reduce_children_by_size.merge_index {merge_index} must be a positive int not greater than {self.get_size() - 1}')
+
+        if size > self.get_size() or size < 0:
+            raise ValueError(
+                f'reduce_children_by_size.size {size} must be a positive int not greater than {self.get_size()}')
+        if size == 0:
+            pass
+        else:
+            if mode == 'backwards':
+                self.reduce_children_by_condition(
+                    lambda child: child.get_fractal_order() < self.get_size() - size + 1)
+            elif mode == 'forwards':
+                self.reduce_children_by_condition(
+                    lambda child: child.get_fractal_order() > size)
+            elif mode == 'sieve':
+                if size == 1:
+                    self.reduce_children_by_condition(condition=lambda child: child.get_fractal_order() not in [1])
+                else:
+                    ap = ArithmeticProgression(a1=1, an=self.get_size(), n=size)
+                    selection = [int(round(x)) for x in ap]
+                    self.reduce_children_by_condition(
+                        condition=lambda child: child.get_fractal_order() not in selection)
+            else:
+                merge_lengths = self._get_merge_lengths(size, merge_index)
+                self.merge_children(*merge_lengths)
 
     # copy
     def __copy__(self: '_TREE_TYPE') -> '_TREE_TYPE':

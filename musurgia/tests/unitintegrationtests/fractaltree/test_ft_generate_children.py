@@ -3,7 +3,7 @@ from unittest import TestCase
 from musurgia.fractal.fractaltree import FractalTree
 
 
-class TestGenerateChildren(TestCase):
+class TestGenerateChildrenReduce(TestCase):
     def setUp(self) -> None:
         self.ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
 
@@ -57,3 +57,17 @@ class TestGenerateChildren(TestCase):
         self.ft.generate_children(number_of_children=((1, 3), 2, (1, (1, 3), 3)))
         assert self.ft.get_leaves(key=lambda leaf: leaf.get_fractal_order()) == [[[1, 2, 3], [3], [[3], [3, 1, 2]]],
                                                                                  [[3], [1, 2, 3]], [2, 3]]
+
+    def test_tuple_number_of_children_mixed_tuples_2_forwards(self):
+        self.ft.generate_children(number_of_children=((1, 3), 2, (1, (1, 3), 3)), reduce_mode='forwards')
+        assert self.ft.get_leaves(key=lambda leaf: leaf.get_fractal_order()) == [[[1], [2, 3, 1]], [2, 1], [[1], [[1], [3, 1, 2]], [1, 2, 3]]]
+
+    def test_tuple_number_of_children_mixed_tuples_2_sieve(self):
+        self.ft.generate_children(number_of_children=((1, 3), 2, (1, (1, 3), 3)), reduce_mode='sieve')
+        assert self.ft.get_leaves(key=lambda leaf: leaf.get_fractal_order()) == [[[1], [3, 1, 2]], [3, 1],
+                                                                                 [[1], [[1], [3, 1, 2]], [1, 2, 3]]]
+
+    def test_tuple_number_of_children_mixed_tuples_2_merge(self):
+        self.ft.generate_children(number_of_children=((1, 3), 2, (1, (1, 3), 3)), reduce_mode='merge', merge_index=1)
+        assert self.ft.get_leaves(key=lambda leaf: leaf.get_fractal_order()) == [[[1], [3, 1, 2]], [2, 3],
+                                                                                 [[3], [[2], [1, 2, 3]], [1, 2, 3]]]

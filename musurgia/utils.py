@@ -143,3 +143,25 @@ def transpose_3d_diagonally(matrix):
             row_list.append(tuple(tmp))
         output.append(row_list)
     return output
+
+
+def flatten(input):
+    """
+    :param input:
+    :return:
+
+    >>> flatten([1, 2])
+    [1, 2]
+    >>> flatten([1, [2, 3], [4, 5, 6]])
+    [1, 2, 3, 4, 5, 6]
+    >>> flatten([1, [2, 3], [[4, 5, 6], 7, [8, 9]]])
+    [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+    """
+    output = []
+    for item in input:
+        if isinstance(item, list):
+            output.extend(flatten(item))
+        else:
+            output.append(item)
+    return output
