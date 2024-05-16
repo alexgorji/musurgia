@@ -1,4 +1,6 @@
-from quicktions import Fraction
+from typing import Optional, Union
+
+from fractions import Fraction
 
 
 class ArithmeticProgressionError(BaseException):
@@ -20,12 +22,10 @@ class DAndSError(ArithmeticProgressionError):
         super().__init__(msg, *args)
 
 
-class ArithmeticProgression(object):
-    """
-
-    """
-
-    def __init__(self, a1=None, an=None, n=None, d=None, s=None, correct_s=False):
+class ArithmeticProgression:
+    def __init__(self, a1: Union[int, float, Fraction, None] = None, an: Union[int, float, Fraction, None] = None,
+                 n: Optional[int] = None, d: Union[int, float, Fraction, None] = None,
+                 s: Union[int, float, Fraction, None] = None, correct_s: bool = False):
         self._a1 = None
         self._an = None
         self._n = None

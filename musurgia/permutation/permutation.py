@@ -1,8 +1,11 @@
 from itertools import cycle
 from pprint import pprint
+from typing import Literal, Iterator, Optional
 
 from musurgia.utils import transpose_3d_vertically, transpose_3d_half_diagonally, transpose_3d_diagonally, \
     MusurgiaTypeError, check_type
+
+ReadingDirection = Literal['horizontal', 'vertical', 'diagonal', 'half-diagonal']
 
 
 def permute(input_list: list, permutation_order: tuple[int, ...]) -> list:
@@ -223,7 +226,7 @@ class LimitedPermutation:
             self.order = order
 
     def __init__(self, input_list: list, main_permutation_order: tuple, first_index: tuple = (1, 1),
-                 reading_direction: str = 'horizontal'):
+                 reading_direction: ReadingDirection = 'horizontal'):
 
         self._input_list = None
         self._main_permutation_order = None
@@ -232,7 +235,7 @@ class LimitedPermutation:
         self._permutation_orders = None
 
         self._first_index = None
-        self._reading_direction = None
+        self._reading_direction: Optional[ReadingDirection] = None
 
         self.input_list = input_list
         self.main_permutation_order = main_permutation_order
@@ -303,7 +306,7 @@ class LimitedPermutation:
             self._populate_permutation_orders()
 
     @property
-    def reading_direction(self):
+    def reading_direction(self) -> ReadingDirection:
         """
         >>> lp = LimitedPermutation(['a', 'b', 'c'], (3, 1, 2))
         >>> pprint(lp.get_permutation_orders())
@@ -334,7 +337,7 @@ class LimitedPermutation:
         return self._reading_direction
 
     @reading_direction.setter
-    def reading_direction(self, val):
+    def reading_direction(self, val: ReadingDirection) -> None:
         permitted = ['horizontal', 'vertical', 'diagonal', 'half-diagonal']
         if val not in permitted:
             raise ValueError(f"Invalid reading direction: {val}. Permitted values are: {permitted}")
@@ -358,7 +361,7 @@ class LimitedPermutation:
 
         return self._element_generator
 
-    def get_permutation_order_iterator(self):
+    def get_permutation_order_iterator(self) -> Iterator:
         """
         >>> it = LimitedPermutation(input_list=['a', 'b', 'c'], main_permutation_order=(3, 1, 2)).get_permutation_order_iterator()
         >>> next(it)
