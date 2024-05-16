@@ -1,6 +1,6 @@
 from itertools import cycle
 from pprint import pprint
-from typing import Literal, Iterator, Optional
+from typing import Literal, Iterator, Optional, cast
 
 from musurgia.utils import transpose_3d_vertically, transpose_3d_half_diagonally, transpose_3d_diagonally, \
     MusurgiaTypeError, check_type
@@ -333,8 +333,7 @@ class LimitedPermutation:
          [(1, 3, 2), (2, 1, 3), (3, 2, 1)]]
 
         """
-
-        return self._reading_direction
+        return cast(ReadingDirection, self._reading_direction)
 
     @reading_direction.setter
     def reading_direction(self, val: ReadingDirection) -> None:

@@ -1,5 +1,5 @@
 import itertools
-from typing import Union, Optional, List, TypeVar, Callable, NewType, Literal, Any, Tuple
+from typing import Union, Optional, List, TypeVar, Callable, NewType, Literal, Any, Tuple, cast, Sequence
 
 from fractions import Fraction
 from verysimpletree.tree import Tree
@@ -12,6 +12,7 @@ _TREE_TYPE = TypeVar('_TREE_TYPE', bound='FractalTree')
 NonNegativeInt = NewType('NonNegativeInt', int)
 ReadingDirection = Literal['horizontal', 'vertical', 'diagonal', 'half-diagonal']
 ReduceChildrenMode = Literal['backwards', 'forwards', 'sieve', 'merge']
+ConvertableToFraction = Union[float, int, Fraction]
 
 
 def check_non_negative_int(value: int) -> NonNegativeInt:
@@ -30,6 +31,13 @@ def check_reduce_children_mode(value: str) -> None:
     permitted = ['backwards', 'forwards', 'sieve', 'merge']
     if value not in permitted:
         raise ValueError(f"ReadingDirection value must be in {permitted}, got {value}")
+
+
+def convert_to_fraction(value: Union[int, float, Fraction]) -> Fraction:
+    if isinstance(value, Fraction):
+        return value
+    else:
+        return Fraction(value)
 
 
 class FractalTreeException(Exception):
@@ -60,18 +68,16 @@ class FractalTree(Tree):
     """
 
     def __init__(self, value: int,
-                 proportions: Union[
-                     list[int], list[float], List['Fraction'], tuple[int, ...], tuple[float, ...], Tuple[
-                         'Fraction', ...]],
+                 proportions: Sequence[ConvertableToFraction],
                  main_permutation_order: tuple[int, ...], first_index: tuple[int, int] = (1, 1),
                  reading_direction: ReadingDirection = 'horizontal', fertile: bool = True,
-                 *args: Any,
-                 **kwargs: Any):
+                 *args,
+                 **kwargs):
         super().__init__(*args, **kwargs)
         self._limited_permutation = None
         self._value = None
-        self._proportions = None
-        self._main_permutation_order = None
+        self._proportions: List[Fraction] = []
+        self._main_permutation_order: Optional[tuple[int, ...]] = None
         self._first_index = None
         self._reading_direction = reading_direction
         self._fertile = None
@@ -79,7 +85,7 @@ class FractalTree(Tree):
         self._children_fractal_values = None
         self._permutation_order = None
         self._set_value(value)
-        self.proportions = proportions
+        self.proportions = proportions  # type: ignore
         self.main_permutation_order = main_permutation_order
         self.first_index = first_index
         self.reading_direction = reading_direction
@@ -170,20 +176,21 @@ class FractalTree(Tree):
         self._set_permutation_order()
 
     @property
-    def proportions(self) -> List['Fraction']:
-        return self._proportions  # type: ignore
+    def proportions(self) -> List[Fraction]:
+        return self._proportions
 
     @proportions.setter
-    def proportions(self, values: Union[
-        List[int], List[float], List['Fraction'], Tuple[int], Tuple[float], Tuple['Fraction']]) -> None:
-        self._proportions = [Fraction(Fraction(value) / Fraction(sum(values))) for value in values]
+    def proportions(self, values: Sequence[ConvertableToFraction]) -> None:
+        converted_values: List[Fraction] = [convert_to_fraction(val) for val in list(values)]
+        total = sum(converted_values)
+        self._proportions = [Fraction(value, total) for value in converted_values]
 
     @property
-    def main_permutation_order(self) -> tuple[int]:
+    def main_permutation_order(self) -> tuple[int, ...]:
         return self._main_permutation_order  # type: ignore
 
     @main_permutation_order.setter
-    def main_permutation_order(self, value: tuple[int]) -> None:
+    def main_permutation_order(self, value: tuple[int, ...]) -> None:
         self._main_permutation_order = value
         self._set_permutation_order()
 
@@ -229,7 +236,7 @@ class FractalTree(Tree):
         if conditions is not None:
             for leaf in leaves:
                 for condition in conditions:
-                    if condition(leaf) is False:
+                    if cast(Callable, condition)(leaf) is False:
                         leaf.fertile = False
                         break
 
