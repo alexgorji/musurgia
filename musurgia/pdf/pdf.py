@@ -1,6 +1,6 @@
 import inspect
 
-from fpdf import FPDF
+from fpdf import FPDF, FPDF_VERSION
 
 from musurgia.pdf.line import HorizontalRuler, VerticalRuler
 from musurgia.pdf.pdfunit import PdfUnit
@@ -53,13 +53,7 @@ class Pdf(FPDF):
 
         self.set_font("Helvetica", "", 10)
 
-    # private methods
-    # def _out(self, s):
-    #     # caller_frame = inspect.getframeinfo(inspect.currentframe().f_back)
-    #     # print(f'_out is called by: {caller_frame[0], caller_frame[2]}')
-    #     # print(f'_out before: s: {s}, state: {self.state}, pages: {self.pages}')
-    #     super()._out(s)
-    #     # print(f'_out after: pages: {self.pages}')
+    # private
 
     def _pop_state(self):
         # https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf
@@ -154,6 +148,19 @@ class Pdf(FPDF):
 
     def translate_page_margins(self):
         self.translate(self.l_margin, self.t_margin)
+
+    def _putinfo(self):
+        self._out('/Producer ' + self._textstring('PyFPDF ' + FPDF_VERSION + ' http://pyfpdf.googlecode.com/'))
+        if hasattr(self, 'title'):
+            self._out('/Title ' + self._textstring(self.title))
+        if hasattr(self, 'subject'):
+            self._out('/Subject ' + self._textstring(self.subject))
+        if hasattr(self, 'author'):
+            self._out('/Author ' + self._textstring(self.author))
+        if hasattr(self, 'keywords'):
+            self._out('/Keywords ' + self._textstring(self.keywords))
+        if hasattr(self, 'creator'):
+            self._out('/Creator ' + self._textstring(self.creator))
 
     def write_to_path(self, path):
         # FPDF.close() is called inside output to write to buffer first before writing it to file.
