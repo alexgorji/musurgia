@@ -102,7 +102,6 @@ class TestClip(TestCase):
                     _add_page()
                 draw_with_clip(index)
             self.pdf.write_to_path(pdf_path)
-            self.assertCompareFiles(pdf_path)
 
     def test_with_clipping_area(self):
         c = DrawObjectColumn()

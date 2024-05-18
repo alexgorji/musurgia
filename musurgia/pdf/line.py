@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from quicktions import Fraction
+from fractions import Fraction
 
 from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.masterslave import Master, Slave
@@ -37,7 +37,7 @@ class StraightLine(Slave, DrawObject, Labeled):
     @length.setter
     def length(self, val):
         if not isinstance(val, float) and not isinstance(val, int) and not isinstance(val, Fraction):
-            raise TypeError(f"length.value must be of type float, int or Fraction  not{type(val)}")
+            raise TypeError(f"length.value must be of type float, int or Fraction not {type(val)}")
         self._length = val
 
     @property

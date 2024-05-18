@@ -13,6 +13,7 @@ class Test(TestCase):
         ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
         ft.add_layer()
         ft.add_layer()
+        self.assertEqual(ft.get_number_of_layers(), 2)
         self.assertEqual([[3, 1, 2], [2, 3, 1], [1, 2, 3]], ft.get_leaves(key=lambda node: node.get_fractal_order()))
         self.assertEqual([[2.5, 0.83, 1.67], [0.56, 0.83, 0.28], [0.56, 1.11, 1.67]],
                          ft.get_leaves(key=lambda node: round(float(node.get_value()), 2)))
