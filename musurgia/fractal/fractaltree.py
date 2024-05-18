@@ -213,6 +213,22 @@ class FractalTree(Tree):
         self._reading_direction = value
         self._set_permutation_order()
 
+    def split(self, *proportions):
+        if hasattr(proportions[0], '__iter__'):
+            proportions = proportions[0]
+
+        proportions = [Fraction(prop) for prop in proportions]
+
+        for prop in proportions:
+            value = self.get_value() * prop / sum(proportions)
+            new_node = self.__copy__()
+            new_node.first_index = self.first_index
+            new_node.change_value(value)
+            new_node._fractal_order = self.get_fractal_order()
+            self.add_child(new_node)
+
+        return self.get_children()
+
     # public methods
     def add_layer(self, *conditions: Optional[Callable[['_TREE_TYPE'], bool]]) -> None:
         """
