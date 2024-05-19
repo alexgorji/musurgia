@@ -379,14 +379,14 @@ class FractalTree(Tree):
             raise ValueError(f'FractalTree.get_layer: max layer number={self.get_number_of_layers()}')
         else:
             if layer == 0:
-                return self.get_with_key(key)
+                return self.get_self_with_key(key)
             else:
                 if self.is_leaf:
                     return self.get_layer(layer=layer - 1, key=key)
                 output = []
                 for child in self.get_children():
                     if child.get_farthest_leaf().get_distance() == 1:
-                        output.append(child.get_with_key(key))
+                        output.append(child.get_self_with_key(key))
                     else:
                         output.append(child.get_layer(layer - 1, key))
                 return output
