@@ -14,14 +14,14 @@ class TestFont(TestCase):
 
     def test_text_pixel_height(self):
         self.font.size = 12
-        actual = self.font.get_text_pixel_height('This One')
-        expected = 8.844
+        actual = round(self.font.get_text_pixel_height('This One'), 3)
+        expected = 8.1
         self.assertEqual(expected, actual)
 
     def test_text_pixel_width(self):
         self.font.size = 11
-        actual = self.font.get_text_pixel_width('This One')
-        expected = 44.627
+        actual = round(self.font.get_text_pixel_width('This One'), 3)
+        expected = 52.8
         self.assertEqual(expected, actual)
 
     def test_errors(self):

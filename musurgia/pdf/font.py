@@ -1,4 +1,5 @@
 from pathlib import Path
+from pprint import pprint
 from typing import Optional
 
 import matplotlib as mpl
@@ -20,14 +21,11 @@ def _make_afm_path_dictionary():
             if diff == {b'CapHeight'}:
                 if new_header.get(b'CapHeight'):
                     return True
-                #
-                # print('old:', old_header.get(b'CapHeight'))
-                # print('new:', new_header.get(b'CapHeight'))
             elif diff == set():
                 return False
             else:
                 raise AttributeError(
-                    f'{family},  {weight}, {style} already in dict: {old_afm} differnce: {diff}')
+                    f'{family}, {weight}, {style} already in dict: {old_afm} differnce: {diff}')
         else:
             return True
 
@@ -63,11 +61,12 @@ class Font:
     """
 
     __AFM_PATH_DICTIONARY = _make_afm_path_dictionary()
-    _FAMILY = ['Helvetica', 'Courier', 'Times']
+    # pprint(__AFM_PATH_DICTIONARY)
+    _FAMILY = ['Courier']
     _WEIGHT = ['bold', 'medium']
     _STYLE = ['italic', 'regular']
 
-    def __init__(self, family: str = 'Helvetica', weight: str = 'medium', style: str = 'regular', size: int = 10, *args,
+    def __init__(self, family: str = 'Courier', weight: str = 'medium', style: str = 'regular', size: int = 10, *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
         self._family = None

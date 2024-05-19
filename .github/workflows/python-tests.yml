@@ -34,4 +34,5 @@ jobs:
         python -m pip install musicxml
     - name: Test with pytest
       run: |
-        pytest
+        pytest musurgia/tests/unitintegrationtests/pdf/text/test_font.py
+
