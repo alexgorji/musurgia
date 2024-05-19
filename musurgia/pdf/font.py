@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Optional
 
 import matplotlib as mpl
 from matplotlib._afm import AFM
@@ -73,7 +74,7 @@ class Font:
         self._weight = None
         self._style = None
         self._size = None
-        self._afm = None
+        self._afm: Optional[AFM] = None
 
         self.family = family
         self.weight = weight
@@ -85,7 +86,7 @@ class Font:
             self._afm = self.__AFM_PATH_DICTIONARY[self.family, self.weight, self.style]
 
     @property
-    def family(self) -> str:
+    def family(self):
         """
         Set and get font family. Currently valid values are [``Helvetica``, ``Courier``, ``Times``]
         """
@@ -147,6 +148,8 @@ class Font:
         >>> Font(size=12).get_text_pixel_width('Test')
         21.9
         """
+        if self._afm is None:
+            raise TypeError()
         return (self._afm.string_width_height(val)[0] / 1000) * self.size
 
     def get_text_pixel_height(self, val: str) -> float:
@@ -161,4 +164,6 @@ class Font:
         >>> Font(size=12, weight='bold', style='italic').get_text_pixel_height('Test')
         8.783999999999999
         """
+        if self._afm is None:
+            raise TypeError()
         return (self._afm.string_width_height(val)[1] / 1000) * self.size
