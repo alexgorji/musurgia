@@ -142,10 +142,10 @@ class Font:
         :param val: text as str
         :return: width of text in pixels
 
-        >>> Font().get_text_pixel_width('Test')
-        18.25
-        >>> Font(size=12).get_text_pixel_width('Test')
-        21.9
+        >>> round(Font().get_text_pixel_width('Test'), 2)
+        24.0
+        >>> round(Font(size=12).get_text_pixel_width('Test'), 2)
+        28.8
         """
         if self._afm is None:
             raise TypeError()
@@ -156,12 +156,12 @@ class Font:
         :param val: text as str
         :return: height of text in pixels
 
-        >>> Font().get_text_pixel_height('Test')
-        7.33
-        >>> Font(size=12).get_text_pixel_height('Test')
-        8.796
-        >>> Font(size=12, weight='bold', style='italic').get_text_pixel_height('Test')
-        8.783999999999999
+        >>> round(Font().get_text_pixel_height('Test'), 2)
+        5.77
+        >>> round(Font(size=12).get_text_pixel_height('Test'), 2)
+        6.92
+        >>> round(Font(size=12, weight='bold', style='italic').get_text_pixel_height('Test'), 2)
+        6.95
         """
         if self._afm is None:
             raise TypeError()

@@ -31,15 +31,13 @@ class TestText(TestCase):
             self.pdf.draw_ruler('v')
             self.pdf.translate(10, 10)
             t.draw(self.pdf)
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_get_height(self):
         t = Text('fox is going to be dead.')
         t.font_size = 14
         t.top_margin = 3
-        expected = 7.682066666666666
-        actual = t.get_height()
-        self.assertEqual(expected, actual)
+        self.assertEqual(7.02, round(t.get_height(), 3))
 
     def test_height_graphical(self):
         t = Text('The fox is going to be dead.')
@@ -57,7 +55,7 @@ class TestText(TestCase):
                 hls.draw(self.pdf)
             t.draw(self.pdf)
 
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_multiple(self):
         t1 = Text(value='Fox is going to be dead.')
@@ -74,7 +72,7 @@ class TestText(TestCase):
             self.pdf.translate(0, t1.get_height())
             t3.draw(self.pdf)
             self.pdf.translate(0, t1.get_height())
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw_multiple_with_relative_y(self):
         t1 = Text(value='Fox is going to be dead.', relative_x=10, relative_y=10)
@@ -90,4 +88,4 @@ class TestText(TestCase):
             t2.draw(self.pdf)
             t3.draw(self.pdf)
 
-            self.pdf.write(pdf_path)
+            self.pdf.write_to_path(pdf_path)

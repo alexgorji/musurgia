@@ -5,7 +5,7 @@ from musurgia.pdf.pdfunit import PdfUnit
 
 
 class Text(DrawObject):
-    DEFAULT_FONT_FAMILY = 'Helvetica'
+    DEFAULT_FONT_FAMILY = 'Courier'
     DEFAULT_FONT_SIZE = 10
     DEFAULT_FONT_WEIGHT = 'medium'
     DEFAULT_FONT_STYLE = 'regular'
