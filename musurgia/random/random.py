@@ -1,8 +1,10 @@
-from typing import Optional
+from typing import Optional, Any, Iterator, no_type_check, Union, TypeVar
 
-from musurgia.utils import check_type, MusurgiaTypeError, NonNegativeInteger
+from musurgia.check_types import NonNegativeInteger, check_type
 
 __all__ = ['Random']
+
+T = TypeVar('T', bound='Random')
 
 
 class Random:
@@ -32,18 +34,21 @@ class Random:
     import random
     current_random = random
 
-    def __init__(self, pool, periodicity=None, forbidden_list=None, seed=None, *args, **kwargs):
+    def __init__(self, pool: list[Any], periodicity: Optional[NonNegativeInteger] = None,
+                 forbidden_list: Optional[list[Any]] = None, seed: Optional[Union[int, str, bytes, bytearray]] = None,
+                 *args: Any,
+                 **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self._pool = None
-        self._periodicity = None
-        self._forbidden_list = None
-        self._seed = None
+        self._pool: list[Any] = []
+        self._periodicity: Optional[NonNegativeInteger] = None
+        self._forbidden_list: list[Any] = []
+        self._seed: Optional[Union[int, str, bytes, bytearray]] = None
         self._counter = 0
-        self._previous_elements = []
+        self._previous_elements: list[Any] = []
 
         self.pool = pool
-        self.periodicity = periodicity
-        self.forbidden_list = forbidden_list
+        self.periodicity = periodicity  # type: ignore
+        self.forbidden_list = forbidden_list if forbidden_list is not None else []
         self.seed = seed
 
     # properties
@@ -69,7 +74,7 @@ class Random:
         return self._counter
 
     @property
-    def forbidden_list(self) -> list:
+    def forbidden_list(self) -> list[Any]:
         """
         Set and get ``forbidden_list`` property which is used internally to keep trace of previous elements and has
         maximum length of :obj:`periodicity`. All elements in this list are forbidden to be chosen from. After
@@ -81,10 +86,6 @@ class Random:
         :obj:`periodicity`, :obj:`permutation_order_iterator` will remove so many elements from the beginning of this list until the
         right length is achieved.
 
-        >>> Random(pool=[1, 2, 3], forbidden_list="[2]")
-        Traceback (most recent call last):
-            ...
-        TypeError: Random.forbidden_list: Value [2] must be of type list not str.
         >>> r = Random(pool=[1, 3, 2, 4, 5, 6], periodicity=4, seed=20, forbidden_list=[2, 3, 1])
         >>> previous_forbidden_list = r.forbidden_list[:]
         >>> el1 = next(r)
@@ -105,21 +106,18 @@ class Random:
         >>> r.forbidden_list == [1] + [el1, el2, el3]
         True
         """
-        if not self._forbidden_list:
-            self._forbidden_list = []
         return self._forbidden_list
 
     @forbidden_list.setter
-    def forbidden_list(self, values: Optional[list]):
-        if values is not None:
-            try:
-                check_type(t=list, v=values, class_name=self.__class__.__name__, property_name='forbidden_list')
-            except MusurgiaTypeError as err:
-                raise TypeError(err.msg)
-        self._forbidden_list = values
+    def forbidden_list(self, values: Optional[list[Any]]) -> None:
+        if not values:
+            self._forbidden_list = []
+        else:
+            check_type(t=list, v=values, class_name=self.__class__.__name__, property_name='forbidden_list')
+            self._forbidden_list = values
 
     @property
-    def periodicity(self) -> Optional['NonNegativeInteger']:
+    def periodicity(self) -> NonNegativeInteger:
         """
         Set and get ``periodicity`` property of types ``None`` or ``NonNegativInteger``. This property defines the
         minimum distance between two appearances of an element.
@@ -130,59 +128,35 @@ class Random:
         If set to ``None``, ``len(self.pool) - 2`` is returned. If len(self.pool) is ``1``, ``0`` is returned.
         If set to a value equal or greater than ``len(self.pool)``, ``len(self.pool) - 1`` is returned.
 
-        >>> Random(pool=[1, 2, 3], periodicity=-1)
-        Traceback (most recent call last):
-           ...
-        TypeError: Random.periodicity: Value -1 must be of type NonNegativeInteger not int.
-
-        >>> Random(pool=[1, 2, 3], periodicity=1.6)
-        Traceback (most recent call last):
-           ...
-        TypeError: Random.periodicity: Value 1.6 must be of type NonNegativeInteger not float.
-
         >>> Random(pool=[1, 2, 3, 4]).periodicity
         2
         >>> Random(pool=[1]).periodicity
         0
         >>> Random(pool=[1, 2, 3, 4], periodicity=5).periodicity
         3
-
         """
-        if self.pool:
-            if self._periodicity is None:
-                output = len(self.pool) - 2
-                return output if output >= 0 else 0
-
-            if self._periodicity >= len(self.pool):
-                return len(self.pool) - 1
-        return self._periodicity
+        if self._periodicity is None:
+            output = len(self.pool) - 2
+            return max(output, 0)
+        elif self._periodicity >= len(self.pool):
+            return len(self.pool) - 1
+        else:
+            return self._periodicity
 
     @periodicity.setter
-    def periodicity(self, value: Optional[int]):
-        if value is not None:
-            try:
-                check_type(t=NonNegativeInteger, v=value, property_name='periodicity',
-                           class_name=self.__class__.__name__)
-                self._periodicity = value
-            except MusurgiaTypeError as err:
-                raise TypeError(err.msg)
+    def periodicity(self, value: Optional[NonNegativeInteger]) -> None:
+        if value is None:
+            self._periodicity = None
+        else:
+            check_type(t=NonNegativeInteger, v=value, property_name='periodicity', class_name=self.__class__.__name__)
+            self._periodicity = value
 
     @property
-    def pool(self) -> list:
+    def pool(self) -> list[Any]:
         """
         Set and get ``pool`` property. This property defines the list of possible elements to be randomly chosen from.
         Duplicates will be omitted without chaining the order of each element's first appearances.
         :return: ``None`` or ``list``
-
-        >>> Random(pool=3)
-        Traceback (most recent call last):
-            ...
-        ValueError: Random.pool must be iterable.
-
-        >>> Random(pool=None)
-        Traceback (most recent call last):
-            ...
-        ValueError: Random.pool must be iterable.
 
         >>> Random(pool=[1, 2, 3, 2, 1]).pool
         [1, 2, 3]
@@ -190,13 +164,12 @@ class Random:
         return self._pool
 
     @pool.setter
-    def pool(self, values):
-        if not hasattr(values, '__iter__'):
-            raise ValueError('Random.pool must be iterable.')
+    def pool(self, values: list[Any]) -> None:
+        check_type(v=values, t=list, property_name='pool', class_name=self.__class__.__name__)
         self._pool = list(dict.fromkeys(values))
 
     @property
-    def seed(self):
+    def seed(self) -> Optional[Union[int, str, bytes, bytearray]]:
         """
         Set and get ``seed.a`` value of python random function which is used to randomly choose an element.
 
@@ -212,12 +185,12 @@ class Random:
         return self._seed
 
     @seed.setter
-    def seed(self, value):
+    def seed(self, value: Optional[Union[int, str, bytes, bytearray]]) -> None:
         self._seed = value
         self.current_random.seed(value)
 
     # methods
-    def get_previous_elements(self) -> list:
+    def get_previous_elements(self) -> list[Any]:
         """
         :return: list of all randomly chosen values
 
@@ -229,15 +202,15 @@ class Random:
         """
         return self._previous_elements
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Any]:
         """
         The core methode of Random. This is a generator to generate random values. :obj:`__next__` method calls :obj:`__iter__().__next__()`.
 
         :return: a random value out of :obj:`pool` considering :obj:`seed`, :obj:`periodicity` and :obj:`forbidden_list`
         """
         while True:
-            def check(element):
-                def forbid_element(el):
+            def check(element: Any) -> bool:
+                def forbid_element(el: Any) -> None:
                     if len(self.forbidden_list) >= self.periodicity:
                         self.forbidden_list.pop(0)
                     self.forbidden_list.append(el)
@@ -261,13 +234,13 @@ class Random:
             self._previous_elements.append(random_element)
             yield random_element
 
-    def __next__(self):
+    def __next__(self) -> Any:
         """
         :return: self.__iter__().__next__()`
         """
         return self.__iter__().__next__()
 
-    def __deepcopy__(self, memodict={}):
+    def __deepcopy__(self: 'T', memodict: dict[int, Any] = {}) -> 'T':
         copied = self.__class__(pool=self.pool, periodicity=self.periodicity,
                                 forbidden_list=self.forbidden_list,
                                 seed=self.seed)

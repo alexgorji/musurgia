@@ -1,5 +1,5 @@
 import itertools
-from typing import Union, Optional, List, TypeVar, Callable, NewType, Literal, Any, Tuple, cast, Sequence
+from typing import Union, Optional, List, TypeVar, Callable, Literal, Any, Tuple, cast, Sequence
 
 from fractions import Fraction
 from verysimpletree.tree import Tree
@@ -13,16 +13,9 @@ from musurgia.utils import flatten
 
 _TREE_TYPE = TypeVar('_TREE_TYPE', bound='FractalTree')
 
-NonNegativeInt = NewType('NonNegativeInt', int)
 ReadingDirection = Literal['horizontal', 'vertical', 'diagonal', 'half-diagonal']
 ReduceChildrenMode = Literal['backwards', 'forwards', 'sieve', 'merge']
 ConvertableToFraction = Union[float, int, Fraction]
-
-
-def check_non_negative_int(value: int) -> NonNegativeInt:
-    if value < 0:
-        raise ValueError(f"NonNegativeInt value must be non-negative, got {value}")
-    return NonNegativeInt(value)
 
 
 def check_read_direction(value: str) -> None:
