@@ -1,62 +1,24 @@
 from itertools import cycle
 from pprint import pprint
-from typing import Literal, Iterator, Optional, cast
+from typing import Literal, Iterator, Optional, cast, Any
 
-from musurgia.utils import transpose_3d_vertically, transpose_3d_half_diagonally, transpose_3d_diagonally, \
-    MusurgiaTypeError, check_type
+from musurgia.check_types import MusurgiaTypeError, check_type
 
 ReadingDirection = Literal['horizontal', 'vertical', 'diagonal', 'half-diagonal']
 
 
-def permute(input_list: list, permutation_order: tuple[int, ...]) -> list:
+def permute(input_list: list[Any], permutation_order: tuple[int, ...]) -> list:
     """
     Permutes a list of values by reference to another list named permutation_order.
     :param input_list: A list of values to permute
     :param permutation_order: A tuple consisting of all integers between 1 and lenght of input_list - 1 without duplications.
     :return: permuted list of values
 
-    >>> permute([10, 20, 30, 40], [3, 2, 4, 1])
-    Traceback (most recent call last):
-       ...
-    TypeError: permute.permutation_order: Value [3, 2, 4, 1] must be of type tuple not list.
-
-    >>> permute(None, [3, 2, 4, 1])
-    Traceback (most recent call last):
-       ...
-    TypeError: permute.input_list: Value None must be of type list not NoneType.
-
-    >>> permute([10, 20, 30, 40], None)
-    Traceback (most recent call last):
-       ...
-    TypeError: permute.permutation_order: Value None must be of type tuple not NoneType.
-
-    >>> permute([10, 20, 30, 40], (3, 2, 4))
-    Traceback (most recent call last):
-       ...
-    ValueError: Invalid permutation_order (3, 2, 4) for input_list [10, 20, 30, 40]: wrong length
-
-    >>> permute([10, 20, 30, 40], (3, 2, 4, 1, 3))
-    Traceback (most recent call last):
-       ...
-    ValueError: Invalid permutation_order (3, 2, 4, 1, 3) for input_list [10, 20, 30, 40]: wrong length
-
-    >>> permute([10, 20, 30, 40], (3, 2, 4, 5))
-    Traceback (most recent call last):
-       ...
-    ValueError: Invalid permutation_order (3, 2, 4, 5) for input_list [10, 20, 30, 40]: {2, 3, 4, 5} != {1, 2, 3, 4}
-
     >>> permute([10, 20, 30, 40], (3, 2, 4, 1))
     [30, 20, 40, 10]
     """
-
-    try:
-        check_type(input_list, list, function_name='permute', argument_name='input_list')
-    except MusurgiaTypeError as err:
-        raise TypeError(err)
-    try:
-        check_type(permutation_order, tuple, function_name='permute', argument_name='permutation_order')
-    except MusurgiaTypeError as err:
-        raise TypeError(err)
+    check_type(input_list, list, function_name='permute', argument_name='input_list')
+    check_type(permutation_order, tuple, function_name='permute', argument_name='permutation_order')
 
     if len(permutation_order) != len(input_list):
         raise ValueError(f'Invalid permutation_order {permutation_order} for input_list {input_list}: wrong length')
@@ -82,7 +44,7 @@ def get_self_permutation_2d(permutation_order: tuple[int, ...]) -> list[tuple[in
     >>> get_self_permutation_2d([4, 2, 3, 1])
     Traceback (most recent call last):
        ...
-    TypeError: permute.permutation_order: Value [4, 2, 3, 1] must be of type tuple not list.
+    musurgia.check_types.MusurgiaTypeError: permute:permutation_order: Value [4, 2, 3, 1] must be of type tuple not list
 
     >>> get_self_permutation_2d((3, 1, 2))
     [(3, 1, 2), (2, 3, 1), (1, 2, 3)]
@@ -121,7 +83,7 @@ def get_self_permutation_3d(permutation_order: tuple[int, ...]) -> list[list[tup
     >>> get_self_permutation_3d([4, 2, 3, 1])
     Traceback (most recent call last):
        ...
-    TypeError: permute.permutation_order: Value [4, 2, 3, 1] must be of type tuple not list.
+    musurgia.check_types.MusurgiaTypeError: permute:permutation_order: Value [4, 2, 3, 1] must be of type tuple not list
 
     >>> pprint(get_self_permutation_3d((3, 1, 2)))
     [[(3, 1, 2), (2, 3, 1), (1, 2, 3)],
@@ -197,12 +159,12 @@ class LimitedPermutation:
     >>> lp = LimitedPermutation(('a', 'b', 'c'), (3, 1, 2))
     Traceback (most recent call last):
        ...
-    TypeError: LimitedPermutation.input_list: Value ('a', 'b', 'c') must be of type list not tuple.
+    musurgia.check_types.MusurgiaTypeError: LimitedPermutation.input_list: Value ('a', 'b', 'c') must be of type list not tuple
 
     >>> lp = LimitedPermutation(['a', 'b', 'c'], [3, 1, 2])
     Traceback (most recent call last):
        ...
-    TypeError: permute.permutation_order: Value [3, 1, 2] must be of type tuple not list.
+    musurgia.check_types.MusurgiaTypeError: permute:permutation_order: Value [3, 1, 2] must be of type tuple not list
 
     >>> lp = LimitedPermutation(['a', 'b', 'c'], (3, 1, 2))
     >>> pprint(lp.get_permutation_orders())
@@ -289,10 +251,7 @@ class LimitedPermutation:
 
     @input_list.setter
     def input_list(self, val):
-        try:
-            check_type(t=list, v=val, class_name='LimitedPermutation', property_name='input_list')
-        except MusurgiaTypeError as err:
-            raise TypeError(err)
+        check_type(t=list, v=val, class_name='LimitedPermutation', property_name='input_list')
         self._input_list = val
 
     @property

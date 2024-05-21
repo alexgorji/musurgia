@@ -1,5 +1,7 @@
 from typing import Any, Optional
 
+NonNegativeInteger = int
+
 
 class MusurgiaTypeError(TypeError):
     """
@@ -55,7 +57,7 @@ def check_type(v: Any, t: type, function_name: Optional[str] = None, class_name:
     """
     if t == NonNegativeInteger:
         try:
-            check_non_negative_int(v)
+            check_non_negative_integer(v)
         except TypeError as err:
             raise MusurgiaTypeError(v, t, function_name, class_name, method_name, argument_name, property_name,
                                     str(err))
@@ -65,10 +67,7 @@ def check_type(v: Any, t: type, function_name: Optional[str] = None, class_name:
     return True
 
 
-NonNegativeInteger = int
-
-
-def check_non_negative_int(value: int) -> bool:
+def check_non_negative_integer(value: int) -> bool:
     if not isinstance(value, int) or value < 0:
         raise TypeError(f"NonNegativeInteger value must be a non-negative integer, got {value}")
     return True
