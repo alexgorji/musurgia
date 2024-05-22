@@ -3,7 +3,7 @@ from pathlib import Path
 from musurgia.pdf.line import StraightLine
 from musurgia.pdf.masterslave import Master
 from musurgia.pdf.pdf import Pdf
-from musurgia.tests.unitintegrationtests.test_utils  import TestCase
+from musurgia.tests.unitintegrationtests._test_utils  import TestCase
 
 path = Path(__file__)
 

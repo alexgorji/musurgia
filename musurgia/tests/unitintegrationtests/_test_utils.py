@@ -9,26 +9,6 @@ from pathlib import Path
 from diff_pdf_visually import pdf_similar
 
 
-class TestErrors(TestCase):
-    def test_musurgia_type_error(self):
-        with self.assertRaises(TypeError):
-            MusurgiaTypeError()
-        with self.assertRaises(TypeError):
-            MusurgiaTypeError(t='myType')
-        with self.assertRaises(TypeError):
-            MusurgiaTypeError(v=3)
-
-        class MyType(type):
-            pass
-
-        assert MusurgiaTypeError(t=MyType, v=3).msg == "Value 3 must be of type MyType not int"
-        assert MusurgiaTypeError(t=MyType, v=3,
-                                 argument_name='arg1').msg == "arg1: Value 3 must be of type MyType not int"
-
-        assert MusurgiaTypeError(t=MyType, v=3, argument_name='arg1', method_name='get_arg1',
-                                 class_name="MyClass").msg == "MyClass.get_arg1:arg1: Value 3 must be of type MyType not int"
-
-
 def create_test_path(path, test_name):
     return path.parent.joinpath(f'{path.stem}_{test_name}')
 

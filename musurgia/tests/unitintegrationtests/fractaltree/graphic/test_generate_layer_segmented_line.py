@@ -3,7 +3,7 @@ from pathlib import Path
 from musurgia.fractal.fractaltree import FractalTree
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.text import PageText
-from musurgia.tests.unitintegrationtests.test_utils import TestCase
+from musurgia.tests.unitintegrationtests._test_utils import TestCase
 
 path = Path(__file__)
 

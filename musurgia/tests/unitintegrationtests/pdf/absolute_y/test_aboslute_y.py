@@ -1,6 +1,6 @@
 from musurgia.pdf.line import VerticalLineSegment
 from musurgia.pdf.pdf import Pdf
-from musurgia.tests.unitintegrationtests.test_utils import TestCase
+from musurgia.tests.unitintegrationtests._test_utils import TestCase
 
 
 class TestAbsoluteY(TestCase):

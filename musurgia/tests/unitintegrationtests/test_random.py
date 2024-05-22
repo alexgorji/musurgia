@@ -1,5 +1,5 @@
 from musurgia.random import Random
-from musurgia.tests.unitintegrationtests.test_utils import TestCase
+from musurgia.tests.unitintegrationtests._test_utils import TestCase
 
 
 class TestRandom(TestCase):

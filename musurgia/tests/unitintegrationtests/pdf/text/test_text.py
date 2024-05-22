@@ -3,7 +3,7 @@ from pathlib import Path
 from musurgia.pdf.line import HorizontalLineSegment
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.text import Text
-from musurgia.tests.unitintegrationtests.test_utils  import TestCase
+from musurgia.tests.unitintegrationtests._test_utils  import TestCase
 
 path = Path(__file__)
 

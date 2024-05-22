@@ -148,7 +148,7 @@ class Random:
         if value is None:
             self._periodicity = None
         else:
-            check_type(t=NonNegativeInteger, v=value, property_name='periodicity', class_name=self.__class__.__name__)
+            check_type(t='NonNegativeInteger', v=value, property_name='periodicity', class_name=self.__class__.__name__)
             self._periodicity = value
 
     @property

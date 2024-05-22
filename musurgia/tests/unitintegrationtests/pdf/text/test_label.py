@@ -5,7 +5,7 @@ from musurgia.pdf.line import VerticalSegmentedLine
 from musurgia.pdf.masterslave import PositionMaster
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.text import TextLabel
-from musurgia.tests.unitintegrationtests.test_utils  import TestCase
+from musurgia.tests.unitintegrationtests._test_utils  import TestCase
 
 path = Path(__file__)
 
