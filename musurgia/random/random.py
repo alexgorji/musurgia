@@ -1,6 +1,6 @@
 from typing import Optional, Any, Iterator, no_type_check, Union, TypeVar
 
-from musurgia.check_types import NonNegativeInteger, check_type
+from musurgia.musurgia_types import NonNegativeInteger, check_type
 
 __all__ = ['Random']
 

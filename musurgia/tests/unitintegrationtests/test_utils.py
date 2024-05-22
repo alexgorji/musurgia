@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from musurgia.check_types import MusurgiaTypeError, check_type
+from musurgia.musurgia_types import MusurgiaTypeError, check_type
 
 import os
 import unittest
