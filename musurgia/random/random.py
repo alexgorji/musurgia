@@ -1,4 +1,4 @@
-from typing import Optional, Any, Iterator, no_type_check, Union, TypeVar
+from typing import Optional, Any, Iterator, Union, TypeVar
 
 from musurgia.musurgia_types import NonNegativeInteger, check_type
 

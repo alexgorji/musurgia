@@ -1,13 +1,3 @@
-class MarginedOrbjectError(Exception):
-    def __init__(self, *args):
-        super().__init__(*args)
-
-
-class MarginNotSettableError(MarginedOrbjectError):
-    def __init__(self, *args):
-        super().__init__(*args)
-
-
 class Margined:
     def __init__(self, top_margin=None, bottom_margin=None, left_margin=None, right_margin=None, *args, **kwargs):
         super().__init__(*args, **kwargs)

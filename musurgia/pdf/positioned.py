@@ -1,20 +1,3 @@
-class PositionedObjectError(Exception):
-    def __init__(self, *args):
-        super().__init__(*args)
-
-
-class RelativePositionNotSettableError(PositionedObjectError):
-    pass
-
-
-class RelativeXNotSettableError(RelativePositionNotSettableError):
-    pass
-
-
-class RelativeYNotSettableError(RelativePositionNotSettableError):
-    pass
-
-
 class Positioned(object):
     def __init__(self, relative_x=None, relative_y=None, *args, **kwargs):
         self._relative_x = None

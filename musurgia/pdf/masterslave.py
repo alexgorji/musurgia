@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
-from musurgia.pdf.margined import MarginNotSettableError
-from musurgia.pdf.positioned import RelativePositionNotSettableError
+from musurgia.musurgia_exceptions import MarginNotSettableError, RelativePositionNotSettableError
 
 
 class _GetSlavePositionMixIn(ABC):

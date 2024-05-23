@@ -1,7 +1,10 @@
 from unittest import TestCase
 
 from musurgia.matrix.matrix import Matrix, MatrixIsEmptyError, SquareMatrix, \
-    SquareMatrixDataError, PermutationOrderMatrix, PermutationOrderMatrixDataError, PermutationOrderMatrixGenerator
+    PermutationOrderMatrix, PermutationOrderMatrixGenerator, \
+    MatrixIndexController
+from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError, MatrixIndexEndOfRowError, \
+    MatrixIndexEndOfMatrixError, SquareMatrixDataError, PermutationOrderMatrixDataError
 
 
 class TestMatrix(TestCase):

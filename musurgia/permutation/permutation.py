@@ -1,24 +1,9 @@
 from pprint import pprint
 from typing import Any
 
+from musurgia.musurgia_exceptions import PermutationOrderTypeError, PermutationOrderValueError
 from musurgia.musurgia_types import check_type, PermutationOrder, check_permutation_order_values, \
     MatrixData
-
-
-class PermutationOrderException(Exception):
-    pass
-
-
-class PermutationOrderError(PermutationOrderException):
-    pass
-
-
-class PermutationOrderTypeError(PermutationOrderError, TypeError):
-    pass
-
-
-class PermutationOrderValueError(PermutationOrderError, ValueError):
-    pass
 
 
 def permute(input_list: list[Any], permutation_order: PermutationOrder) -> list:

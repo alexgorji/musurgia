@@ -2,24 +2,7 @@ from typing import Optional, Union
 
 from fractions import Fraction
 
-
-class ArithmeticProgressionError(BaseException):
-    def __init__(self, *args):
-        super().__init__(*args)
-
-
-class DAndSError(ArithmeticProgressionError):
-    """
-    >>> ArithmeticProgression(d=4, an=15, s=33)
-    Traceback (most recent call last):
-        ...
-    musurgia.arithmeticprogression.DAndSError: you cannot set both d an s!
-
-    """
-
-    def __init__(self, *args):
-        msg = 'you cannot set both d an s!'
-        super().__init__(msg, *args)
+from musurgia.musurgia_exceptions import DAndSError
 
 
 class ArithmeticProgression:

@@ -1,14 +1,10 @@
 from pathlib import Path
-from pprint import pprint
 from typing import Optional
 
 import matplotlib as mpl
 from matplotlib._afm import AFM
 
-
-class FontError(Exception):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+from musurgia.musurgia_exceptions import FontException
 
 
 def _make_afm_path_dictionary():
@@ -94,7 +90,7 @@ class Font:
     @family.setter
     def family(self, val):
         if val not in self._FAMILY:
-            raise FontError(f'{val} not a valid value: Current valid families are: :obj:~{self._FAMILY}')
+            raise FontException(f'{val} not a valid value: Current valid families are: :obj:~{self._FAMILY}')
         self._family = val
         self._set_afm()
 
@@ -119,7 +115,7 @@ class Font:
     @style.setter
     def style(self, val):
         if val not in self._STYLE:
-            raise FontError(f'{val} not a valid value: {self._STYLE}')
+            raise FontException(f'{val} not a valid value: {self._STYLE}')
         self._style = val
         self._set_afm()
 
@@ -133,7 +129,7 @@ class Font:
     @weight.setter
     def weight(self, val):
         if val not in self._WEIGHT:
-            raise FontError(f'{val} not a valid value: {self._WEIGHT}')
+            raise FontException(f'{val} not a valid value: {self._WEIGHT}')
         self._weight = val
         self._set_afm()
 

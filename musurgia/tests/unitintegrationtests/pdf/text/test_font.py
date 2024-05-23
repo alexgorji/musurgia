@@ -1,4 +1,5 @@
-from musurgia.pdf.font import Font, FontError
+from musurgia.pdf.font import Font
+from musurgia.musurgia_exceptions import FontException
 from musurgia.tests.unitintegrationtests._test_utils import TestCase
 
 
@@ -25,11 +26,11 @@ class TestFont(TestCase):
         self.assertEqual(expected, actual)
 
     def test_errors(self):
-        with self.assertRaises(FontError):
+        with self.assertRaises(FontException):
             self.font.family = 'Bla'
 
-        with self.assertRaises(FontError):
+        with self.assertRaises(FontException):
             self.font.style = 'Bla'
 
-        with self.assertRaises(FontError):
+        with self.assertRaises(FontException):
             self.font.weight = 'Bla'

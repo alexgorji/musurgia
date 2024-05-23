@@ -1,7 +1,7 @@
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.named import Named
-from musurgia.pdf.positioned import RelativeXNotSettableError, RelativeYNotSettableError
+from musurgia.musurgia_exceptions import RelativeXNotSettableError, RelativeYNotSettableError
 
 
 class MarkLine(DrawObject, Labeled):

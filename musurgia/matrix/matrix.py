@@ -1,19 +1,11 @@
 from typing import Optional, Any, TypeVar
 
+from musurgia.musurgia_exceptions import MatrixIsEmptyError, SquareMatrixDataError, \
+    PermutationOrderMatrixDataError
 from musurgia.musurgia_types import NonNegativeInteger, check_type, PositiveInteger, \
     MatrixData, MatrixIndex, check_matrix_index_values, check_permutation_order_values, \
     create_error_message, PermutationOrder
 from musurgia.permutation.limited_permutation import LimitedPermutationOrders
-
-
-class MatrixException(Exception):
-    pass
-
-
-class MatrixIsEmptyError(MatrixException):
-    def __init__(self) -> None:
-        msg = 'Matrix is empty!'
-        super().__init__(msg)
 
 
 class SimpleMatrix:
@@ -105,14 +97,6 @@ class Matrix(SimpleMatrix):
         return self.matrix_data.pop(row_number - 1)
 
 
-class SquareMatrixException(MatrixException):
-    pass
-
-
-class SquareMatrixDataError(SquareMatrixException):
-    pass
-
-
 class SquareMatrix(SimpleMatrix):
     T = TypeVar('T', bound='SimpleMatrix')
 
@@ -126,14 +110,6 @@ class SquareMatrix(SimpleMatrix):
 
     def get_size(self) -> NonNegativeInteger:
         return self.get_column_size()
-
-
-class PermutationOrderMatrixException(MatrixException):
-    pass
-
-
-class PermutationOrderMatrixDataError(PermutationOrderMatrixException):
-    pass
 
 
 class PermutationOrderMatrixGenerator:
