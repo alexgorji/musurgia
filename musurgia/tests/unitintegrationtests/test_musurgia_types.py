@@ -1,7 +1,9 @@
+from fractions import Fraction
 from unittest import TestCase
 
 from musurgia.musurgia_types import check_type, \
-    MusurgiaTypeError, check_matrix_index_values, check_permutation_order_values, create_error_message
+    MusurgiaTypeError, check_matrix_index_values, check_permutation_order_values, create_error_message, \
+    convert_to_fraction
 
 
 class TestCreateErrorMessage(TestCase):
@@ -124,6 +126,21 @@ class TestCheckTypeFunction(TestCase):
         assert check_type('diagonal', 'MatrixTransposeMode')
         with self.assertRaises(MusurgiaTypeError):
             assert check_type('wrong', 'MatrixTransposeMode')
+
+    def test_fractal_tree_reduce_children_mode(self):
+        assert check_type('sieve', 'FractalTreeReduceChildrenMode')
+        with self.assertRaises(MusurgiaTypeError):
+            assert check_type('wrong', 'FractalTreeReduceChildrenMode')
+
+    def test_convertable_to_fraction_type(self):
+        assert check_type(1, 'ConvertableToFraction')
+        with self.assertRaises(MusurgiaTypeError):
+            assert check_type('wrong', 'ConvertableToFraction')
+
+    def test_convert_to_fraction(self):
+        assert convert_to_fraction(1) == Fraction(1, 1)
+        assert convert_to_fraction(1.5) == Fraction(3, 2)
+        assert convert_to_fraction(Fraction(3, 4)) == Fraction(3, 4)
 
 
 class TestCheckValues(TestCase):

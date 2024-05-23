@@ -1,7 +1,7 @@
 from typing import Optional, Any, TypeVar
 
 from musurgia.musurgia_exceptions import MatrixIsEmptyError, SquareMatrixDataError, \
-    PermutationOrderMatrixDataError
+    PermutationOrderMatrixDataError, MatrixIndexOutOfRangeError, MatrixIndexEndOfMatrixError, MatrixIndexEndOfRowError
 from musurgia.musurgia_types import NonNegativeInteger, check_type, PositiveInteger, \
     MatrixData, MatrixIndex, check_matrix_index_values, check_permutation_order_values, \
     create_error_message, PermutationOrder
@@ -156,123 +156,195 @@ class PermutationOrderMatrix(SquareMatrix):
                                              message=str(err)))
         return True
 
-# class PermutationOrderMatrixTransposition:
-#     def __init__(self, matrix: PermutationOrderMatrix):
-#         self._matrix: Optional[PermutationOrderMatrix] = None
-#         self.matrix = matrix
-#
-#     @property
-#     def matrix(self) -> PermutationOrderMatrix:
-#         return self._matrix
-#
-#     @matrix.setter
-#     def matrix(self, value: PermutationOrderMatrix) -> None:
-#         if not isinstance(value, PermutationOrderMatrix):
-#             raise TypeError(create_error_message())
-#         if self._matrix is None:
-#             self._matrix = value
-#         else:
-#             raise AttributeError('PermutationOrderMatrixTransposition: matrix cannot be set after initialization')
-#
-#     @staticmethod
-#     def reorder_permutation_order_matrix_data_vertically(matrix_data: MatrixData) -> MatrixData:
-#         """
-#         No type checking takes place!
-#
-#         >>> matrix_data = [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')], [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')], [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
-#         >>> pprint(matrix_data)
-#         [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')],
-#          [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')],
-#          [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
-#         >>> pprint(PermutationOrderMatrixTransposition.reorder_permutation_order_matrix_data_vertically(matrix_data))
-#         [[('a1', 'a2', 'a3'), ('b1', 'b2', 'b3'), ('c1', 'c2', 'c3')],
-#          [('d1', 'd2', 'd3'), ('e1', 'e2', 'e3'), ('f1', 'f2', 'f3')],
-#          [('g1', 'g2', 'g3'), ('h1', 'h2', 'h3'), ('i1', 'i2', 'i3')]]
-#         """
-#         output = []
-#         for column in range(len(matrix_data)):
-#             row_list = []
-#             for element in range(len(matrix_data)):
-#                 tmp = []
-#                 for row in range(len(matrix_data)):
-#                     tmp.append(matrix_data[row][column][element])
-#                 row_list.append(tuple(tmp))
-#             output.append(row_list)
-#         return output
-#
-#     @staticmethod
-#     def reorder_permutation_order_matrix_data_half_diagonally(matrix_data: MatrixData) -> MatrixData:
-#         """
-#         No type checking takes place!
-#
-#         >>> matrix_data = [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')], [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')], [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
-#         >>> pprint(matrix_data)
-#         [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')],
-#          [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')],
-#          [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
-#         >>> pprint(PermutationOrderMatrixTransposition.reorder_permutation_order_matrix_data_half_diagonally(matrix_data))
-#         [[('a1', 'b2', 'c3'), ('b1', 'c2', 'a3'), ('c1', 'a2', 'b3')],
-#          [('d1', 'e2', 'f3'), ('e1', 'f2', 'd3'), ('f1', 'd2', 'e3')],
-#          [('g1', 'h2', 'i3'), ('h1', 'i2', 'g3'), ('i1', 'g2', 'h3')]]
-#         """
-#         output = []
-#         for i in range(len(matrix_data)):
-#             row_list = []
-#             for j in range(len(matrix_data)):
-#                 tmp = []
-#                 for k in range(len(matrix_data)):
-#                     row = k
-#                     column = i
-#                     element = (j + k) % len(matrix_data)
-#                     tmp.append(matrix_data[row][column][element])
-#                 row_list.append(tuple(tmp))
-#             output.append(row_list)
-#         return output
-#
-#     @staticmethod
-#     def reorder_permutation_order_matrix_data_diagonally(matrix_data: MatrixData) -> MatrixData:
-#         """
-#         No type checking takes place!
-#
-#         >>> matrix_data = [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')], [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')], [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
-#         >>> pprint(matrix_data)
-#         [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')],
-#          [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')],
-#          [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
-#         >>> pprint(PermutationOrderMatrixTransposition.reorder_permutation_order_matrix_data_diagonally(matrix_data))
-#         [[('a1', 'b2', 'c3'), ('b1', 'c2', 'd3'), ('c1', 'd2', 'e3')],
-#          [('d1', 'e2', 'f3'), ('e1', 'f2', 'g3'), ('f1', 'g2', 'h3')],
-#          [('g1', 'h2', 'i3'), ('h1', 'i2', 'a3'), ('i1', 'a2', 'b3')]]
-#         """
-#         output = []
-#         for i in range(len(matrix_data)):
-#             row_list = []
-#             for j in range(len(matrix_data)):
-#                 tmp = []
-#                 for k in range(len(matrix_data)):
-#                     row = k
-#                     column = (i + (j + k) // len(matrix_data)) % len(matrix_data)
-#                     element = (j + k) % len(matrix_data)
-#                     tmp.append(matrix_data[row][column][element])
-#                 row_list.append(tuple(tmp))
-#             output.append(row_list)
-#         return output
-#
-#     def reorder_vertically(self) -> None:
-#         self.matrix.matrix_data = self.reorder_permutation_order_matrix_data_vertically(self.matrix.matrix_data)
-#
-#     def reorder_half_diagonally(self) -> None:
-#         self.matrix.matrix_data = self.reorder_permutation_order_matrix_data_half_diagonally(self.matrix.matrix_data)
-#
-#     def reorder_diagonally(self) -> None:
-#         self.matrix.matrix_data = self.reorder_permutation_order_matrix_data_diagonally(self.matrix.matrix_data)
-#
-#     def reorder(self, mode: PermutationOrderMatrixReorderMode) -> None:
-#         if mode == 'diagonally':
-#             self.reorder_diagonally()
-#         elif mode == 'half_diagonally':
-#             self.reorder_half_diagonally()
-#         elif mode == 'vertically':
-#             self.reorder_vertically()
-#         else:
-#             raise ValueError()
+
+class MatrixIndexController:
+    def __init__(self, number_of_rows: NonNegativeInteger, number_of_columns: NonNegativeInteger,
+                 first_index: MatrixIndex = (1, 1)):
+        self._number_of_rows = None
+        self._number_of_columns = None
+        self._first_index = None
+        self._next_index = None
+        self._current_index = None
+
+        self.number_of_rows = number_of_rows
+        self.number_of_columns = number_of_columns
+        self.first_index = first_index
+
+    def _get_next_index(self):
+        c = (self._current_index[1] + 1) % self.number_of_columns
+        r = self._current_index[0]
+        if c == 0:
+            c = self.number_of_columns
+        if c == 1:
+            r += 1
+        return r, c
+
+    @property
+    def number_of_rows(self) -> NonNegativeInteger:
+        return self._number_of_rows
+
+    @number_of_rows.setter
+    def number_of_rows(self, value):
+        check_type(value, 'NonNegativeInteger', class_name=self.__class__.__name__, property_name='number_of_rows')
+        self._number_of_rows = value
+
+    @property
+    def number_of_columns(self) -> NonNegativeInteger:
+        return self._number_of_columns
+
+    @number_of_columns.setter
+    def number_of_columns(self, value):
+        check_type(value, 'NonNegativeInteger', class_name=self.__class__.__name__, property_name='number_of_columns')
+        self._number_of_columns = value
+
+    @property
+    def first_index(self) -> Optional[MatrixIndex]:
+        return self._first_index
+
+    @first_index.setter
+    def first_index(self, value):
+        check_type(value, 'MatrixIndex', class_name=self.__class__.__name__, property_name='index')
+        check_matrix_index_values(value, self.number_of_rows, self.number_of_columns)
+        self._first_index = value
+        self._next_index = value
+        self._current_index = value
+
+    def get_next_in_row(self):
+        if self._current_index[1] == self.number_of_columns:
+            raise MatrixIndexEndOfRowError
+        return self.__next__()
+
+    def reset(self):
+        self.first_index = (1, 1)
+
+    def __iter__(self) -> 'MatrixIndexController':
+        return self
+
+    def __next__(self) -> MatrixIndex:
+        try:
+            check_matrix_index_values(self._next_index, self.number_of_rows, self.number_of_columns)
+        except MatrixIndexOutOfRangeError:
+            raise MatrixIndexEndOfMatrixError
+        self._current_index = self._next_index
+        self._next_index = self._get_next_index()
+        return self._current_index
+    # class PermutationOrderMatrixTransposition:
+    #     def __init__(self, matrix: PermutationOrderMatrix):
+    #         self._matrix: Optional[PermutationOrderMatrix] = None
+    #         self.matrix = matrix
+    #
+    #     @property
+    #     def matrix(self) -> PermutationOrderMatrix:
+    #         return self._matrix
+    #
+    #     @matrix.setter
+    #     def matrix(self, value: PermutationOrderMatrix) -> None:
+    #         if not isinstance(value, PermutationOrderMatrix):
+    #             raise TypeError(create_error_message())
+    #         if self._matrix is None:
+    #             self._matrix = value
+    #         else:
+    #             raise AttributeError('PermutationOrderMatrixTransposition: matrix cannot be set after initialization')
+    #
+    #     @staticmethod
+    #     def reorder_permutation_order_matrix_data_vertically(matrix_data: MatrixData) -> MatrixData:
+    #         """
+    #         No type checking takes place!
+    #
+    #         >>> matrix_data = [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')], [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')], [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
+    #         >>> pprint(matrix_data)
+    #         [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')],
+    #          [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')],
+    #          [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
+    #         >>> pprint(PermutationOrderMatrixTransposition.reorder_permutation_order_matrix_data_vertically(matrix_data))
+    #         [[('a1', 'a2', 'a3'), ('b1', 'b2', 'b3'), ('c1', 'c2', 'c3')],
+    #          [('d1', 'd2', 'd3'), ('e1', 'e2', 'e3'), ('f1', 'f2', 'f3')],
+    #          [('g1', 'g2', 'g3'), ('h1', 'h2', 'h3'), ('i1', 'i2', 'i3')]]
+    #         """
+    #         output = []
+    #         for column in range(len(matrix_data)):
+    #             row_list = []
+    #             for element in range(len(matrix_data)):
+    #                 tmp = []
+    #                 for row in range(len(matrix_data)):
+    #                     tmp.append(matrix_data[row][column][element])
+    #                 row_list.append(tuple(tmp))
+    #             output.append(row_list)
+    #         return output
+    #
+    #     @staticmethod
+    #     def reorder_permutation_order_matrix_data_half_diagonally(matrix_data: MatrixData) -> MatrixData:
+    #         """
+    #         No type checking takes place!
+    #
+    #         >>> matrix_data = [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')], [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')], [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
+    #         >>> pprint(matrix_data)
+    #         [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')],
+    #          [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')],
+    #          [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
+    #         >>> pprint(PermutationOrderMatrixTransposition.reorder_permutation_order_matrix_data_half_diagonally(matrix_data))
+    #         [[('a1', 'b2', 'c3'), ('b1', 'c2', 'a3'), ('c1', 'a2', 'b3')],
+    #          [('d1', 'e2', 'f3'), ('e1', 'f2', 'd3'), ('f1', 'd2', 'e3')],
+    #          [('g1', 'h2', 'i3'), ('h1', 'i2', 'g3'), ('i1', 'g2', 'h3')]]
+    #         """
+    #         output = []
+    #         for i in range(len(matrix_data)):
+    #             row_list = []
+    #             for j in range(len(matrix_data)):
+    #                 tmp = []
+    #                 for k in range(len(matrix_data)):
+    #                     row = k
+    #                     column = i
+    #                     element = (j + k) % len(matrix_data)
+    #                     tmp.append(matrix_data[row][column][element])
+    #                 row_list.append(tuple(tmp))
+    #             output.append(row_list)
+    #         return output
+    #
+    #     @staticmethod
+    #     def reorder_permutation_order_matrix_data_diagonally(matrix_data: MatrixData) -> MatrixData:
+    #         """
+    #         No type checking takes place!
+    #
+    #         >>> matrix_data = [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')], [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')], [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
+    #         >>> pprint(matrix_data)
+    #         [[('a1', 'b1', 'c1'), ('d1', 'e1', 'f1'), ('g1', 'h1', 'i1')],
+    #          [('a2', 'b2', 'c2'), ('d2', 'e2', 'f2'), ('g2', 'h2', 'i2')],
+    #          [('a3', 'b3', 'c3'), ('d3', 'e3', 'f3'), ('g3', 'h3', 'i3')]]
+    #         >>> pprint(PermutationOrderMatrixTransposition.reorder_permutation_order_matrix_data_diagonally(matrix_data))
+    #         [[('a1', 'b2', 'c3'), ('b1', 'c2', 'd3'), ('c1', 'd2', 'e3')],
+    #          [('d1', 'e2', 'f3'), ('e1', 'f2', 'g3'), ('f1', 'g2', 'h3')],
+    #          [('g1', 'h2', 'i3'), ('h1', 'i2', 'a3'), ('i1', 'a2', 'b3')]]
+    #         """
+    #         output = []
+    #         for i in range(len(matrix_data)):
+    #             row_list = []
+    #             for j in range(len(matrix_data)):
+    #                 tmp = []
+    #                 for k in range(len(matrix_data)):
+    #                     row = k
+    #                     column = (i + (j + k) // len(matrix_data)) % len(matrix_data)
+    #                     element = (j + k) % len(matrix_data)
+    #                     tmp.append(matrix_data[row][column][element])
+    #                 row_list.append(tuple(tmp))
+    #             output.append(row_list)
+    #         return output
+    #
+    #     def reorder_vertically(self) -> None:
+    #         self.matrix.matrix_data = self.reorder_permutation_order_matrix_data_vertically(self.matrix.matrix_data)
+    #
+    #     def reorder_half_diagonally(self) -> None:
+    #         self.matrix.matrix_data = self.reorder_permutation_order_matrix_data_half_diagonally(self.matrix.matrix_data)
+    #
+    #     def reorder_diagonally(self) -> None:
+    #         self.matrix.matrix_data = self.reorder_permutation_order_matrix_data_diagonally(self.matrix.matrix_data)
+    #
+    #     def reorder(self, mode: PermutationOrderMatrixReorderMode) -> None:
+    #         if mode == 'diagonally':
+    #             self.reorder_diagonally()
+    #         elif mode == 'half_diagonally':
+    #             self.reorder_half_diagonally()
+    #         elif mode == 'vertically':
+    #             self.reorder_vertically()
+    #         else:
+    #             raise ValueError()

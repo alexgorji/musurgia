@@ -196,3 +196,41 @@ class TestPermutationOrderMatrix(TestCase):
         with self.assertRaises(PermutationOrderMatrixDataError):
             PermutationOrderMatrix(matrix_data=[[(1, 2, 3), (1, 2, 3, 4)], [(3, 2, 1), (3, 2, 1)]])
         PermutationOrderMatrix(matrix_data=[[(1, 2), (1, 2)], [(2, 1), (1, 2)]])
+
+
+class TestMatrixIndexController(TestCase):
+
+    def test_get_next_index(self):
+        controller = MatrixIndexController(2, 3)
+        assert controller._get_next_index() == (1, 2)
+        controller.first_index = (2, 2)
+        assert controller._get_next_index() == (2, 3)
+        controller.first_index = (2, 3)
+        assert controller._get_next_index() == (3, 1)
+
+    def test_get_next(self):
+        with self.assertRaises(MatrixIndexOutOfRangeError):
+            MatrixIndexController(number_of_columns=3, number_of_rows=5, first_index=(4, 7))
+        controller = MatrixIndexController(number_of_columns=3, number_of_rows=5)
+        controller.first_index = (1, 1)
+        assert next(controller) == (1, 1)
+        assert next(controller) == (1, 2)
+        controller.reset()
+        assert controller.first_index == (1, 1)
+        controller.first_index = (1, 3)
+        next(controller)
+        assert next(controller) == (2, 1)
+        controller.first_index = (3, 2)
+        assert next(controller) == (3, 2)
+        assert controller.get_next_in_row() == (3, 3)
+        with self.assertRaises(MatrixIndexEndOfRowError):
+            controller.get_next_in_row()
+        assert next(controller) == (4, 1)
+        with self.assertRaises(MatrixIndexOutOfRangeError):
+            controller.first_index = (7, 2)
+        controller.first_index = (5, 3)
+        next(controller)
+        with self.assertRaises(MatrixIndexEndOfRowError):
+            next(controller)
+        with self.assertRaises(MatrixIndexEndOfMatrixError):
+            next(controller)

@@ -1,10 +1,13 @@
+from fractions import Fraction
 from typing import Any, Optional, Union, Literal, Callable, cast
 
+from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError
+
 MUSURGIA_TYPES = ['MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder',
-                  'PositiveInteger']
+                  'PositiveInteger', 'ConvertableToFraction', 'FractalTreeReduceChildrenMode']
 
 MusurgiaType = Literal[
-    'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger']
+    'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger', 'ConvertableToFraction', 'FractalTreeReduceChildrenMode']
 
 
 def create_error_message(v: Optional[Any] = None, t: Optional[Union[type, str]] = None,
@@ -120,6 +123,22 @@ def check_positive_integer_type(value: PositiveInteger) -> bool:
     return True
 
 
+ConvertableToFraction = Union[float, int, Fraction]
+
+
+def check_convertable_to_fraction_type(value: Union[int, float, Fraction]) -> bool:
+    if not isinstance(value, int) and not isinstance(value, Fraction) and not isinstance(value, float):
+        raise TypeError
+    return True
+
+
+def convert_to_fraction(value: Union[int, float, Fraction]) -> Fraction:
+    if isinstance(value, Fraction):
+        return value
+    else:
+        return Fraction(value)
+
+
 PermutationOrder = tuple[int, ...]
 
 
@@ -168,7 +187,7 @@ def check_matrix_index_values(index: MatrixIndex, number_of_rows: PositiveIntege
     check_positive_integer_type(number_of_rows)
     check_positive_integer_type(number_of_columns)
     if index[0] > number_of_rows or index[1] > number_of_columns:
-        raise ValueError(
+        raise MatrixIndexOutOfRangeError(
             f"MatrixIndex: index {index} must be in ranges (1..{number_of_rows}, 1..{number_of_columns}) ")
 
     return True
@@ -182,6 +201,15 @@ def check_matrix_transpose_mode_type(value: MatrixTransposeMode) -> bool:
     if value not in permitted:
         raise TypeError(f"MatrixTransposeMode value must be in {permitted}, got {value}")
     return True
+
+
+FractalTreeReduceChildrenMode = Literal['backwards', 'forwards', 'sieve', 'merge']
+
+
+def check_fractal_tree_reduce_children_mode_type(value: str) -> None:
+    permitted = ['backwards', 'forwards', 'sieve', 'merge']
+    if value not in permitted:
+        raise TypeError(f"FractalTreeReduceChildrenMode value must be in {permitted}, got {value}")
 
 
 def _get_name_of_check_type_function(musurgia_type: MusurgiaType) -> str:
