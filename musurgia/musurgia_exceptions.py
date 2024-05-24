@@ -5,7 +5,11 @@ class MatrixIndexException(Exception):
     pass
 
 
-class MatrixIndexOutOfRangeError(MatrixIndexException):
+class MatrixIndexControllerException(Exception):
+    pass
+
+
+class MatrixIndexOutOfRangeError(MatrixIndexException, ValueError):
     pass
 
 
@@ -15,6 +19,11 @@ class MatrixIndexEndOfRowError(MatrixIndexException, StopIteration):
 
 class MatrixIndexEndOfMatrixError(MatrixIndexEndOfRowError, StopIteration):
     pass
+
+
+class MatrixIndexControllerReadingDirectionError(MatrixIndexControllerException):
+    def __init__(self, *args):
+        super().__init__('MatrixIndexController.get_next_in_row() works only for reading_direction horizontal.', *args)
 
 
 class MatrixException(Exception):

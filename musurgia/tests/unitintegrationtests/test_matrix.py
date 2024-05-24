@@ -1,10 +1,12 @@
+from pprint import pprint
 from unittest import TestCase
 
 from musurgia.matrix.matrix import Matrix, MatrixIsEmptyError, SquareMatrix, \
     PermutationOrderMatrix, PermutationOrderMatrixGenerator, \
     MatrixIndexController
 from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError, MatrixIndexEndOfRowError, \
-    MatrixIndexEndOfMatrixError, SquareMatrixDataError, PermutationOrderMatrixDataError
+    MatrixIndexEndOfMatrixError, SquareMatrixDataError, PermutationOrderMatrixDataError, \
+    MatrixIndexControllerReadingDirectionError
 
 
 class TestMatrix(TestCase):
@@ -109,23 +111,22 @@ class TestMatrix(TestCase):
                     [(1, 2), (2, 2), (3, 2), (4, 2), (5, 2)],
                     [(1, 3), (2, 3), (3, 3), (4, 3), (5, 3)],
                     [(1, 4), (2, 4), (3, 4), (4, 4), (5, 4)]]
-        self.big_mat.tranpose()
-        self.assertEqual(expected, self.big_mat.matrix_data)
+        self.assertEqual(expected, self.big_mat.get_transposed_matrix().matrix_data)
 
     def test_transpose_regular(self):
         expected = [[(1, 1), (2, 1), (3, 1), (4, 1), (5, 1)],
                     [(1, 2), (2, 2), (3, 2), (4, 2), (5, 2)],
                     [(1, 3), (2, 3), (3, 3), (4, 3), (5, 3)],
                     [(1, 4), (2, 4), (3, 4), (4, 4), (5, 4)]]
-        self.big_mat.tranpose(mode='regular')
-        self.assertEqual(expected, self.big_mat.matrix_data)
+
+        self.assertEqual(expected, self.big_mat.get_transposed_matrix(mode='regular').matrix_data)
 
     def test_transpose_diagonal(self):
         expected = [[(1, 1), (2, 2), (3, 3), (4, 4), (5, 1)],
                     [(1, 2), (2, 3), (3, 4), (4, 1), (5, 2)],
-                    [(1, 3), (2, 4), (3, 1), (4, 2), (5, 3)]]
-        self.big_mat.tranpose(mode='diagonal')
-        self.assertEqual(expected, self.big_mat.matrix_data)
+                    [(1, 3), (2, 4), (3, 1), (4, 2), (5, 3)],
+                    [(1, 4), (2, 1), (3, 2), (4, 3), (5, 4)]]
+        assert self.big_mat.get_transposed_matrix(mode='diagonal').matrix_data == expected
 
     def test_permute_rows(self):
         assert False
@@ -200,14 +201,6 @@ class TestPermutationOrderMatrix(TestCase):
 
 class TestMatrixIndexController(TestCase):
 
-    def test_get_next_index(self):
-        controller = MatrixIndexController(2, 3)
-        assert controller._get_next_index() == (1, 2)
-        controller.first_index = (2, 2)
-        assert controller._get_next_index() == (2, 3)
-        controller.first_index = (2, 3)
-        assert controller._get_next_index() == (3, 1)
-
     def test_get_next(self):
         with self.assertRaises(MatrixIndexOutOfRangeError):
             MatrixIndexController(number_of_columns=3, number_of_rows=5, first_index=(4, 7))
@@ -234,3 +227,105 @@ class TestMatrixIndexController(TestCase):
             next(controller)
         with self.assertRaises(MatrixIndexEndOfMatrixError):
             next(controller)
+        controller.first_index = (1, 2)
+        next(controller)
+        controller.reset()
+        assert next(controller) == (1, 2)
+
+    def test_iterate(self):
+        controller = MatrixIndexController(3, 4)
+        assert [_ for _ in controller] == [(1, 1), (1, 2), (1, 3), (1, 4), (2, 1), (2, 2), (2, 3), (2, 4), (3, 1),
+                                           (3, 2), (3, 3),
+                                           (3, 4)]
+
+    def test_convert_flatten_index_to_index_horizontal(self):
+        controller = MatrixIndexController(3, 4)
+        indices = [controller._convert_flatten_index_to_index(flatten_index) for flatten_index in range(0, 12)]
+        assert indices == [(1, 1), (1, 2), (1, 3), (1, 4), (2, 1), (2, 2), (2, 3), (2, 4), (3, 1), (3, 2), (3, 3),
+                           (3, 4)]
+        with self.assertRaises(MatrixIndexEndOfMatrixError):
+            controller._convert_flatten_index_to_index(12)
+
+    def test_convert_flatten_index_to_index_diagonal(self):
+        controller = MatrixIndexController(3, 4, reading_direction='diagonal')
+        indices = [controller._convert_flatten_index_to_index(flatten_index) for flatten_index in range(0, 12)]
+        assert indices == [(1, 1), (2, 2), (3, 3), (1, 2), (2, 3), (3, 4), (1, 3), (2, 4), (3, 1), (1, 4), (2, 1),
+                           (3, 2)]
+        with self.assertRaises(MatrixIndexEndOfMatrixError):
+            controller._convert_flatten_index_to_index(12)
+
+    def test_convert_flatten_index_to_index_vertical(self):
+        controller = MatrixIndexController(3, 4, reading_direction='vertical')
+        indices = [controller._convert_flatten_index_to_index(flatten_index) for flatten_index in range(0, 12)]
+        assert indices == [(1, 1), (2, 1), (3, 1), (1, 2), (2, 2), (3, 2), (1, 3), (2, 3), (3, 3), (1, 4), (2, 4),
+                           (3, 4)]
+        with self.assertRaises(MatrixIndexEndOfMatrixError):
+            controller._convert_flatten_index_to_index(12)
+
+    def test_convert_index_to_flatten_index(self):
+        controller = MatrixIndexController(3, 4)
+        for flatten_index in range(0, 12):
+            assert controller._convert_index_to_flatten_index(
+                controller._convert_flatten_index_to_index(flatten_index)) == flatten_index
+
+        controller.reading_direction = 'diagonal'
+        for flatten_index in range(0, 12):
+            assert controller._convert_index_to_flatten_index(
+                controller._convert_flatten_index_to_index(flatten_index)) == flatten_index
+
+        controller.reading_direction = 'vertical'
+        for flatten_index in range(0, 12):
+            assert controller._convert_index_to_flatten_index(
+                controller._convert_flatten_index_to_index(flatten_index)) == flatten_index
+
+    def test_get_next_flatten_index(self):
+        controller = MatrixIndexController(3, 4)
+        for x in range(0, 12):
+            assert controller.get_next_flatten_index() == x
+            next(controller)
+        controller.reading_direction = 'diagonal'
+        for x in range(0, 12):
+            assert controller.get_next_flatten_index() == x
+            next(controller)
+
+        controller = MatrixIndexController(3, 3)
+        for x in range(0, 9):
+            assert controller.get_next_flatten_index() == x
+            next(controller)
+        controller.reading_direction = 'diagonal'
+        for x in range(0, 9):
+            assert controller.get_next_flatten_index() == x
+            next(controller)
+
+    def test_reading_direction(self):
+        controller = MatrixIndexController(2, 3)
+        assert controller.reading_direction == 'horizontal'
+        controller.reading_direction = 'diagonal'
+        with self.assertRaises(MatrixIndexControllerReadingDirectionError):
+            controller.get_next_in_row()
+        controller.first_index = (1, 2)
+        assert next(controller) == (1, 2)
+        assert next(controller) == (2, 3)
+        assert next(controller) == (1, 3)
+        assert next(controller) == (2, 1)
+        with self.assertRaises(MatrixIndexEndOfMatrixError):
+            next(controller)
+        controller = MatrixIndexController(3, 3, first_index=(1, 3), reading_direction='diagonal')
+        assert next(controller) == (1, 3)
+        assert next(controller) == (2, 1)
+        assert next(controller) == (3, 2)
+        with self.assertRaises(MatrixIndexEndOfMatrixError):
+            next(controller)
+        """
+        [[(1, 1), (1, 2), (1, 3), (1, 4)],
+         [(2, 1), (2, 2), (2, 3), (2, 4)],
+         [(3, 1), (3, 2), (3, 3), (3, 4)],
+         [(4, 1), (4, 2), (4, 3), (4, 4)],
+         [(5, 1), (5, 2), (5, 3), (5, 4)]]
+        """
+        controller = MatrixIndexController(5, 4, reading_direction='diagonal')
+        expected = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 1),
+                    (1, 2), (2, 3), (3, 4), (4, 1), (5, 2),
+                    (1, 3), (2, 4), (3, 1), (4, 2), (5, 3),
+                    (1, 4), (2, 1), (3, 2), (4, 3), (5, 4)]
+        assert list(controller) == expected

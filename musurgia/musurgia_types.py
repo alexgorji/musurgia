@@ -4,10 +4,10 @@ from typing import Any, Optional, Union, Literal, Callable, cast
 from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError
 
 MUSURGIA_TYPES = ['MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder',
-                  'PositiveInteger', 'ConvertableToFraction', 'FractalTreeReduceChildrenMode']
+                  'PositiveInteger', 'ConvertableToFraction', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection']
 
 MusurgiaType = Literal[
-    'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger', 'ConvertableToFraction', 'FractalTreeReduceChildrenMode']
+    'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger', 'ConvertableToFraction', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection']
 
 
 def create_error_message(v: Optional[Any] = None, t: Optional[Union[type, str]] = None,
@@ -200,6 +200,16 @@ def check_matrix_transpose_mode_type(value: MatrixTransposeMode) -> bool:
     permitted = ['regular', 'diagonal']
     if value not in permitted:
         raise TypeError(f"MatrixTransposeMode value must be in {permitted}, got {value}")
+    return True
+
+
+MatrixReadingDirection = Literal['horizontal', 'diagonal', 'vertical']
+
+
+def check_matrix_reading_direction_type(value: MatrixReadingDirection) -> bool:
+    permitted = ['horizontal', 'diagonal', 'vertical']
+    if value not in permitted:
+        raise TypeError(f"MatrixReadingDirection value must be in {permitted}, got {value}")
     return True
 
 
