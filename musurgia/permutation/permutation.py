@@ -6,7 +6,7 @@ from musurgia.musurgia_types import check_type, PermutationOrder, check_permutat
     MatrixData
 
 
-def permute(input_list: list[Any], permutation_order: PermutationOrder) -> list:
+def permute(input_list: list[Any], permutation_order: PermutationOrder) -> list[Any]:
     """
     Permutes a list of values by reference to another list named permutation_order.
     :param input_list: A list of values to permute
@@ -125,5 +125,3 @@ def get_self_permutation_3d(permutation_order: tuple[int, ...]) -> MatrixData:
     for i in range(1, len(self_permuted_order)):
         output.append(permute(list(output[i - 1]), permutation_order))
     return output
-
-

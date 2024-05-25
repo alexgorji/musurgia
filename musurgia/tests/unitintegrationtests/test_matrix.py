@@ -7,6 +7,7 @@ from musurgia.matrix.matrix import Matrix, MatrixIsEmptyError, SquareMatrix, \
 from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError, MatrixIndexEndOfRowError, \
     MatrixIndexEndOfMatrixError, SquareMatrixDataError, PermutationOrderMatrixDataError, \
     MatrixIndexControllerReadingDirectionError
+from musurgia.permutation.permutation import permute
 
 
 class TestMatrix(TestCase):
@@ -128,11 +129,18 @@ class TestMatrix(TestCase):
                     [(1, 4), (2, 1), (3, 2), (4, 3), (5, 4)]]
         assert self.big_mat.get_transposed_matrix(mode='diagonal').matrix_data == expected
 
-    def test_permute_rows(self):
-        assert False
+    def test_permute_matrix_data(self):
+        permutation_order = (3, 1, 2, 5, 4)
+        expected = [[(3, 1), (3, 2), (3, 3), (3, 4)],
+                    [(1, 1), (1, 2), (1, 3), (1, 4)],
+                    [(2, 1), (2, 2), (2, 3), (2, 4)],
+                    [(5, 1), (5, 2), (5, 3), (5, 4)],
+                    [(4, 1), (4, 2), (4, 3), (4, 4)]]
+        assert permute(input_list=self.big_mat.matrix_data, permutation_order=permutation_order) == expected
 
-    def test_permute_columns(self):
-        assert False
+    #
+    # def test_permute_columns(self):
+    #     assert False
 
 
 class TestSquareMatrix(TestCase):

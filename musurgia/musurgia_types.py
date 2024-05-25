@@ -163,12 +163,12 @@ def check_matrix_data_type(matrix_data: MatrixData) -> bool:
     row_size = None
     for i, row in enumerate(matrix_data):
         if not isinstance(row, list):
-            raise TypeError(f"TypeMatrix: row {row} is not a list")
+            raise TypeError(f"row {row} is not a list")
         if i == 0:
             row_size = len(row)
         else:
             if len(row) != row_size:
-                raise TypeError(f"TypeMatrix: row {row} must be of length {row_size}")
+                raise TypeError(f"row {row} must be of length {row_size}")
     return True
 
 

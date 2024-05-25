@@ -53,8 +53,18 @@ class PermutationOrderMatrixDataError(PermutationOrderMatrixException):
 
 
 class FractalTreeException(Exception):
-    def __init__(self, *args: Any) -> None:
-        super().__init__(*args)
+    pass
+
+
+class FractalTreePermutationOrderError(FractalTreeException):
+    pass
+
+
+class FractalTreeHasChildrenError(FractalTreeException):
+    pass
+
+class FractalTreeNonRootCannotSetMainPermutationOrderError(FractalTreeException):
+    pass
 
 
 class PermutationOrderException(Exception):
