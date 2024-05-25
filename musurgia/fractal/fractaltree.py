@@ -7,9 +7,9 @@ from verysimpletree.tree import Tree
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.matrix.matrix import PermutationOrderMatrix, PermutationOrderMatrixGenerator
 from musurgia.musurgia_exceptions import FractalTreeHasChildrenError, \
-    FractalTreeNonRootCannotSetMainPermutationOrderError
+    FractalTreeNonRootCannotSetMainPermutationOrderError, PermutationIndexCalculaterNoParentIndexError
 from musurgia.musurgia_types import ConvertableToFraction, FractalTreeReduceChildrenMode, convert_to_fraction, \
-    MatrixIndex, PermutationOrder, check_type
+    MatrixIndex, PermutationOrder, check_type, PositiveInteger
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.line import HorizontalLineSegment, HorizontalSegmentedLine
 from musurgia.pdf.rowcolumn import DrawObjectColumn, DrawObjectRow
@@ -18,6 +18,47 @@ from musurgia.permutation.limited_permutation import LimitedPermutationOrders
 from musurgia.utils import flatten
 
 _TREE_TYPE = TypeVar('_TREE_TYPE', bound='FractalTree')
+
+
+class PermutationIndexCalculater:
+    def __init__(self, size: PositiveInteger, parent_index: Optional[MatrixIndex] = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._size = None
+        self._parent_index = None
+
+        self.size = size
+        self.parent_index = parent_index
+
+    @property
+    def size(self) -> PositiveInteger:
+        return self._size
+
+    @size.setter
+    def size(self, value: PositiveInteger) -> None:
+        check_type(value, 'PositiveInteger', class_name=self.__class__.__name__, property_name='size')
+        self._size = value
+
+    @property
+    def parent_index(self) -> MatrixIndex:
+        return self._parent_index
+
+    @parent_index.setter
+    def parent_index(self, value: MatrixIndex) -> None:
+        if value is not None:
+            check_type(value, 'MatrixIndex', class_name=self.__class__.__name__, property_name='parent_index')
+        self._parent_index = value
+
+    def get_index(self, column_number: PositiveInteger) -> MatrixIndex:
+        if self.parent_index is None:
+            raise PermutationIndexCalculaterNoParentIndexError
+        check_type(column_number, 'PositiveInteger', class_name=self.__class__.__name__, method_name='get_index',
+                   argument_name='column_number')
+        if column_number > self.size:
+            raise ValueError(f'Column number {column_number} cannot be less than size {self.size}')
+        r = sum(self.parent_index) % self.size
+        if r == 0:
+            r = self.size
+        return r, column_number
 
 
 class FractalTree(Tree):

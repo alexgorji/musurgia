@@ -52,6 +52,14 @@ class PermutationOrderMatrixDataError(PermutationOrderMatrixException):
     pass
 
 
+class PermutaionIndexCalculatorException(Exception):
+    pass
+
+
+class PermutationIndexCalculaterNoParentIndexError(PermutaionIndexCalculatorException, ValueError):
+    pass
+
+
 class FractalTreeException(Exception):
     pass
 
@@ -62,6 +70,7 @@ class FractalTreePermutationOrderError(FractalTreeException):
 
 class FractalTreeHasChildrenError(FractalTreeException):
     pass
+
 
 class FractalTreeNonRootCannotSetMainPermutationOrderError(FractalTreeException):
     pass
