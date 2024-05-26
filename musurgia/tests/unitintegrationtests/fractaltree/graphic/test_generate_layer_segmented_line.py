@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from musurgia.fractal.fractaltree import FractalTree
+from musurgia.pdf.drawobject import ClippingArea
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.text import PageText
 from musurgia.tests.unitintegrationtests._test_utils import TestCase
@@ -9,7 +10,7 @@ path = Path(__file__)
 
 
 def make_ft():
-    ft = FractalTree(value=20, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
+    ft = FractalTree(value=20, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
     ft.add_layer()
     ft.get_children()[0].add_layer()
     ft.get_children()[-1].add_layer()

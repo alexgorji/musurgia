@@ -87,3 +87,26 @@ class TestCase(unittest.TestCase):
     def file_path(self, parent_path, name, extension):
         tfp = FilePath(self, parent_path, name, extension)
         return tfp
+
+
+# def node_info(node, fractal_order=True, permutation_index=True, value=True, permutation_order=False):
+#     infos_list = []
+#     if fractal_order:
+#         infos_list.append(node.get_fractal_order())
+#     if permutation_index:
+#         infos_list.append(node.get_permutation_index())
+#     if value:
+#         infos_list.append(round(float(node.get_value()), 2))
+#     if permutation_order:
+#         infos_list.append(node.get_permutation_order())
+#     output = f'{infos_list[0]}'
+#     for info in infos_list[1:]:
+#         output += f': {info}'
+#     return output
+
+def node_info(node):
+    return f'{node.get_fractal_order()}: {node.get_permutation_index()}: {round(float(node.get_value()), 2)}'
+
+
+def node_info_with_permutation_order(node):
+    return f'{node.get_fractal_order()}: {node.get_permutation_index()}: {node.get_permutation_order()}: {round(float(node.get_value()), 2)}'

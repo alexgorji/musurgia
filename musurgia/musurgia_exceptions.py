@@ -68,6 +68,10 @@ class FractalTreePermutationOrderError(FractalTreeException):
     pass
 
 
+class FractalTreePermutationIndexError(FractalTreeException, ValueError):
+    pass
+
+
 class FractalTreeHasChildrenError(FractalTreeException):
     pass
 

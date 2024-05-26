@@ -4,12 +4,14 @@ from unittest import TestCase
 from quicktions import Fraction
 
 from musurgia.fractal.fractaltree import FractalTree
+from musurgia.tests.unitintegrationtests._test_utils import node_info
 from musurgia.utils import flatten
 
 
 class Test(TestCase):
     def setUp(self) -> None:
-        self.ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
+        self.ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
+                              permutation_index=(1, 1))
 
     def test_change_root_value_without_children(self):
         self.ft.change_value(15)
@@ -34,49 +36,61 @@ class Test(TestCase):
     def test_two_layers_change_child_value(self):
         self.ft.add_layer()
         self.ft.add_layer()
-        # print(self.ft.get_layer(1, key=lambda node: node.get_value()))
-        # [Fraction(5, 1), Fraction(5, 3), Fraction(10, 3)]
-        # print(self.ft.get_layer(2, key=lambda node: node.get_value()))
-        # [[Fraction(5, 2), Fraction(5, 6), Fraction(5, 3)], [Fraction(5, 9), Fraction(5, 6), Fraction(5, 18)], [Fraction(5, 9), Fraction(10, 9), Fraction(5, 3)]]
         self.ft.get_children()[0].change_value(10)
-
-        self.assertEqual(15, self.ft.get_value())
-        self.assertEqual(15, sum(flatten(self.ft.get_layer(1, key=lambda node: node.get_value()))))
-        self.assertEqual(15, sum(flatten(self.ft.get_layer(1, key=lambda node: node.get_value()))))
-        self.assertEqual([Fraction(10, 1), Fraction(5, 3), Fraction(10, 3)],
-                         self.ft.get_layer(1, key=lambda node: node.get_value()))
-        self.assertEqual([[Fraction(5, 1), Fraction(5, 3), Fraction(10, 3)],
-                          [Fraction(5, 9), Fraction(5, 6), Fraction(5, 18)],
-                          [Fraction(5, 9), Fraction(10, 9), Fraction(5, 3)]],
-                         self.ft.get_layer(2, key=lambda node: node.get_value()))
+        assert self.ft.get_value() == 15
+        assert sum(flatten(self.ft.get_layer(1, key=lambda node: node.get_value()))) == 15
+        assert sum(flatten(self.ft.get_layer(2, key=lambda node: node.get_value()))) == 15
 
     def test_with_remove(self):
         self.ft.add_layer()
-        self.ft.add_layer()
-        self.ft.add_layer()
-        # print(self.ft.get_layer(1, key=lambda leaf: round(float(leaf.get_value()), 2)))
-        #  [5.0, 1.67, 3.33]
-        # print(self.ft.get_layer(2, key=lambda leaf: round(float(leaf.get_value()), 2)))
-        """
-        [[2.5, 0.83, 1.67], 
-         [0.56, 0.83, 0.28], 
-         [0.56, 1.11, 1.67]]
-        """
-        # pprint(self.ft.get_layer(3, key=lambda leaf: round(float(leaf.get_value()), 2)))
-        """
-        [[[1.25, 0.42, 0.83], [0.28, 0.42, 0.14], [0.28, 0.56, 0.83]],
-         [[0.28, 0.09, 0.19], [0.28, 0.42, 0.14], [0.05, 0.09, 0.14]],
-         [[0.28, 0.09, 0.19], [0.37, 0.56, 0.19], [0.28, 0.56, 0.83]]]
-        """
         first_child = self.ft.get_children()[0]
-        first_child.remove(first_child.get_children()[2])
-        first_child.get_children()[1].change_value(2.5)
-
-        self.assertEqual(10, self.ft.get_value())
-        self.assertEqual([5.0, 1.67, 3.33], self.ft.get_layer(1, key=lambda leaf: round(float(leaf.get_value()), 2)))
-        self.assertEqual([[2.5, 2.5], [0.56, 0.83, 0.28], [0.56, 1.11, 1.67]],
-                         self.ft.get_layer(2, key=lambda leaf: round(float(leaf.get_value()), 2)))
-        self.assertEqual([[[1.25, 0.42, 0.83], [0.83, 1.25, 0.42]],
-                          [[0.28, 0.09, 0.19], [0.28, 0.42, 0.14], [0.05, 0.09, 0.14]],
-                          [[0.28, 0.09, 0.19], [0.37, 0.56, 0.19], [0.28, 0.56, 0.83]]],
-                         self.ft.get_layer(3, key=lambda leaf: round(float(leaf.get_value()), 2)))
+        first_child.add_layer()
+        first_child.add_layer()
+        # print(self.ft.get_tree_representation(node_info))
+        assert self.ft.get_tree_representation(node_info) == """└── None: (1, 1): 10.0
+    ├── 3: (2, 1): 5.0
+    │   ├── 1: (3, 1): 0.83
+    │   │   ├── 2: (1, 1): 0.28
+    │   │   ├── 3: (1, 2): 0.42
+    │   │   └── 1: (1, 3): 0.14
+    │   ├── 2: (3, 2): 1.67
+    │   │   ├── 1: (2, 1): 0.28
+    │   │   ├── 2: (2, 2): 0.56
+    │   │   └── 3: (2, 3): 0.83
+    │   └── 3: (3, 3): 2.5
+    │       ├── 3: (3, 1): 1.25
+    │       ├── 1: (3, 2): 0.42
+    │       └── 2: (3, 3): 0.83
+    ├── 1: (2, 2): 1.67
+    └── 2: (2, 3): 3.33
+"""
+        first_child.remove(first_child.get_children()[1])
+        # print(self.ft.get_tree_representation(node_info))
+        assert self.ft.get_tree_representation(node_info) == """└── None: (1, 1): 10.0
+    ├── 3: (2, 1): 5.0
+    │   ├── 1: (3, 1): 0.83
+    │   │   ├── 2: (1, 1): 0.28
+    │   │   ├── 3: (1, 2): 0.42
+    │   │   └── 1: (1, 3): 0.14
+    │   └── 3: (3, 3): 2.5
+    │       ├── 3: (3, 1): 1.25
+    │       ├── 1: (3, 2): 0.42
+    │       └── 2: (3, 3): 0.83
+    ├── 1: (2, 2): 1.67
+    └── 2: (2, 3): 3.33
+"""
+        first_child.get_children()[0].change_value(2.5)
+        # print(self.ft.get_tree_representation(node_info))
+        assert self.ft.get_tree_representation(node_info) == """└── None: (1, 1): 10.0
+    ├── 3: (2, 1): 5.0
+    │   ├── 1: (3, 1): 2.5
+    │   │   ├── 2: (1, 1): 0.83
+    │   │   ├── 3: (1, 2): 1.25
+    │   │   └── 1: (1, 3): 0.42
+    │   └── 3: (3, 3): 2.5
+    │       ├── 3: (3, 1): 1.25
+    │       ├── 1: (3, 2): 0.42
+    │       └── 2: (3, 3): 0.83
+    ├── 1: (2, 2): 1.67
+    └── 2: (2, 3): 3.33
+"""

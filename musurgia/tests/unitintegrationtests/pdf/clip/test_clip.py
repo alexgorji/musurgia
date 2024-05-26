@@ -17,7 +17,6 @@ class TestClip(TestCase):
 
     def test_line(self):
         pdf_path = create_test_path(path, 'line.pdf')
-        print(pdf_path)
         self.pdf.rect(0, 0, 50, 50)
         self.pdf.clip_rect(0, 0, 50, 50)
         self.pdf.line(10, 20, 100, 100)

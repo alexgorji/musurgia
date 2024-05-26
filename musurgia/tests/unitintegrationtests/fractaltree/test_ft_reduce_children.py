@@ -1,22 +1,22 @@
-from pprint import pprint
 from unittest import TestCase
 
 from musurgia.fractal.fractaltree import FractalTree
+from musurgia.tests.unitintegrationtests._test_utils import node_info
 from musurgia.utils import flatten
 
 
 class TestFractalTreeReduceChildrenByCondition(TestCase):
-
     def test_reduce_first_layer(self):
-        ft = FractalTree(proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), value=20)
+        ft = FractalTree(proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), value=20, permutation_index=(1, 1))
         ft.add_layer()
         ft.add_layer()
         for node in ft.get_layer(1):
             node.reduce_children_by_condition(condition=lambda node: node.get_fractal_order() == 1)
-        self.assertEqual([3, 2, 2, 3, 2, 3], [node.get_fractal_order() for node in ft.iterate_leaves()])
+        assert [node.get_fractal_order() for node in ft.iterate_leaves()] == [2, 3, 3, 2, 2, 3]
 
     def test_value(self):
-        ft = FractalTree(proportions=[1, 2, 3, 4, 5, 6], main_permutation_order=(4, 1, 5, 3, 6, 2), value=20)
+        ft = FractalTree(proportions=[1, 2, 3, 4, 5, 6], main_permutation_order=(4, 1, 5, 3, 6, 2), value=20,
+                         permutation_index=(1, 1))
         ft.add_layer()
         ft.reduce_children_by_condition(lambda child: child.get_fractal_order() not in [2, 3])
         self.assertEqual([3, 2], [node.get_fractal_order() for node in ft.iterate_leaves()])
@@ -24,84 +24,176 @@ class TestFractalTreeReduceChildrenByCondition(TestCase):
 
 
 class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
+    def setUp(self):
+        self.ft = FractalTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), value=20,
+                              permutation_index=(1, 1))
+        self.ft.add_layer()
+        self.ft.add_layer()
+
+        # print(self.ft.get_tree_representation(node_info))
+        """
+        └── None:(1, 1): 20.0
+            ├── 3:(2, 1): 6.0
+            │   ├── 2:(3, 1): 1.2
+            │   ├── 4:(3, 2): 2.4
+            │   ├── 1:(3, 3): 0.6
+            │   └── 3:(3, 4): 1.8
+            ├── 1:(2, 2): 2.0
+            │   ├── 3:(4, 1): 0.6
+            │   ├── 1:(4, 2): 0.2
+            │   ├── 4:(4, 3): 0.8
+            │   └── 2:(4, 4): 0.4
+            ├── 4:(2, 3): 8.0
+            │   ├── 1:(1, 1): 0.8
+            │   ├── 2:(1, 2): 1.6
+            │   ├── 3:(1, 3): 2.4
+            │   └── 4:(1, 4): 3.2
+            └── 2:(2, 4): 4.0
+                ├── 4:(2, 1): 1.6
+                ├── 3:(2, 2): 1.2
+                ├── 2:(2, 3): 0.8
+                └── 1:(2, 4): 0.4
+        """
 
     def test_reduce_backward(self):
-        ft = FractalTree(proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), value=20)
-        ft.add_layer()
-        ft.add_layer()
-        ft.reduce_children_by_size(size=2)
-        self.assertEqual([3, 2], ft.get_layer(1, key=lambda node: node.get_fractal_order()))
-        self.assertEqual([12, 8], ft.get_layer(1, key=lambda node: node.get_value()))
-        self.assertEqual([[3, 1, 2], [1, 2, 3]], ft.get_layer(2, key=lambda node: node.get_fractal_order()))
-        self.assertEqual([[6, 2, 4], [1.33, 2.67, 4]],
-                         ft.get_layer(2, key=lambda node: round(float(node.get_value()), 2)))
+        self.ft.reduce_children_by_size(size=3)
+        for child in self.ft.get_children():
+            child.reduce_children_by_size(size=3)
+        # print(self.ft.get_tree_representation(node_info))
+        assert self.ft.get_tree_representation(node_info) == """└── None: (1, 1): 20.0
+    ├── 3: (2, 1): 6.67
+    │   ├── 2: (3, 1): 1.48
+    │   ├── 4: (3, 2): 2.96
+    │   └── 3: (3, 4): 2.22
+    ├── 4: (2, 3): 8.89
+    │   ├── 2: (1, 2): 1.98
+    │   ├── 3: (1, 3): 2.96
+    │   └── 4: (1, 4): 3.95
+    └── 2: (2, 4): 4.44
+        ├── 4: (2, 1): 1.98
+        ├── 3: (2, 2): 1.48
+        └── 2: (2, 3): 0.99
+"""
 
     def test_reduce_forwards(self):
-        ft = FractalTree(proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), value=20)
-        ft.add_layer()
-        ft.add_layer()
-        ft.reduce_children_by_size(size=2, mode='forwards')
-        self.assertEqual([1, 2], ft.get_layer(1, key=lambda node: node.get_fractal_order()))
-        self.assertEqual([6.67, 13.33], ft.get_layer(1, key=lambda node: round(float(node.get_value()), 2)))
-        self.assertEqual([[2, 3, 1], [1, 2, 3]], ft.get_layer(2, key=lambda node: node.get_fractal_order()))
-        self.assertEqual([[2.22, 3.33, 1.11], [2.22, 4.44, 6.67]],
-                         ft.get_layer(2, key=lambda node: round(float(node.get_value()), 2)))
+        self.ft.reduce_children_by_size(size=3, mode='forwards')
+        for child in self.ft.get_children():
+            child.reduce_children_by_size(size=3, mode='forwards')
+        # print(self.ft.get_tree_representation(node_info))
+        assert self.ft.get_tree_representation(node_info) == """└── None: (1, 1): 20.0
+    ├── 3: (2, 1): 10.0
+    │   ├── 2: (3, 1): 3.33
+    │   ├── 1: (3, 3): 1.67
+    │   └── 3: (3, 4): 5.0
+    ├── 1: (2, 2): 3.33
+    │   ├── 3: (4, 1): 1.67
+    │   ├── 1: (4, 2): 0.56
+    │   └── 2: (4, 4): 1.11
+    └── 2: (2, 4): 6.67
+        ├── 3: (2, 2): 3.33
+        ├── 2: (2, 3): 2.22
+        └── 1: (2, 4): 1.11
+"""
 
     def test_reduce_sieve(self):
-        ft = FractalTree(proportions=(1, 2, 3, 4, 5, 6, 7), main_permutation_order=(5, 3, 1, 6, 2, 7, 4), value=20)
-        ft.add_layer()
-        ft.add_layer()
-        ft.reduce_children_by_size(size=3, mode='sieve')
-        self.assertEqual([1, 7, 4], ft.get_layer(1, key=lambda node: node.get_fractal_order()))
-        self.assertEqual([1.67, 11.67, 6.67], ft.get_layer(1, key=lambda node: round(float(node.get_value()), 2)))
-        self.assertEqual([[3, 5, 2, 4, 1, 6, 7], [2, 1, 5, 4, 3, 6, 7], [3, 5, 2, 6, 1, 7, 4]],
-                         ft.get_layer(2, key=lambda node: node.get_fractal_order()))
-        self.assertEqual([[0.18, 0.3, 0.12, 0.24, 0.06, 0.36, 0.42],
-                          [0.83, 0.42, 2.08, 1.67, 1.25, 2.5, 2.92],
-                          [0.71, 1.19, 0.48, 1.43, 0.24, 1.67, 0.95]],
-                         ft.get_layer(2, key=lambda node: round(float(node.get_value()), 2)))
+        self.ft.reduce_children_by_size(size=3, mode='sieve')
+        for child in self.ft.get_children():
+            child.reduce_children_by_size(size=3, mode='sieve')
+
+        # print(self.ft.get_tree_representation(node_info))
+        assert self.ft.get_tree_representation(node_info) == """└── None: (1, 1): 20.0
+    ├── 1: (2, 2): 2.86
+    │   ├── 1: (4, 2): 0.41
+    │   ├── 4: (4, 3): 1.63
+    │   └── 2: (4, 4): 0.82
+    ├── 4: (2, 3): 11.43
+    │   ├── 1: (1, 1): 1.63
+    │   ├── 2: (1, 2): 3.27
+    │   └── 4: (1, 4): 6.53
+    └── 2: (2, 4): 5.71
+        ├── 4: (2, 1): 3.27
+        ├── 2: (2, 3): 1.63
+        └── 1: (2, 4): 0.82
+"""
+        assert False
 
     def test_merge(self):
-        ft_1 = FractalTree(proportions=(1, 2, 3, 4, 5, 6, 7), main_permutation_order=(5, 3, 1, 6, 2, 7, 4), value=20)
-        ft_2 = FractalTree(proportions=(1, 2, 3, 4, 5, 6, 7), main_permutation_order=(5, 3, 1, 6, 2, 7, 4), value=20)
-        ft_3 = FractalTree(proportions=(1, 2, 3, 4, 5, 6, 7), main_permutation_order=(5, 3, 1, 6, 2, 7, 4), value=20)
+        ft_1 = FractalTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), value=20,
+                           permutation_index=(1, 1))
+        ft_2 = FractalTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), value=20,
+                           permutation_index=(1, 1))
+        ft_3 = FractalTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), value=20,
+                           permutation_index=(1, 1))
         for i in range(2):
             ft_1.add_layer()
             ft_2.add_layer()
             ft_3.add_layer()
-        self.assertEqual([4, 1, 1, 1], ft_1._get_merge_lengths(size=4, merge_index=0))
-        self.assertEqual([1, 1, 4, 1], ft_1._get_merge_lengths(size=4, merge_index=2))
-        self.assertEqual([2, 1, 4], ft_3._get_merge_lengths(size=3, merge_index=3))
-        # print(ft_1.get_layer(1, key=lambda node: round(float(node.get_value()), 2)))
-        #  [3.57, 2.14, 0.71, 4.29, 1.43, 5.0, 2.86]
-        # pprint(ft_1.get_layer(2, key=lambda node: node.get_fractal_order()))
+        # print(self.ft.get_tree_representation(node_info))
         """
-        [[5, 3, 1, 6, 2, 7, 4],
-         [2, 1, 5, 7, 3, 4, 6],
-         [3, 5, 2, 4, 1, 6, 7],
-         [1, 2, 3, 6, 5, 7, 4],
-         [5, 3, 1, 7, 2, 4, 6],
-         [2, 1, 5, 4, 3, 6, 7],
-         [3, 5, 2, 6, 1, 7, 4]]
+        └── None: (1, 1): 20.0
+            ├── 3: (2, 1): 6.0
+            │   ├── 2: (3, 1): 1.2
+            │   ├── 4: (3, 2): 2.4
+            │   ├── 1: (3, 3): 0.6
+            │   └── 3: (3, 4): 1.8
+            ├── 1: (2, 2): 2.0
+            │   ├── 3: (4, 1): 0.6
+            │   ├── 1: (4, 2): 0.2
+            │   ├── 4: (4, 3): 0.8
+            │   └── 2: (4, 4): 0.4
+            ├── 4: (2, 3): 8.0
+            │   ├── 1: (1, 1): 0.8
+            │   ├── 2:(1, 2): 1.6
+            │   ├── 3: (1, 3): 2.4
+            │   └── 4: (1, 4): 3.2
+            └── 2: (2, 4): 4.0
+                ├── 4: (2, 1): 1.6
+                ├── 3: (2, 2): 1.2
+                ├── 2: (2, 3): 0.8
+                └── 1: (2, 4): 0.4
         """
-        ft_1.reduce_children_by_size(size=4, mode='merge', merge_index=0)
-        ft_2.reduce_children_by_size(size=4, mode='merge', merge_index=2)
-        ft_3.reduce_children_by_size(size=3, mode='merge', merge_index=3)
-        self.assertEqual([5, 2, 7, 4], ft_1.get_layer(1, key=lambda node: node.get_fractal_order()))
-        self.assertEqual([5, 3, 1, 4], ft_2.get_layer(1, key=lambda node: node.get_fractal_order()))
-        self.assertEqual([5, 1, 6], ft_3.get_layer(1, key=lambda node: node.get_fractal_order()))
-        self.assertEqual([10.71, 1.43, 5.0, 2.86],
-                         ft_1.get_layer(1, key=lambda node: round(float(node.get_value()), 2)))
-        self.assertEqual([[5, 3, 1, 6, 2, 7, 4],
-                          [5, 3, 1, 7, 2, 4, 6],
-                          [2, 1, 5, 4, 3, 6, 7],
-                          [3, 5, 2, 6, 1, 7, 4]],
-                         ft_1.get_layer(2, key=lambda node: node.get_fractal_order()))
-        self.assertEqual([[1.91, 1.15, 0.38, 2.3, 0.77, 2.68, 1.53],
-                          [0.26, 0.15, 0.05, 0.36, 0.1, 0.2, 0.31],
-                          [0.36, 0.18, 0.89, 0.71, 0.54, 1.07, 1.25],
-                          [0.31, 0.51, 0.2, 0.61, 0.1, 0.71, 0.41]],
-                         ft_1.get_layer(2, key=lambda node: round(float(node.get_value()), 2)))
+        assert ft_1._get_merge_lengths(size=2, merge_index=0) == [3, 1]
+        assert ft_2._get_merge_lengths(size=2, merge_index=2) == [2, 2]
+        assert ft_3._get_merge_lengths(size=2, merge_index=3) == [3, 1]
+
+        for index, ft in zip([0, 2, 3], [ft_1, ft_2, ft_3]):
+            ft.reduce_children_by_size(size=2, mode='merge', merge_index=index)
+            for child in ft.get_children():
+                child.reduce_children_by_size(size=3, mode='merge', merge_index=index)
+        # print(ft_1.get_tree_representation(node_info))
+        assert ft_1.get_tree_representation(node_info) == """└── None: (1, 1): 20.0
+    ├── 3: (2, 1): 16.0
+    │   ├── 2: (3, 1): 9.6
+    │   ├── 1: (3, 3): 1.6
+    │   └── 3: (3, 4): 4.8
+    └── 2: (2, 4): 4.0
+        ├── 4: (2, 1): 2.8
+        ├── 2: (2, 3): 0.8
+        └── 1: (2, 4): 0.4
+"""
+        # print(ft_2.get_tree_representation(node_info))
+        assert ft_2.get_tree_representation(node_info) == """└── None: (1, 1): 20.0
+    ├── 3: (2, 1): 8.0
+    │   ├── 2: (3, 1): 1.6
+    │   ├── 4: (3, 2): 3.2
+    │   └── 1: (3, 3): 3.2
+    └── 4: (2, 3): 12.0
+        ├── 1: (1, 1): 1.2
+        ├── 2: (1, 2): 2.4
+        └── 3: (1, 3): 8.4
+"""
+        # print(ft_3.get_tree_representation(node_info))
+        assert ft_3.get_tree_representation(node_info) == """└── None: (1, 1): 20.0
+    ├── 3: (2, 1): 16.0
+    │   ├── 2: (3, 1): 9.6
+    │   ├── 1: (3, 3): 1.6
+    │   └── 3: (3, 4): 4.8
+    └── 2: (2, 4): 4.0
+        ├── 4: (2, 1): 2.8
+        ├── 2: (2, 3): 0.8
+        └── 1: (2, 4): 0.4
+"""
+
         for ft in [ft_1, ft_2, ft_3]:
             assert ft.get_value() == sum(flatten(ft.get_layer(1, key=lambda node: node.get_value()))) == sum(
                 flatten(ft.get_layer(2, key=lambda node: node.get_value())))

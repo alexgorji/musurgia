@@ -5,7 +5,8 @@ from musurgia.fractal.fractaltree import FractalTree
 
 class TestFtSplit(TestCase):
     def setUp(self):
-        self.ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
+        self.ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
+                              permutation_index=(1, 1))
         self.ft.add_layer()
         self.first_child = self.ft.get_children()[0]
 

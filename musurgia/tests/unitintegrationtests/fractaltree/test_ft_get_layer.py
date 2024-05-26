@@ -6,7 +6,8 @@ from musurgia.fractal.fractaltree import FractalTree
 
 class TestGetLayer(TestCase):
     def setUp(self) -> None:
-        self.ft = FractalTree(proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), value=10)
+        self.ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
+                              permutation_index=(1, 1))
 
     def test_wrong_layer(self):
         with self.assertRaises(Exception):
@@ -51,22 +52,30 @@ class TestGetLayer(TestCase):
         self.ft.add_layer(lambda n: True if n.get_fractal_order() > 1 else False)
         self.ft.add_layer(lambda n: True if n.get_fractal_order() > 1 else False)
         self.ft.add_layer(lambda n: True if n.get_fractal_order() > 1 else False)
-        self.assertEqual([3, 1, 2], self.ft.get_layer(1, key=lambda node: node.get_fractal_order()))
-        self.assertEqual([[3, 1, 2], 1, [1, 2, 3]], self.ft.get_layer(2, key=lambda node: node.get_fractal_order()))
-        self.assertEqual([[[3, 1, 2], 1, [1, 2, 3]], 1, [1, [2, 3, 1], [1, 2, 3]]],
-                         self.ft.get_layer(3, key=lambda node: node.get_fractal_order()))
-        self.assertEqual([[[[3, 1, 2], 1, [1, 2, 3]], 1, [1, [2, 3, 1], [1, 2, 3]]],
-                          1,
-                          [1, [[3, 1, 2], [2, 3, 1], 1], [1, [2, 3, 1], [1, 2, 3]]]],
-                         self.ft.get_layer(4, key=lambda node: node.get_fractal_order()))
+        assert self.ft.get_layer(1, key=lambda node: node.get_fractal_order()) == [3, 1, 2]
+        assert self.ft.get_layer(2, key=lambda node: node.get_fractal_order()) == [[1, 2, 3], 1, [2, 3, 1]]
+        assert self.ft.get_layer(3, key=lambda node: node.get_fractal_order()) == [[1, [1, 2, 3], [3, 1, 2]], 1,
+                                                                                   [[1, 2, 3], [3, 1, 2], 1]]
+        assert self.ft.get_layer(4, key=lambda node: node.get_fractal_order()) == [
+            [1, [1, [3, 1, 2], [2, 3, 1]], [[2, 3, 1], 1, [3, 1, 2]]],
+            1,
+            [[1, [1, 2, 3], [3, 1, 2]], [[3, 1, 2], 1, [1, 2, 3]], 1]]
 
     def test_layer_values(self):
         self.ft.add_layer()
         self.ft.add_layer()
-        self.assertEqual([Fraction(5, 1), Fraction(5, 3), Fraction(10, 3)],
-                         self.ft.get_layer(1, key=lambda node: node.get_value()))
-        self.assertEqual(
-            [[Fraction(5, 2), Fraction(5, 6), Fraction(5, 3)],
-             [Fraction(5, 9), Fraction(5, 6), Fraction(5, 18)],
-             [Fraction(5, 9), Fraction(10, 9), Fraction(5, 3)]],
-            self.ft.get_layer(2, key=lambda node: node.get_value()))
+        # print(self.ft.get_tree_representation(key=lambda node: round(float(node.get_value()), 2)))
+        assert self.ft.get_tree_representation(key=lambda node: round(float(node.get_value()), 2)) == """└── 10.0
+    ├── 5.0
+    │   ├── 0.83
+    │   ├── 1.67
+    │   └── 2.5
+    ├── 1.67
+    │   ├── 0.83
+    │   ├── 0.28
+    │   └── 0.56
+    └── 3.33
+        ├── 1.11
+        ├── 1.67
+        └── 0.56
+"""
