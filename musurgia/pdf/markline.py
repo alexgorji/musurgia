@@ -79,8 +79,6 @@ class MarkLine(DrawObject, Labeled):
         return self.relative_y + self.height
 
     def draw(self, pdf):
-        # pdf.translate(self.relative_x, self.relative_y)
-        # no margins
         x1 = self.relative_x
         x2 = x1
         y1 = self.relative_y

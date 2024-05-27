@@ -17,10 +17,3 @@ class PdfUnit:
     @staticmethod
     def change(val):
         PdfUnit.GLOBAL_UNIT = val
-#
-# def _get_unit(k):
-#     unit_dict = {1: 'pt', 72. / 25.4: 'mm', 72. / 2.54: 'cm', 72.: 'in'}
-#     unit = unit_dict.get(k)
-#     if k is None:
-#         raise AttributeError(f'wrong k {k}')
-#     return unit

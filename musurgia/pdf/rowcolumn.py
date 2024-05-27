@@ -1,8 +1,10 @@
+from abc import ABC
+
 from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.drawobject import DrawObject
 
 
-class DrawObjectContainer(DrawObject, Labeled):
+class DrawObjectContainer(DrawObject, Labeled, ABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._draw_objects = []

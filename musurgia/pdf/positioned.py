@@ -1,4 +1,8 @@
-class Positioned(object):
+class Positioned:
+    """
+    An interface for setting and getting DrawObject's position attributes.
+    """
+
     def __init__(self, relative_x=None, relative_y=None, *args, **kwargs):
         self._relative_x = None
         self._relative_y = None

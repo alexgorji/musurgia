@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from math import ceil
-from typing import List
 
 from musurgia.pdf.margined import Margined
 from musurgia.pdf.positioned import Positioned
@@ -57,7 +56,7 @@ class DrawObject(ABC, Positioned, Margined):
 
 
 class ClippingArea:
-    def __init__(self, pdf, draw_object, left_margin=10, right_margin=0, top_margin=10):
+    def __init__(self, pdf, draw_object: 'DrawObject', left_margin=10, right_margin=0, top_margin=10):
         self.pdf = pdf
         self.draw_object = draw_object
         self.left_margin = left_margin

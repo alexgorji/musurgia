@@ -1,4 +1,8 @@
 class Margined:
+    """
+    An interface for setting and getting DrawObject's margin attributes.
+    """
+
     def __init__(self, top_margin=None, bottom_margin=None, left_margin=None, right_margin=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._top_margin = None
@@ -10,7 +14,6 @@ class Margined:
         self.left_margin = left_margin
         self.bottom_margin = bottom_margin
         self.right_margin = right_margin
-
 
     @property
     def top_margin(self):

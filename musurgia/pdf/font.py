@@ -50,7 +50,7 @@ class Font:
     the text in pixels via two methods: :obj:`get_text_pixel_height()` and :obj:`get_text_pixel_width()`
 
     Attributes:
-        family: Default value is ``Helvetica``.
+        family: Default value is ``Courier``.
         weight: Default value is ``medium``
         style: Default value is ``regular``
         size: Default value is `10`

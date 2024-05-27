@@ -6,7 +6,7 @@ class NameLabel(TextLabel):
         super().__init__(text=text, relative_x=relative_x, relative_y=relative_y, *args, **kwargs)
 
 
-class Named(object):
+class Named:
     def __init__(self, name=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._name = None
