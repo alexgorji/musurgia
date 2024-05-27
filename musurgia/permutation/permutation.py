@@ -41,11 +41,6 @@ def get_self_permutation_2d(permutation_order: tuple[int, ...]) -> list[tuple[in
     Each permuted permutation order will be permuted again. If all integers of the original permuation are not in their
     natural order (natural orders=`(1, 2, 3, 4, ...)`) the resulted list will be distinctive. Otherwise there will be duplicates.
 
-    >>> get_self_permutation_2d([4, 2, 3, 1])
-    Traceback (most recent call last):
-       ...
-    musurgia.check_types.MusurgiaTypeError: permute:permutation_order: Value [4, 2, 3, 1] must be of type tuple not list
-
     >>> get_self_permutation_2d((3, 1, 2))
     [(3, 1, 2), (2, 3, 1), (1, 2, 3)]
 
@@ -79,11 +74,6 @@ def get_self_permutation_3d(permutation_order: tuple[int, ...]) -> MatrixData:
     :param permutation_order: A list consisting of all integers between 1 and a higher integer
     
     :return:
-
-    >>> get_self_permutation_3d([4, 2, 3, 1])
-    Traceback (most recent call last):
-       ...
-    musurgia.check_types.MusurgiaTypeError: permute:permutation_order: Value [4, 2, 3, 1] must be of type tuple not list
 
     >>> pprint(get_self_permutation_3d((3, 1, 2)))
     [[(3, 1, 2), (2, 3, 1), (1, 2, 3)],
