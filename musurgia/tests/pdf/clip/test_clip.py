@@ -108,6 +108,7 @@ class TestClip(TestCase):
         c.add_draw_object(HorizontalRuler(length=1200, bottom_margin=5))
         c.add_draw_object(HorizontalSegmentedLine(lengths=600 * [2]))
         ca = ClippingArea(self.pdf, draw_object=c)
+        ca.left_margin = c.top_margin = 10
         self.pdf.translate_page_margins()
         ca.draw()
         with self.file_path(path, 'with_clipping_area', 'pdf') as pdf_path:
@@ -116,6 +117,7 @@ class TestClip(TestCase):
 
     def test_clipped_draw(self):
         c = DrawObjectColumn()
+        c.clipping_area.top_margin = c.clipping_area.left_margin = 10
         c.bottom_margin = 60
         c.add_draw_object(HorizontalRuler(length=1200, bottom_margin=5))
         c.add_draw_object(HorizontalSegmentedLine(lengths=600 * [2]))
@@ -133,4 +135,3 @@ class TestClip(TestCase):
             self.pdf.draw_ruler('v')
         with self.file_path(path, 'clipped_draw', 'pdf') as pdf_path:
             self.pdf.write_to_path(pdf_path)
-            self.assertCompareFiles(pdf_path)

@@ -20,7 +20,7 @@ class Test(TestCase):
         ft.add_layer()
         # print(ft.get_layer(1, key=lambda leaf: round(float(leaf.get_value()), 2)))
         #  [4.0, 6.67, 1.33, 2.67, 5.33]
-        pprint(ft.get_layer(2, key=lambda leaf: round(float(leaf.get_value()), 2)))
+        # pprint(ft.get_layer(2, key=lambda leaf: round(float(leaf.get_value()), 2)))
         """
         [[0.8, 0.53, 0.27, 1.07, 1.33],
          [1.33, 1.78, 0.44, 2.22, 0.89],

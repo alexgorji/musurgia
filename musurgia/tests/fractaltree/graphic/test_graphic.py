@@ -3,6 +3,7 @@ from pathlib import Path
 from musurgia.fractal.fractaltree import FractalTree
 from musurgia.pdf.line import HorizontalRuler
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.rowcolumn import DrawObjectColumn
 from musurgia.tests._test_utils import TestCase
 
 path = Path(__file__)
@@ -16,9 +17,25 @@ def make_ft():
     return ft
 
 
-class TestFractlTreeGraphic(TestCase):
+class TestFractalTreeGraphic(TestCase):
     def setUp(self) -> None:
         self.pdf = Pdf(orientation='l')
+
+    def test_draw_clipped(self):
+        unit = 20
+        ft = make_ft()
+        ft.graphic.unit = unit
+        c = DrawObjectColumn()
+
+        c.bottom_margin = 50
+        ruler = HorizontalRuler(unit=unit, length=ft.graphic.get_width(), bottom_margin=5)
+        c.add_draw_object(ruler)
+        c.add_draw_object(ft.graphic)
+        self.pdf.r_margin = self.pdf.l_margin = ((self.pdf.w - 13 * unit) / 2)
+        self.pdf.translate_page_margins()
+        c.clipped_draw(self.pdf)
+        with self.file_path(path, 'draw_clipped', 'pdf') as pdf_path:
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw(self):
         with self.file_path(path, 'draw', 'pdf') as pdf_path:

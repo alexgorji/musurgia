@@ -1,7 +1,9 @@
 from pathlib import Path
 
 from musurgia.fractal.fractaltree import FractalTree
+from musurgia.pdf.line import HorizontalRuler
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.rowcolumn import DrawObjectColumn
 from musurgia.pdf.text import PageText
 from musurgia.tests._test_utils import TestCase
 
@@ -38,7 +40,27 @@ class TestGenerateLayerSegmentedLine(TestCase):
     def test_draw_with_clipping(self):
         ft = make_ft()
         unit = 20
+        change_ft_graphic(ft, unit)
 
+        c = DrawObjectColumn()
+        c.bottom_margin = 20
+        ruler = HorizontalRuler(unit=unit, length=ft.graphic.get_width(), bottom_margin=10)
+        c.add_draw_object(ruler)
+
+        c.add_draw_object(ft.graphic)
+
+        segmented_line = ft.graphic.generate_layer_segmented_line(layer_number=2)
+        change_layer_graphic(segmented_line)
+        segmented_line.segments[0].start_mark_line.add_text_label('blabla', placement='left', right_margin=1)
+
+        c.add_draw_object(segmented_line)
+
+        self.pdf.r_margin = self.pdf.l_margin = ((self.pdf.w - 13 * unit) / 2)
+        self.pdf.translate_page_margins()
+
+        c.clipped_draw(self.pdf)
+        with self.file_path(path, 'draw_clipped', 'pdf') as pdf_path:
+            self.pdf.write_to_path(pdf_path)
 
     def test_draw(self):
         unit = 10

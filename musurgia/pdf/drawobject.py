@@ -56,7 +56,7 @@ class DrawObject(ABC, Positioned, Margined):
 
 
 class ClippingArea:
-    def __init__(self, pdf, draw_object: 'DrawObject', left_margin=10, right_margin=0, top_margin=10):
+    def __init__(self, pdf, draw_object: 'DrawObject', left_margin=0, right_margin=0, top_margin=0):
         self.pdf = pdf
         self.draw_object = draw_object
         self.left_margin = left_margin
@@ -93,6 +93,7 @@ class ClippingArea:
     # public methods
 
     def draw(self) -> None:
+        # self.pdf.translate_page_margins()
         self.pdf.translate(self.left_margin, self.top_margin)
         for index in range(self.get_number_of_rows()):
             if index != 0:
@@ -103,3 +104,6 @@ class ClippingArea:
 
     def get_number_of_rows(self):
         return int(ceil(self.draw_object.get_width() / self.row_width))
+
+    def set_width(self, value):
+        self._width = value
