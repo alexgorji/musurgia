@@ -22,7 +22,6 @@ class TestFractlTreeGraphic(TestCase):
 
     def test_draw(self):
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
-            print(pdf_path)
             ft = make_ft()
             self.pdf.translate_page_margins()
             self.pdf.draw_ruler('h')
