@@ -112,10 +112,12 @@ class MarkLine(StraightLine):
 class LineSegment(MasterDrawObject):
     def __init__(self, mode, length, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._straight_line = StraightLine(name='straight_line', mode=mode, length=length, master=self)
+        self._straight_line = StraightLine(simple_name='straight_line', mode=mode, length=length, master=self)
         marker_mode = StraightLine.get_opposite_mode(self.mode)
-        self._start_mark_line = MarkLine(name='start_mark_line', mode=marker_mode, master=self, placement='start')
-        self._end_mark_line = MarkLine(name='end_mark_line', mode=marker_mode, master=self, placement='end', show=False)
+        self._start_mark_line = MarkLine(simple_name='start_mark_line', mode=marker_mode, master=self,
+                                         placement='start')
+        self._end_mark_line = MarkLine(simple_name='end_mark_line', mode=marker_mode, master=self, placement='end',
+                                       show=False)
 
     @property
     def straight_line(self):
@@ -201,22 +203,22 @@ class LineSegment(MasterDrawObject):
                 else:
                     return self.length
 
-    def get_slave_margin(self, slave, margin):
-        if slave.name == 'straight_line':
+    def get_slave_margin(self, slave: SlaveDrawObject, margin):
+        if slave.simple_name == 'straight_line':
             return self._get_straight_line_margin(margin)
-        elif slave.name == 'start_mark_line':
+        elif slave.simple_name == 'start_mark_line':
             return self._get_mark_line_margin(margin)
-        elif slave.name == 'end_mark_line':
+        elif slave.simple_name == 'end_mark_line':
             return self._get_mark_line_margin(margin)
         else:
             raise AttributeError(slave)
 
-    def get_slave_position(self, slave, position):
-        if slave.name == 'straight_line':
+    def get_slave_position(self, slave: SlaveDrawObject, position):
+        if slave.simple_name == 'straight_line':
             return self._get_straight_line_position(position)
-        elif slave.name == 'start_mark_line':
+        elif slave.simple_name == 'start_mark_line':
             return self._get_mark_line_position(position, slave)
-        elif slave.name == 'end_mark_line':
+        elif slave.simple_name == 'end_mark_line':
             return self._get_mark_line_position(position, slave)
         else:
             raise AttributeError(slave)

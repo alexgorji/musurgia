@@ -4,13 +4,13 @@ from typing import Optional
 
 from musurgia.musurgia_exceptions import PdfAttributeError
 from musurgia.musurgia_types import create_error_message, check_type
-from musurgia.pdf.margined import HasMarginsProtocol
+from musurgia.pdf.margined import AbstractMargined, MarginedSlave, MarginedMaster
 from musurgia.pdf.masterslave import Slave, Master
 from musurgia.pdf.pdf import Pdf
-from musurgia.pdf.positioned import HasPositionsProtocol
+from musurgia.pdf.positioned import AbstractPositioned, PositionedSlave, PositionedMaster
 
 
-class DrawObject(ABC, HasMarginsProtocol, HasPositionsProtocol):
+class DrawObject(AbstractPositioned, AbstractMargined, ABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._show: bool = True
@@ -52,11 +52,11 @@ class DrawObject(ABC, HasMarginsProtocol, HasPositionsProtocol):
         self.clipping_area.draw()
 
 
-class SlaveDrawObject(DrawObject, Slave, ABC):
+class SlaveDrawObject(DrawObject, Slave, PositionedSlave, MarginedSlave, ABC):
     pass
 
 
-class MasterDrawObject(DrawObject, Master, ABC):
+class MasterDrawObject(DrawObject, Master, PositionedMaster, MarginedMaster, ABC):
     pass
 
 

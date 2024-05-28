@@ -39,13 +39,13 @@ masterslave.py
 * _GetSlaveMarginMixIn(ABC)
 * _SetSlavePositionMixIn
 * _SetSlaveMarginMixIn
-* _Named
+* SimpleNamed
 * PositionMaster(_GetSlavePositionMixIn):
 * MarginMaster(_GetSlaveMarginMixIn):
 * Master(_GetSlavePositionMixIn, _GetSlaveMarginMixIn):
-* PositionSlave(_Named, _SetSlavePositionMixIn):
-* MarginSlave(_Named, _SetSlaveMarginMixIn):
-* Slave(_Named, _SetSlavePositionMixIn, _SetSlaveMarginMixIn):
+* PositionSlave(SimpleNamed, _SetSlavePositionMixIn):
+* MarginSlave(SimpleNamed, _SetSlaveMarginMixIn):
+* Slave(SimpleNamed, _SetSlavePositionMixIn, _SetSlaveMarginMixIn):
 
 named.py
 

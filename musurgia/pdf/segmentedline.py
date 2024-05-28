@@ -249,7 +249,7 @@ class SegmentedLine(DrawObject, Labeled, Named):
 
         for line_segment in self.line_segments:
             if line_segment == self.line_segments[0]:
-                line_segment.name = self.name
+                line_segment.simple_name = self.name
 
             line_segment.draw_with_break(pdf)
             new_x = pdf.x
@@ -257,9 +257,9 @@ class SegmentedLine(DrawObject, Labeled, Named):
             if line_segment._line_break:
                 # pdf.y += self.bottom_margin
                 if self.name:
-                    line_segment.name = self.name
+                    line_segment.simple_name = self.name
                     pdf.x = new_x - line_segment.actual_length
-                    line_segment.name.draw(pdf)
+                    line_segment.simple_name.draw(pdf)
                 pdf.x = new_x
 
     def draw(self, pdf):
@@ -268,7 +268,7 @@ class SegmentedLine(DrawObject, Labeled, Named):
         pdf.x = pdf.l_margin
         for line_segment in self.line_segments:
             if line_segment == self.line_segments[0]:
-                line_segment.name = self.name
+                line_segment.simple_name = self.name
 
             line_segment.draw_with_break(pdf)
             new_x = pdf.x
@@ -276,7 +276,7 @@ class SegmentedLine(DrawObject, Labeled, Named):
             if line_segment._line_break:
                 # pdf.y += self.bottom_margin
                 if self.name:
-                    line_segment.name = self.name
+                    line_segment.simple_name = self.name
                     pdf.x = new_x - line_segment.actual_length
-                    line_segment.name.draw(pdf)
+                    line_segment.simple_name.draw(pdf)
                 pdf.x = new_x
