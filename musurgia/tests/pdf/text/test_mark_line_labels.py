@@ -2,6 +2,7 @@ from pathlib import Path
 
 from musurgia.pdf.line import HorizontalLineSegment, HorizontalSegmentedLine, VerticalSegmentedLine
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.tests._test_utils import TestCase
 
 path = Path(__file__)
@@ -21,8 +22,8 @@ class TestMarkLineLabels(TestCase):
         self.ls.relative_y = 20
         with self.file_path(path, 'draw_above', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
 
             self.ls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -34,8 +35,8 @@ class TestMarkLineLabels(TestCase):
 
         with self.file_path(path, 'draw_one_above', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            # self.pdf.draw_ruler('h')
-            # self.pdf.draw_ruler('v')
+            # draw_ruler(self.pdf, 'h')
+            # draw_ruler(self.pdf, 'v')
             self.pdf.translate(30, 30)
             self.ls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -48,8 +49,8 @@ class TestMarkLineLabels(TestCase):
         self.ls.relative_y = 20
         with self.file_path(path, 'draw_below', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.ls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
 
@@ -63,8 +64,8 @@ class TestMarkLineLabels(TestCase):
         self.ls.relative_y = 10
         with self.file_path(path, 'draw_left', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.ls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
 
@@ -75,8 +76,8 @@ class TestMarkLineLabels(TestCase):
         ml.add_text_label('third text label above', font_size=9)
         with self.file_path(path, 'different_sizes', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 20)
             self.ls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -88,8 +89,8 @@ class TestMarkLineLabels(TestCase):
         ml.add_text_label('third text label above', font_size=8)
         with self.file_path(path, 'font_size_8', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 20)
             self.ls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -102,8 +103,8 @@ class TestMarkLineLabels(TestCase):
         hsl.segments[2].start_mark_line.add_label(3, placement='below', font_size=8)
         with self.file_path(path, 'below_with_different_mark_line_lengths', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             hsl.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -116,8 +117,8 @@ class TestMarkLineLabels(TestCase):
         vsl.segments[2].start_mark_line.add_label(3, placement='left', font_size=8)
         with self.file_path(path, 'vertical_with_left_text_labels', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             vsl.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -131,8 +132,8 @@ class TestMarkLineLabels(TestCase):
         self.ls.relative_y = 40
         with self.file_path(path, 'draw_above_with_different_bottom_margins', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
 
             self.ls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -149,8 +150,8 @@ class TestMarkLineLabels(TestCase):
 
         with self.file_path(path, 'left_position', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(30, 30)
             self.ls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)

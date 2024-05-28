@@ -4,6 +4,7 @@ from pathlib import Path
 from musurgia.pdf.line import HorizontalRuler, HorizontalSegmentedLine
 from musurgia.pdf.drawobject import ClippingArea
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.rowcolumn import DrawObjectColumn
 from musurgia.pdf.text import PageText
 from musurgia.tests._test_utils import TestCase, create_test_path
@@ -67,8 +68,8 @@ class TestClip(TestCase):
 
         def _prepare_page():
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('v')
-            self.pdf.draw_ruler('h')
+            draw_ruler(self.pdf, 'v')
+            draw_ruler(self.pdf, 'h')
             self.pdf.translate(clip_area_left_margin, clip_area_top_margin)
 
         def _add_page():
@@ -131,7 +132,7 @@ class TestClip(TestCase):
             self.pdf.page = page
             self.pdf.reset_position()
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
         with self.file_path(path, 'clipped_draw', 'pdf') as pdf_path:
             self.pdf.write_to_path(pdf_path)

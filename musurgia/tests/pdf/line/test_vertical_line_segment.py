@@ -2,6 +2,7 @@ from pathlib import Path
 
 from musurgia.pdf.line import VerticalLineSegment
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.tests._test_utils import TestCase
 
 path = Path(__file__)
@@ -50,8 +51,8 @@ class TestVerticalLineSegment(TestCase):
     def test_draw(self):
         with self.file_path(parent_path=path, name='draw', extension='pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             self.vls.end_mark_line.show = True
             self.vls.draw(self.pdf)

@@ -132,15 +132,23 @@ class TestCheckTypeFunction(TestCase):
         with self.assertRaises(MusurgiaTypeError):
             assert check_type('wrong', 'FractalTreeReduceChildrenMode')
 
-    def test_convertable_to_fraction_type(self):
-        assert check_type(1, 'ConvertableToFraction')
+    def test_convertible_to_fraction_type(self):
+        assert check_type(1, 'ConvertibleToFraction')
         with self.assertRaises(MusurgiaTypeError):
-            assert check_type('wrong', 'ConvertableToFraction')
+            assert check_type('wrong', 'ConvertibleToFraction')
 
     def test_convert_to_fraction(self):
         assert convert_to_fraction(1) == Fraction(1, 1)
         assert convert_to_fraction(1.5) == Fraction(3, 2)
         assert convert_to_fraction(Fraction(3, 4)) == Fraction(3, 4)
+
+    def test_convertible_to_float(self):
+        assert check_type(1, 'ConvertibleToFloat')
+        assert check_type(1 / 10, 'ConvertibleToFloat')
+        assert check_type('1.6', 'ConvertibleToFloat')
+        assert check_type(Fraction(1 / 3), 'ConvertibleToFloat')
+        with self.assertRaises(MusurgiaTypeError):
+            assert check_type('wrong', 'ConvertibleToFloat')
 
 
 class TestCheckValues(TestCase):

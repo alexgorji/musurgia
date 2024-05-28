@@ -132,3 +132,11 @@ class DAndSError(ArithmeticProgressionException):
     def __init__(self, *args):
         msg = 'you cannot set both d an s!'
         super().__init__(msg, *args)
+
+
+class PdfException(Exception):
+    pass
+
+
+class PdfAttributeError(PdfException, AttributeError):
+    pass

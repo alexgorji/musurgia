@@ -2,6 +2,7 @@ from pathlib import Path
 
 from musurgia.pdf.line import VerticalSegmentedLine
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.pdf_tools import draw_ruler, draw_page_numbers
 from musurgia.pdf.text import Text
 from musurgia.tests._test_utils import TestCase
 
@@ -21,15 +22,15 @@ class TestAddPage(TestCase):
 
     def test_draw(self):
         self.pdf.translate_page_margins()
-        self.pdf.draw_ruler(mode='h')
-        self.pdf.draw_ruler(mode='v')
+        draw_ruler(self.pdf, mode='h')
+        draw_ruler(self.pdf, mode='v')
         self.pdf.translate(10, 10)
         vsl = VerticalSegmentedLine(lengths=[10, 20, 30, 40])
         vsl.draw(self.pdf)
         self.pdf.add_page()
         self.pdf.translate_page_margins()
-        self.pdf.draw_ruler(mode='h')
-        self.pdf.draw_ruler(mode='v')
+        draw_ruler(self.pdf, mode='h')
+        draw_ruler(self.pdf, mode='v')
         self.pdf.translate(10, 10)
         # print(self.pdf.absolute_positions)
         vsl.draw(self.pdf)
@@ -39,7 +40,7 @@ class TestAddPage(TestCase):
     def test_page_number(self):
         for i in range(3):
             self.pdf.add_page()
-        self.pdf.draw_page_numbers(v_position='center', h_position='bottom')
+        draw_page_numbers(self.pdf, v_position='center', h_position='bottom')
 
         with self.file_path(path, 'page_number', 'pdf') as pdf_path:
             self.pdf.write_to_path(pdf_path)
@@ -60,10 +61,10 @@ class TestAddPage(TestCase):
             self.pdf.page = page
             self.pdf.reset_position()
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
 
-        self.pdf.draw_page_numbers(v_position='center', h_position='bottom')
+        draw_page_numbers(self.pdf, v_position='center', h_position='bottom')
 
         with self.file_path(path, 'draw_in_reversed_order', 'pdf') as pdf_path:
             self.pdf.write_to_path(pdf_path)

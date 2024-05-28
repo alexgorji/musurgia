@@ -1,8 +1,10 @@
 from pathlib import Path
 
+from musurgia.musurgia_exceptions import RelativePositionNotSettableError
 from musurgia.pdf.line import StraightLine
 from musurgia.pdf.masterslave import Master
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.tests._test_utils import TestCase
 
 path = Path(__file__)
@@ -21,6 +23,12 @@ class TestStraightLine(TestCase):
         self.pdf = Pdf()
         self.master = DummyMaster()
         self.sl = StraightLine(mode='h', length=20, name='straight_test', master=self.master)
+
+    def test_position_not_settable(self):
+        with self.assertRaises(RelativePositionNotSettableError):
+            StraightLine(relative_x=0, mode='h', length=20, name='straight_test', master=self.master)
+        with self.assertRaises(RelativePositionNotSettableError):
+            self.sl.relative_x = 10
 
     def test_relative_x(self):
         actual = self.sl.relative_x
@@ -45,7 +53,7 @@ class TestStraightLine(TestCase):
     def test_draw(self):
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.sl.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)

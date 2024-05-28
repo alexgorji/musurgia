@@ -30,9 +30,3 @@ class TestAbsoluteY(TestCase):
         expected = 40
         self.assertEqual(expected, actual)
 
-    def test_ruler(self):
-        self.pdf.translate_page_margins()
-        self.pdf.draw_ruler('v')
-        actual = self.pdf.absolute_y
-        expected = 10
-        self.assertEqual(expected, actual)

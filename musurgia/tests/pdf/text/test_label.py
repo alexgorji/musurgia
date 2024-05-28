@@ -4,6 +4,7 @@ from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.line import VerticalSegmentedLine
 from musurgia.pdf.masterslave import PositionMaster
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.text import TextLabel
 from musurgia.tests._test_utils import TestCase
 
@@ -43,8 +44,8 @@ class TestTextLabel(TestCase):
 
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             t.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -56,8 +57,8 @@ class TestTextLabel(TestCase):
         t3 = TextLabel(master=DummyPositionMaster(), name='t3', text='What should we do??')
         with self.file_path(path, 'draw_multiple', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             t1.draw(self.pdf)
             self.pdf.translate(0, t1.get_height())
@@ -87,8 +88,8 @@ class TestTextLabel(TestCase):
         lvl.add_label('seventh seven seven', placement='left')
         with self.file_path(path, 'left_labels', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(30, 10)
             lvl.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)

@@ -3,6 +3,7 @@ from pathlib import Path
 from musurgia.pdf.line import MarkLine
 from musurgia.pdf.masterslave import Master
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.tests._test_utils import TestCase
 
 path = Path(__file__)
@@ -45,8 +46,8 @@ class TestMarkLine(TestCase):
     def test_draw(self):
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.ml.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
 
@@ -55,8 +56,8 @@ class TestMarkLine(TestCase):
         self.ml.master.get_slave_margin = lambda slave, margin: 0
         with self.file_path(path, 'draw_multiple', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(20, 20)
             self.ml.draw(self.pdf)
             self.ml.master.get_slave_margin = lambda slave, margin: 5 if margin in ['l', 'left'] else 0

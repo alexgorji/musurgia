@@ -2,6 +2,7 @@ from pathlib import Path
 
 from musurgia.pdf.line import HorizontalLineSegment, VerticalLineSegment
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.tests._test_utils import TestCase
 
 path = Path(__file__)
@@ -21,8 +22,8 @@ class TestStraightLineLabels(TestCase):
         self.hls.straight_line.add_text_label('three above')
         with self.file_path(path, 'horizontal_above', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(20, 20)
             self.hls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -33,8 +34,8 @@ class TestStraightLineLabels(TestCase):
         self.hls.straight_line.add_text_label('three below', placement='below')
         with self.file_path(path, 'test_horizontal_below', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(20, 20)
             self.hls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -45,8 +46,8 @@ class TestStraightLineLabels(TestCase):
         self.hls.straight_line.add_text_label('three left', placement='left')
         with self.file_path(path, 'horizontal_left', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(20, 20)
             self.hls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -57,8 +58,8 @@ class TestStraightLineLabels(TestCase):
         self.vls.straight_line.add_text_label('three above')
         with self.file_path(path, 'vertical_above', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(20, 20)
             self.vls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -71,8 +72,8 @@ class TestStraightLineLabels(TestCase):
         self.vls.straight_line.add_text_label('three above')
         with self.file_path(path, 'vertical_above_with_relative_y', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(20, 20)
             self.vls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -83,8 +84,8 @@ class TestStraightLineLabels(TestCase):
         self.vls.straight_line.add_text_label('three below', placement='below')
         with self.file_path(path, 'test_vertical_below', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(20, 20)
             self.vls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -95,8 +96,8 @@ class TestStraightLineLabels(TestCase):
         self.vls.straight_line.add_text_label('three left', placement='left')
         with self.file_path(path, 'vertical_left', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(20, 20)
             self.vls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -108,8 +109,8 @@ class TestStraightLineLabels(TestCase):
         self.vls.straight_line.add_text_label('three left', placement='left')
         with self.file_path(path, 'vertical_left_with_top_margin', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(20, 20)
             self.vls.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)

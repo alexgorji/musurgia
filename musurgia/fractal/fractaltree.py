@@ -9,7 +9,7 @@ from musurgia.matrix.matrix import PermutationOrderMatrix, PermutationOrderMatri
 from musurgia.musurgia_exceptions import FractalTreeHasChildrenError, \
     FractalTreeNonRootCannotSetMainPermutationOrderError, PermutationIndexCalculaterNoParentIndexError, \
     FractalTreePermutationIndexError
-from musurgia.musurgia_types import ConvertableToFraction, FractalTreeReduceChildrenMode, convert_to_fraction, \
+from musurgia.musurgia_types import ConvertibleToFraction, FractalTreeReduceChildrenMode, convert_to_fraction, \
     MatrixIndex, PermutationOrder, check_type, PositiveInteger, check_matrix_index_values
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.line import HorizontalLineSegment, HorizontalSegmentedLine
@@ -68,8 +68,8 @@ class FractalTree(Tree):
     FractalTree represents the node of a fractal tree with a mechanism of limited permutations.
     """
 
-    def __init__(self, value: ConvertableToFraction,
-                 proportions: Sequence[ConvertableToFraction],
+    def __init__(self, value: ConvertibleToFraction,
+                 proportions: Sequence[ConvertibleToFraction],
                  main_permutation_order: Optional[tuple[int, ...]] = None,
                  permutation_index: Optional[MatrixIndex] = None,
                  fertile: bool = True,
@@ -213,7 +213,7 @@ class FractalTree(Tree):
         return self._proportions
 
     @proportions.setter
-    def proportions(self, values: Sequence[ConvertableToFraction]) -> None:
+    def proportions(self, values: Sequence[ConvertibleToFraction]) -> None:
         converted_values: List[Fraction] = [convert_to_fraction(val) for val in list(values)]
         total = sum(converted_values)
         self._proportions = [Fraction(value, total) for value in converted_values]

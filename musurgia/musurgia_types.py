@@ -4,10 +4,11 @@ from typing import Any, Optional, Union, Literal, Callable, cast
 from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError
 
 MUSURGIA_TYPES = ['MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder',
-                  'PositiveInteger', 'ConvertableToFraction', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection']
+                  'PositiveInteger', 'ConvertibleToFraction', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection',
+                  'ConvertibleToFloat']
 
 MusurgiaType = Literal[
-    'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger', 'ConvertableToFraction', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection']
+    'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger', 'ConvertibleToFraction', 'ConvertibleToFloat', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection']
 
 
 def create_error_message(v: Optional[Any] = None, t: Optional[Union[type, str]] = None,
@@ -46,10 +47,10 @@ def create_error_message(v: Optional[Any] = None, t: Optional[Union[type, str]] 
         raise AttributeError('After setting property_name property_name must be set.')
 
     if not message:
-        if isinstance(t, type):
-            _type = t.__name__
-        else:
+        if isinstance(t, str):
             _type = t
+        else:
+            _type = cast(type, t).__name__
         message = f'Value {v} must be of type {_type} not {v.__class__.__name__}'
 
     if property_name and class_name:
@@ -123,20 +124,31 @@ def check_positive_integer_type(value: PositiveInteger) -> bool:
     return True
 
 
-ConvertableToFraction = Union[float, int, Fraction]
+ConvertibleToFraction = Union[float, int, Fraction]
 
 
-def check_convertable_to_fraction_type(value: Union[int, float, Fraction]) -> bool:
+def check_convertible_to_fraction_type(value: ConvertibleToFraction) -> bool:
     if not isinstance(value, int) and not isinstance(value, Fraction) and not isinstance(value, float):
         raise TypeError
     return True
 
 
-def convert_to_fraction(value: Union[int, float, Fraction]) -> Fraction:
+def convert_to_fraction(value: ConvertibleToFraction) -> Fraction:
     if isinstance(value, Fraction):
         return value
     else:
         return Fraction(value)
+
+
+ConvertibleToFloat = Union[float, int, Fraction, str]
+
+
+def check_convertible_to_float_type(value: ConvertibleToFloat) -> bool:
+    try:
+        float(value)
+    except (TypeError, ValueError):
+        raise TypeError
+    return True
 
 
 PermutationOrder = tuple[int, ...]

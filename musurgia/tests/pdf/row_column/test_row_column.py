@@ -2,6 +2,7 @@ from pathlib import Path
 
 from musurgia.pdf.line import HorizontalLineSegment, VerticalSegmentedLine
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn
 from musurgia.tests._test_utils import TestCase
 
@@ -33,8 +34,8 @@ class TestRowColumn(TestCase):
     def test_draw_row(self):
         with self.file_path(path, 'draw_row', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             r = self.row
             r.draw(self.pdf)
@@ -47,8 +48,8 @@ class TestRowColumn(TestCase):
         r.add_draw_object(HorizontalLineSegment(20))
         with self.file_path(path, 'draw_row_of_segments', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             r.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -64,8 +65,8 @@ class TestRowColumn(TestCase):
 
         with self.file_path(path, 'draw_column_of_row_of_segments', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             c.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -80,8 +81,8 @@ class TestRowColumn(TestCase):
 
         with self.file_path(path, 'draw_row_of_column_of_segments', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             c.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -89,20 +90,9 @@ class TestRowColumn(TestCase):
     def test_draw_column(self):
         with self.file_path(path, 'draw_column', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             c = self.column
             c.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
-
-    # def test_column_add_label_left(self):
-    #     with self.file_path(path, 'column_add_label_left', 'pdf') as pdf_path:
-    #         self.pdf.translate_page_margins()
-    #         self.pdf.draw_ruler('h')
-    #         self.pdf.draw_ruler('v')
-    #         self.pdf.translate(20, 20)
-    #         c = self.column
-    #         c.add_label('test label', placement='left')
-    #         c.draw(self.pdf)
-    #         self.pdf.write_to_path(pdf_path)

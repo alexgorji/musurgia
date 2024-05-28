@@ -3,6 +3,7 @@ from pathlib import Path
 from musurgia.fractal.fractaltree import FractalTree
 from musurgia.pdf.line import HorizontalRuler
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.rowcolumn import DrawObjectColumn
 from musurgia.pdf.text import PageText
 from musurgia.tests._test_utils import TestCase
@@ -66,8 +67,8 @@ class TestGenerateLayerSegmentedLine(TestCase):
         unit = 10
         ft = make_ft()
         self.pdf.translate_page_margins()
-        self.pdf.draw_ruler('h', first_label=-1, unit=unit)
-        self.pdf.draw_ruler('v')
+        draw_ruler(self.pdf, 'h', first_label=-1, unit=unit)
+        draw_ruler(self.pdf, 'v')
         self.pdf.translate(unit, 10)
         pt = PageText('Some Title', v_position='center', font_weight='bold', font_size=12)
         pt.draw(self.pdf)

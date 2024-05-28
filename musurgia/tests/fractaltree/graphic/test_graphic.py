@@ -3,6 +3,7 @@ from pathlib import Path
 from musurgia.fractal.fractaltree import FractalTree
 from musurgia.pdf.line import HorizontalRuler
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.rowcolumn import DrawObjectColumn
 from musurgia.tests._test_utils import TestCase
 
@@ -41,8 +42,8 @@ class TestFractalTreeGraphic(TestCase):
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
             ft = make_ft()
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             ft.graphic.unit = 2
             ft.graphic.draw(self.pdf)

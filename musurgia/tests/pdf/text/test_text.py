@@ -2,6 +2,7 @@ from pathlib import Path
 
 from musurgia.pdf.line import HorizontalLineSegment
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.text import Text
 from musurgia.tests._test_utils import TestCase
 
@@ -16,8 +17,8 @@ class TestText(TestCase):
         t = Text('The fox is going to be dead.')
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             t.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -27,8 +28,8 @@ class TestText(TestCase):
         t.top_margin = 5
         with self.file_path(path, 'draw_with_top_margin', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             t.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -43,8 +44,8 @@ class TestText(TestCase):
         t = Text('The fox is going to be dead.')
         with self.file_path(path, 'height_graphical', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             hls = HorizontalLineSegment(length=t.get_text_width(), relative_y=-t.get_text_height() * 3 / 4)
             hls.start_mark_line.length = t.get_height()
@@ -63,8 +64,8 @@ class TestText(TestCase):
         t3 = Text(value='What should we do??', relative_y=0)
         with self.file_path(path, 'draw_multiple', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             t1.draw(self.pdf)
             self.pdf.translate(0, t1.get_height())
@@ -81,8 +82,8 @@ class TestText(TestCase):
 
         with self.file_path(path, 'draw_multiple_with_relative_y', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
 
             t1.draw(self.pdf)
             t2.draw(self.pdf)

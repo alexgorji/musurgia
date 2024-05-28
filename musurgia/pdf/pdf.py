@@ -1,10 +1,8 @@
-import inspect
-
 from fpdf import FPDF, FPDF_VERSION
 
-from musurgia.pdf.line import HorizontalRuler, VerticalRuler
+# from musurgia.pdf.line import HorizontalRuler, VerticalRuler
 from musurgia.pdf.pdfunit import PdfUnit
-from musurgia.pdf.text import PageText
+# from musurgia.pdf.text import PageText
 
 
 def sprintf(fmt, *args): return fmt % args
@@ -101,26 +99,6 @@ class Pdf(FPDF):
         self._out(sprintf('%.2f %.2f %.2f %.2f re W n',
                           x * self.k, (self.h - y) * self.k,
                           w * self.k, -h * self.k))
-
-    def draw_page_numbers(self, **kwargs):
-        for page in self.pages:
-            self.page = page
-            self.reset_position()
-            page_number = PageText(page, **kwargs)
-            page_number.draw(self)
-
-    def draw_ruler(self, mode='h', unit=10, first_label=0, show_first_label=False, label_show_interval=1):
-        if mode in ['h', 'horizontal']:
-            length = self.w - self.l_margin - self.r_margin
-            ruler = HorizontalRuler(length=length, unit=unit, first_label=first_label,
-                                    show_first_label=show_first_label, label_show_interval=label_show_interval)
-        elif mode in ['v', 'vertical']:
-            length = self.h - self.t_margin - self.b_margin
-            ruler = VerticalRuler(length=length, unit=unit, first_label=first_label,
-                                  show_first_label=show_first_label, label_show_interval=label_show_interval)
-        else:
-            raise AttributeError()
-        ruler.draw(self)
 
     def prepare_draw_object(self, draw_object):
         return PrepareDrawObject(self, draw_object=draw_object)

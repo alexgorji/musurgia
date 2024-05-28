@@ -2,6 +2,7 @@ from pathlib import Path
 
 from musurgia.pdf.line import HorizontalLineSegment
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.tests._test_utils import TestCase
 
 path = Path(__file__)
@@ -55,8 +56,8 @@ class TestHorizontalLineSegment(TestCase):
     def test_draw(self):
         with self.file_path(parent_path=path, name='draw', extension='pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             self.hls.end_mark_line.show = True
             self.hls.draw(self.pdf)
@@ -67,8 +68,8 @@ class TestHorizontalLineSegment(TestCase):
         segments[-1].end_mark_line.show = True
         with self.file_path(parent_path=path, name='draw_list', extension='pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
             for segment in segments:
                 segment.draw(self.pdf)
@@ -81,8 +82,8 @@ class TestHorizontalLineSegment(TestCase):
 
         with self.file_path(parent_path=path, name='draw_with_top_margin', extension='pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
 
             self.hls.end_mark_line.show = True
@@ -94,8 +95,8 @@ class TestHorizontalLineSegment(TestCase):
         self.hls.end_mark_line.add_label('end mark line')
         with self.file_path(parent_path=path, name='end_mark_line_labels', extension='pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.draw_ruler('h')
-            self.pdf.draw_ruler('v')
+            draw_ruler(self.pdf, 'h')
+            draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
 
             self.hls.end_mark_line.show = True
