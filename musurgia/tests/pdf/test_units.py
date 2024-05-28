@@ -1,9 +1,11 @@
 from unittest import TestCase
 
 from musurgia.musurgia_exceptions import PdfAttributeError
-from musurgia.pdf.drawobject import ClippingArea, DrawObject
-from musurgia.pdf.pdf import Pdf
+from musurgia.musurgia_types import MusurgiaTypeError
+from musurgia.pdf.drawobject import ClippingArea
 from musurgia.pdf.line import HorizontalRuler
+from musurgia.pdf.masterslave import SimpleNamed, Slave
+from musurgia.pdf.pdf import Pdf
 
 
 class TestClippingArea(TestCase):
@@ -24,6 +26,17 @@ class TestClippingArea(TestCase):
         with self.assertRaises(PdfAttributeError):
             ClippingArea(pdf=None, draw_object=self.ruler).get_row_width()
 
+
+class TestSimpleNamed(TestCase):
+    def test_wrong_type(self):
+        with self.assertRaises(MusurgiaTypeError):
+            SimpleNamed(3)
+
+
+class TestSlave(TestCase):
+    def test_wrong_master_type(self):
+        with self.assertRaises(MusurgiaTypeError):
+            Slave(master='bla')
 
 # class TestDrawObject(TestCase):
 #     def test_no_margins(self):

@@ -93,16 +93,12 @@ class MusurgiaTypeError(TypeError):
     If ``method_name`` is not set ``obj`` has no impact.
     """
 
-    def __init__(self, v: Any, t: Union[type, str], function_name: Optional[str] = None,
+    def __init__(self, v: Optional[Any] = None, t: Optional[Union[type, str]] = None,
+                 function_name: Optional[str] = None,
                  class_name: Optional[str] = None,
                  method_name: Optional[str] = None, argument_name: Optional[str] = None,
                  property_name: Optional[str] = None, message: Optional[str] = None):
-        if message:
-            msg = create_error_message(None, None, function_name, class_name, method_name, argument_name, property_name,
-                                       message)
-        else:
-            msg = create_error_message(v, t, function_name, class_name, method_name, argument_name, property_name)
-
+        msg = create_error_message(v, t, function_name, class_name, method_name, argument_name, property_name, message)
         super().__init__(msg)
 
     def __setattr__(self, attr: str, value: Any) -> Any:
@@ -272,7 +268,11 @@ def check_type(v: Any, t: Union[type, str], function_name: Optional[str] = None,
     """
 
     def _create_error(message: Optional[str] = None) -> MusurgiaTypeError:
-        return MusurgiaTypeError(v, t, function_name, class_name, method_name, argument_name, property_name, message)
+        if not message:
+            return MusurgiaTypeError(v, t, function_name, class_name, method_name, argument_name, property_name)
+        else:
+            return MusurgiaTypeError(None, None, function_name, class_name, method_name, argument_name, property_name,
+                                     message)
 
     if isinstance(t, type):
         if not isinstance(v, t):
