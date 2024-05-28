@@ -29,22 +29,22 @@ class AbstractPositioned(ABC):
     @property
     @abstractmethod
     def relative_x(self) -> float:
-        raise NotImplementedError
+        """relative_x getter must be provided"""
 
     @relative_x.setter
     @abstractmethod
     def relative_x(self, val: Optional[ConvertibleToFloat]) -> None:
-        raise NotImplementedError
+        """relative_x setter must be provided"""
 
     @property
     @abstractmethod
     def relative_y(self) -> float:
-        raise NotImplementedError
+        """relative_y getter must be provided"""
 
     @relative_y.setter
     @abstractmethod
     def relative_y(self, val: Optional[ConvertibleToFloat]) -> None:
-        raise NotImplementedError
+        """relative_y setter must be provided"""
 
     def get_positions(self) -> dict[str, float]:
         return {'x': self.relative_x, 'y': self.relative_y}
@@ -77,7 +77,7 @@ class Positioned(AbstractPositioned):
 class SlavePositionGetter(ABC):
     @abstractmethod
     def get_slave_position(self, slave: 'PositionedSlave', position: str) -> float:
-        pass
+        """get_slave_position must be provided"""
 
 
 class PositionedMaster(Positioned, SlavePositionGetter, ABC):

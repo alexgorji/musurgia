@@ -41,42 +41,42 @@ class AbstractMargined(ABC):
     @property
     @abstractmethod
     def bottom_margin(self) -> float:
-        raise NotImplementedError
+        """bottom_margin getter must be provided"""
 
     @bottom_margin.setter
     @abstractmethod
     def bottom_margin(self, val: Optional[ConvertibleToFloat]) -> None:
-        raise NotImplementedError
+        """bottom_margin setter must be provided"""
 
     @property
     @abstractmethod
     def left_margin(self) -> float:
-        raise NotImplementedError
+        """left_margin getter must be provided"""
 
     @left_margin.setter
     @abstractmethod
     def left_margin(self, val: Optional[ConvertibleToFloat]) -> None:
-        raise NotImplementedError
+        """left_margin setter must be provided"""
 
     @property
     @abstractmethod
     def top_margin(self) -> float:
-        raise NotImplementedError
+        """top_margin getter must be provided"""
 
     @top_margin.setter
     @abstractmethod
     def top_margin(self, val: Optional[ConvertibleToFloat]) -> None:
-        raise NotImplementedError
+        """top_margin setter must be provided"""
 
     @property
     @abstractmethod
     def right_margin(self) -> float:
-        raise NotImplementedError
+        """right_margin getter must be provided"""
 
     @right_margin.setter
     @abstractmethod
     def right_margin(self, val: Optional[ConvertibleToFloat]) -> None:
-        raise NotImplementedError
+        """right_margin setter must be provided"""
 
     def get_margins(self) -> dict[str, float]:
         return {'left': self.left_margin, 'top': self.top_margin, 'right': self.right_margin,
@@ -134,7 +134,7 @@ class Margined(AbstractMargined):
 class MarginedMaster(Margined, ABC):
     @abstractmethod
     def get_slave_margin(self, slave: 'MarginedSlave', margin: str) -> float:
-        pass
+        """get_slave_margin must be provided"""
 
 
 class HasMarginedMasterProtocol(Protocol):

@@ -42,9 +42,13 @@ class TestPositioned(TestCase):
 
     def test_slave_set_position(self):
         with self.assertRaises(RelativePositionNotSettableError):
-            Slave(relative_x=3, relative_y=4)
+            Slave(relative_x=3)
         with self.assertRaises(RelativePositionNotSettableError):
             self.s.relative_x = 3
+        with self.assertRaises(RelativePositionNotSettableError):
+            Slave(relative_y=3)
+        with self.assertRaises(RelativePositionNotSettableError):
+            self.s.relative_y = 3
 
     def test_master_positions(self):
         m = Master()
@@ -71,9 +75,15 @@ class TestMargined(TestCase):
 
     def test_slave_set_margin(self):
         with self.assertRaises(MarginNotSettableError):
-            Slave(bottom_margin=3.0, left_margin=2)
+            Slave(bottom_margin=3.0)
         with self.assertRaises(MarginNotSettableError):
             self.s.right_margin = 3
+        with self.assertRaises(MarginNotSettableError):
+            self.s.left_margin = 3
+        with self.assertRaises(MarginNotSettableError):
+            self.s.top_margin = 3
+        with self.assertRaises(MarginNotSettableError):
+            self.s.bottom_margin = 3
 
     def test_master_margins(self):
         m = Master()
