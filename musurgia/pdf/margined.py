@@ -5,6 +5,20 @@ from musurgia.musurgia_exceptions import MarginNotSettableError
 from musurgia.musurgia_types import ConvertibleToFloat, check_type
 
 
+class HasMarginsProtocol(Protocol):
+    @property
+    def left_margin(self) -> float: ...
+
+    @property
+    def top_margin(self) -> float: ...
+
+    @property
+    def right_margin(self) -> float: ...
+
+    @property
+    def bottom_margin(self) -> float: ...
+
+
 class AbstractMargined(ABC):
     """
     An interface for setting and getting DrawObject's margin attributes.

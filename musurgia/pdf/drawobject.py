@@ -3,99 +3,14 @@ from math import ceil
 from typing import Optional
 
 from musurgia.musurgia_exceptions import PdfAttributeError
-from musurgia.musurgia_types import create_error_message, check_type, ConvertibleToFloat
+from musurgia.musurgia_types import create_error_message, check_type
+from musurgia.pdf.margined import HasMarginsProtocol
+from musurgia.pdf.masterslave import Slave, Master
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.positioned import HasPositionsProtocol
 
 
-class Margined:
-    """
-    An interface for setting and getting DrawObject's margin attributes.
-    """
-
-    def __init__(self, top_margin: ConvertibleToFloat = 0,
-                 bottom_margin: ConvertibleToFloat = 0, left_margin: ConvertibleToFloat = 0,
-                 right_margin: ConvertibleToFloat = 0, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._top_margin: float = 0
-        self._left_margin: float = 0
-        self._bottom_margin: float = 0
-        self._right_margin: float = 0
-
-        self.top_margin = top_margin
-        self.left_margin = left_margin
-        self.bottom_margin = bottom_margin
-        self.right_margin = right_margin
-
-    @property
-    def bottom_margin(self) -> float:
-        return self._bottom_margin
-
-    @bottom_margin.setter
-    def bottom_margin(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='bottom_margin')
-        self._bottom_margin = float(val)
-
-    @property
-    def left_margin(self) -> float:
-        return self._left_margin
-
-    @left_margin.setter
-    def left_margin(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='left_margin')
-        self._left_margin = float(val)
-
-    @property
-    def top_margin(self) -> float:
-        return self._top_margin
-
-    @top_margin.setter
-    def top_margin(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='top_margin')
-        self._top_margin = float(val)
-
-    @property
-    def right_margin(self) -> float:
-        return self._right_margin
-
-    @right_margin.setter
-    def right_margin(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='right_margin')
-        self._right_margin = float(val)
-
-
-class Positioned:
-    """
-    An interface for setting and getting DrawObject's position attributes.
-    """
-
-    def __init__(self, relative_x: ConvertibleToFloat = 0, relative_y: ConvertibleToFloat = 0, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._relative_x: float = 0
-        self._relative_y: float = 0
-
-        self.relative_x = relative_x
-        self.relative_y = relative_y
-
-    @property
-    def relative_x(self) -> float:
-        return self._relative_x
-
-    @relative_x.setter
-    def relative_x(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='relative_x')
-        self._relative_x = float(val)
-
-    @property
-    def relative_y(self) -> float:
-        return self._relative_y
-
-    @relative_y.setter
-    def relative_y(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='relative_y')
-        self._relative_y = float(val)
-
-
-class DrawObject(ABC, Positioned, Margined):
+class DrawObject(ABC, HasMarginsProtocol, HasPositionsProtocol):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._show: bool = True
@@ -111,17 +26,16 @@ class DrawObject(ABC, Positioned, Margined):
 
     @show.setter
     def show(self, val: bool) -> None:
-        if not isinstance(val, bool):
-            raise TypeError(f"show.value must be of type bool not {type(val)}")
+        check_type(val, bool, class_name=self.__class__.__name__, property_name='show')
         self._show = val
 
     @abstractmethod
     def get_relative_x2(self) -> float:
-        raise NotImplementedError()
+        """ this property is needed to get relative_x2 """
 
     @abstractmethod
     def get_relative_y2(self) -> float:
-        raise NotImplementedError()
+        """ this property is needed to get relative_y2 """
 
     def get_height(self) -> float:
         return self.top_margin + self.get_relative_y2() - self.relative_y + self.bottom_margin
@@ -131,18 +45,19 @@ class DrawObject(ABC, Positioned, Margined):
 
     @abstractmethod
     def draw(self, pdf: Pdf) -> None:
-        raise NotImplementedError()
+        """ this property is needed draw the DrawObject to pdf """
 
     def clipped_draw(self, pdf: Pdf) -> None:
         self.clipping_area.pdf = pdf
         self.clipping_area.draw()
 
-    def get_relative_position(self) -> dict:
-        return {'relative_x': self.relative_x, 'relative_y': self.relative_y}
 
-    def get_margins(self) -> dict:
-        return {'left_margin': self.left_margin, 'top_margin': self.top_margin, 'right_margin': self.right_margin,
-                'bottom_margin': self.bottom_margin}
+class SlaveDrawObject(DrawObject, Slave, ABC):
+    pass
+
+
+class MasterDrawObject(DrawObject, Master, ABC):
+    pass
 
 
 class ClippingArea:
@@ -191,5 +106,7 @@ class ClippingArea:
 
     def get_row_width(self) -> float:
         if not self.pdf:
-            raise AttributeError('set pdf first!')
+            msg = create_error_message(class_name=self.__class__.__name__, method_name='get_row_height',
+                                       argument_name=None, message='set pdf first!')
+            raise PdfAttributeError(msg)
         return self.pdf.w - self.pdf.l_margin - self.pdf.r_margin - self.left_margin - self.right_margin

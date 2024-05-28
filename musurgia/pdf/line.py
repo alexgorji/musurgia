@@ -1,15 +1,13 @@
 from abc import abstractmethod
-
 from fractions import Fraction
 
+from musurgia.pdf.drawobject import SlaveDrawObject, MasterDrawObject
 from musurgia.pdf.labeled import Labeled
-from musurgia.pdf.masterslave import Master, Slave
-from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn, DrawObjectContainer
 from musurgia.pdf.text import TextLabel
 
 
-class StraightLine(Slave, DrawObject, Labeled):
+class StraightLine(SlaveDrawObject, Labeled):
     def __init__(self, mode, length, show=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._mode = None
@@ -111,7 +109,7 @@ class MarkLine(StraightLine):
         return self.length / 2
 
 
-class LineSegment(Master, DrawObject):
+class LineSegment(MasterDrawObject):
     def __init__(self, mode, length, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._straight_line = StraightLine(name='straight_line', mode=mode, length=length, master=self)

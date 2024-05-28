@@ -1,10 +1,13 @@
+from abc import ABC
+
 from musurgia.pdf.font import Font
-from musurgia.pdf.masterslave import PositionSlave
 from musurgia.pdf.drawobject import DrawObject
+from musurgia.pdf.margined import Margined
 from musurgia.pdf.pdfunit import PdfUnit
+from musurgia.pdf.positioned import PositionedSlave, Positioned
 
 
-class Text(DrawObject):
+class AbstractText(DrawObject, ABC):
     DEFAULT_FONT_FAMILY = 'Courier'
     DEFAULT_FONT_SIZE = 10
     DEFAULT_FONT_WEIGHT = 'medium'
@@ -97,11 +100,25 @@ class Text(DrawObject):
                 pdf.text(x=0, y=0, txt=self.value)
 
 
-class TextLabel(PositionSlave, Text):
-    def __init__(self, text, placement='above', *args, **kwargs):
+class Text(AbstractText, Positioned, Margined):
+    pass
+
+
+class TextLabel(PositionedSlave, AbstractText, Margined):
+    def __init__(self, text, master=None, placement='above', *args, **kwargs):
         super().__init__(value=text, *args, **kwargs)
+        self._master = None
+        self.master = master
         self._placement = None
         self.placement = placement
+
+    @property
+    def master(self):
+        return self._master
+
+    @master.setter
+    def master(self, value):
+        self._master = value
 
     @property
     def placement(self):

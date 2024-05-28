@@ -2,9 +2,11 @@ from abc import ABC
 
 from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.drawobject import DrawObject
+from musurgia.pdf.margined import Margined
+from musurgia.pdf.positioned import Positioned
 
 
-class DrawObjectContainer(DrawObject, Labeled, ABC):
+class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._draw_objects = []

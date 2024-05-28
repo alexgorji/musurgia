@@ -2,9 +2,9 @@ from pathlib import Path
 
 from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.line import VerticalSegmentedLine
-from musurgia.pdf.masterslave import PositionMaster
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
+from musurgia.pdf.positioned import SlavePositionGetter
 from musurgia.pdf.text import TextLabel
 from musurgia.tests._test_utils import TestCase
 
@@ -27,7 +27,7 @@ class LabeledVerticalLine(VerticalSegmentedLine, Labeled):
     #         return super().get_slave_position(slave, position)
 
 
-class DummyPositionMaster(PositionMaster):
+class DummyPositionMaster(SlavePositionGetter):
     def get_slave_position(self, slave, position):
         if position == 'x':
             return 0

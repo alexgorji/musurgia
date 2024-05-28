@@ -1,8 +1,8 @@
-from musurgia.pdf.masterslave import PositionMaster
+from musurgia.pdf.positioned import SlavePositionGetter, HasPositionsProtocol
 from musurgia.pdf.text import TextLabel
 
 
-class Labeled(PositionMaster):
+class Labeled(SlavePositionGetter, HasPositionsProtocol):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._above_text_labels = []

@@ -1,4 +1,6 @@
-from musurgia.pdf.masterslave import Master, PositionMaster, MarginMaster
+from musurgia.pdf.margined import MarginedMaster
+from musurgia.pdf.masterslave import Master
+from musurgia.pdf.positioned import PositionedMaster
 from musurgia.tests._test_utils import TestCase
 
 
@@ -11,12 +13,12 @@ class DummyMaster(Master):
         pass
 
 
-class DummyPositionMaster(PositionMaster):
+class DummyPositionMaster(PositionedMaster):
     def get_slave_position(self, slave, position):
         pass
 
 
-class DummyMarginMaster(MarginMaster):
+class DummyMarginMaster(MarginedMaster):
     def get_slave_margin(self, slave, margin):
         pass
 
@@ -28,8 +30,8 @@ class TestMaster(TestCase):
 
     def test_init_margin(self):
         m = DummyMarginMaster()
-        self.assertTrue(isinstance(m, MarginMaster))
+        self.assertTrue(isinstance(m, MarginedMaster))
 
     def test_init_position(self):
         m = DummyPositionMaster()
-        self.assertTrue(isinstance(m, PositionMaster))
+        self.assertTrue(isinstance(m, PositionedMaster))

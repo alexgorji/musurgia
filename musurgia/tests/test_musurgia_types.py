@@ -29,6 +29,8 @@ class TestCreateErrorMessage(TestCase):
         with self.assertRaises(AttributeError):
             create_error_message(v=3, t=list, method_name='method_name')
         with self.assertRaises(AttributeError):
+            create_error_message(message='message', method_name='method_name')
+        with self.assertRaises(AttributeError):
             create_error_message(v=3, t=list, property_name='property_name')
         with self.assertRaises(AttributeError):
             create_error_message(v=3, t=list, property_name='argument_name')

@@ -34,8 +34,11 @@ def create_error_message(v: Optional[Any] = None, t: Optional[Union[type, str]] 
     if method_name and property_name:
         raise AttributeError('method_name and property_name cannot be set together.')
 
-    if method_name and not (argument_name and class_name):
+    if method_name and not message and not (argument_name and class_name):
         raise AttributeError('After setting method_name class_name and argument_name must be set.')
+
+    if method_name and message and not class_name:
+        raise AttributeError('After setting message and method_name class_name must be set.')
 
     if argument_name and not (function_name or method_name):
         raise AttributeError('After setting argument_name method_name or function_name must be set.')

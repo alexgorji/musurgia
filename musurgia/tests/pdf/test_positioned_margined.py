@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from musurgia.musurgia_exceptions import RelativePositionNotSettableError, MarginNotSettableError
-from musurgia.pdf.margined import MarginedSlave, MarginedMaster, Margined
+from musurgia.pdf.margined import MarginedSlave, MarginedMaster, Margined, AbstractMargined
 from musurgia.pdf.positioned import PositionedSlave, PositionedMaster, Positioned
 
 
@@ -27,6 +27,10 @@ class Slave(PositionedSlave, MarginedSlave):
     @property
     def master(self) -> Master:
         return self._master
+
+
+class WrongMaster(AbstractMargined):
+    pass
 
 
 class TestPositioned(TestCase):
@@ -85,3 +89,7 @@ class TestMargined(TestCase):
         assert h.get_margins() == {'bottom': 0.0, 'left': 10.0, 'right': 20.0, 'top': 0.0}
         with self.assertRaises(AttributeError):
             h.get_slave_margin()
+
+    def test_wrong_master(self):
+        with self.assertRaises(TypeError):
+            WrongMaster()
