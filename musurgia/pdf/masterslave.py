@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Union
+from typing import Optional
 
 from musurgia.musurgia_exceptions import MarginNotSettableError, RelativePositionNotSettableError
 from musurgia.musurgia_types import check_type

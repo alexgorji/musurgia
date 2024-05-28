@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from math import ceil
-from typing import Optional, Union
+from typing import Optional
 
 from musurgia.musurgia_exceptions import PdfAttributeError
 from musurgia.musurgia_types import create_error_message, check_type, ConvertibleToFloat
@@ -146,7 +146,8 @@ class DrawObject(ABC, Positioned, Margined):
 
 
 class ClippingArea:
-    def __init__(self, pdf: Optional[Pdf], draw_object: DrawObject, left_margin: float = 0, right_margin: float = 0, top_margin: float = 0):
+    def __init__(self, pdf: Optional[Pdf], draw_object: DrawObject, left_margin: float = 0, right_margin: float = 0,
+                 top_margin: float = 0):
         self.pdf: Optional[Pdf] = pdf
         self.draw_object: DrawObject = draw_object
         self.left_margin: float = left_margin

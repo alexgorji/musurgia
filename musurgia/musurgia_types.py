@@ -15,7 +15,7 @@ def create_error_message(v: Optional[Any] = None, t: Optional[Union[type, str]] 
                          function_name: Optional[str] = None,
                          class_name: Optional[str] = None,
                          method_name: Optional[str] = None, argument_name: Optional[str] = None,
-                         property_name: Optional[str] = None, message: Optional[str] = None):
+                         property_name: Optional[str] = None, message: Optional[str] = None) -> str:
     if not message and not (v or t):
         raise AttributeError('if no message provided v and t must be set')
 

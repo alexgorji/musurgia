@@ -22,7 +22,7 @@ class MatrixIndexEndOfMatrixError(MatrixIndexEndOfRowError, StopIteration):
 
 
 class MatrixIndexControllerReadingDirectionError(MatrixIndexControllerException):
-    def __init__(self, *args):
+    def __init__(self, *args: Any):
         super().__init__('MatrixIndexController.get_next_in_row() works only for reading_direction horizontal.', *args)
 
 
@@ -129,7 +129,7 @@ class ArithmeticProgressionException(Exception):
 
 
 class DAndSError(ArithmeticProgressionException):
-    def __init__(self, *args):
+    def __init__(self, *args: Any):
         msg = 'you cannot set both d an s!'
         super().__init__(msg, *args)
 
