@@ -5,10 +5,24 @@ from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError
 
 MUSURGIA_TYPES = ['MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder',
                   'PositiveInteger', 'ConvertibleToFraction', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection',
-                  'ConvertibleToFloat']
+                  'ConvertibleToFloat', 'LabelPlacement']
 
 MusurgiaType = Literal[
-    'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger', 'ConvertibleToFraction', 'ConvertibleToFloat', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection']
+    'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger', 'ConvertibleToFraction', 'ConvertibleToFloat', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection', 'LabelPlacement']
+
+
+class LiteralCheckGenerator:
+    def __init__(self, type_name: str, permitted: list[str]):
+        self.type_name = type_name
+        self.permitted = permitted
+
+    def generate_checker(self) -> Callable[[str], bool]:
+        def checker(value: str) -> bool:
+            if value not in self.permitted:
+                raise TypeError(f"{self.type_name} value must be in {self.permitted}, got {value}")
+            return True
+
+        return checker
 
 
 def create_error_message(v: Optional[Any] = None, t: Optional[Union[type, str]] = None,
@@ -205,32 +219,20 @@ def check_matrix_index_values(index: MatrixIndex, number_of_rows: PositiveIntege
 
 
 MatrixTransposeMode = Literal['regular', 'diagonal']
-
-
-def check_matrix_transpose_mode_type(value: MatrixTransposeMode) -> bool:
-    permitted = ['regular', 'diagonal']
-    if value not in permitted:
-        raise TypeError(f"MatrixTransposeMode value must be in {permitted}, got {value}")
-    return True
-
+check_matrix_transpose_mode_type = LiteralCheckGenerator('MatrixTransposeMode',
+                                                         ['regular', 'diagonal']).generate_checker()
 
 MatrixReadingDirection = Literal['horizontal', 'diagonal', 'vertical']
-
-
-def check_matrix_reading_direction_type(value: MatrixReadingDirection) -> bool:
-    permitted = ['horizontal', 'diagonal', 'vertical']
-    if value not in permitted:
-        raise TypeError(f"MatrixReadingDirection value must be in {permitted}, got {value}")
-    return True
-
+check_matrix_reading_direction_type = LiteralCheckGenerator('MatrixReadingDirection',
+                                                            ['horizontal', 'diagonal', 'vertical']).generate_checker()
 
 FractalTreeReduceChildrenMode = Literal['backwards', 'forwards', 'sieve', 'merge']
+check_fractal_tree_reduce_children_mode_type = LiteralCheckGenerator('FractalTreeReduceChildrenMode',
+                                                                     ['backwards', 'forwards', 'sieve',
+                                                                      'merge']).generate_checker()
 
-
-def check_fractal_tree_reduce_children_mode_type(value: str) -> None:
-    permitted = ['backwards', 'forwards', 'sieve', 'merge']
-    if value not in permitted:
-        raise TypeError(f"FractalTreeReduceChildrenMode value must be in {permitted}, got {value}")
+LabelPlacement = Literal['above', 'below', 'left']
+check_label_placement_type = LiteralCheckGenerator('LabelPlacement', ['above', 'below', 'left']).generate_checker()
 
 
 def _get_name_of_check_type_function(musurgia_type: MusurgiaType) -> str:

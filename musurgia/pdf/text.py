@@ -1,5 +1,6 @@
 from abc import ABC
 
+from musurgia.musurgia_types import check_type, LabelPlacement
 from musurgia.pdf.font import Font
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.margined import Margined
@@ -105,7 +106,7 @@ class Text(AbstractText, Positioned, Margined):
 
 
 class TextLabel(PositionedSlave, AbstractText, Margined):
-    def __init__(self, text, master=None, placement='above', *args, **kwargs):
+    def __init__(self, text, master=None, placement: LabelPlacement = 'above', *args, **kwargs):
         super().__init__(value=text, *args, **kwargs)
         self._master = None
         self.master = master
@@ -126,9 +127,7 @@ class TextLabel(PositionedSlave, AbstractText, Margined):
 
     @placement.setter
     def placement(self, val):
-        permitted = ['above', 'below', 'left']
-        if val not in permitted:
-            raise ValueError(f'placement.value {val} must be in {permitted}')
+        check_type(val, 'LabelPlacement', class_name=self.__class__.__name__, property_name='placement')
         self._placement = val
 
 

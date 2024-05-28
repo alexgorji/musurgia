@@ -13,6 +13,8 @@ from musurgia.musurgia_types import ConvertibleToFraction, FractalTreeReduceChil
     MatrixIndex, PermutationOrder, check_type, PositiveInteger, check_matrix_index_values
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.line import HorizontalLineSegment, HorizontalSegmentedLine
+from musurgia.pdf.margined import Margined
+from musurgia.pdf.positioned import Positioned
 from musurgia.pdf.rowcolumn import DrawObjectColumn, DrawObjectRow
 from musurgia.permutation.permutation import permute, get_self_permutation_2d
 from musurgia.permutation.limited_permutation import LimitedPermutationOrders
@@ -593,7 +595,7 @@ class FractalTree(Tree):
                               fertile=self.fertile)
 
 
-class _Graphic(DrawObject):
+class _Graphic(DrawObject, Margined, Positioned):
     def __init__(self, fractal_tree, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._draw_object_column = None

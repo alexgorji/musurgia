@@ -152,6 +152,11 @@ class TestCheckTypeFunction(TestCase):
         with self.assertRaises(MusurgiaTypeError):
             assert check_type('wrong', 'ConvertibleToFloat')
 
+    def test_check_label_placement_type(self):
+        assert check_type('above', 'LabelPlacement')
+        with self.assertRaises(MusurgiaTypeError):
+            assert check_type('wrong', 'LabelPlacement')
+
 
 class TestCheckValues(TestCase):
 
