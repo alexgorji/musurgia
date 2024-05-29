@@ -1,11 +1,11 @@
 from abc import ABC
-from typing import Optional
+from typing import Optional, Any
 
 from musurgia.musurgia_types import check_type, create_error_message, MusurgiaTypeError
 
 
 class SimpleNamed:
-    def __init__(self, simple_name: Optional[str] = None, *args, **kwargs):
+    def __init__(self, simple_name: Optional[str] = None, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._simple_name = None
         self.simple_name = simple_name
@@ -26,7 +26,7 @@ class Master(ABC):
 
 
 class Slave(SimpleNamed):
-    def __init__(self, master: Optional[Master] = None, *args, **kwargs):
+    def __init__(self, master: Optional[Master] = None, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._master = None
         self.master = master

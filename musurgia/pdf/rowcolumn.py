@@ -4,6 +4,7 @@ from musurgia.musurgia_types import create_error_message
 from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.margined import Margined
+from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.positioned import Positioned
 
 
@@ -27,13 +28,13 @@ class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
 
 class DrawObjectRow(DrawObjectContainer):
 
-    def get_relative_x2(self):
+    def get_relative_x2(self) -> float:
         return self.relative_x + sum([do.get_width() for do in self.draw_objects])
 
-    def get_relative_y2(self):
+    def get_relative_y2(self) -> float:
         return self.relative_y + max([do.get_height() for do in self.draw_objects])
 
-    def draw(self, pdf):
+    def draw(self, pdf: Pdf) -> None:
         with pdf.prepare_draw_object(self):
             self.draw_above_text_labels(pdf)
             self.draw_left_text_labels(pdf)
@@ -45,10 +46,10 @@ class DrawObjectRow(DrawObjectContainer):
 
 
 class DrawObjectColumn(DrawObjectContainer):
-    def get_relative_x2(self):
+    def get_relative_x2(self) -> float:
         return self.relative_x + max([do.get_width() for do in self.draw_objects])
 
-    def get_relative_y2(self):
+    def get_relative_y2(self) -> float:
         return self.relative_y + sum([do.get_height() for do in self.draw_objects])
 
     def draw(self, pdf):

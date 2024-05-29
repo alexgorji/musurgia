@@ -1,5 +1,6 @@
 from abc import abstractmethod, ABC
 from fractions import Fraction
+from typing import Any
 
 from musurgia.musurgia_exceptions import RelativeXNotSettableError, RelativeYNotSettableError
 from musurgia.musurgia_types import HorizontalVertical, check_type, ConvertibleToFloat, MarkLinePlacement
@@ -65,13 +66,13 @@ class StraightLine(SlaveDrawObject, Labeled):
         else:
             raise NotImplementedError  # pragma: no cover
 
-    def get_relative_x2(self):
+    def get_relative_x2(self) -> float:
         if self.mode in ['h', 'horizontal']:
             return self.relative_x + self.length
         else:
             return self.relative_x
 
-    def get_relative_y2(self):
+    def get_relative_y2(self) -> float:
         if self.mode in ['v', 'vertical']:
             return self.relative_y + self.length
         else:
@@ -106,7 +107,7 @@ class MarkLine(StraightLine):
 
 class LineSegment(MasterDrawObject, ABC):
 
-    def __init__(self, mode, length, *args, **kwargs):
+    def __init__(self, mode: HorizontalVertical, length: ConvertibleToFloat, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._straight_line = StraightLine(simple_name='straight_line', mode=mode, length=length, master=self)
         marker_mode = StraightLine.get_opposite_mode(self.mode)
@@ -114,26 +115,6 @@ class LineSegment(MasterDrawObject, ABC):
                                          placement='start')
         self._end_mark_line = MarkLine(simple_name='end_mark_line', mode=marker_mode, master=self, placement='end',
                                        show=False)
-
-    @property
-    def straight_line(self):
-        return self._straight_line
-
-    @property
-    def start_mark_line(self):
-        return self._start_mark_line
-
-    @property
-    def end_mark_line(self):
-        return self._end_mark_line
-
-    @property
-    def mode(self):
-        return self.straight_line.mode
-
-    @property
-    def length(self):
-        return self.straight_line.length
 
     def _get_straight_line_position(self, position):
         if self.mode in ['h', 'horizontal']:
@@ -165,6 +146,26 @@ class LineSegment(MasterDrawObject, ABC):
                 else:
                     return self.length
 
+    @property
+    def straight_line(self) -> StraightLine:
+        return self._straight_line
+
+    @property
+    def start_mark_line(self) -> MarkLine:
+        return self._start_mark_line
+
+    @property
+    def end_mark_line(self) -> MarkLine:
+        return self._end_mark_line
+
+    @property
+    def mode(self) -> HorizontalVertical:
+        return self.straight_line.mode
+
+    @property
+    def length(self) -> float:
+        return self.straight_line.length
+
     def get_slave_margin(self, slave: SlaveDrawObject, margin):
         return 0
 
@@ -180,16 +181,16 @@ class LineSegment(MasterDrawObject, ABC):
 
 
 class HorizontalLineSegment(LineSegment):
-    def __init__(self, length, *args, **kwargs):
+    def __init__(self, length: ConvertibleToFloat, *args: Any, **kwargs: Any):
         super().__init__(mode='horizontal', length=length, *args, **kwargs)
 
-    def get_relative_x2(self):
+    def get_relative_x2(self) -> float:
         return self.relative_x + self.length
 
-    def get_relative_y2(self):
+    def get_relative_y2(self) -> float:
         return self.relative_y + max([ml.get_height() for ml in [self.start_mark_line, self.end_mark_line]])
 
-    def draw(self, pdf):
+    def draw(self, pdf: Pdf) -> None:
         with pdf.prepare_draw_object(self):
             self.start_mark_line.draw(pdf)
             self.straight_line.draw(pdf)
@@ -200,10 +201,10 @@ class VerticalLineSegment(LineSegment):
     def __init__(self, length, *args, **kwargs):
         super().__init__(mode='vertical', length=length, *args, **kwargs)
 
-    def get_relative_x2(self):
+    def get_relative_x2(self) -> float:
         return self.relative_x + max([ml.get_width() for ml in [self.start_mark_line, self.end_mark_line]])
 
-    def get_relative_y2(self):
+    def get_relative_y2(self) -> float:
         return self.relative_y + self.length
 
     def draw(self, pdf):
@@ -214,12 +215,12 @@ class VerticalLineSegment(LineSegment):
 
 
 class AbstractSegmentedLine(DrawObjectContainer):
-    def __init__(self, lengths, *args, **kwargs):
+    def __init__(self, lengths: list[ConvertibleToFloat], *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._make_segments(lengths)
 
     @property
-    def segments(self):
+    def segments(self) -> list[LineSegment]:
         return self.draw_objects
 
     @abstractmethod
@@ -230,8 +231,6 @@ class AbstractSegmentedLine(DrawObjectContainer):
 class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):
 
     def _make_segments(self, lengths):
-        # if not lengths:
-        #     raise AttributeError('lengths must be set.')
         for length in lengths:
             self.add_draw_object(HorizontalLineSegment(length))
         self.segments[-1].end_mark_line.show = True
@@ -240,16 +239,21 @@ class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):
 class VerticalSegmentedLine(AbstractSegmentedLine, DrawObjectColumn):
 
     def _make_segments(self, lengths):
-        # if not lengths:
-        #     raise AttributeError('lengths must be set.')
         for length in lengths:
             self.add_draw_object(VerticalLineSegment(length))
         self.segments[-1].end_mark_line.show = True
 
 
 class AbstractRuler(AbstractSegmentedLine, ABC):
-    def __init__(self, length, unit=10.0, first_label=0, label_show_interval=1, show_first_label=True, *args, **kwargs):
-        number_of_units = length / unit
+    def __init__(self, length: ConvertibleToFloat, unit: ConvertibleToFloat = 10.0, first_label: int = 0,
+                 label_show_interval: int = 1, show_first_label: bool = True, *args: Any, **kwargs: Any):
+        check_type(length, 'ConvertibleToFloat', class_name='AbstractRuler', property_name='length')
+        check_type(unit, 'ConvertibleToFloat', class_name='AbstractRuler', property_name='unit')
+        check_type(first_label, int, class_name='AbstractRuler', property_name='first_label')
+        check_type(label_show_interval, int, class_name='AbstractRuler', property_name='label_show_interval')
+        check_type(show_first_label, int, class_name='AbstractRuler', property_name='show_first_label')
+
+        number_of_units = float(length) / float(unit)
         partial_segment_length = number_of_units - int(number_of_units)
         lengths = int(number_of_units) * [unit]
         if partial_segment_length:
@@ -257,6 +261,7 @@ class AbstractRuler(AbstractSegmentedLine, ABC):
         super().__init__(lengths=lengths, *args, **kwargs)
         if partial_segment_length:
             self.draw_objects[-1].end_mark_line.show = False
+
         self.unit = unit
         self.first_label = first_label
         self.label_show_interval = label_show_interval
@@ -267,7 +272,7 @@ class AbstractRuler(AbstractSegmentedLine, ABC):
     def length(self):
         return sum([s.length for s in self.segments])
 
-    def _set_labels(self):
+    def _set_labels(self):  # type: ignore
         def _add_label(mark_line, txt):
             tl = TextLabel(txt)
             if isinstance(self, VerticalSegmentedLine):

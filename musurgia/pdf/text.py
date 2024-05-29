@@ -84,10 +84,10 @@ class AbstractText(DrawObject, ABC):
     def get_text_height(self):
         return self.font.get_text_pixel_height(self.value) / PdfUnit.get_k()
 
-    def get_relative_x2(self):
+    def get_relative_x2(self) -> float:
         return self.relative_x + self.get_text_width()
 
-    def get_relative_y2(self):
+    def get_relative_y2(self) -> float:
         return self.relative_y + self.get_text_height()
 
     def draw(self, pdf):

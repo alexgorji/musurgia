@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from musurgia.musurgia_types import check_type, \
     MusurgiaTypeError, check_matrix_index_values, check_permutation_order_values, create_error_message, \
-    convert_to_fraction
+    convert_to_fraction, LiteralCheckGenerator, HorizontalVertical
 
 
 class TestCreateErrorMessage(TestCase):
@@ -196,3 +196,12 @@ class TestCheckValues(TestCase):
             assert check_permutation_order_values((4, 3, 1, 2), size=5)
         with self.assertRaises(ValueError):
             assert check_permutation_order_values((4, 3, 1, 2), size=3)
+
+
+class TestLiteralCheckGenerator(TestCase):
+    def test_literal_check(self):
+        checker = LiteralCheckGenerator(HorizontalVertical, 'HorizontalVertical').generate_checker()
+        assert checker('h')
+        assert checker('v')
+        with self.assertRaises(TypeError):
+            checker('d')
