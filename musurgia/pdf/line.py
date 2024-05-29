@@ -1,8 +1,9 @@
 from abc import abstractmethod, ABC
 from fractions import Fraction
 
+from musurgia.musurgia_exceptions import RelativeXNotSettableError, RelativeYNotSettableError
 from musurgia.musurgia_types import HorizontalVertical, check_type, ConvertibleToFloat, MarkLinePlacement
-from musurgia.pdf.drawobject import SlaveDrawObject, MasterDrawObject
+from musurgia.pdf.drawobject import SlaveDrawObject, MasterDrawObject, DrawObject
 from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn, DrawObjectContainer
