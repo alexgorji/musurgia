@@ -1,6 +1,9 @@
 from abc import ABC
+from typing import Optional
 
-from musurgia.musurgia_types import check_type, LabelPlacement
+from musurgia.musurgia_exceptions import RelativePositionNotSettableError
+from musurgia.musurgia_types import check_type, LabelPlacement, FontStyle, FontFamily, FontWeight, ConvertibleToFloat, \
+    VerticalPosition, HorizontalPosition
 from musurgia.pdf.font import Font
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.margined import Margined
@@ -14,8 +17,9 @@ class AbstractText(DrawObject, ABC):
     DEFAULT_FONT_WEIGHT = 'medium'
     DEFAULT_FONT_STYLE = 'regular'
 
-    def __init__(self, value, font_family=None, font_weight=None, font_style=None,
-                 font_size=None, *args,
+    def __init__(self, value, font_family: Optional[FontFamily] = None, font_weight: Optional[FontWeight] = None,
+                 font_style: Optional[FontStyle] = None,
+                 font_size: Optional[ConvertibleToFloat] = None, *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
         self.font = Font()
@@ -87,14 +91,14 @@ class AbstractText(DrawObject, ABC):
         return self.relative_y + self.get_text_height()
 
     def draw(self, pdf):
-        if pdf.k != PdfUnit.get_k():
-            raise AttributeError('wrong pdf.k!')
+        # if pdf.k != PdfUnit.get_k():
+        #     raise AttributeError('wrong pdf.k!')
         if self.show:
             pdf.reset_font()
             style = ""
-            if self.font.style == 'italic':
+            if self.font_style == 'italic':
                 style += 'I'
-            if self.font.weight == 'bold':
+            if self.font_weight == 'bold':
                 style += 'B'
             pdf.set_font(self.font.family, style=style, size=self.font_size)
             with pdf.prepare_draw_object(self):
@@ -132,25 +136,57 @@ class TextLabel(PositionedSlave, AbstractText, Margined):
 
 
 class PageText(Text):
-    def __init__(self, value, v_position=None, h_position=None, *args, **kwargs):
+    def __init__(self, value, v_position: VerticalPosition = 'top', h_position: HorizontalPosition = 'left', *args,
+                 **kwargs):
         super().__init__(value=value, *args, **kwargs)
+        self._v_position = None
+        self._h_position = None
         self.v_position = v_position
         self.h_position = h_position
 
-    def draw(self, pdf):
-        if self.v_position == 'center':
-            self.relative_x = ((pdf.w - pdf.l_margin - pdf.r_margin) / 2) - self.get_width() / 2
-        elif self.v_position == 'left':
-            self.relative_x = pdf.l_margin
-        elif self.v_position == 'right':
-            self.relative_x = pdf.w - pdf.r_margin - self.get_width()
-        else:
-            pass
+    @Text.relative_y.setter
+    def relative_y(self, val):
+        if val:
+            raise RelativePositionNotSettableError
 
-        if self.h_position == 'top':
-            self.relative_y = 0
-        elif self.h_position == 'bottom':
-            self.relative_y = pdf.h - pdf.b_margin
+    @Text.relative_x.setter
+    def relative_x(self, val):
+        if val:
+            raise RelativePositionNotSettableError
+
+    @property
+    def v_position(self) -> VerticalPosition:
+        return self._v_position
+
+    @v_position.setter
+    def v_position(self, val: VerticalPosition) -> None:
+        check_type(val, 'VerticalPosition')
+        self._v_position = val
+
+    @property
+    def h_position(self) -> HorizontalPosition:
+        return self._h_position
+
+    @h_position.setter
+    def h_position(self, val: HorizontalPosition) -> None:
+        check_type(val, 'HorizontalPosition')
+        self._h_position = val
+
+    def draw(self, pdf):
+        pdf.reset_position()
+        if self.h_position == 'center':
+            self._relative_x = ((pdf.w - pdf.l_margin - pdf.r_margin) / 2) - self.get_width() / 2
+        elif self.h_position == 'left':
+            self._relative_x = pdf.l_margin
+        elif self.h_position == 'right':
+            self._relative_x = pdf.w - pdf.r_margin - self.get_width()
         else:
-            pass
+            raise NotImplementedError  # pragma: no cover
+
+        if self.v_position == 'top':
+            self._relative_y = pdf.t_margin
+        elif self.v_position == 'bottom':
+            self._relative_y = pdf.h - pdf.b_margin
+        else:
+            raise NotImplementedError  # pragma: no cover
         super().draw(pdf)

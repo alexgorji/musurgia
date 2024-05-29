@@ -1,9 +1,9 @@
 from musurgia.musurgia_types import check_matrix_data_type
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 from musurgia.permutation.limited_permutation import LimitedPermutationOrders
 
 
-class TestLimitedPermutationOrders(TestCase):
+class TestLimitedPermutationOrders(PdfTestCase):
     def test_init_errors(self):
         with self.assertRaises(TypeError):
             LimitedPermutationOrders(main_permutation_order=[3])

@@ -1,10 +1,10 @@
 from pprint import pprint
+from unittest import TestCase
 
 from musurgia.fractal.fractaltree import FractalTree
-from musurgia.tests._test_utils import TestCase
 
 
-class Test(TestCase):
+class TestFtMergeChildren(TestCase):
     def test_one_layer(self):
         ft = FractalTree(proportions=(1, 2, 3, 4, 5), main_permutation_order=(3, 5, 1, 2, 4), value=10,
                          permutation_index=(1, 1))

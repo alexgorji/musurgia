@@ -1,10 +1,10 @@
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 import matplotlib as mpl
 from matplotlib._afm import AFM
 
-from musurgia.musurgia_exceptions import FontException
+from musurgia.musurgia_types import FontFamily, FontWeight, FontStyle, check_type, ConvertibleToFloat
 
 
 def _make_afm_path_dictionary():
@@ -61,12 +61,14 @@ class Font:
     """
 
     __AFM_PATH_DICTIONARY = _make_afm_path_dictionary()
-    # pprint(__AFM_PATH_DICTIONARY)
-    _FAMILY = ['Courier']
-    _WEIGHT = ['bold', 'medium']
-    _STYLE = ['italic', 'regular']
 
-    def __init__(self, family: str = 'Courier', weight: str = 'medium', style: str = 'regular', size: int = 10, *args,
+    # pprint(__AFM_PATH_DICTIONARY)
+    # _FAMILY = ['Courier']
+    # _WEIGHT = ['bold', 'medium']
+    # _STYLE = ['italic', 'regular']
+
+    def __init__(self, family: FontFamily = 'Courier', weight: FontWeight = 'medium', style: FontStyle = 'regular',
+                 size: ConvertibleToFloat = 10, *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
         self._family = None
@@ -93,8 +95,7 @@ class Font:
 
     @family.setter
     def family(self, val):
-        if val not in self._FAMILY:
-            raise FontException(f'{val} not a valid value: Current valid families are: :obj:~{self._FAMILY}')
+        check_type(val, 'FontFamily', class_name=self.__class__.__name__, property_name='family')
         self._family = val
         self._set_afm()
 
@@ -107,6 +108,7 @@ class Font:
 
     @size.setter
     def size(self, val):
+        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='size')
         self._size = val
 
     @property
@@ -118,8 +120,7 @@ class Font:
 
     @style.setter
     def style(self, val):
-        if val not in self._STYLE:
-            raise FontException(f'{val} not a valid value: {self._STYLE}')
+        check_type(val, 'FontStyle', class_name=self.__class__.__name__, property_name='style')
         self._style = val
         self._set_afm()
 
@@ -132,8 +133,7 @@ class Font:
 
     @weight.setter
     def weight(self, val):
-        if val not in self._WEIGHT:
-            raise FontException(f'{val} not a valid value: {self._WEIGHT}')
+        check_type(val, 'FontWeight', class_name=self.__class__.__name__, property_name='weight')
         self._weight = val
         self._set_afm()
 

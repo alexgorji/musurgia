@@ -1,8 +1,8 @@
 from musurgia.pdf.pdfunit import PdfUnit
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 
 
-class TestPdfK(TestCase):
+class TestPdfK(PdfTestCase):
     def test_get_k(self):
         actual = PdfUnit.get_k()
         expected = 2.834645669291339

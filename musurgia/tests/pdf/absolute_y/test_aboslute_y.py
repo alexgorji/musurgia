@@ -1,9 +1,9 @@
 from musurgia.pdf.line import VerticalLineSegment
 from musurgia.pdf.pdf import Pdf
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 
 
-class TestAbsoluteY(TestCase):
+class TestAbsoluteY(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf()
 

@@ -96,10 +96,6 @@ class PermutationOrderValueError(PermutationOrderError, ValueError):
     pass
 
 
-class FontException(Exception):
-    pass
-
-
 class MarginedObjectException(Exception):
     pass
 

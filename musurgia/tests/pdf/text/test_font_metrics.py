@@ -4,12 +4,12 @@ import matplotlib as mpl
 import pytest
 
 from musurgia.pdf.font import _make_afm_path_dictionary
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 
 afm_path = Path(mpl.get_data_path(), 'fonts', 'afm', 'ptmr8a.afm')
 
 
-class Test(TestCase):
+class Test(PdfTestCase):
     def test_afm_dict(self):
         actual = sorted(list(_make_afm_path_dictionary().keys()))
         expected = [

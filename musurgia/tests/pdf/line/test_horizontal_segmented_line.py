@@ -3,12 +3,12 @@ from pathlib import Path
 from musurgia.pdf.line import HorizontalSegmentedLine
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 
 path = Path(__file__)
 
 
-class TestHorizontalSegmentedLine(TestCase):
+class TestHorizontalSegmentedLine(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf()
         self.hsl = HorizontalSegmentedLine(lengths=[10, 15, 20, 25])

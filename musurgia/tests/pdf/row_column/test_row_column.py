@@ -5,12 +5,12 @@ from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn
 from musurgia.pdf.text import TextLabel
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 
 path = Path(__file__)
 
 
-class TestRowColumn(TestCase):
+class TestRowColumn(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf(orientation='l')
         self._make_row()

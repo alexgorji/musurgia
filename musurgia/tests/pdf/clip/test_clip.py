@@ -7,12 +7,12 @@ from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.rowcolumn import DrawObjectColumn
 from musurgia.pdf.text import PageText
-from musurgia.tests._test_utils import TestCase, create_test_path
+from musurgia.tests._test_utils import PdfTestCase, create_test_path
 
 path = Path(__file__)
 
 
-class TestClip(TestCase):
+class TestClip(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf()
 
@@ -122,9 +122,10 @@ class TestClip(TestCase):
         c.bottom_margin = 60
         c.add_draw_object(HorizontalRuler(length=1200, bottom_margin=5))
         c.add_draw_object(HorizontalSegmentedLine(lengths=600 * [2]))
-        self.pdf.translate_page_margins()
-        title = PageText('A very nice title', v_position='center', font_weight='bold', font_size=12, top_margin=10)
+        title = PageText('A very nice title', h_position='center', font_weight='bold', font_size=12, top_margin=10)
         title.draw(self.pdf)
+
+        self.pdf.translate_page_margins()
         self.pdf.translate(0, title.get_height())
         c.clipped_draw(self.pdf)
 

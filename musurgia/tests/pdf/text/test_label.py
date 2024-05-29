@@ -6,7 +6,7 @@ from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.positioned import SlavePositionGetter
 from musurgia.pdf.text import TextLabel
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 
 path = Path(__file__)
 
@@ -29,7 +29,7 @@ class DummyPositionMaster(SlavePositionGetter):
             return 0
 
 
-class TestTextLabel(TestCase):
+class TestTextLabel(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf()
 

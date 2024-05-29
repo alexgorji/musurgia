@@ -1,7 +1,7 @@
 from musurgia.pdf.margined import MarginedMaster
 from musurgia.pdf.masterslave import Master
 from musurgia.pdf.positioned import PositionedMaster
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 
 
 class DummyMaster(Master):
@@ -23,7 +23,7 @@ class DummyMarginMaster(MarginedMaster):
         pass
 
 
-class TestMaster(TestCase):
+class TestMaster(PdfTestCase):
     def test_init(self):
         m = DummyMaster()
         self.assertTrue(isinstance(m, Master))

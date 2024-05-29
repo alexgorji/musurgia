@@ -1,8 +1,8 @@
 from musurgia.random import Random
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 
 
-class TestRandom(TestCase):
+class TestRandom(PdfTestCase):
     def test_counter(self):
         r = Random(pool=['a', 'b', 'c'], periodicity=1, seed=20)
         assert r.counter == 0

@@ -3,12 +3,12 @@ from pathlib import Path
 from musurgia.pdf.line import HorizontalLineSegment, VerticalLineSegment
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 
 path = Path(__file__)
 
 
-class TestStraightLineLabels(TestCase):
+class TestStraightLineLabels(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf()
         self.hls = HorizontalLineSegment(length=20)

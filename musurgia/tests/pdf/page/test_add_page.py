@@ -4,12 +4,12 @@ from musurgia.pdf.line import VerticalSegmentedLine
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler, draw_page_numbers
 from musurgia.pdf.text import Text
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 
 path = Path(__file__)
 
 
-class TestAddPage(TestCase):
+class TestAddPage(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf()
 
@@ -40,7 +40,7 @@ class TestAddPage(TestCase):
     def test_page_number(self):
         for i in range(3):
             self.pdf.add_page()
-        draw_page_numbers(self.pdf, v_position='center', h_position='bottom')
+        draw_page_numbers(self.pdf, v_position='bottom', h_position='center')
 
         with self.file_path(path, 'page_number', 'pdf') as pdf_path:
             self.pdf.write_to_path(pdf_path)
@@ -64,7 +64,7 @@ class TestAddPage(TestCase):
             draw_ruler(self.pdf, 'h')
             draw_ruler(self.pdf, 'v')
 
-        draw_page_numbers(self.pdf, v_position='center', h_position='bottom')
+        draw_page_numbers(self.pdf, v_position='bottom', h_position='center')
 
         with self.file_path(path, 'draw_in_reversed_order', 'pdf') as pdf_path:
             self.pdf.write_to_path(pdf_path)

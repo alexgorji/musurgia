@@ -4,7 +4,7 @@ from musurgia.pdf.line import MarkLine
 from musurgia.pdf.masterslave import Master
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 
 path = Path(__file__)
 
@@ -17,7 +17,7 @@ class DummyMaster(Master):
         return 20
 
 
-class TestMarkLine(TestCase):
+class TestMarkLine(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf()
         self.master = DummyMaster()

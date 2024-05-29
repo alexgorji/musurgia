@@ -32,8 +32,8 @@ class FilePath:
 
     @unittest.setter
     def unittest(self, val):
-        if not isinstance(val, TestCase):
-            raise TypeError(f"unittest.value must be of type {type(TestCase)} not{type(val)}")
+        if not isinstance(val, PdfTestCase):
+            raise TypeError(f"unittest.value must be of type {type(PdfTestCase)} not{type(val)}")
         self._unittest = val
 
     @property
@@ -54,8 +54,7 @@ class FilePath:
         self.unittest.assertCompareFiles(self.out_path)
 
 
-class TestCase(unittest.TestCase):
-    """"""
+class PdfTestCase(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

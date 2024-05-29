@@ -2,7 +2,6 @@ from unittest import TestCase
 
 from musurgia.fractal.fractaltree import FractalTree
 from musurgia.matrix.matrix import PermutationOrderMatrix
-from musurgia.musurgia_exceptions import FractalTreePermutationOrderError
 
 
 class TestFractalTreeInit(TestCase):

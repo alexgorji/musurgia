@@ -5,10 +5,13 @@ from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError
 
 MUSURGIA_TYPES = ['MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder',
                   'PositiveInteger', 'ConvertibleToFraction', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection',
-                  'ConvertibleToFloat', 'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType']
+                  'ConvertibleToFloat', 'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType',
+                  'FontFamily', 'FontWeight', 'FontStyle', 'VerticalPosition', 'HorizontalPosition']
 
 MusurgiaType = Literal[
-    'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger', 'ConvertibleToFraction', 'ConvertibleToFloat', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection', 'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType']
+    'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger',
+    'ConvertibleToFraction', 'ConvertibleToFloat', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection',
+    'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType', 'FontFamily', 'FontWeight', 'FontStyle', 'VerticalPosition', 'HorizontalPosition']
 
 
 class LiteralCheckGenerator:
@@ -255,6 +258,18 @@ check_pdf_unit_type_type = LiteralCheckGenerator('PdfUnitType',
                                                  ['pt', 'mm', 'cm', 'in']).generate_checker()
 PositionType = Literal['x', 'y']
 check_position_type_type = LiteralCheckGenerator('PositionType', ['x', 'y']).generate_checker()
+
+FontFamily = Literal['Courier']
+check_font_family_type = LiteralCheckGenerator('FontFamily', ['Courier']).generate_checker()
+FontWeight = Literal['medium', 'bold']
+check_font_weight_type = LiteralCheckGenerator('FontWeight', ['medium', 'bold']).generate_checker()
+FontStyle = Literal['regular', 'italic']
+check_font_style_type = LiteralCheckGenerator('FontStyle', ['regular', 'italic']).generate_checker()
+VerticalPosition = ['top', 'bottom']
+check_vertical_position_type = LiteralCheckGenerator('VerticalPosition', ['top', 'bottom']).generate_checker()
+HorizontalPosition = ['left', 'center', 'right']
+check_horizontal_position_type = LiteralCheckGenerator('HorizontalPosition',
+                                                       ['left', 'center', 'right']).generate_checker()
 
 
 def _get_name_of_check_type_function(musurgia_type: MusurgiaType) -> str:

@@ -6,7 +6,7 @@ from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.rowcolumn import DrawObjectColumn
 from musurgia.pdf.text import PageText
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 
 path = Path(__file__)
 
@@ -34,7 +34,7 @@ def change_ft_graphic(ft, unit):
     ft.graphic.change_segment_attributes(bottom_margin=5)
 
 
-class TestGenerateLayerSegmentedLine(TestCase):
+class TestGenerateLayerSegmentedLine(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf(orientation='l')
 

@@ -5,7 +5,7 @@ from musurgia.pdf.line import HorizontalRuler
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.rowcolumn import DrawObjectColumn
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 
 path = Path(__file__)
 
@@ -18,7 +18,7 @@ def make_ft():
     return ft
 
 
-class TestFractalTreeGraphic(TestCase):
+class TestFractalTreeGraphic(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf(orientation='l')
 

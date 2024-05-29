@@ -4,12 +4,12 @@ from musurgia.pdf.line import HorizontalLineSegment
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.text import Text
-from musurgia.tests._test_utils import TestCase
+from musurgia.tests._test_utils import PdfTestCase
 
 path = Path(__file__)
 
 
-class TestText(TestCase):
+class TestText(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf()
 
@@ -89,4 +89,15 @@ class TestText(TestCase):
             t2.draw(self.pdf)
             t3.draw(self.pdf)
 
+            self.pdf.write_to_path(pdf_path)
+
+    def test_text_font(self):
+        t = Text(value='some text', font_family='Courier', font_weight='bold', font_style='italic')
+        assert t.font_family == 'Courier'
+        assert t.font_weight == 'bold'
+        assert t.font_style == 'italic'
+
+        with self.file_path(path, 'test_font', 'pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            t.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
