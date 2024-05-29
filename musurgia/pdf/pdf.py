@@ -106,7 +106,7 @@ class Pdf(FPDF, HasOutProtocol):
     def reset_font(self):
         # https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf
         self._out(sprintf('BT /F%d %.2f Tf ET',
-                          self.current_font['i'],
+                          self.current_font.i,
                           self.font_size_pt))
 
     def reset_position(self):
@@ -146,7 +146,7 @@ class Pdf(FPDF, HasOutProtocol):
         # print('writing to path, output buffer is:', self.buffer)
         # print('')
         # print('############')
-        self.output(path, 'F')
+        self.output(path)
         # print('############')
         # print('written to path, output buffer is:', self.buffer)
         # print('')

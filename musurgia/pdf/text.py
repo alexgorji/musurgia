@@ -102,7 +102,7 @@ class AbstractText(DrawObject, ABC):
                 style += 'B'
             pdf.set_font(self.font.family, style=style, size=self.font_size)
             with pdf.prepare_draw_object(self):
-                pdf.text(x=0, y=0, txt=self.value)
+                pdf.text(x=0, y=0, text=self.value)
 
 
 class Text(AbstractText, Positioned, Margined):
