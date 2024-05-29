@@ -14,14 +14,18 @@ def _make_afm_path_dictionary():
             old_header = old_afm._header
             new_header = afm._header
             diff = set(old_header) ^ set(new_header)
-            if diff == {b'CapHeight'}:
-                if new_header.get(b'CapHeight'):
-                    return True
-            elif diff == set():
+            if diff == set():
                 return False
             else:
-                raise AttributeError(
-                    f'{family}, {weight}, {style} already in dict: {old_afm} differnce: {diff}')
+                return True
+            # if diff == {b'CapHeight'}:
+            #     if new_header.get(b'CapHeight'):
+            #         return True
+            # elif diff == set():
+            #     return False
+            # else:
+            #     raise AttributeError(
+            #         f'{family}, {weight}, {style} already in dict: {old_afm} difference: {diff}')
         else:
             return True
 
@@ -133,9 +137,9 @@ class Font:
         self._weight = val
         self._set_afm()
 
-    def get_text_pixel_width(self, val: str) -> float:
+    def get_text_pixel_width(self, value: str) -> float:
         """
-        :param val: text as str
+        :param value: text as str
         :return: width of text in pixels
 
         >>> round(Font().get_text_pixel_width('Test'), 2)
@@ -143,9 +147,7 @@ class Font:
         >>> round(Font(size=12).get_text_pixel_width('Test'), 2)
         28.8
         """
-        if self._afm is None:
-            raise TypeError()
-        return (self._afm.string_width_height(val)[0] / 1000) * self.size
+        return (self._afm.string_width_height(value)[0] / 1000) * self.size
 
     def get_text_pixel_height(self, val: str) -> float:
         """
@@ -159,6 +161,4 @@ class Font:
         >>> round(Font(size=12, weight='bold', style='italic').get_text_pixel_height('Test'), 2)
         6.95
         """
-        if self._afm is None:
-            raise TypeError()
         return (self._afm.string_width_height(val)[1] / 1000) * self.size
