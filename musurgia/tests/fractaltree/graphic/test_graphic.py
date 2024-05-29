@@ -55,7 +55,7 @@ class TestFractalTreeGraphic(TestCase):
             ruler = HorizontalRuler(length=ruler_length, unit=3, show_first_label=True, label_show_interval=5)
             for segment in ruler.segments:
                 try:
-                    segment.start_mark_line.text_labels[0].font_size = 8
+                    segment.start_mark_line.get_text_labels[0].font_size = 8
                 except IndexError:
                     pass
             return ruler

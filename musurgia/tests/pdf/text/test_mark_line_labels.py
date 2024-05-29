@@ -59,7 +59,7 @@ class TestMarkLineLabels(TestCase):
         ml.add_text_label('first text label left', placement='left')
         ml.add_text_label('second text label left left left', placement='left')
         ml.add_text_label('third text label left left left', placement='left')
-        ml.left_text_labels[1].font.size = 8
+        ml.get_left_text_labels()[1].font.size = 8
         self.ls.relative_x = 40
         self.ls.relative_y = 10
         with self.file_path(path, 'draw_left', 'pdf') as pdf_path:

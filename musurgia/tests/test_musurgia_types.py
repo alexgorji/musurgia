@@ -173,6 +173,11 @@ class TestCheckTypeFunction(TestCase):
         with self.assertRaises(MusurgiaTypeError):
             assert check_type('wrong', 'PdfUnitType')
 
+    def test_check_position_type(self):
+        assert check_type('x', 'PositionType')
+        with self.assertRaises(MusurgiaTypeError):
+            assert check_type('wrong', 'PositionType')
+
 
 class TestCheckValues(TestCase):
 

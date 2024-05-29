@@ -3,11 +3,13 @@ from unittest import TestCase
 from musurgia.musurgia_exceptions import PdfAttributeError
 from musurgia.musurgia_types import MusurgiaTypeError
 from musurgia.pdf.drawobject import ClippingArea
+from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.line import HorizontalRuler
 from musurgia.pdf.masterslave import SimpleNamed, Slave
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.pdfunit import PdfUnit
+from musurgia.pdf.text import TextLabel
 
 
 class TestClippingArea(TestCase):
@@ -51,10 +53,3 @@ class TestPdfUnit(TestCase):
         assert PdfUnit.GLOBAL_UNIT == 'mm'
         with self.assertRaises(MusurgiaTypeError):
             PdfUnit.GLOBAL_UNIT = 'bla'
-
-# class TestDrawObject(TestCase):
-#     def test_no_margins(self):
-#         class Dummy(DrawObject):
-#             pass
-#
-#         d = Dummy()

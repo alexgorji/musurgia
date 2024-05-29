@@ -37,7 +37,7 @@ class DrawObjectRow(DrawObjectContainer):
             for do in self.draw_objects:
                 do.draw(pdf)
                 pdf.translate(do.get_width(), 0)
-            if self.below_text_labels:
+            if self.get_below_text_labels():
                 pdf.translate(0, 2)
                 self.draw_below_text_labels(pdf)
 
@@ -56,6 +56,6 @@ class DrawObjectColumn(DrawObjectContainer):
             for do in self.draw_objects:
                 do.draw(pdf)
                 pdf.translate(0, do.get_height())
-            if self.below_text_labels:
+            if self.get_below_text_labels():
                 pdf.translate(0, 2)
                 self.draw_below_text_labels(pdf)

@@ -87,5 +87,5 @@ class MarkLine(DrawObject, Labeled):
             for i in range(self.thickness):
                 grid = 0.1
                 pdf.line(x1=x1 + i * grid, y1=y1, x2=x2 + i * grid, y2=y2)
-        for text_label in self.text_labels:
+        for text_label in self.get_text_labels():
             text_label.draw(pdf)

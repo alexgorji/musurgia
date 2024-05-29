@@ -20,12 +20,6 @@ class LabeledVerticalLine(VerticalSegmentedLine, Labeled):
         self.draw_left_text_labels(pdf)
         super().draw(pdf)
 
-    # def get_slave_position(self, slave, position):
-    #     if isinstance(slave, TextLabel):
-    #         return 0
-    #     else:
-    #         return super().get_slave_position(slave, position)
-
 
 class DummyPositionMaster(SlavePositionGetter):
     def get_slave_position(self, slave, position):
@@ -39,8 +33,17 @@ class TestTextLabel(TestCase):
     def setUp(self) -> None:
         self.pdf = Pdf()
 
+    def test_get_text_labels(self):
+        t = Labeled()
+        assert t.get_text_labels() == []
+        a = t.add_label(TextLabel('above', placement='above'))
+        b = t.add_label(TextLabel('below', placement='below'))
+        l = t.add_label(TextLabel('left', placement='left'))
+        aa = t.add_label(TextLabel('above-above'))
+        assert t.get_text_labels() == [l, a, aa, b]
+
     def test_draw(self):
-        t = TextLabel(master=DummyPositionMaster(), name='t1', text='Fox is going to be dead.')
+        t = TextLabel(master=DummyPositionMaster(), name='t1', value='Fox is going to be dead.')
 
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
@@ -51,10 +54,10 @@ class TestTextLabel(TestCase):
             self.pdf.write_to_path(pdf_path)
 
     def test_draw_multiple(self):
-        t1 = TextLabel(master=DummyPositionMaster(), name='t1', text='Fox is going to be dead.')
+        t1 = TextLabel(master=DummyPositionMaster(), name='t1', value='Fox is going to be dead.')
         t1.top_margin = -5
-        t2 = TextLabel(master=DummyPositionMaster(), name='t2', text='What should we do??')
-        t3 = TextLabel(master=DummyPositionMaster(), name='t3', text='What should we do??')
+        t2 = TextLabel(master=DummyPositionMaster(), name='t2', value='What should we do??')
+        t3 = TextLabel(master=DummyPositionMaster(), name='t3', value='What should we do??')
         with self.file_path(path, 'draw_multiple', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
             draw_ruler(self.pdf, 'h')

@@ -106,8 +106,8 @@ class Text(AbstractText, Positioned, Margined):
 
 
 class TextLabel(PositionedSlave, AbstractText, Margined):
-    def __init__(self, text, master=None, placement: LabelPlacement = 'above', *args, **kwargs):
-        super().__init__(value=text, *args, **kwargs)
+    def __init__(self, value, master=None, placement: LabelPlacement = 'above', *args, **kwargs):
+        super().__init__(value=value, *args, **kwargs)
         self._master = None
         self.master = master
         self._placement = None

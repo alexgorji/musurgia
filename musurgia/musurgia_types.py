@@ -5,10 +5,10 @@ from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError
 
 MUSURGIA_TYPES = ['MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder',
                   'PositiveInteger', 'ConvertibleToFraction', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection',
-                  'ConvertibleToFloat', 'LabelPlacement', 'HorizontalVertical', 'PdfUnitType']
+                  'ConvertibleToFloat', 'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType']
 
 MusurgiaType = Literal[
-    'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger', 'ConvertibleToFraction', 'ConvertibleToFloat', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection', 'LabelPlacement', 'HorizontalVertical', 'PdfUnitType']
+    'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger', 'ConvertibleToFraction', 'ConvertibleToFloat', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection', 'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType']
 
 
 class LiteralCheckGenerator:
@@ -253,6 +253,8 @@ check_horizontal_vertical_type = LiteralCheckGenerator('HorizontalVertical',
 PdfUnitType = Literal['pt', 'mm', 'cm', 'in']
 check_pdf_unit_type_type = LiteralCheckGenerator('PdfUnitType',
                                                  ['pt', 'mm', 'cm', 'in']).generate_checker()
+PositionType = Literal['x', 'y']
+check_position_type_type = LiteralCheckGenerator('PositionType', ['x', 'y']).generate_checker()
 
 
 def _get_name_of_check_type_function(musurgia_type: MusurgiaType) -> str:
