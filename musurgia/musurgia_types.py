@@ -1,5 +1,5 @@
 from fractions import Fraction
-from typing import Any, Optional, Union, Literal, Callable, cast
+from typing import Any, Optional, Union, Literal, Callable, cast, _LiteralGenericAlias, get_args
 
 from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError
 
@@ -7,19 +7,33 @@ MUSURGIA_TYPES = ['MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegati
                   'PositiveInteger', 'ConvertibleToFraction', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection',
                   'ConvertibleToFloat', 'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType',
                   'FontFamily', 'FontWeight', 'FontStyle', 'VerticalPosition', 'HorizontalPosition',
-                  'MarkLinePlacement']
+                  'MarkLinePlacement', 'PageOrientation', 'PageFormat', 'PageOrientation']
 
 MusurgiaType = Literal[
     'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger',
     'ConvertibleToFraction', 'ConvertibleToFloat', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection',
     'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType', 'FontFamily', 'FontWeight', 'FontStyle',
-    'VerticalPosition', 'HorizontalPosition', 'MarkLinePlacement']
+    'VerticalPosition', 'HorizontalPosition', 'MarkLinePlacement', 'PageOrientation', 'PageFormat', 'PageOrientation']
+
+
+# class LiteralCheckGenerator:
+#     def __init__(self, type_name: str, permitted: list[str]):
+#         self.type_name = type_name
+#         self.permitted = permitted
+#
+#     def generate_checker(self) -> Callable[[str], bool]:
+#         def checker(value: str) -> bool:
+#             if value not in self.permitted:
+#                 raise TypeError(f"{self.type_name} value must be in {self.permitted}, got {value}")
+#             return True
+#
+#         return checker
 
 
 class LiteralCheckGenerator:
-    def __init__(self, type_name: str, permitted: list[str]):
+    def __init__(self, literal_type: _LiteralGenericAlias, type_name: str):
         self.type_name = type_name
-        self.permitted = permitted
+        self.permitted = get_args(literal_type)
 
     def generate_checker(self) -> Callable[[str], bool]:
         def checker(value: str) -> bool:
@@ -236,45 +250,50 @@ def check_matrix_index_values(index: MatrixIndex, number_of_rows: PositiveIntege
 
 
 MatrixTransposeMode = Literal['regular', 'diagonal']
-check_matrix_transpose_mode_type = LiteralCheckGenerator('MatrixTransposeMode',
-                                                         ['regular', 'diagonal']).generate_checker()
+check_matrix_transpose_mode_type = LiteralCheckGenerator(MatrixTransposeMode, 'MatrixTransposeMode').generate_checker()
 
 MatrixReadingDirection = Literal['horizontal', 'diagonal', 'vertical']
-check_matrix_reading_direction_type = LiteralCheckGenerator('MatrixReadingDirection',
-                                                            ['horizontal', 'diagonal', 'vertical']).generate_checker()
-
+check_matrix_reading_direction_type = LiteralCheckGenerator(MatrixReadingDirection,
+                                                            'MatrixReadingDirection').generate_checker()
 FractalTreeReduceChildrenMode = Literal['backwards', 'forwards', 'sieve', 'merge']
-check_fractal_tree_reduce_children_mode_type = LiteralCheckGenerator('FractalTreeReduceChildrenMode',
-                                                                     ['backwards', 'forwards', 'sieve',
-                                                                      'merge']).generate_checker()
+check_fractal_tree_reduce_children_mode_type = LiteralCheckGenerator(FractalTreeReduceChildrenMode,
+                                                                     'FractalTreeReduceChildrenMode').generate_checker()
 
 LabelPlacement = Literal['above', 'below', 'left']
-check_label_placement_type = LiteralCheckGenerator('LabelPlacement', ['above', 'below', 'left']).generate_checker()
+check_label_placement_type = LiteralCheckGenerator(LabelPlacement, 'LabelPlacement').generate_checker()
 
 HorizontalVertical = Literal['horizontal', 'h', 'vertical', 'v']
-check_horizontal_vertical_type = LiteralCheckGenerator('HorizontalVertical',
-                                                       ['horizontal', 'h', 'vertical', 'v']).generate_checker()
+check_horizontal_vertical_type = LiteralCheckGenerator(HorizontalVertical, 'HorizontalVertical').generate_checker()
 
 PdfUnitType = Literal['pt', 'mm', 'cm', 'in']
-check_pdf_unit_type_type = LiteralCheckGenerator('PdfUnitType',
-                                                 ['pt', 'mm', 'cm', 'in']).generate_checker()
+check_pdf_unit_type_type = LiteralCheckGenerator(PdfUnitType, 'PdfUnitType').generate_checker()
+
 PositionType = Literal['x', 'y']
-check_position_type_type = LiteralCheckGenerator('PositionType', ['x', 'y']).generate_checker()
+check_position_type_type = LiteralCheckGenerator(PositionType, 'PositionType').generate_checker()
 
 FontFamily = Literal['Courier']
-check_font_family_type = LiteralCheckGenerator('FontFamily', ['Courier']).generate_checker()
+check_font_family_type = LiteralCheckGenerator(FontFamily, 'FontFamily').generate_checker()
+
 FontWeight = Literal['medium', 'bold']
-check_font_weight_type = LiteralCheckGenerator('FontWeight', ['medium', 'bold']).generate_checker()
+check_font_weight_type = LiteralCheckGenerator(FontWeight, 'FontWeight').generate_checker()
+
 FontStyle = Literal['regular', 'italic']
-check_font_style_type = LiteralCheckGenerator('FontStyle', ['regular', 'italic']).generate_checker()
-VerticalPosition = ['top', 'bottom']
-check_vertical_position_type = LiteralCheckGenerator('VerticalPosition', ['top', 'bottom']).generate_checker()
-HorizontalPosition = ['left', 'center', 'right']
-check_horizontal_position_type = LiteralCheckGenerator('HorizontalPosition',
-                                                       ['left', 'center', 'right']).generate_checker()
-MarkLinePlacement = ['start', 'end']
-check_mark_line_placement_type = LiteralCheckGenerator('MarkLinePlacement',
-                                                       ['start', 'end']).generate_checker()
+check_font_style_type = LiteralCheckGenerator(FontStyle, 'FontStyle').generate_checker()
+
+VerticalPosition = Literal['top', 'bottom']
+check_vertical_position_type = LiteralCheckGenerator(VerticalPosition, 'VerticalPosition').generate_checker()
+
+HorizontalPosition = Literal['left', 'center', 'right']
+check_horizontal_position_type = LiteralCheckGenerator(HorizontalPosition, 'HorizontalPosition').generate_checker()
+
+MarkLinePlacement = Literal['start', 'end']
+check_mark_line_placement_type = LiteralCheckGenerator(MarkLinePlacement, 'MarkLinePlacement').generate_checker()
+
+PageOrientation = Literal["", "portrait", "p", "P", "landscape", "l", "L"]
+check_page_orientation_type = LiteralCheckGenerator(PageOrientation, 'PageOrientation').generate_checker()
+
+PageFormat = Literal["", "a3", "A3", "a4", "A4", "a5", "A5", "letter", "Letter", "legal", "Legal"]
+check_page_format_type = LiteralCheckGenerator(PageFormat, 'PageFormat').generate_checker()
 
 
 def _get_name_of_check_type_function(musurgia_type: MusurgiaType) -> str:
