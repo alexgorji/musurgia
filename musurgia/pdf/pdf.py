@@ -1,7 +1,8 @@
+import re
 from types import TracebackType
 from typing import Protocol, Any, TYPE_CHECKING, Optional
 
-from fpdf import FPDF, FPDF_VERSION
+from fpdf import FPDF
 
 from musurgia.musurgia_types import ConvertibleToFloat, check_type, PageOrientation, PageFormat
 from musurgia.pdf.pdfunit import PdfUnit
@@ -108,7 +109,8 @@ class Pdf(FPDF, HasOutProtocol):
                  duration: int = 0,
                  transition: Optional[Any] = None,
                  ) -> None:
-        check_type(orientation, 'PageOrientation', class_name='PageOrientation', method_name='add_page', argument_name='orientation')
+        check_type(orientation, 'PageOrientation', class_name='PageOrientation', method_name='add_page',
+                   argument_name='orientation')
         check_type(format, 'PageFormat', class_name='PageOrientation', method_name='add_page', argument_name='format')
         check_type(same, bool, class_name='PageOrientation', method_name='add_page', argument_name='same')
         check_type(duration, int, class_name='PageOrientation', method_name='add_page', argument_name='duration')
@@ -157,27 +159,10 @@ class Pdf(FPDF, HasOutProtocol):
     def translate_page_margins(self) -> None:
         self.translate(self.l_margin, self.t_margin)
 
-    def _putinfo(self):  # pragma: no cover
-        self._out('/Producer ' + self._textstring('PyFPDF ' + FPDF_VERSION + ' http://pyfpdf.googlecode.com/'))
-        if hasattr(self, 'title'):
-            self._out('/Title ' + self._textstring(self.title))
-        if hasattr(self, 'subject'):
-            self._out('/Subject ' + self._textstring(self.subject))
-        if hasattr(self, 'author'):
-            self._out('/Author ' + self._textstring(self.author))
-        if hasattr(self, 'keywords'):
-            self._out('/Keywords ' + self._textstring(self.keywords))
-        if hasattr(self, 'creator'):
-            self._out('/Creator ' + self._textstring(self.creator))
-
     def write_to_path(self, path):
-        # FPDF.close() is called inside output to write to buffer first before writing it to file.
-        # print('############')
-        # print('writing to path, output buffer is:', self.buffer)
-        # print('')
-        # print('############')
-        self.output(path)
-        # print('############')
-        # print('written to path, output buffer is:', self.buffer)
-        # print('')
-        # print('############')
+        buffer = self.output()
+        new_buffer = re.sub(rb'CreationDate \(D:[0-9]{14}Z[0-9]{2}\'[0-9]{2}\'\)', b'CreationDate (none)',
+                            bytes(buffer))
+        new_buffer = bytearray(
+            re.sub(rb'ID \[<([0-9A-F]{32})><\1>]', b'ID [<1><2>]', new_buffer))
+        path.write_bytes(new_buffer)
