@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from math import ceil
-from typing import Optional
+from typing import Optional, Protocol
 
 from musurgia.musurgia_exceptions import PdfAttributeError
 from musurgia.musurgia_types import create_error_message, check_type
@@ -8,6 +8,10 @@ from musurgia.pdf.margined import AbstractMargined, MarginedSlave, MarginedMaste
 from musurgia.pdf.masterslave import Slave, Master
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.positioned import AbstractPositioned, PositionedSlave, PositionedMaster
+
+
+class HasGetHeightProtocol(Protocol):
+    def get_height(self) -> float: ...
 
 
 class DrawObject(AbstractPositioned, AbstractMargined, ABC):

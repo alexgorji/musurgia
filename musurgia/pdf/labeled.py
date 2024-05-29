@@ -1,9 +1,10 @@
 from musurgia.musurgia_types import check_type, PositionType
+from musurgia.pdf.drawobject import HasGetHeightProtocol
 from musurgia.pdf.positioned import SlavePositionGetter, HasPositionsProtocol
 from musurgia.pdf.text import TextLabel
 
 
-class Labeled(SlavePositionGetter, HasPositionsProtocol):
+class Labeled(SlavePositionGetter, HasPositionsProtocol, HasGetHeightProtocol):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._above_text_labels = []

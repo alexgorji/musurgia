@@ -1,5 +1,6 @@
 from abc import ABC
 
+from musurgia.musurgia_types import create_error_message
 from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.margined import Margined
@@ -11,9 +12,11 @@ class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
         super().__init__(*args, **kwargs)
         self._draw_objects = []
 
-    def add_draw_object(self, draw_object):
+    def add_draw_object(self, draw_object: DrawObject):
         if not isinstance(draw_object, DrawObject):
-            raise TypeError(draw_object)
+            raise TypeError(create_error_message(class_name=self.__class__.__name__, method_name='add_draw_object',
+                                                 argument_name='draw_object',
+                                                 message=f'draw_object must be of type DrawObject, not {type(draw_object)}'))
         self._draw_objects.append(draw_object)
         return draw_object
 
@@ -34,12 +37,11 @@ class DrawObjectRow(DrawObjectContainer):
         with pdf.prepare_draw_object(self):
             self.draw_above_text_labels(pdf)
             self.draw_left_text_labels(pdf)
+            if self.get_below_text_labels():
+                self.draw_below_text_labels(pdf)
             for do in self.draw_objects:
                 do.draw(pdf)
                 pdf.translate(do.get_width(), 0)
-            if self.get_below_text_labels():
-                pdf.translate(0, 2)
-                self.draw_below_text_labels(pdf)
 
 
 class DrawObjectColumn(DrawObjectContainer):
@@ -53,9 +55,9 @@ class DrawObjectColumn(DrawObjectContainer):
         with pdf.prepare_draw_object(self):
             self.draw_above_text_labels(pdf)
             self.draw_left_text_labels(pdf)
+            if self.get_below_text_labels():
+                self.draw_below_text_labels(pdf)
             for do in self.draw_objects:
                 do.draw(pdf)
                 pdf.translate(0, do.get_height())
-            if self.get_below_text_labels():
-                pdf.translate(0, 2)
-                self.draw_below_text_labels(pdf)
+
