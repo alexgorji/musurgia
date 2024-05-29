@@ -1,14 +1,16 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from fractions import Fraction
 
+from musurgia.musurgia_types import HorizontalVertical, check_type, ConvertibleToFloat, MarkLinePlacement
 from musurgia.pdf.drawobject import SlaveDrawObject, MasterDrawObject
 from musurgia.pdf.labeled import Labeled
+from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn, DrawObjectContainer
 from musurgia.pdf.text import TextLabel
 
 
 class StraightLine(SlaveDrawObject, Labeled):
-    def __init__(self, mode, length, show=True, *args, **kwargs):
+    def __init__(self, mode: HorizontalVertical, length: ConvertibleToFloat, show: bool = True, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._mode = None
         self._length = None
@@ -23,9 +25,7 @@ class StraightLine(SlaveDrawObject, Labeled):
 
     @mode.setter
     def mode(self, val):
-        permitted = ['h', 'horizontal', 'v', 'vertical']
-        if val not in permitted:
-            raise ValueError(f'mode.value {val} must be in {permitted}')
+        check_type(val, 'HorizontalVertical', class_name=self.__class__.__name__, property_name='mode')
         self._mode = val
 
     @property
@@ -34,8 +34,7 @@ class StraightLine(SlaveDrawObject, Labeled):
 
     @length.setter
     def length(self, val):
-        if not isinstance(val, float) and not isinstance(val, int) and not isinstance(val, Fraction):
-            raise TypeError(f"length.value must be of type float, int or Fraction not {type(val)}")
+        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='length')
         self._length = val
 
     @property
@@ -63,7 +62,7 @@ class StraightLine(SlaveDrawObject, Labeled):
         elif mode == 'vertical':
             return 'horizontal'
         else:
-            raise AttributeError()
+            raise NotImplementedError  # pragma: no cover
 
     def get_relative_x2(self):
         if self.mode in ['h', 'horizontal']:
@@ -89,7 +88,7 @@ class StraightLine(SlaveDrawObject, Labeled):
 
 
 class MarkLine(StraightLine):
-    def __init__(self, placement, length=3, *args, **kwargs):
+    def __init__(self, placement: MarkLinePlacement, length=3, *args, **kwargs):
         super().__init__(length=length, *args, **kwargs)
         self._placement = None
         self.placement = placement
@@ -100,16 +99,12 @@ class MarkLine(StraightLine):
 
     @placement.setter
     def placement(self, val):
-        permitted = ['start', 'end']
-        if val not in permitted:
-            raise ValueError(f'placement.value {val} must be in {permitted}')
+        check_type(val, 'MarkLinePlacement', class_name=self.__class__.__name__, property_name='placement')
         self._placement = val
 
-    def get_middle_y(self):
-        return self.length / 2
 
+class LineSegment(MasterDrawObject, ABC):
 
-class LineSegment(MasterDrawObject):
     def __init__(self, mode, length, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._straight_line = StraightLine(simple_name='straight_line', mode=mode, length=length, master=self)
@@ -139,54 +134,21 @@ class LineSegment(MasterDrawObject):
     def length(self):
         return self.straight_line.length
 
-    def _get_straight_line_margin(self, margin):
-        if margin in ['l', 'left']:
-            return 0
-        elif margin in ['r', 'right']:
-            return 0
-        elif margin in ['t', 'top']:
-            return 0
-        elif margin in ['b', 'bottom']:
-            return 0
-        else:
-            raise AttributeError(margin)
-
-    def _get_mark_line_margin(self, margin):
-        if margin in ['l', 'left']:
-            return 0
-        elif margin in ['r', 'right']:
-            return 0
-        elif margin in ['t', 'top']:
-            return 0
-        elif margin in ['b', 'bottom']:
-            return 0
-        else:
-            raise AttributeError(margin)
-
     def _get_straight_line_position(self, position):
-        if position not in ['x', 'y']:
-            raise AttributeError(position)
-
         if self.mode in ['h', 'horizontal']:
             if position == 'x':
                 return 0
             elif position == 'y':
                 return 0
-                # return max([ml.get_middle_y() for ml in [self.start_mark_line, self.end_mark_line]])
         else:
             if position == 'x':
                 return 0
-                # return max([ml.get_middle_y() for ml in [self.start_mark_line, self.end_mark_line]])
             elif position == 'y':
                 return 0
 
     def _get_mark_line_position(self, position, mark_line):
-        if position not in ['x', 'y']:
-            raise AttributeError(position)
-
         if mark_line.mode in ['h', 'horizontal']:
             if position == 'x':
-                # return 0
                 return -mark_line.length / 2
             else:
                 if mark_line.placement == 'start':
@@ -195,7 +157,6 @@ class LineSegment(MasterDrawObject):
                     return self.length
         else:
             if position == 'y':
-                # return 0
                 return -mark_line.length / 2
             else:
                 if mark_line.placement == 'start':
@@ -204,14 +165,7 @@ class LineSegment(MasterDrawObject):
                     return self.length
 
     def get_slave_margin(self, slave: SlaveDrawObject, margin):
-        if slave.simple_name == 'straight_line':
-            return self._get_straight_line_margin(margin)
-        elif slave.simple_name == 'start_mark_line':
-            return self._get_mark_line_margin(margin)
-        elif slave.simple_name == 'end_mark_line':
-            return self._get_mark_line_margin(margin)
-        else:
-            raise AttributeError(slave)
+        return 0
 
     def get_slave_position(self, slave: SlaveDrawObject, position):
         if slave.simple_name == 'straight_line':
@@ -221,7 +175,7 @@ class LineSegment(MasterDrawObject):
         elif slave.simple_name == 'end_mark_line':
             return self._get_mark_line_position(position, slave)
         else:
-            raise AttributeError(slave)
+            raise NotImplementedError  # pragma: no cover
 
 
 class HorizontalLineSegment(LineSegment):
@@ -264,23 +218,19 @@ class AbstractSegmentedLine(DrawObjectContainer):
         self._make_segments(lengths)
 
     @property
-    def lengths(self):
-        return [segment.length for segment in self.segments]
-
-    @property
     def segments(self):
         return self.draw_objects
 
     @abstractmethod
     def _make_segments(self, lengths):
-        pass
+        """private method for making segments"""
 
 
 class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):
 
     def _make_segments(self, lengths):
-        if not lengths:
-            raise AttributeError('lengths must be set.')
+        # if not lengths:
+        #     raise AttributeError('lengths must be set.')
         for length in lengths:
             self.add_draw_object(HorizontalLineSegment(length))
         self.segments[-1].end_mark_line.show = True
@@ -289,14 +239,14 @@ class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):
 class VerticalSegmentedLine(AbstractSegmentedLine, DrawObjectColumn):
 
     def _make_segments(self, lengths):
-        if not lengths:
-            raise AttributeError('lengths must be set.')
+        # if not lengths:
+        #     raise AttributeError('lengths must be set.')
         for length in lengths:
             self.add_draw_object(VerticalLineSegment(length))
         self.segments[-1].end_mark_line.show = True
 
 
-class AbstractRuler(AbstractSegmentedLine):
+class AbstractRuler(AbstractSegmentedLine, ABC):
     def __init__(self, length, unit=10.0, first_label=0, label_show_interval=1, show_first_label=True, *args, **kwargs):
         number_of_units = length / unit
         partial_segment_length = number_of_units - int(number_of_units)

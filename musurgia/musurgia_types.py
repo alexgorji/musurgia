@@ -6,12 +6,14 @@ from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError
 MUSURGIA_TYPES = ['MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder',
                   'PositiveInteger', 'ConvertibleToFraction', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection',
                   'ConvertibleToFloat', 'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType',
-                  'FontFamily', 'FontWeight', 'FontStyle', 'VerticalPosition', 'HorizontalPosition']
+                  'FontFamily', 'FontWeight', 'FontStyle', 'VerticalPosition', 'HorizontalPosition',
+                  'MarkLinePlacement']
 
 MusurgiaType = Literal[
     'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger',
     'ConvertibleToFraction', 'ConvertibleToFloat', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection',
-    'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType', 'FontFamily', 'FontWeight', 'FontStyle', 'VerticalPosition', 'HorizontalPosition']
+    'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType', 'FontFamily', 'FontWeight', 'FontStyle',
+    'VerticalPosition', 'HorizontalPosition', 'MarkLinePlacement']
 
 
 class LiteralCheckGenerator:
@@ -270,6 +272,9 @@ check_vertical_position_type = LiteralCheckGenerator('VerticalPosition', ['top',
 HorizontalPosition = ['left', 'center', 'right']
 check_horizontal_position_type = LiteralCheckGenerator('HorizontalPosition',
                                                        ['left', 'center', 'right']).generate_checker()
+MarkLinePlacement = ['start', 'end']
+check_mark_line_placement_type = LiteralCheckGenerator('MarkLinePlacement',
+                                                       ['start', 'end']).generate_checker()
 
 
 def _get_name_of_check_type_function(musurgia_type: MusurgiaType) -> str:
