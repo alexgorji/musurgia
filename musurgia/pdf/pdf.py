@@ -1,8 +1,7 @@
-from fpdf import FPDF, FPDF_VERSION
+from typing import Protocol
 
-# from musurgia.pdf.line import HorizontalRuler, VerticalRuler
+from fpdf import FPDF, FPDF_VERSION
 from musurgia.pdf.pdfunit import PdfUnit
-# from musurgia.pdf.text import PageText
 
 
 def sprintf(fmt, *args): return fmt % args
@@ -33,7 +32,11 @@ class PrepareDrawObject:
         self.pdf._pop_state()
 
 
-class Pdf(FPDF):
+class HasOutProtocol(Protocol):
+    def _out(self, s): ...
+
+
+class Pdf(FPDF, HasOutProtocol):
     """
     Child of fpdf.FPDF class
     """
@@ -90,9 +93,6 @@ class Pdf(FPDF):
         super().add_page(orientation=self.cur_orientation)
         self._absolute_positions[self.page] = [0, 0]
 
-    def add_space(self, val):
-        self.y += val
-
     def clip_rect(self, x, y, w, h):
         # https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf
 
@@ -127,7 +127,7 @@ class Pdf(FPDF):
     def translate_page_margins(self):
         self.translate(self.l_margin, self.t_margin)
 
-    def _putinfo(self):
+    def _putinfo(self):  # pragma: no cover
         self._out('/Producer ' + self._textstring('PyFPDF ' + FPDF_VERSION + ' http://pyfpdf.googlecode.com/'))
         if hasattr(self, 'title'):
             self._out('/Title ' + self._textstring(self.title))
