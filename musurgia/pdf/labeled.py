@@ -20,7 +20,7 @@ class Labeled(SlavePositionGetter, HasPositionsProtocol):
         elif label.placement == 'left':
             self._left_text_labels.append(label)
         else:
-            raise AttributeError()
+            pass
 
         return label
 
@@ -78,7 +78,7 @@ class Labeled(SlavePositionGetter, HasPositionsProtocol):
                 return self.get_height() / 2
             return 0
         else:
-            raise AttributeError(position)
+            pass
 
     def get_above_text_labels_height(self):
         return sum([tl.get_height() for tl in self.above_text_labels])

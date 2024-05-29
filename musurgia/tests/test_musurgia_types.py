@@ -27,6 +27,17 @@ class TestCreateErrorMessage(TestCase):
             create_error_message(v=3, t=list, class_name='ClassName', property_name='property_name',
                                  argument_name='argument_name')
         with self.assertRaises(AttributeError):
+            create_error_message(v=3, t=list, class_name='ClassName', class_attribute_name='class_attribute_name',
+                                 property_name='property_name')
+        with self.assertRaises(AttributeError):
+            create_error_message(v=3, t=list, class_name='ClassName', class_attribute_name='class_attribute_name',
+                                 method_name='method_name')
+        with self.assertRaises(AttributeError):
+            create_error_message(v=3, t=list, class_name='ClassName', class_attribute_name='class_attribute_name',
+                                 argument_name='argument_name')
+        with self.assertRaises(AttributeError):
+            create_error_message(v=3, t=list, class_attribute_name='class_attribute_name')
+        with self.assertRaises(AttributeError):
             create_error_message(v=3, t=list, method_name='method_name')
         with self.assertRaises(AttributeError):
             create_error_message(message='message', method_name='method_name')
@@ -156,6 +167,11 @@ class TestCheckTypeFunction(TestCase):
         assert check_type('above', 'LabelPlacement')
         with self.assertRaises(MusurgiaTypeError):
             assert check_type('wrong', 'LabelPlacement')
+
+    def test_check_pdf_unit_type(self):
+        assert check_type('pt', 'PdfUnitType')
+        with self.assertRaises(MusurgiaTypeError):
+            assert check_type('wrong', 'PdfUnitType')
 
 
 class TestCheckValues(TestCase):

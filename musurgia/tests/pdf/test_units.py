@@ -6,6 +6,8 @@ from musurgia.pdf.drawobject import ClippingArea
 from musurgia.pdf.line import HorizontalRuler
 from musurgia.pdf.masterslave import SimpleNamed, Slave
 from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.pdf_tools import draw_ruler
+from musurgia.pdf.pdfunit import PdfUnit
 
 
 class TestClippingArea(TestCase):
@@ -37,6 +39,18 @@ class TestSlave(TestCase):
     def test_wrong_master_type(self):
         with self.assertRaises(MusurgiaTypeError):
             Slave(master='bla')
+
+
+class TestPdfUnit(TestCase):
+    def test_setting_global_unit(self):
+        assert PdfUnit._DEFAULT_UNIT == 'mm'
+        assert PdfUnit.GLOBAL_UNIT == 'mm'
+        PdfUnit.GLOBAL_UNIT = 'pt'
+        assert PdfUnit.GLOBAL_UNIT == 'pt'
+        PdfUnit.reset()
+        assert PdfUnit.GLOBAL_UNIT == 'mm'
+        with self.assertRaises(MusurgiaTypeError):
+            PdfUnit.GLOBAL_UNIT = 'bla'
 
 # class TestDrawObject(TestCase):
 #     def test_no_margins(self):

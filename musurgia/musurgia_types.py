@@ -5,10 +5,10 @@ from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError
 
 MUSURGIA_TYPES = ['MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder',
                   'PositiveInteger', 'ConvertibleToFraction', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection',
-                  'ConvertibleToFloat', 'LabelPlacement']
+                  'ConvertibleToFloat', 'LabelPlacement', 'HorizontalVertical', 'PdfUnitType']
 
 MusurgiaType = Literal[
-    'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger', 'ConvertibleToFraction', 'ConvertibleToFloat', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection', 'LabelPlacement']
+    'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger', 'ConvertibleToFraction', 'ConvertibleToFloat', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection', 'LabelPlacement', 'HorizontalVertical', 'PdfUnitType']
 
 
 class LiteralCheckGenerator:
@@ -29,7 +29,8 @@ def create_error_message(v: Optional[Any] = None, t: Optional[Union[type, str]] 
                          function_name: Optional[str] = None,
                          class_name: Optional[str] = None,
                          method_name: Optional[str] = None, argument_name: Optional[str] = None,
-                         property_name: Optional[str] = None, message: Optional[str] = None) -> str:
+                         property_name: Optional[str] = None, class_attribute_name: Optional[str] = None,
+                         message: Optional[str] = None) -> str:
     if not message and not (v or t):
         raise AttributeError('if no message provided v and t must be set')
 
@@ -42,11 +43,18 @@ def create_error_message(v: Optional[Any] = None, t: Optional[Union[type, str]] 
     if function_name and not argument_name:
         raise AttributeError('After setting function_name argument_name must be set.')
 
-    if class_name and not (property_name or method_name):
-        raise AttributeError('After setting class_name property_name or method_name must be set.')
+    if class_name and not (property_name or method_name or class_attribute_name):
+        raise AttributeError('After setting class_name property_name, method_name or class_attribute_name must be set.')
 
-    if method_name and property_name:
-        raise AttributeError('method_name and property_name cannot be set together.')
+    if class_attribute_name and not class_name:
+        raise AttributeError('After setting class_attribute_name class_name must be set.')
+
+    if class_attribute_name and (property_name or method_name or argument_name):
+        raise AttributeError(
+            'class_attribute_name and property_name, method_name or argument_name cannot be set together.')
+
+    if method_name and (property_name or class_attribute_name):
+        raise AttributeError('method_name and property_name or class_attribute_name cannot be set together.')
 
     if method_name and not message and not (argument_name and class_name):
         raise AttributeError('After setting method_name class_name and argument_name must be set.')
@@ -61,7 +69,7 @@ def create_error_message(v: Optional[Any] = None, t: Optional[Union[type, str]] 
         raise AttributeError('argument_name and property_name cannot be set together.')
 
     if property_name and not class_name:
-        raise AttributeError('After setting property_name property_name must be set.')
+        raise AttributeError('After setting property_name class_name must be set.')
 
     if not message:
         if isinstance(t, str):
@@ -90,6 +98,8 @@ def create_error_message(v: Optional[Any] = None, t: Optional[Union[type, str]] 
 
 
 def check_musurgia_type_type(value: str) -> bool:
+    if not isinstance(value, str):
+        raise TypeError(f"MusurgiaType value must be of type str,  got {type(value)}")
     if value not in MUSURGIA_TYPES:
         raise TypeError(f"MusurgiaType value must be in {MUSURGIA_TYPES}, got {value}")
     return True
@@ -111,8 +121,10 @@ class MusurgiaTypeError(TypeError):
                  function_name: Optional[str] = None,
                  class_name: Optional[str] = None,
                  method_name: Optional[str] = None, argument_name: Optional[str] = None,
-                 property_name: Optional[str] = None, message: Optional[str] = None):
-        msg = create_error_message(v, t, function_name, class_name, method_name, argument_name, property_name, message)
+                 property_name: Optional[str] = None, class_attribute_name: Optional[str] = None,
+                 message: Optional[str] = None):
+        msg = create_error_message(v, t, function_name, class_name, method_name, argument_name, property_name,
+                                   class_attribute_name, message)
         super().__init__(msg)
 
     def __setattr__(self, attr: str, value: Any) -> Any:
@@ -234,6 +246,14 @@ check_fractal_tree_reduce_children_mode_type = LiteralCheckGenerator('FractalTre
 LabelPlacement = Literal['above', 'below', 'left']
 check_label_placement_type = LiteralCheckGenerator('LabelPlacement', ['above', 'below', 'left']).generate_checker()
 
+HorizontalVertical = Literal['horizontal', 'h', 'vertical', 'v']
+check_horizontal_vertical_type = LiteralCheckGenerator('HorizontalVertical',
+                                                       ['horizontal', 'h', 'vertical', 'v']).generate_checker()
+
+PdfUnitType = Literal['pt', 'mm', 'cm', 'in']
+check_pdf_unit_type_type = LiteralCheckGenerator('PdfUnitType',
+                                                 ['pt', 'mm', 'cm', 'in']).generate_checker()
+
 
 def _get_name_of_check_type_function(musurgia_type: MusurgiaType) -> str:
     """
@@ -256,7 +276,7 @@ def get_check_musurgia_type(musurgia_type: MusurgiaType) -> Callable[[Any], bool
 
 def check_type(v: Any, t: Union[type, str], function_name: Optional[str] = None, class_name: Optional[str] = None,
                method_name: Optional[str] = None, argument_name: Optional[str] = None,
-               property_name: Optional[str] = None) -> bool:
+               property_name: Optional[str] = None, class_attribute_name: Optional[str] = None) -> bool:
     """
     :param v: ``value`` to be checked.
     :param t: ``type``.
@@ -265,16 +285,18 @@ def check_type(v: Any, t: Union[type, str], function_name: Optional[str] = None,
     :param method_name: see :obj:`MusurgiaTypeError`
     :param argument_name: see :obj:`MusurgiaTypeError`
     :param property_name: see :obj:`MusurgiaTypeError`
+    :param class_attribute_name: see :obj:`MusurgiaTypeError`
 
     :raise: :obj:`MusurgiaTypeError`
     """
 
     def _create_error(message: Optional[str] = None) -> MusurgiaTypeError:
         if not message:
-            return MusurgiaTypeError(v, t, function_name, class_name, method_name, argument_name, property_name)
+            return MusurgiaTypeError(v, t, function_name, class_name, method_name, argument_name, property_name,
+                                     class_attribute_name)
         else:
             return MusurgiaTypeError(None, None, function_name, class_name, method_name, argument_name, property_name,
-                                     message)
+                                     class_attribute_name, message)
 
     if isinstance(t, type):
         if not isinstance(v, t):
