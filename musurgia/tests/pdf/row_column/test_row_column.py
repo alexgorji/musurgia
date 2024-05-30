@@ -4,7 +4,7 @@ from musurgia.pdf.line import HorizontalLineSegment, VerticalSegmentedLine
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn
-from musurgia.pdf.text import TextLabel
+from musurgia.pdf.labeled import TextLabel
 from musurgia.tests._test_utils import PdfTestCase
 
 path = Path(__file__)

@@ -2,20 +2,12 @@ from pathlib import Path
 
 from musurgia.musurgia_exceptions import RelativePositionNotSettableError
 from musurgia.pdf.line import StraightLine
-from musurgia.pdf.masterslave import Master
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.tests._test_utils import PdfTestCase
+from musurgia.tests.pdf.test_units import DummyMaster
 
 path = Path(__file__)
-
-
-class DummyMaster(Master):
-    def get_slave_margin(self, slave, margin):
-        return 10
-
-    def get_slave_position(self, slave, position):
-        return 20
 
 
 class TestStraightLine(PdfTestCase):

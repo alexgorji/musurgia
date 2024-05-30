@@ -1,11 +1,12 @@
 from unittest import TestCase
 
 from musurgia.pdf.line import StraightLine
+from musurgia.tests.pdf.test_units import DummyMaster
 
 
 class TestStraightLine(TestCase):
     def test_is_horizontal_or_vertical(self):
-        line = StraightLine(value='something', mode='h', length=2)
+        line = StraightLine(master=DummyMaster(), value='something', mode='h', length=2)
         assert line.is_horizontal
         assert not line.is_vertical
         line.mode = 'horizontal'

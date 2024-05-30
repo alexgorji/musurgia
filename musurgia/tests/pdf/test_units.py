@@ -2,9 +2,9 @@ from unittest import TestCase
 
 from musurgia.musurgia_exceptions import PdfAttributeError
 from musurgia.musurgia_types import MusurgiaTypeError
-from musurgia.pdf.drawobject import ClippingArea
+from musurgia.pdf.drawobject import ClippingArea, MasterDrawObject
 from musurgia.pdf.line import HorizontalRuler
-from musurgia.pdf.masterslave import SimpleNamed, Slave
+# from musurgia.pdf.masterslave import SimpleNamed, Slave
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdfunit import PdfUnit
 
@@ -26,18 +26,6 @@ class TestClippingArea(TestCase):
             ClippingArea(pdf=None, draw_object=self.ruler).get_row_width()
 
 
-class TestSimpleNamed(TestCase):
-    def test_wrong_type(self):
-        with self.assertRaises(MusurgiaTypeError):
-            SimpleNamed(3)
-
-
-class TestSlave(TestCase):
-    def test_wrong_master_type(self):
-        with self.assertRaises(MusurgiaTypeError):
-            Slave(master='bla')
-
-
 class TestPdfUnit(TestCase):
     def test_setting_global_unit(self):
         assert PdfUnit._DEFAULT_UNIT == 'mm'
@@ -48,3 +36,20 @@ class TestPdfUnit(TestCase):
         assert PdfUnit.GLOBAL_UNIT == 'mm'
         with self.assertRaises(MusurgiaTypeError):
             PdfUnit.GLOBAL_UNIT = 'bla'
+
+
+class DummyMaster(MasterDrawObject):
+    def get_slave_margin(self, slave, margin):
+        return 10
+
+    def get_slave_position(self, slave, position):
+        return 20
+
+    def draw(self, pdf):
+        pass
+
+    def get_relative_x2(self):
+        pass
+
+    def get_relative_y2(self):
+        pass

@@ -12,7 +12,7 @@ from musurgia.pdf.positioned import Positioned
 class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
     def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self._draw_objects = []
+        self._draw_objects: list[DrawObject] = []
 
     def add_draw_object(self, draw_object: DrawObject) -> DrawObject:
         if not isinstance(draw_object, DrawObject):

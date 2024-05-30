@@ -1,35 +1,31 @@
 from abc import ABC
-from typing import Optional, Any
+from typing import Optional, Any, Literal
 
 from musurgia.musurgia_exceptions import RelativePositionNotSettableError
-from musurgia.musurgia_types import check_type, LabelPlacement, FontStyle, FontFamily, FontWeight, ConvertibleToFloat, \
+from musurgia.musurgia_types import check_type, FontStyle, FontFamily, FontWeight, ConvertibleToFloat, \
     VerticalPosition, HorizontalPosition
-from musurgia.pdf.font import Font
 from musurgia.pdf.drawobject import DrawObject
+from musurgia.pdf.font import Font
 from musurgia.pdf.margined import Margined
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdfunit import PdfUnit
 from musurgia.pdf.positioned import Positioned
-from musurgia.pdf.masterslave import PositionedSlave
 
 
 class AbstractText(DrawObject, ABC):
-    DEFAULT_FONT_FAMILY = 'Courier'
-    DEFAULT_FONT_SIZE = 10
-    DEFAULT_FONT_WEIGHT = 'medium'
-    DEFAULT_FONT_STYLE = 'regular'
+    DEFAULT_FONT_FAMILY: FontFamily = 'Courier'
+    DEFAULT_FONT_SIZE: int = 10
+    DEFAULT_FONT_WEIGHT: FontWeight = 'medium'
+    DEFAULT_FONT_STYLE: FontStyle = 'regular'
 
-    def __init__(self, value: Any, font_family: Optional[FontFamily] = None, font_weight: Optional[FontWeight] = None,
-                 font_style: Optional[FontStyle] = None,
-                 font_size: Optional[ConvertibleToFloat] = None, *args: Any,
+    def __init__(self, value: Any, font_family: FontFamily = DEFAULT_FONT_FAMILY,
+                 font_weight: FontWeight = DEFAULT_FONT_WEIGHT,
+                 font_style: FontStyle = DEFAULT_FONT_STYLE,
+                 font_size: int = DEFAULT_FONT_SIZE, *args: Any,
                  **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self.font = Font()
-        self.font_family = font_family
-        self.font_weight = font_weight
-        self.font_style = font_style
-        self.font_size = font_size
-        self._value = None
+        self.font = Font(font_family, font_weight, font_style, font_size)
+        self._value: str
         self.value = value
 
     @property
@@ -37,22 +33,17 @@ class AbstractText(DrawObject, ABC):
         return self.font.family
 
     @font_family.setter
-    def font_family(self, val: Optional[FontFamily]) -> None:
-        if val is None:
-            val = self.DEFAULT_FONT_FAMILY
+    def font_family(self, val: FontFamily) -> None:
         check_type(val, 'FontFamily', class_name=self.__class__.__name__, property_name='font_family')
         self.font.family = val
 
     @property
-    def font_size(self) -> float:
+    def font_size(self) -> int:
         return self.font.size
 
     @font_size.setter
-    def font_size(self, val: Optional[ConvertibleToFloat]) -> None:
-        if val is None:
-            val = self.DEFAULT_FONT_SIZE
-        val = float(val)
-        check_type(val, float, class_name=self.__class__.__name__, property_name='font_size')
+    def font_size(self, val: int) -> None:
+        check_type(val, int, class_name=self.__class__.__name__, property_name='font_size')
         self.font.size = val
 
     @property
@@ -60,9 +51,7 @@ class AbstractText(DrawObject, ABC):
         return self.font.weight
 
     @font_weight.setter
-    def font_weight(self, val: Optional[FontWeight]) -> None:
-        if val is None:
-            val = self.DEFAULT_FONT_WEIGHT
+    def font_weight(self, val: FontWeight) -> None:
         check_type(val, 'FontWeight', class_name=self.__class__.__name__, property_name='font_weight')
         self.font.weight = val
 
@@ -71,9 +60,7 @@ class AbstractText(DrawObject, ABC):
         return self.font.style
 
     @font_style.setter
-    def font_style(self, val: Optional[FontStyle]) -> None:
-        if val is None:
-            val = self.DEFAULT_FONT_STYLE
+    def font_style(self, val: FontStyle) -> None:
         check_type(val, 'FontStyle', class_name=self.__class__.__name__, property_name='font_style')
         self.font.style = val
 
@@ -97,16 +84,19 @@ class AbstractText(DrawObject, ABC):
     def get_relative_y2(self) -> float:
         return self.relative_y + self.get_text_height()
 
-    def draw(self, pdf):
-        # if pdf.k != PdfUnit.get_k():
-        #     raise AttributeError('wrong pdf.k!')
+    def draw(self, pdf: Pdf) -> None:
         if self.show:
             pdf.reset_font()
-            style = ""
-            if self.font_style == 'italic':
-                style += 'I'
-            if self.font_weight == 'bold':
-                style += 'B'
+            style: Literal[
+                '', 'B', 'I', 'U', 'BU', 'UB', 'BI', 'IB', 'IU', 'UI', 'BIU', 'BUI', 'IBU', 'IUB', 'UBI', 'UIB']
+            if self.font_style == 'italic' and self.font_weight == 'bold':
+                style = 'IB'
+            elif self.font_style == 'italic':
+                style = 'I'
+            elif self.font_weight == 'bold':
+                style = 'B'
+            else:
+                style = ''
             pdf.set_font(self.font.family, style=style, size=self.font_size)
             with pdf.prepare_draw_object(self):
                 pdf.text(x=0, y=0, text=self.value)
@@ -116,48 +106,23 @@ class Text(AbstractText, Positioned, Margined):
     pass
 
 
-class TextLabel(PositionedSlave, AbstractText, Margined):
-    def __init__(self, value, master=None, placement: LabelPlacement = 'above', *args, **kwargs):
-        super().__init__(value=value, *args, **kwargs)
-        self._master = None
-        self.master = master
-        self._placement = None
-        self.placement = placement
-
-    @property
-    def master(self):
-        return self._master
-
-    @master.setter
-    def master(self, value):
-        self._master = value
-
-    @property
-    def placement(self):
-        return self._placement
-
-    @placement.setter
-    def placement(self, val):
-        check_type(val, 'LabelPlacement', class_name=self.__class__.__name__, property_name='placement')
-        self._placement = val
-
-
 class PageText(Text):
-    def __init__(self, value, v_position: VerticalPosition = 'top', h_position: HorizontalPosition = 'left', *args,
-                 **kwargs):
-        super().__init__(value=value, *args, **kwargs)
-        self._v_position = None
-        self._h_position = None
+    def __init__(self, value: Any, v_position: VerticalPosition = 'top', h_position: HorizontalPosition = 'left',
+                 *args: Any,
+                 **kwargs: Any):
+        super().__init__(value=value, *args, **kwargs)  # type: ignore
+        self._v_position: VerticalPosition
+        self._h_position: HorizontalPosition
         self.v_position = v_position
         self.h_position = h_position
 
-    @Text.relative_y.setter
-    def relative_y(self, val):
+    @Text.relative_y.setter  # type: ignore
+    def relative_y(self, val: ConvertibleToFloat) -> None:
         if val:
             raise RelativePositionNotSettableError
 
-    @Text.relative_x.setter
-    def relative_x(self, val):
+    @Text.relative_x.setter  # type: ignore
+    def relative_x(self, val: ConvertibleToFloat) -> None:
         if val:
             raise RelativePositionNotSettableError
 

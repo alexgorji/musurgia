@@ -1,13 +1,12 @@
 from abc import ABC, abstractmethod
 from math import ceil
-from typing import Optional, Protocol, Any, cast
+from typing import Optional, Protocol, Any, Union, TYPE_CHECKING
 
-from musurgia.musurgia_exceptions import PdfAttributeError
-from musurgia.musurgia_types import create_error_message, check_type
-from musurgia.pdf.margined import AbstractMargined
-from musurgia.pdf.masterslave import Slave, Master, PositionedMaster, PositionedSlave, MarginedMaster, MarginedSlave
+from musurgia.musurgia_exceptions import PdfAttributeError, RelativePositionNotSettableError, MarginNotSettableError
+from musurgia.musurgia_types import create_error_message, check_type, MusurgiaTypeError, PositionType, MarginType
+from musurgia.pdf.margined import AbstractMargined, Margined
 from musurgia.pdf.pdf import Pdf
-from musurgia.pdf.positioned import AbstractPositioned
+from musurgia.pdf.positioned import AbstractPositioned, Positioned
 
 
 class HasGetHeightProtocol(Protocol):
@@ -56,12 +55,131 @@ class DrawObject(AbstractPositioned, AbstractMargined, ABC):
         self.clipping_area.draw()
 
 
-class SlaveDrawObject(DrawObject, Slave, PositionedSlave, MarginedSlave, ABC):
+class Master(ABC):
+    @abstractmethod
+    def get_slave_position(self, slave: Any, position: PositionType) -> float:
+        """get_slave_position must be provided"""
+
+    @abstractmethod
+    def get_slave_margin(self, slave: Any, margin: MarginType) -> float:
+        """get_slave_margin must be provided"""
+
+
+class HasMasterProtocol(Protocol):
+    @property
+    def master(self) -> Optional['Master']: ...
+
+
+class PositionedSlave(AbstractPositioned, HasMasterProtocol):
+    @property
+    def relative_x(self) -> float:
+        if not self.master:
+            raise AttributeError(create_error_message(message='set master first', class_name=self.__class__.__name__,
+                                                      property_name='relative_x'))
+        return self.master.get_slave_position(slave=self, position='x')
+
+    @relative_x.setter
+    def relative_x(self, val: Optional[float]) -> None:
+        if val is not None:
+            raise RelativePositionNotSettableError()
+
+    @property
+    def relative_y(self) -> float:
+        if not self.master:
+            raise AttributeError(create_error_message(message='set master first', class_name=self.__class__.__name__,
+                                                      property_name='relative_y'))
+        return self.master.get_slave_position(slave=self, position='y')
+
+    @relative_y.setter
+    def relative_y(self, val: Optional[float]) -> None:
+        if val is not None:
+            raise RelativePositionNotSettableError()
+
+
+class MarginedSlave(AbstractMargined, HasMasterProtocol):
+    @property
+    def left_margin(self) -> float:
+        if not self.master:
+            raise AttributeError(create_error_message(message='set master first', class_name=self.__class__.__name__,
+                                                      property_name='left_margin'))
+        return self.master.get_slave_margin(slave=self, margin='left')
+
+    @left_margin.setter
+    def left_margin(self, val: Optional[float]) -> None:
+        if val is not None:
+            raise MarginNotSettableError()
+
+    @property
+    def top_margin(self) -> float:
+        if not self.master:
+            raise AttributeError(create_error_message(message='set master first', class_name=self.__class__.__name__,
+                                                      property_name='top_margin'))
+        return self.master.get_slave_margin(slave=self, margin='top')
+
+    @top_margin.setter
+    def top_margin(self, val: Optional[float]) -> None:
+        if val is not None:
+            raise MarginNotSettableError()
+
+    @property
+    def right_margin(self) -> float:
+        if not self.master:
+            raise AttributeError(create_error_message(message='set master first', class_name=self.__class__.__name__,
+                                                      property_name='right_margin'))
+        return self.master.get_slave_margin(slave=self, margin='right')
+
+    @right_margin.setter
+    def right_margin(self, val: Optional[float]) -> None:
+        if val is not None:
+            raise MarginNotSettableError()
+
+    @property
+    def bottom_margin(self) -> float:
+        if not self.master:
+            raise AttributeError(create_error_message(message='set master first', class_name=self.__class__.__name__,
+                                                      property_name='bottom_margin'))
+        return self.master.get_slave_margin(slave=self, margin='bottom')
+
+    @bottom_margin.setter
+    def bottom_margin(self, val: Optional[float]) -> None:
+        if val is not None:
+            raise MarginNotSettableError()
+
+
+class MasterDrawObject(Master, DrawObject, Positioned, Margined, ABC):
     pass
 
 
-class MasterDrawObject(DrawObject, Master, PositionedMaster, MarginedMaster, ABC):
-    pass
+class SlaveDrawObject(DrawObject, PositionedSlave, MarginedSlave, ABC):
+    def __init__(self, master: Optional[MasterDrawObject] = None, simple_name: Optional[str] = None, *args: Any,
+                 **kwargs: Any):
+        self._master: Optional[MasterDrawObject]
+        self.master = master
+        super().__init__(*args, **kwargs)
+
+        self._simple_name: Optional[str]
+        self.simple_name = simple_name
+
+    @property
+    def master(self) -> Optional[MasterDrawObject]:
+        return self._master
+
+    @master.setter
+    def master(self, val: Optional[MasterDrawObject]) -> None:
+        if not None and not isinstance(val, MasterDrawObject):
+            raise MusurgiaTypeError(message=f"master.value must be of type {MasterDrawObject} not {type(val)}",
+                                    class_name=self.__class__.__name__, property_name='master')
+        self._master = val
+
+    @property
+    def simple_name(self) -> Optional[str]:
+        return self._simple_name
+
+    @simple_name.setter
+    def simple_name(self, val: Optional[str]) -> None:
+        if val is not None:
+            check_type(val, str, class_name=self.__class__.__name__, property_name='simple_name')
+        self._simple_name = val
 
 
 class ClippingArea:

@@ -1,30 +1,31 @@
 from abc import abstractmethod, ABC
 from fractions import Fraction
-from typing import Any, Union, cast
+from typing import Any, Union, cast, Optional
 
 from musurgia.musurgia_exceptions import RelativeXNotSettableError, RelativeYNotSettableError
 from musurgia.musurgia_types import HorizontalVertical, check_type, ConvertibleToFloat, MarkLinePlacement, PositionType, \
     MarginType
 from musurgia.pdf.drawobject import SlaveDrawObject, MasterDrawObject, DrawObject
-from musurgia.pdf.labeled import Labeled
+from musurgia.pdf.labeled import Labeled, TextLabel
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn, DrawObjectContainer
-from musurgia.pdf.text import TextLabel
 
 
 class StraightLine(SlaveDrawObject, Labeled):
     def __init__(self, mode: HorizontalVertical, length: ConvertibleToFloat, show: bool = True, *args: Any,
                  **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self._mode = None
-        self._length = None
+        self._mode: Optional[HorizontalVertical] = None
+        self._length: Optional[ConvertibleToFloat] = None
 
         self.mode = mode
-        self.length = length
+        self.length = float(length)
         self.show = show
 
     @property
     def mode(self) -> HorizontalVertical:
+        if not self._mode:
+            raise AttributeError('mode not set')
         return self._mode
 
     @mode.setter
@@ -34,12 +35,14 @@ class StraightLine(SlaveDrawObject, Labeled):
 
     @property
     def length(self) -> float:
-        return self._length
+        if not self._length:
+            raise AttributeError('length not set')
+        return float(self._length)
 
     @length.setter
     def length(self, val: ConvertibleToFloat) -> None:
         check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='length')
-        self._length = float(val)
+        self._length = val
 
     @property
     def is_vertical(self) -> bool:
@@ -94,11 +97,13 @@ class StraightLine(SlaveDrawObject, Labeled):
 class MarkLine(StraightLine):
     def __init__(self, placement: MarkLinePlacement, length: ConvertibleToFloat = 3, *args: Any, **kwargs: Any):
         super().__init__(length=length, *args, **kwargs)  # type: ignore
-        self._placement = None
+        self._placement: Optional[MarkLinePlacement] = None
         self.placement = placement
 
     @property
     def placement(self) -> MarkLinePlacement:
+        if self._placement is None:
+            raise AttributeError('placement is not set')
         return self._placement
 
     @placement.setter
@@ -157,9 +162,13 @@ class LineSegment(MasterDrawObject, ABC):
         return self.straight_line.length
 
     def get_slave_margin(self, slave: StraightLine, margin: MarginType) -> float:
+        check_type(margin, 'MarginType', class_name='self.__class__.__name__', method_name='get_slave_margin',
+                   argument_name='margin')
         return 0
 
     def get_slave_position(self, slave: StraightLine, position: PositionType) -> float:
+        check_type(position, 'PositionType', class_name='self.__class__.__name__', method_name='get_slave_position',
+                   argument_name='position')
         if slave.simple_name == 'straight_line':
             return 0
         elif slave.simple_name == 'start_mark_line':
@@ -265,7 +274,7 @@ class AbstractRuler(AbstractSegmentedLine, ABC):
 
     def _set_labels(self) -> None:
         def _add_label(mark_line: MarkLine, txt: str) -> None:
-            tl = TextLabel(txt)
+            tl = TextLabel(txt, master=mark_line)
             if isinstance(self, VerticalSegmentedLine):
                 tl.placement = 'left'
                 tl.right_margin = 1

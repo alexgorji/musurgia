@@ -1,11 +1,12 @@
 from pathlib import Path
+from typing import Any
 
-from musurgia.pdf.labeled import Labeled
+from musurgia.musurgia_types import MarginType
+from musurgia.pdf.labeled import Labeled, TextLabel
 from musurgia.pdf.line import VerticalSegmentedLine
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
-from musurgia.pdf.masterslave import SlavePositionGetter
-from musurgia.pdf.text import TextLabel
+from musurgia.pdf.drawobject import Master
 from musurgia.tests._test_utils import PdfTestCase
 
 path = Path(__file__)
@@ -21,12 +22,15 @@ class LabeledVerticalLine(VerticalSegmentedLine, Labeled):
         super().draw(pdf)
 
 
-class DummyPositionMaster(SlavePositionGetter):
+class DummyPositionMaster(Master):
     def get_slave_position(self, slave, position):
         if position == 'x':
             return 0
         elif position == 'y':
             return 0
+
+    def get_slave_margin(self, slave: Any, margin: MarginType) -> float:
+        raise NotImplementedError
 
 
 class TestTextLabel(PdfTestCase):

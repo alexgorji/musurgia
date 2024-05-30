@@ -1,16 +1,17 @@
 from unittest import TestCase
 
 from musurgia.musurgia_exceptions import RelativePositionNotSettableError, MarginNotSettableError
+from musurgia.pdf.drawobject import PositionedSlave, MarginedSlave
 from musurgia.pdf.margined import Margined, AbstractMargined
 from musurgia.pdf.positioned import Positioned
-from musurgia.pdf.masterslave import PositionedMaster, PositionedSlave, MarginedMaster, MarginedSlave
+from musurgia.tests.pdf.test_units import DummyMaster
 
 
 class Human(Positioned, Margined):
     pass
 
 
-class Master(PositionedMaster, MarginedMaster):
+class Master(DummyMaster):
     def get_slave_position(self, slave: 'PositionedSlave', position: str) -> float:
         positions = {'x': 1.0, 'y': 2.0}
         return positions[position]

@@ -1,24 +1,61 @@
-from typing import Union, Any
+from typing import Union, Any, Optional
 
-from musurgia.musurgia_types import check_type, PositionType
-from musurgia.pdf.drawobject import HasGetHeightProtocol
+from musurgia.musurgia_types import check_type, PositionType, create_error_message, LabelPlacement, MarginType
+from musurgia.pdf.drawobject import HasGetHeightProtocol, PositionedSlave, Master
+from musurgia.pdf.margined import Margined
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.positioned import HasPositionsProtocol
-from musurgia.pdf.masterslave import SlavePositionGetter
-from musurgia.pdf.text import TextLabel
+from musurgia.pdf.text import AbstractText
 
 
-class Labeled(SlavePositionGetter, HasPositionsProtocol, HasGetHeightProtocol):
-    def __init__(self, *args, **kwargs):
+class TextLabel(PositionedSlave, AbstractText, Margined):
+    def __init__(self, value: Any, master: Optional[Master] = None, placement: LabelPlacement = 'above',
+                 *args: Any,
+                 **kwargs: Any) -> None:
+        self._master: Optional[Master]
+        self.master = master
+        super().__init__(value=value, *args, **kwargs)  # type: ignore
+        self._placement: LabelPlacement
+        self.placement = placement
+
+    @property
+    def master(self) -> Optional[Master]:
+        return self._master
+
+    @master.setter
+    def master(self, value: Optional[Master]) -> None:
+        self._master = value
+
+    @property
+    def placement(self) -> LabelPlacement:
+        if not self.master:
+            raise AttributeError(create_error_message(message='set master first', class_name=self.__class__.__name__,
+                                                      property_name='placement'))
+        return self._placement
+
+    @placement.setter
+    def placement(self, val: LabelPlacement) -> None:
+        check_type(val, 'LabelPlacement', class_name=self.__class__.__name__, property_name='placement')
+        self._placement = val
+
+
+class Labeled(Master, HasPositionsProtocol, HasGetHeightProtocol):
+    def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self._above_text_labels = []
-        self._below_text_labels = []
-        self._left_text_labels = []
+        self._above_text_labels: list[TextLabel] = []
+        self._below_text_labels: list[TextLabel] = []
+        self._left_text_labels: list[TextLabel] = []
 
     def add_text_label(self, label: Union[TextLabel, str], **kwargs: Any) -> TextLabel:
         if not isinstance(label, TextLabel):
-            label = TextLabel(label, **kwargs)
-        label.master = self
+            label = TextLabel(label, self, **kwargs)
+        else:
+            if label.master:
+                if label.master != self:
+                    raise AttributeError(
+                        create_error_message(message=f"label.master {label.master} must be the same as {self}"))
+            else:
+                label.master = self
         if label.placement == 'above':
             self._above_text_labels.append(label)
         elif label.placement == 'below':
@@ -70,9 +107,14 @@ class Labeled(SlavePositionGetter, HasPositionsProtocol, HasGetHeightProtocol):
                         pdf.translate(-(text_label.get_width()), 0)
                         text_label.draw(pdf)
 
-    def get_slave_position(self, slave, position: PositionType):
+    def get_slave_position(self, slave: TextLabel, position: PositionType) -> float:
         check_type(position, 'PositionType', class_name=self.__class__.__name__, method_name='get_slave_position',
                    argument_name='position')
+        if not isinstance(slave, TextLabel):
+            raise TypeError(
+                create_error_message(slave, class_name=self.__class__.__name__, method_name='get_slave_position',
+                                     argument_name='slave'))
+
         if position == 'x':
             return 0
         elif position == 'y':
@@ -85,3 +127,6 @@ class Labeled(SlavePositionGetter, HasPositionsProtocol, HasGetHeightProtocol):
 
     def get_left_text_labels_height(self) -> float:
         return sum([tl.get_height() for tl in self.get_left_text_labels()])
+
+    def get_slave_margin(self, slave: Any, margin: MarginType) -> float:
+        raise NotImplementedError

@@ -8,7 +8,7 @@ from musurgia.musurgia_types import FontFamily, FontWeight, FontStyle, check_typ
 
 
 def _make_afm_path_dictionary() -> 'dict[tuple[Any, Any, str], AFM]':
-    def check_entry():
+    def check_entry() -> bool:
         old_afm = output.get((family, weight, style))
         if old_afm is not None:
             old_header = old_afm._header
@@ -34,10 +34,10 @@ def _make_afm_path_dictionary() -> 'dict[tuple[Any, Any, str], AFM]':
     for file in directory.iterdir():
         afm_path = file
         with afm_path.open('rb') as fh:
-            afm = AFM(fh)
-        family = afm.get_familyname()
-        weight = afm.get_weight().lower()
-        if afm.get_angle() < 0:
+            afm = AFM(fh)  # type: ignore
+        family = afm.get_familyname()  # type: ignore
+        weight = afm.get_weight().lower()  # type: ignore
+        if afm.get_angle() < 0:  # type: ignore
             style = 'italic'
         else:
             style = 'regular'
@@ -68,23 +68,21 @@ class Font:
     # _STYLE = ['italic', 'regular']
 
     def __init__(self, family: FontFamily = 'Courier', weight: FontWeight = 'medium', style: FontStyle = 'regular',
-                 size: ConvertibleToFloat = 10, *args,
-                 **kwargs):
+                 size: int = 10, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self._family = None
-        self._weight = None
-        self._style = None
-        self._size = None
-        self._afm: Optional[AFM] = None
+        self._family: FontFamily
+        self._weight: FontWeight
+        self._style: FontStyle
+        self._size: int
+        self._afm: AFM
 
-        self.family = family  # type: ignore
-        self.weight = weight  # type: ignore
-        self.style = style  # type: ignore
-        self.size = size  # type: ignore
+        self.family = family
+        self.weight = weight
+        self.style = style
+        self.size = size
 
     def _set_afm(self) -> None:
-        if self.family and self.weight and self.style:
-            self._afm = self.__AFM_PATH_DICTIONARY[self.family, self.weight, self.style]
+        self._afm = self.__AFM_PATH_DICTIONARY[self.family, self.weight, self.style]
 
     @property
     def family(self) -> FontFamily:
@@ -94,22 +92,25 @@ class Font:
         return self._family
 
     @family.setter
-    def family(self, val):
+    def family(self, val: FontFamily) -> None:
         check_type(val, 'FontFamily', class_name=self.__class__.__name__, property_name='family')
         self._family = val
-        self._set_afm()
+        try:
+            self._set_afm()
+        except AttributeError:
+            pass
 
     @property
-    def size(self) -> float:
+    def size(self) -> int:
         """
         Set and get font size
         """
         return self._size
 
     @size.setter
-    def size(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='size')
-        self._size = float(val)
+    def size(self, val: int) -> None:
+        check_type(val, int, class_name=self.__class__.__name__, property_name='size')
+        self._size = val
 
     @property
     def style(self) -> FontStyle:
@@ -122,7 +123,10 @@ class Font:
     def style(self, val: FontStyle) -> None:
         check_type(val, 'FontStyle', class_name=self.__class__.__name__, property_name='style')
         self._style = val
-        self._set_afm()
+        try:
+            self._set_afm()
+        except AttributeError:
+            pass
 
     @property
     def weight(self) -> FontWeight:
@@ -135,7 +139,10 @@ class Font:
     def weight(self, val: FontWeight) -> None:
         check_type(val, 'FontWeight', class_name=self.__class__.__name__, property_name='weight')
         self._weight = val
-        self._set_afm()
+        try:
+            self._set_afm()
+        except AttributeError:
+            pass
 
     def get_text_pixel_width(self, value: str) -> float:
         """
@@ -147,7 +154,7 @@ class Font:
         >>> round(Font(size=12).get_text_pixel_width('Test'), 2)
         28.8
         """
-        return (self._afm.string_width_height(value)[0] / 1000) * self.size
+        return (self._afm.string_width_height(value)[0] / 1000) * self.size  # type: ignore
 
     def get_text_pixel_height(self, val: str) -> float:
         """
@@ -161,4 +168,4 @@ class Font:
         >>> round(Font(size=12, weight='bold', style='italic').get_text_pixel_height('Test'), 2)
         6.95
         """
-        return (self._afm.string_width_height(val)[1] / 1000) * self.size
+        return (self._afm.string_width_height(val)[1] / 1000) * self.size  # type: ignore
