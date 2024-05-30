@@ -34,7 +34,7 @@ class AbstractText(DrawObject, ABC):
 
     @font_family.setter
     def font_family(self, val: FontFamily) -> None:
-        check_type(val, 'FontFamily', class_name=self.__class__.__name__, property_name='font_family')
+        # check_type(val, 'FontFamily', class_name=self.__class__.__name__, property_name='font_family')
         self.font.family = val
 
     @property
@@ -43,7 +43,7 @@ class AbstractText(DrawObject, ABC):
 
     @font_size.setter
     def font_size(self, val: int) -> None:
-        check_type(val, int, class_name=self.__class__.__name__, property_name='font_size')
+        # check_type(val, int, class_name=self.__class__.__name__, property_name='font_size')
         self.font.size = val
 
     @property
@@ -52,7 +52,7 @@ class AbstractText(DrawObject, ABC):
 
     @font_weight.setter
     def font_weight(self, val: FontWeight) -> None:
-        check_type(val, 'FontWeight', class_name=self.__class__.__name__, property_name='font_weight')
+        # check_type(val, 'FontWeight', class_name=self.__class__.__name__, property_name='font_weight')
         self.font.weight = val
 
     @property
@@ -61,7 +61,7 @@ class AbstractText(DrawObject, ABC):
 
     @font_style.setter
     def font_style(self, val: FontStyle) -> None:
-        check_type(val, 'FontStyle', class_name=self.__class__.__name__, property_name='font_style')
+        # check_type(val, 'FontStyle', class_name=self.__class__.__name__, property_name='font_style')
         self.font.style = val
 
     @property

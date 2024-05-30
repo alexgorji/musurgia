@@ -13,6 +13,20 @@ class TestText(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf()
 
+    def test_font_attributes(self):
+        t = Text('Test')
+        t.font_size = 20
+        t.font_weight = 'medium'
+        t.font_style = 'italic'
+        t.font_family = 'Courier'
+        assert t.font_size == 20
+        assert t.font_weight == 'medium'
+        assert t.font_style == 'italic'
+        assert t.font_family == 'Courier'
+
+        with self.assertRaises(TypeError):
+            t.font_style = 'wrong'
+
     def test_draw(self):
         t = Text('The fox is going to be dead.')
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
@@ -97,7 +111,11 @@ class TestText(PdfTestCase):
         assert t.font_weight == 'bold'
         assert t.font_style == 'italic'
 
+        t2 = Text(value='some text', font_style='italic')
+
         with self.file_path(path, 'test_font', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
             t.draw(self.pdf)
+            self.pdf.translate(dx=0, dy=10)
+            t2.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
