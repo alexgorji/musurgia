@@ -69,11 +69,8 @@ class TestGenerateLayerSegmentedLine(PdfTestCase):
         self.pdf.translate_page_margins()
         draw_ruler(self.pdf, 'h', first_label=-1, unit=unit)
         draw_ruler(self.pdf, 'v')
-        self.pdf.translate(unit, 10)
-        pt = PageText('Some Title', h_position='center', font_weight='bold', font_size=12)
-        pt.draw(self.pdf)
 
-        self.pdf.translate(0, 10)
+        self.pdf.translate(10, 20)
 
         change_ft_graphic(ft, unit)
         ft.graphic.draw(self.pdf)
@@ -84,6 +81,8 @@ class TestGenerateLayerSegmentedLine(PdfTestCase):
         change_layer_graphic(segmented_line)
         segmented_line.segments[0].start_mark_line.add_text_label('blabla', placement='left', right_margin=1)
         segmented_line.draw(self.pdf)
-
+        pt = PageText('Some Title', h_position='center', font_weight='bold', font_size=12, top_margin=10,
+                      left_margin=10)
+        pt.draw(self.pdf)
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
             self.pdf.write_to_path(pdf_path)
