@@ -8,6 +8,8 @@ from pathlib import Path
 
 from diff_pdf_visually import pdf_similar
 
+from musurgia.pdf.drawobject import MasterDrawObject
+
 
 def create_test_path(path, test_name):
     return path.parent.joinpath(f'{path.stem}_{test_name}')
@@ -88,24 +90,26 @@ class PdfTestCase(unittest.TestCase):
         return tfp
 
 
-# def node_info(node, fractal_order=True, permutation_index=True, value=True, permutation_order=False):
-#     infos_list = []
-#     if fractal_order:
-#         infos_list.append(node.get_fractal_order())
-#     if permutation_index:
-#         infos_list.append(node.get_permutation_index())
-#     if value:
-#         infos_list.append(round(float(node.get_value()), 2))
-#     if permutation_order:
-#         infos_list.append(node.get_permutation_order())
-#     output = f'{infos_list[0]}'
-#     for info in infos_list[1:]:
-#         output += f': {info}'
-#     return output
-
 def node_info(node):
     return f'{node.get_fractal_order()}: {node.get_permutation_index()}: {round(float(node.get_value()), 2)}'
 
 
 def node_info_with_permutation_order(node):
     return f'{node.get_fractal_order()}: {node.get_permutation_index()}: {node.get_permutation_order()}: {round(float(node.get_value()), 2)}'
+
+
+class DummyMaster(MasterDrawObject):
+    def get_slave_margin(self, slave, margin):
+        return 10
+
+    def get_slave_position(self, slave, position):
+        return 20
+
+    def draw(self, pdf):
+        pass
+
+    def get_relative_x2(self):
+        pass
+
+    def get_relative_y2(self):
+        pass

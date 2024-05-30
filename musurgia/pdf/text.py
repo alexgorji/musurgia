@@ -3,7 +3,7 @@ from typing import Optional, Any, Literal
 
 from musurgia.musurgia_exceptions import RelativePositionNotSettableError
 from musurgia.musurgia_types import check_type, FontStyle, FontFamily, FontWeight, ConvertibleToFloat, \
-    VerticalPosition, HorizontalPosition
+    VerticalPosition, HorizontalPosition, create_error_message
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.font import Font
 from musurgia.pdf.margined import Margined
@@ -85,6 +85,10 @@ class AbstractText(DrawObject, ABC):
         return self.relative_y + self.get_text_height()
 
     def draw(self, pdf: Pdf) -> None:
+        if not isinstance(pdf, Pdf):
+            raise TypeError(create_error_message(message=f"{pdf} must be of type Pdf not {type(pdf)}",
+                                                 class_name=self.__class__.__name__, method_name='draw',
+                                                 argument_name='pdf'))
         if self.show:
             pdf.reset_font()
             style: Literal[

@@ -125,7 +125,7 @@ class Font:
         self._style = val
         try:
             self._set_afm()
-        except AttributeError:
+        except AttributeError:  # pragma: no cover
             pass
 
     @property

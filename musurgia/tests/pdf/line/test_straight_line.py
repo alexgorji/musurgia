@@ -4,8 +4,7 @@ from musurgia.musurgia_exceptions import RelativePositionNotSettableError
 from musurgia.pdf.line import StraightLine
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
-from musurgia.tests._test_utils import PdfTestCase
-from musurgia.tests.pdf.test_units import DummyMaster
+from musurgia.tests._test_utils import PdfTestCase, DummyMaster
 
 path = Path(__file__)
 

@@ -4,7 +4,7 @@ from musurgia.musurgia_exceptions import RelativePositionNotSettableError, Margi
 from musurgia.pdf.drawobject import PositionedSlave, MarginedSlave
 from musurgia.pdf.margined import Margined, AbstractMargined
 from musurgia.pdf.positioned import Positioned
-from musurgia.tests.pdf.test_units import DummyMaster
+from musurgia.tests._test_utils import DummyMaster
 
 
 class Human(Positioned, Margined):

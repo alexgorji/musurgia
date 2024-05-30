@@ -166,7 +166,7 @@ class SlaveDrawObject(DrawObject, PositionedSlave, MarginedSlave, ABC):
 
     @master.setter
     def master(self, val: Optional[MasterDrawObject]) -> None:
-        if not None and not isinstance(val, MasterDrawObject):
+        if val is not None and not isinstance(val, MasterDrawObject):
             raise MusurgiaTypeError(message=f"master.value must be of type {MasterDrawObject} not {type(val)}",
                                     class_name=self.__class__.__name__, property_name='master')
         self._master = val
@@ -194,7 +194,7 @@ class ClippingArea:
     # private methods
     def _add_page(self) -> None:
         if not self.pdf:
-            raise PdfAttributeError(self._get_pdf_not_exists_message('_add_page'))
+            raise PdfAttributeError(self._get_pdf_not_exists_message('_add_page'))  # pragma: no cover
         self.pdf.add_page()
         self._prepare_page()
 
@@ -204,7 +204,7 @@ class ClippingArea:
 
     def _draw_with_clip(self, index: int) -> None:
         if not self.pdf:
-            raise PdfAttributeError(self._get_pdf_not_exists_message('_draw_with_clip'))
+            raise PdfAttributeError(self._get_pdf_not_exists_message('_draw_with_clip'))  # pragma: no cover
         with self.pdf.saved_state():
             self.pdf.clip_rect(-1, -5, self.get_row_width() + 1.14, self.get_row_height())
             self.pdf.translate(index * -self.get_row_width(), 0)
@@ -212,14 +212,14 @@ class ClippingArea:
 
     def _prepare_page(self) -> None:
         if not self.pdf:
-            raise PdfAttributeError(self._get_pdf_not_exists_message('_prepare_page'))
+            raise PdfAttributeError(self._get_pdf_not_exists_message('_prepare_page'))  # pragma: no cover
         self.pdf.translate_page_margins()
         self.pdf.translate(self.left_margin, self.top_margin)
 
     # public methods
     def draw(self) -> None:
         if not self.pdf:
-            raise PdfAttributeError(self._get_pdf_not_exists_message('_prepare_page'))
+            raise PdfAttributeError(self._get_pdf_not_exists_message('draw'))
         self.pdf.translate(self.left_margin, self.top_margin)
         for index in range(self.get_number_of_rows()):
             if index != 0:
@@ -236,5 +236,5 @@ class ClippingArea:
 
     def get_row_width(self) -> float:
         if not self.pdf:
-            raise PdfAttributeError(self._get_pdf_not_exists_message('_prepare_page'))
+            raise PdfAttributeError(self._get_pdf_not_exists_message('get_row_width'))
         return self.pdf.w - self.pdf.l_margin - self.pdf.r_margin - self.left_margin - self.right_margin

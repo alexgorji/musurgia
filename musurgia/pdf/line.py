@@ -15,8 +15,8 @@ class StraightLine(SlaveDrawObject, Labeled):
     def __init__(self, mode: HorizontalVertical, length: ConvertibleToFloat, show: bool = True, *args: Any,
                  **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self._mode: Optional[HorizontalVertical] = None
-        self._length: Optional[ConvertibleToFloat] = None
+        self._mode: HorizontalVertical
+        self._length: ConvertibleToFloat
 
         self.mode = mode
         self.length = float(length)
@@ -24,8 +24,6 @@ class StraightLine(SlaveDrawObject, Labeled):
 
     @property
     def mode(self) -> HorizontalVertical:
-        if not self._mode:
-            raise AttributeError('mode not set')
         return self._mode
 
     @mode.setter
@@ -35,8 +33,6 @@ class StraightLine(SlaveDrawObject, Labeled):
 
     @property
     def length(self) -> float:
-        if not self._length:
-            raise AttributeError('length not set')
         return float(self._length)
 
     @length.setter
@@ -95,15 +91,14 @@ class StraightLine(SlaveDrawObject, Labeled):
 
 
 class MarkLine(StraightLine):
-    def __init__(self, placement: MarkLinePlacement, length: ConvertibleToFloat = 3, *args: Any, **kwargs: Any):
-        super().__init__(length=length, *args, **kwargs)  # type: ignore
-        self._placement: Optional[MarkLinePlacement] = None
+    def __init__(self, placement: MarkLinePlacement, mode: HorizontalVertical, length: ConvertibleToFloat = 3,
+                 *args: Any, **kwargs: Any):
+        super().__init__(length=length, mode=mode, *args, **kwargs)  # type: ignore
+        self._placement: MarkLinePlacement
         self.placement = placement
 
     @property
     def placement(self) -> MarkLinePlacement:
-        if self._placement is None:
-            raise AttributeError('placement is not set')
         return self._placement
 
     @placement.setter

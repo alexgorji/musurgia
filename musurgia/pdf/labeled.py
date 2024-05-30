@@ -112,8 +112,11 @@ class Labeled(Master, HasPositionsProtocol, HasGetHeightProtocol):
                    argument_name='position')
         if not isinstance(slave, TextLabel):
             raise TypeError(
-                create_error_message(slave, class_name=self.__class__.__name__, method_name='get_slave_position',
+                create_error_message(message=f'slave must be of type TextLabel not {type(slave)}',
+                                     class_name=self.__class__.__name__, method_name='get_slave_position',
                                      argument_name='slave'))
+        if not slave.master == self:
+            raise AttributeError(create_error_message(message=f'slave hat wrong master'))
 
         if position == 'x':
             return 0
@@ -129,4 +132,4 @@ class Labeled(Master, HasPositionsProtocol, HasGetHeightProtocol):
         return sum([tl.get_height() for tl in self.get_left_text_labels()])
 
     def get_slave_margin(self, slave: Any, margin: MarginType) -> float:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
