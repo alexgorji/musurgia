@@ -1,8 +1,7 @@
 from abc import abstractmethod, ABC
 from typing import Optional, Protocol, Any
 
-from musurgia.musurgia_exceptions import MarginNotSettableError
-from musurgia.musurgia_types import ConvertibleToFloat, check_type
+from musurgia.musurgia_types import ConvertibleToFloat, check_type, MarginType
 
 
 class HasMarginsProtocol(Protocol):
@@ -78,7 +77,7 @@ class AbstractMargined(ABC):
     def right_margin(self, val: Optional[ConvertibleToFloat]) -> None:
         """right_margin setter must be provided"""
 
-    def get_margins(self) -> dict[str, float]:
+    def get_margins(self) -> dict[MarginType, float]:
         return {'left': self.left_margin, 'top': self.top_margin, 'right': self.right_margin,
                 'bottom': self.bottom_margin}
 
@@ -131,50 +130,3 @@ class Margined(AbstractMargined):
         self._right_margin = float(val)
 
 
-class MarginedMaster(Margined, ABC):
-    @abstractmethod
-    def get_slave_margin(self, slave: 'MarginedSlave', margin: str) -> float:
-        """get_slave_margin must be provided"""
-
-
-class HasMarginedMasterProtocol(Protocol):
-    @property
-    def master(self) -> 'MarginedMaster': ...
-
-
-class MarginedSlave(AbstractMargined, HasMarginedMasterProtocol):
-    @property
-    def left_margin(self) -> float:
-        return self.master.get_slave_margin(slave=self, margin='left')
-
-    @left_margin.setter
-    def left_margin(self, val: Optional[float]) -> None:
-        if val is not None:
-            raise MarginNotSettableError()
-
-    @property
-    def top_margin(self) -> float:
-        return self.master.get_slave_margin(slave=self, margin='top')
-
-    @top_margin.setter
-    def top_margin(self, val: Optional[float]) -> None:
-        if val is not None:
-            raise MarginNotSettableError()
-
-    @property
-    def right_margin(self) -> float:
-        return self.master.get_slave_margin(slave=self, margin='right')
-
-    @right_margin.setter
-    def right_margin(self, val: Optional[float]) -> None:
-        if val is not None:
-            raise MarginNotSettableError()
-
-    @property
-    def bottom_margin(self) -> float:
-        return self.master.get_slave_margin(slave=self, margin='bottom')
-
-    @bottom_margin.setter
-    def bottom_margin(self, val: Optional[float]) -> None:
-        if val is not None:
-            raise MarginNotSettableError()

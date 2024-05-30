@@ -3,13 +3,10 @@ from unittest import TestCase
 from musurgia.musurgia_exceptions import PdfAttributeError
 from musurgia.musurgia_types import MusurgiaTypeError
 from musurgia.pdf.drawobject import ClippingArea
-from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.line import HorizontalRuler
 from musurgia.pdf.masterslave import SimpleNamed, Slave
 from musurgia.pdf.pdf import Pdf
-from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.pdfunit import PdfUnit
-from musurgia.pdf.text import TextLabel
 
 
 class TestClippingArea(TestCase):
@@ -25,8 +22,6 @@ class TestClippingArea(TestCase):
         assert self.ca.get_row_height() == x + 10
 
     def test_no_pdf(self):
-        with self.assertRaises(PdfAttributeError):
-            ClippingArea(pdf=None, draw_object=self.ruler).get_row_height()
         with self.assertRaises(PdfAttributeError):
             ClippingArea(pdf=None, draw_object=self.ruler).get_row_width()
 

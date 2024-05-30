@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Any
 
 from musurgia.musurgia_types import create_error_message
 from musurgia.pdf.labeled import Labeled
@@ -9,11 +10,11 @@ from musurgia.pdf.positioned import Positioned
 
 
 class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._draw_objects = []
 
-    def add_draw_object(self, draw_object: DrawObject):
+    def add_draw_object(self, draw_object: DrawObject) -> DrawObject:
         if not isinstance(draw_object, DrawObject):
             raise TypeError(create_error_message(class_name=self.__class__.__name__, method_name='add_draw_object',
                                                  argument_name='draw_object',
@@ -22,7 +23,7 @@ class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
         return draw_object
 
     @property
-    def draw_objects(self):
+    def draw_objects(self) -> list[DrawObject]:
         return self._draw_objects
 
 
@@ -52,7 +53,7 @@ class DrawObjectColumn(DrawObjectContainer):
     def get_relative_y2(self) -> float:
         return self.relative_y + sum([do.get_height() for do in self.draw_objects])
 
-    def draw(self, pdf):
+    def draw(self, pdf: Pdf) -> None:
         with pdf.prepare_draw_object(self):
             self.draw_above_text_labels(pdf)
             self.draw_left_text_labels(pdf)
@@ -61,4 +62,3 @@ class DrawObjectColumn(DrawObjectContainer):
             for do in self.draw_objects:
                 do.draw(pdf)
                 pdf.translate(0, do.get_height())
-

@@ -1,6 +1,4 @@
-from musurgia.pdf.margined import MarginedMaster
-from musurgia.pdf.masterslave import Master
-from musurgia.pdf.positioned import PositionedMaster
+from musurgia.pdf.masterslave import Master, PositionedMaster, MarginedMaster
 from musurgia.tests._test_utils import PdfTestCase
 
 

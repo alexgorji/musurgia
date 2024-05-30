@@ -1,6 +1,10 @@
+from typing import Union, Any
+
 from musurgia.musurgia_types import check_type, PositionType
 from musurgia.pdf.drawobject import HasGetHeightProtocol
-from musurgia.pdf.positioned import SlavePositionGetter, HasPositionsProtocol
+from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.positioned import HasPositionsProtocol
+from musurgia.pdf.masterslave import SlavePositionGetter
 from musurgia.pdf.text import TextLabel
 
 
@@ -11,7 +15,7 @@ class Labeled(SlavePositionGetter, HasPositionsProtocol, HasGetHeightProtocol):
         self._below_text_labels = []
         self._left_text_labels = []
 
-    def add_text_label(self, label, **kwargs):
+    def add_text_label(self, label: Union[TextLabel, str], **kwargs: Any) -> TextLabel:
         if not isinstance(label, TextLabel):
             label = TextLabel(label, **kwargs)
         label.master = self
@@ -24,22 +28,22 @@ class Labeled(SlavePositionGetter, HasPositionsProtocol, HasGetHeightProtocol):
 
         return label
 
-    def add_label(self, label, **kwargs):
+    def add_label(self, label: Union[TextLabel, str], **kwargs: Any) -> TextLabel:
         return self.add_text_label(label, **kwargs)
 
-    def get_above_text_labels(self):
+    def get_above_text_labels(self) -> list[TextLabel]:
         return self._above_text_labels
 
-    def get_below_text_labels(self):
+    def get_below_text_labels(self) -> list[TextLabel]:
         return self._below_text_labels
 
-    def get_left_text_labels(self):
+    def get_left_text_labels(self) -> list[TextLabel]:
         return self._left_text_labels
 
-    def get_text_labels(self):
+    def get_text_labels(self) -> list[TextLabel]:
         return self.get_left_text_labels() + self.get_above_text_labels() + self.get_below_text_labels()
 
-    def draw_above_text_labels(self, pdf):
+    def draw_above_text_labels(self, pdf: Pdf) -> None:
         if self.get_above_text_labels():
             with pdf.saved_state():
                 translate_y = -self.get_above_text_labels_height() + self.get_above_text_labels()[-1].get_text_height()
@@ -48,7 +52,7 @@ class Labeled(SlavePositionGetter, HasPositionsProtocol, HasGetHeightProtocol):
                     text_label.draw(pdf)
                     pdf.translate(0, text_label.get_height())
 
-    def draw_below_text_labels(self, pdf):
+    def draw_below_text_labels(self, pdf: Pdf) -> None:
         if self.get_below_text_labels():
             with pdf.saved_state():
                 pdf.translate(self.relative_x, self.get_height())
@@ -56,7 +60,7 @@ class Labeled(SlavePositionGetter, HasPositionsProtocol, HasGetHeightProtocol):
                     pdf.translate(0, text_label.get_height())
                     text_label.draw(pdf)
 
-    def draw_left_text_labels(self, pdf):
+    def draw_left_text_labels(self, pdf: Pdf) -> None:
         if self.get_left_text_labels():
             with pdf.saved_state():
                 pdf.translate(0, -self.get_left_text_labels_height() / 2)
@@ -76,8 +80,8 @@ class Labeled(SlavePositionGetter, HasPositionsProtocol, HasGetHeightProtocol):
                 return self.get_height() / 2
             return 0
 
-    def get_above_text_labels_height(self):
+    def get_above_text_labels_height(self) -> float:
         return sum([tl.get_height() for tl in self.get_above_text_labels()])
 
-    def get_left_text_labels_height(self):
+    def get_left_text_labels_height(self) -> float:
         return sum([tl.get_height() for tl in self.get_left_text_labels()])

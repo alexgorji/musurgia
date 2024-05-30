@@ -1,7 +1,6 @@
 from abc import abstractmethod, ABC
 from typing import Optional, Protocol, Any
 
-from musurgia.musurgia_exceptions import RelativePositionNotSettableError
 from musurgia.musurgia_types import ConvertibleToFloat, check_type
 
 
@@ -74,36 +73,3 @@ class Positioned(AbstractPositioned):
         self._relative_y = float(val)
 
 
-class SlavePositionGetter(ABC):
-    @abstractmethod
-    def get_slave_position(self, slave: 'PositionedSlave', position: str) -> float:
-        """get_slave_position must be provided"""
-
-
-class PositionedMaster(Positioned, SlavePositionGetter, ABC):
-    pass
-
-
-class HasPositionedMasterProtocol(Protocol):
-    @property
-    def master(self) -> 'PositionedMaster': ...
-
-
-class PositionedSlave(AbstractPositioned, HasPositionedMasterProtocol):
-    @property
-    def relative_x(self) -> float:
-        return self.master.get_slave_position(slave=self, position='x')
-
-    @relative_x.setter
-    def relative_x(self, val: Optional[float]) -> None:
-        if val is not None:
-            raise RelativePositionNotSettableError()
-
-    @property
-    def relative_y(self) -> float:
-        return self.master.get_slave_position(slave=self, position='y')
-
-    @relative_y.setter
-    def relative_y(self, val: Optional[float]) -> None:
-        if val is not None:
-            raise RelativePositionNotSettableError()

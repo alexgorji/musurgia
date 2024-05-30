@@ -70,7 +70,7 @@ class TestGenerateLayerSegmentedLine(PdfTestCase):
         draw_ruler(self.pdf, 'h', first_label=-1, unit=unit)
         draw_ruler(self.pdf, 'v')
         self.pdf.translate(unit, 10)
-        pt = PageText('Some Title', v_position='center', font_weight='bold', font_size=12)
+        pt = PageText('Some Title', h_position='center', font_weight='bold', font_size=12)
         pt.draw(self.pdf)
 
         self.pdf.translate(0, 10)

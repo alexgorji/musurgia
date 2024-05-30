@@ -1,6 +1,7 @@
 import re
+from pathlib import Path
 from types import TracebackType
-from typing import Protocol, Any, TYPE_CHECKING, Optional
+from typing import Protocol, Any, TYPE_CHECKING, Optional, Union, cast
 
 from fpdf import FPDF
 
@@ -8,7 +9,7 @@ from musurgia.musurgia_types import ConvertibleToFloat, check_type, PageOrientat
 from musurgia.pdf.pdfunit import PdfUnit
 
 if TYPE_CHECKING:
-    from musurgia.pdf.drawobject import DrawObject
+    from musurgia.pdf.drawobject import DrawObject  # pragma: no cover
 
 
 def sprintf(fmt: str, *args: Any) -> str: return fmt % args
@@ -97,21 +98,16 @@ class Pdf(FPDF, HasOutProtocol):
     def k(self, val: float) -> None:
         pass
 
-    # public methods
-
-    # def add_page(self, orientation: '_Orientation') -> None:
-    #     super().add_page(orientation=self.cur_orientation)
-    #     self._absolute_positions[self.page] = [0, 0.]
-
-    def add_page(self, orientation: PageOrientation = "",
-                 format: PageFormat = "",
+    def add_page(self, orientation: PageOrientation = "", format: Union[PageFormat, tuple[float, float]] = "",
                  same: bool = False,
                  duration: int = 0,
                  transition: Optional[Any] = None,
                  ) -> None:
         check_type(orientation, 'PageOrientation', class_name='PageOrientation', method_name='add_page',
                    argument_name='orientation')
-        check_type(format, 'PageFormat', class_name='PageOrientation', method_name='add_page', argument_name='format')
+        if not isinstance(format, tuple):
+            check_type(format, 'PageFormat', class_name='PageOrientation', method_name='add_page',
+                       argument_name='format')
         check_type(same, bool, class_name='PageOrientation', method_name='add_page', argument_name='same')
         check_type(duration, int, class_name='PageOrientation', method_name='add_page', argument_name='duration')
 
@@ -120,9 +116,21 @@ class Pdf(FPDF, HasOutProtocol):
         super().add_page(orientation=orientation, format=format, same=same, duration=duration, transition=transition)
         self._absolute_positions[self.page] = [0, 0.]
 
-    def clip_rect(self, x, y, w, h):
+    def clip_rect(self, x: ConvertibleToFloat, y: ConvertibleToFloat, w: ConvertibleToFloat,
+                  h: ConvertibleToFloat) -> None:
         # https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf
-
+        check_type(x, 'ConvertibleToFloat', class_name=self.__class__.__name__, method_name='clip_rect',
+                   argument_name='x')
+        check_type(y, 'ConvertibleToFloat', class_name=self.__class__.__name__, method_name='clip_rect',
+                   argument_name='y')
+        check_type(w, 'ConvertibleToFloat', class_name=self.__class__.__name__, method_name='clip_rect',
+                   argument_name='w')
+        check_type(h, 'ConvertibleToFloat', class_name=self.__class__.__name__, method_name='clip_rect',
+                   argument_name='h')
+        x = float(x)
+        y = float(y)
+        w = float(w)
+        h = float(h)
         self._out(sprintf('%.2f %.2f %.2f %.2f re W n',
                           x * self.k, (self.h - y) * self.k,
                           w * self.k, -h * self.k))
@@ -133,7 +141,7 @@ class Pdf(FPDF, HasOutProtocol):
     def reset_font(self) -> None:
         # https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf
         self._out(sprintf('BT /F%d %.2f Tf ET',
-                          self.current_font.i,
+                          self.current_font.i,  # type: ignore
                           self.font_size_pt))
 
     def reset_position(self) -> None:
@@ -159,7 +167,7 @@ class Pdf(FPDF, HasOutProtocol):
     def translate_page_margins(self) -> None:
         self.translate(self.l_margin, self.t_margin)
 
-    def write_to_path(self, path):
+    def write_to_path(self, path: Path) -> None:
         buffer = self.output()
         new_buffer = re.sub(rb'CreationDate \(D:[0-9]{14}Z[0-9]{2}\'[0-9]{2}\'\)', b'CreationDate (none)',
                             bytes(buffer))

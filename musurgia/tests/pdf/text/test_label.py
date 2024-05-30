@@ -4,7 +4,7 @@ from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.line import VerticalSegmentedLine
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
-from musurgia.pdf.positioned import SlavePositionGetter
+from musurgia.pdf.masterslave import SlavePositionGetter
 from musurgia.pdf.text import TextLabel
 from musurgia.tests._test_utils import PdfTestCase
 

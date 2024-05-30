@@ -1,5 +1,5 @@
 from fractions import Fraction
-from typing import Any, Optional, Union, Literal, Callable, cast, _LiteralGenericAlias, get_args
+from typing import Any, Optional, Union, Literal, Callable, cast, get_args
 
 from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError
 
@@ -7,31 +7,17 @@ MUSURGIA_TYPES = ['MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegati
                   'PositiveInteger', 'ConvertibleToFraction', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection',
                   'ConvertibleToFloat', 'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType',
                   'FontFamily', 'FontWeight', 'FontStyle', 'VerticalPosition', 'HorizontalPosition',
-                  'MarkLinePlacement', 'PageOrientation', 'PageFormat', 'PageOrientation']
+                  'MarkLinePlacement', 'PageOrientation', 'PageFormat', 'PageOrientation', 'MarginType']
 
 MusurgiaType = Literal[
     'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger',
     'ConvertibleToFraction', 'ConvertibleToFloat', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection',
     'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType', 'FontFamily', 'FontWeight', 'FontStyle',
-    'VerticalPosition', 'HorizontalPosition', 'MarkLinePlacement', 'PageOrientation', 'PageFormat', 'PageOrientation']
-
-
-# class LiteralCheckGenerator:
-#     def __init__(self, type_name: str, permitted: list[str]):
-#         self.type_name = type_name
-#         self.permitted = permitted
-#
-#     def generate_checker(self) -> Callable[[str], bool]:
-#         def checker(value: str) -> bool:
-#             if value not in self.permitted:
-#                 raise TypeError(f"{self.type_name} value must be in {self.permitted}, got {value}")
-#             return True
-#
-#         return checker
+    'VerticalPosition', 'HorizontalPosition', 'MarkLinePlacement', 'PageOrientation', 'PageFormat', 'PageOrientation', 'MarginType']
 
 
 class LiteralCheckGenerator:
-    def __init__(self, literal_type: _LiteralGenericAlias, type_name: str):
+    def __init__(self, literal_type: Any, type_name: str):
         self.type_name = type_name
         self.permitted = get_args(literal_type)
 
@@ -294,6 +280,9 @@ check_page_orientation_type = LiteralCheckGenerator(PageOrientation, 'PageOrient
 
 PageFormat = Literal["", "a3", "A3", "a4", "A4", "a5", "A5", "letter", "Letter", "legal", "Legal"]
 check_page_format_type = LiteralCheckGenerator(PageFormat, 'PageFormat').generate_checker()
+
+MarginType = Literal['left', 'right', 'top', 'bottom']
+check_margin_type_type = LiteralCheckGenerator(MarginType, 'MarginType').generate_checker()
 
 
 def _get_name_of_check_type_function(musurgia_type: MusurgiaType) -> str:

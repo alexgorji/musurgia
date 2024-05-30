@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Optional
+from typing import Optional, Any
 
 from musurgia.musurgia_exceptions import RelativePositionNotSettableError
 from musurgia.musurgia_types import check_type, LabelPlacement, FontStyle, FontFamily, FontWeight, ConvertibleToFloat, \
@@ -7,8 +7,10 @@ from musurgia.musurgia_types import check_type, LabelPlacement, FontStyle, FontF
 from musurgia.pdf.font import Font
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.margined import Margined
+from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdfunit import PdfUnit
-from musurgia.pdf.positioned import PositionedSlave, Positioned
+from musurgia.pdf.positioned import Positioned
+from musurgia.pdf.masterslave import PositionedSlave
 
 
 class AbstractText(DrawObject, ABC):
@@ -17,10 +19,10 @@ class AbstractText(DrawObject, ABC):
     DEFAULT_FONT_WEIGHT = 'medium'
     DEFAULT_FONT_STYLE = 'regular'
 
-    def __init__(self, value, font_family: Optional[FontFamily] = None, font_weight: Optional[FontWeight] = None,
+    def __init__(self, value: Any, font_family: Optional[FontFamily] = None, font_weight: Optional[FontWeight] = None,
                  font_style: Optional[FontStyle] = None,
-                 font_size: Optional[ConvertibleToFloat] = None, *args,
-                 **kwargs):
+                 font_size: Optional[ConvertibleToFloat] = None, *args: Any,
+                 **kwargs: Any):
         super().__init__(*args, **kwargs)
         self.font = Font()
         self.font_family = font_family
@@ -31,57 +33,62 @@ class AbstractText(DrawObject, ABC):
         self.value = value
 
     @property
-    def font_family(self):
+    def font_family(self) -> FontFamily:
         return self.font.family
 
     @font_family.setter
-    def font_family(self, val):
+    def font_family(self, val: Optional[FontFamily]) -> None:
         if val is None:
             val = self.DEFAULT_FONT_FAMILY
+        check_type(val, 'FontFamily', class_name=self.__class__.__name__, property_name='font_family')
         self.font.family = val
 
     @property
-    def font_size(self):
+    def font_size(self) -> float:
         return self.font.size
 
     @font_size.setter
-    def font_size(self, val):
+    def font_size(self, val: Optional[ConvertibleToFloat]) -> None:
         if val is None:
             val = self.DEFAULT_FONT_SIZE
+        val = float(val)
+        check_type(val, float, class_name=self.__class__.__name__, property_name='font_size')
         self.font.size = val
 
     @property
-    def font_weight(self):
+    def font_weight(self) -> FontWeight:
         return self.font.weight
 
     @font_weight.setter
-    def font_weight(self, val):
+    def font_weight(self, val: Optional[FontWeight]) -> None:
         if val is None:
             val = self.DEFAULT_FONT_WEIGHT
+        check_type(val, 'FontWeight', class_name=self.__class__.__name__, property_name='font_weight')
         self.font.weight = val
 
     @property
-    def font_style(self):
+    def font_style(self) -> FontStyle:
         return self.font.style
 
     @font_style.setter
-    def font_style(self, val):
+    def font_style(self, val: Optional[FontStyle]) -> None:
         if val is None:
             val = self.DEFAULT_FONT_STYLE
+        check_type(val, 'FontStyle', class_name=self.__class__.__name__, property_name='font_style')
         self.font.style = val
 
     @property
-    def value(self):
+    def value(self) -> str:
         return self._value
 
     @value.setter
-    def value(self, val):
+    def value(self, val: Any) -> None:
         self._value = str(val)
 
-    def get_text_width(self):
+    def get_text_width(self) -> float:
         return self.font.get_text_pixel_width(self.value) / PdfUnit.get_k()
 
-    def get_text_height(self):
+    def get_text_height(self) -> float:
         return self.font.get_text_pixel_height(self.value) / PdfUnit.get_k()
 
     def get_relative_x2(self) -> float:
@@ -172,7 +179,7 @@ class PageText(Text):
         check_type(val, 'HorizontalPosition')
         self._h_position = val
 
-    def draw(self, pdf):
+    def draw(self, pdf: Pdf) -> None:
         pdf.reset_position()
         if self.h_position == 'center':
             self._relative_x = ((pdf.w - pdf.l_margin - pdf.r_margin) / 2) - self.get_width() / 2

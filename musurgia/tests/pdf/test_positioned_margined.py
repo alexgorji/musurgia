@@ -1,8 +1,9 @@
 from unittest import TestCase
 
 from musurgia.musurgia_exceptions import RelativePositionNotSettableError, MarginNotSettableError
-from musurgia.pdf.margined import MarginedSlave, MarginedMaster, Margined, AbstractMargined
-from musurgia.pdf.positioned import PositionedSlave, PositionedMaster, Positioned
+from musurgia.pdf.margined import Margined, AbstractMargined
+from musurgia.pdf.positioned import Positioned
+from musurgia.pdf.masterslave import PositionedMaster, PositionedSlave, MarginedMaster, MarginedSlave
 
 
 class Human(Positioned, Margined):

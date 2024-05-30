@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, Any
 
 import matplotlib as mpl
 from matplotlib._afm import AFM
@@ -7,7 +7,7 @@ from matplotlib._afm import AFM
 from musurgia.musurgia_types import FontFamily, FontWeight, FontStyle, check_type, ConvertibleToFloat
 
 
-def _make_afm_path_dictionary():
+def _make_afm_path_dictionary() -> 'dict[tuple[Any, Any, str], AFM]':
     def check_entry():
         old_afm = output.get((family, weight, style))
         if old_afm is not None:
@@ -77,17 +77,17 @@ class Font:
         self._size = None
         self._afm: Optional[AFM] = None
 
-        self.family = family
-        self.weight = weight
-        self.style = style
-        self.size = size
+        self.family = family  # type: ignore
+        self.weight = weight  # type: ignore
+        self.style = style  # type: ignore
+        self.size = size  # type: ignore
 
-    def _set_afm(self):
+    def _set_afm(self) -> None:
         if self.family and self.weight and self.style:
             self._afm = self.__AFM_PATH_DICTIONARY[self.family, self.weight, self.style]
 
     @property
-    def family(self):
+    def family(self) -> FontFamily:
         """
         Set and get font family. Currently valid values are [``Helvetica``, ``Courier``, ``Times``]
         """
@@ -100,39 +100,39 @@ class Font:
         self._set_afm()
 
     @property
-    def size(self):
+    def size(self) -> float:
         """
         Set and get font size
         """
         return self._size
 
     @size.setter
-    def size(self, val):
+    def size(self, val: ConvertibleToFloat) -> None:
         check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='size')
-        self._size = val
+        self._size = float(val)
 
     @property
-    def style(self):
+    def style(self) -> FontStyle:
         """
         Set and get font style. Valid values are [``italic``, ``regular``]
         """
         return self._style
 
     @style.setter
-    def style(self, val):
+    def style(self, val: FontStyle) -> None:
         check_type(val, 'FontStyle', class_name=self.__class__.__name__, property_name='style')
         self._style = val
         self._set_afm()
 
     @property
-    def weight(self):
+    def weight(self) -> FontWeight:
         """
         Set and get font weight. Valid values are [``bold``, ``medium``]
         """
         return self._weight
 
     @weight.setter
-    def weight(self, val):
+    def weight(self, val: FontWeight) -> None:
         check_type(val, 'FontWeight', class_name=self.__class__.__name__, property_name='weight')
         self._weight = val
         self._set_afm()

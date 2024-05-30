@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 from math import ceil
-from typing import Optional, Protocol
+from typing import Optional, Protocol, Any, cast
 
 from musurgia.musurgia_exceptions import PdfAttributeError
 from musurgia.musurgia_types import create_error_message, check_type
-from musurgia.pdf.margined import AbstractMargined, MarginedSlave, MarginedMaster
-from musurgia.pdf.masterslave import Slave, Master
+from musurgia.pdf.margined import AbstractMargined
+from musurgia.pdf.masterslave import Slave, Master, PositionedMaster, PositionedSlave, MarginedMaster, MarginedSlave
 from musurgia.pdf.pdf import Pdf
-from musurgia.pdf.positioned import AbstractPositioned, PositionedSlave, PositionedMaster
+from musurgia.pdf.positioned import AbstractPositioned
 
 
 class HasGetHeightProtocol(Protocol):
@@ -15,7 +15,7 @@ class HasGetHeightProtocol(Protocol):
 
 
 class DrawObject(AbstractPositioned, AbstractMargined, ABC):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._show = True
         self._clipping_area = ClippingArea(pdf=None, draw_object=self)
@@ -75,21 +75,33 @@ class ClippingArea:
 
     # private methods
     def _add_page(self) -> None:
+        if not self.pdf:
+            raise PdfAttributeError(self._get_pdf_not_exists_message('_add_page'))
         self.pdf.add_page()
         self._prepare_page()
 
+    def _get_pdf_not_exists_message(self, method_name: str) -> str:
+        return create_error_message(message='pdf must be set first', class_name=self.__class__.__name__,
+                                    method_name=method_name)
+
     def _draw_with_clip(self, index: int) -> None:
+        if not self.pdf:
+            raise PdfAttributeError(self._get_pdf_not_exists_message('_draw_with_clip'))
         with self.pdf.saved_state():
             self.pdf.clip_rect(-1, -5, self.get_row_width() + 1.14, self.get_row_height())
             self.pdf.translate(index * -self.get_row_width(), 0)
             self.draw_object.draw(self.pdf)
 
     def _prepare_page(self) -> None:
+        if not self.pdf:
+            raise PdfAttributeError(self._get_pdf_not_exists_message('_prepare_page'))
         self.pdf.translate_page_margins()
         self.pdf.translate(self.left_margin, self.top_margin)
 
     # public methods
     def draw(self) -> None:
+        if not self.pdf:
+            raise PdfAttributeError(self._get_pdf_not_exists_message('_prepare_page'))
         self.pdf.translate(self.left_margin, self.top_margin)
         for index in range(self.get_number_of_rows()):
             if index != 0:
@@ -102,15 +114,9 @@ class ClippingArea:
         return int(ceil(self.draw_object.get_width() / self.get_row_width()))
 
     def get_row_height(self) -> float:
-        if not self.pdf:
-            msg = create_error_message(class_name=self.__class__.__name__, method_name='get_row_height',
-                                       argument_name=None, message='set pdf first!')
-            raise PdfAttributeError(msg)
         return self.draw_object.get_height()
 
     def get_row_width(self) -> float:
         if not self.pdf:
-            msg = create_error_message(class_name=self.__class__.__name__, method_name='get_row_height',
-                                       argument_name=None, message='set pdf first!')
-            raise PdfAttributeError(msg)
+            raise PdfAttributeError(self._get_pdf_not_exists_message('_prepare_page'))
         return self.pdf.w - self.pdf.l_margin - self.pdf.r_margin - self.left_margin - self.right_margin
