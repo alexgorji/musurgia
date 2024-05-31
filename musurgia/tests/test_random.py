@@ -1,4 +1,4 @@
-from musurgia.random import Random
+from musurgia.magicrandom import Random
 from musurgia.tests._test_utils import PdfTestCase
 
 
