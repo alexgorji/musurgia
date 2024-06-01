@@ -150,7 +150,7 @@ class SquareMatrix(SimpleMatrix):
     def __init__(self, matrix_data: MatrixData, *args: Any, **kwargs: Any) -> None:
         if matrix_data is None or matrix_data == []:
             raise SquareMatrixDataError('SquareMatrix.matrix_data cannot be empty or None')
-        super().__init__(matrix_data=matrix_data, *args, **kwargs)
+        super().__init__(matrix_data=matrix_data, *args, **kwargs)  # type: ignore
         if self.get_row_size() != self.get_column_size():
             raise SquareMatrixDataError(
                 f'SquareMatrix.matrix_data: row size {self.get_row_size()} must be equal to column size {self.get_column_size()}')

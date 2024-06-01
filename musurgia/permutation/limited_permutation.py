@@ -10,7 +10,7 @@ class LimitedPermutationOrders:
     def __init__(self, main_permutation_order: PermutationOrder, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._main_permutation_order = ()
-        self._permutation_orders = None
+        self._permutation_orders: MatrixData
         self.main_permutation_order = main_permutation_order
 
     @property
