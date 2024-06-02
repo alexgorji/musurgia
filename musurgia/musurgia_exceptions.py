@@ -72,6 +72,15 @@ class FractalTreePermutationIndexError(FractalTreeException, ValueError):
     pass
 
 
+class FractalTreeSetMainPermutationOrderFirstError(FractalTreeException, ValueError):
+    msg = "set root's main_permutation_order first"
+
+    def __init__(self, msg=None):
+        if msg is None:
+            msg = self.msg
+        super().__init__(msg)
+
+
 class FractalTreeHasChildrenError(FractalTreeException):
     pass
 

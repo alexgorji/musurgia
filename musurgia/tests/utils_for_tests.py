@@ -1,10 +1,8 @@
-# type: ignore
-
 import os
 import unittest
 from pathlib import Path
 
-from diff_pdf_visually import pdf_similar
+from diff_pdf_visually import pdf_similar  # type: ignore
 
 from musurgia.pdf.drawobject import MasterDrawObject
 

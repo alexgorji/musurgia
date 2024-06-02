@@ -178,8 +178,12 @@ class PermutationOrderMatrixGenerator:
 class PermutationOrderMatrix(SquareMatrix):
     T = TypeVar('T', bound='SquareMatrix')
 
-    @SquareMatrix.matrix_data.setter
-    def matrix_data(self, val):
+    @property
+    def matrix_data(self) -> MatrixData:
+        return super().matrix_data
+
+    @matrix_data.setter
+    def matrix_data(self, val: MatrixData) -> None:
         check_type(val, 'MatrixData', class_name=self.__class__.__name__, property_name='matrix_data')
         self._check_matrix_data_permutation_orders(val)
         self._matrix_data = val
@@ -207,10 +211,10 @@ class PermutationOrderMatrix(SquareMatrix):
 class MatrixIndexController:
     def __init__(self, number_of_rows: NonNegativeInteger, number_of_columns: NonNegativeInteger,
                  first_index: MatrixIndex = (1, 1), reading_direction: MatrixReadingDirection = 'horizontal'):
-        self._number_of_rows = None
-        self._number_of_columns = None
-        self._reading_direction = None
-        self._first_index = None
+        self._number_of_rows: NonNegativeInteger
+        self._number_of_columns: NonNegativeInteger
+        self._reading_direction: MatrixReadingDirection
+        self._first_index: MatrixIndex
         self._flatten_index = 0
 
         self.number_of_rows = number_of_rows
@@ -333,8 +337,10 @@ class MatrixIndexController:
         return self._flatten_index
 
     def reset(self):
-        if self._first_index is not None:
+        try:
             self.first_index = self._first_index
+        except AttributeError:
+            pass
 
     def __iter__(self) -> 'MatrixIndexController':
         return self

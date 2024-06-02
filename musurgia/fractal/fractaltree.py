@@ -1,34 +1,34 @@
 import itertools
-from typing import Union, Optional, List, TypeVar, Callable, Any, Tuple, cast, Sequence
-
 from fractions import Fraction
+from typing import Union, Optional, List, Callable, Any, cast, Sequence
+
 from verysimpletree.tree import Tree
 
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.matrix.matrix import PermutationOrderMatrix, PermutationOrderMatrixGenerator
 from musurgia.musurgia_exceptions import FractalTreeHasChildrenError, \
     FractalTreeNonRootCannotSetMainPermutationOrderError, PermutationIndexCalculaterNoParentIndexError, \
-    FractalTreePermutationIndexError
+    FractalTreePermutationIndexError, FractalTreeSetMainPermutationOrderFirstError
 from musurgia.musurgia_types import ConvertibleToFraction, FractalTreeReduceChildrenMode, convert_to_fraction, \
-    MatrixIndex, PermutationOrder, check_type, PositiveInteger, check_matrix_index_values
+    MatrixIndex, PermutationOrder, check_type, PositiveInteger, check_matrix_index_values, create_error_message
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.line import HorizontalLineSegment, HorizontalSegmentedLine
 from musurgia.pdf.margined import Margined
 from musurgia.pdf.positioned import Positioned
 from musurgia.pdf.rowcolumn import DrawObjectColumn, DrawObjectRow
-from musurgia.permutation.permutation import permute, get_self_permutation_2d
-from musurgia.permutation.limited_permutation import LimitedPermutationOrders
+from musurgia.permutation.permutation import permute
 from musurgia.tests.utils_for_tests import node_info
 from musurgia.utils import flatten
 
-_TREE_TYPE = TypeVar('_TREE_TYPE', bound='FractalTree')
+
+# _TREE_TYPE = TypeVar('_TREE_TYPE', bound='FractalTree')
 
 
 class PermutationIndexCalculater:
     def __init__(self, size: PositiveInteger, parent_index: Optional[MatrixIndex] = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._size = None
-        self._parent_index = None
+        self._size: PositiveInteger
+        self._parent_index: Optional[MatrixIndex] = None
 
         self.size = size
         self.parent_index = parent_index
@@ -43,7 +43,7 @@ class PermutationIndexCalculater:
         self._size = value
 
     @property
-    def parent_index(self) -> MatrixIndex:
+    def parent_index(self) -> Optional[MatrixIndex]:
         return self._parent_index
 
     @parent_index.setter
@@ -65,33 +65,33 @@ class PermutationIndexCalculater:
         return r, column_number
 
 
-class FractalTree(Tree):
+class FractalTree(Tree[Any]):
     """
     FractalTree represents the node of a fractal tree with a mechanism of limited permutations.
     """
 
     def __init__(self, value: ConvertibleToFraction,
                  proportions: Sequence[ConvertibleToFraction],
-                 main_permutation_order: Optional[tuple[int, ...]] = None,
+                 main_permutation_order: Optional[PermutationOrder] = None,
                  permutation_index: Optional[MatrixIndex] = None,
                  fertile: bool = True,
                  *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
-        self._permutation_order_matrix: PermutationOrderMatrix
-        self._value = None
-        self._proportions: List[Fraction] = []
-        self._main_permutation_order: [tuple[int, ...]]
-        self._permutation_index = None
-        self._fertile = None
+        self._permutation_order_matrix: Optional[PermutationOrderMatrix]
+        self._value: Fraction
+        self._proportions: Sequence[ConvertibleToFraction] = []
+        self._main_permutation_order: Optional[PermutationOrder] = None
+        self._permutation_index: Optional[MatrixIndex] = None
+        self._fertile: bool
 
-        self._fractal_order = None
+        self._fractal_order: int
         self._children_fractal_values = None
         self._children_permutation_order_matrices = None
         self._permutation_order = None
         self._set_value(value)
 
-        self.proportions = proportions  # type: ignore
+        self.proportions = proportions
         self.main_permutation_order = main_permutation_order
         self.set_permutation_index(permutation_index)
         self.fertile = fertile
@@ -101,11 +101,11 @@ class FractalTree(Tree):
 
     # private methods
 
-    def _check_child_to_be_added(self, child: '_TREE_TYPE') -> bool:
+    def _check_child_to_be_added(self, child: 'FractalTree') -> bool:
         if isinstance(child, FractalTree):
             if child._main_permutation_order is not None:
                 raise FractalTreeNonRootCannotSetMainPermutationOrderError
-            return super()._check_child_to_be_added(child)
+            return True
         else:
             return False
 
@@ -126,7 +126,7 @@ class FractalTree(Tree):
         """
         if not self._children_fractal_values:
             self._children_fractal_values = self._calculate_children_fractal_values()
-        return self._children_fractal_values  # type: ignore
+        return self._children_fractal_values
 
     def _get_merge_lengths(self, size, merge_index):
         if size == 1:
@@ -160,7 +160,7 @@ class FractalTree(Tree):
             return self._pic
         return self.get_root()._get_pic()
 
-    def _set_value(self, val: Union[int, float, Fraction]) -> None:
+    def _set_value(self, val: ConvertibleToFraction) -> None:
         if not isinstance(val, Fraction):
             val = Fraction(val)
         self._value = val
@@ -168,7 +168,7 @@ class FractalTree(Tree):
     # properties
     @property
     def fertile(self) -> bool:
-        return self._fertile  # type: ignore
+        return self._fertile
 
     @fertile.setter
     def fertile(self, val: bool) -> None:
@@ -179,14 +179,14 @@ class FractalTree(Tree):
         return self._graphic
 
     @property
-    def main_permutation_order(self) -> tuple[int, ...]:
+    def main_permutation_order(self) -> Optional[PermutationOrder]:
         if self.is_root:
             return self._main_permutation_order
         else:
             return self.get_root().main_permutation_order
 
     @main_permutation_order.setter
-    def main_permutation_order(self, value: PermutationOrder) -> None:
+    def main_permutation_order(self, value: Optional[PermutationOrder]) -> None:
         if self.get_children():
             raise FractalTreeHasChildrenError
         if value is not None:
@@ -202,7 +202,7 @@ class FractalTree(Tree):
         self._main_permutation_order = value
 
     @property
-    def proportions(self) -> list[Fraction]:
+    def proportions(self) -> Sequence[ConvertibleToFraction]:
         return self._proportions
 
     @proportions.setter
@@ -212,7 +212,7 @@ class FractalTree(Tree):
         self._proportions = [Fraction(value, total) for value in converted_values]
 
     # public methods
-    def add_layer(self, *conditions: Optional[Callable[['_TREE_TYPE'], bool]]) -> None:
+    def add_layer(self, *conditions: Optional[Callable[['FractalTree'], bool]]) -> None:
         """
         >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         >>> ft.add_layer()
@@ -299,7 +299,7 @@ class FractalTree(Tree):
                 └── 5/9
         <BLANKLINE>
         """
-        factor = Fraction(Fraction(new_value), self.get_value())  # type: ignore
+        factor = Fraction(Fraction(new_value), self.get_value())
         self._set_value(new_value)
         for node in self.get_reversed_path_to_root()[1:]:
             node._value = sum([child.get_value() for child in node.get_children()])
@@ -387,10 +387,15 @@ class FractalTree(Tree):
 
     def get_children_fractal_orders(self) -> list[int]:
         if self.is_root:
-            return permute(list(range(1, self.get_size() + 1)), self.main_permutation_order)
+            if self.main_permutation_order is None:
+                raise AttributeError(
+                    create_error_message(message='Set main_permutation_order first', class_name=self.__class__.__name__,
+                                         method_name='get_children_fractal_orders'))
+            else:
+                return permute(list(range(1, self.get_size() + 1)), self.main_permutation_order)
         return permute(list(range(1, self.get_size() + 1)), self.get_permutation_order())
 
-    def get_fractal_order(self) -> int:
+    def get_fractal_order(self) -> Optional[int]:
         """
         :return:
 
@@ -399,10 +404,13 @@ class FractalTree(Tree):
         >>> [node.get_fractal_order() for node in ft.traverse()]
         [None, 3, 1, 2]
         """
-        return self._fractal_order  # type: ignore
+        try:
+            return self._fractal_order
+        except AttributeError:
+            return None
 
-    def get_layer(self, layer: int, key: Optional[Union[str, Callable[[_TREE_TYPE], Any]]] = None) -> List[
-        '_TREE_TYPE']:
+    def get_layer(self, layer: int, key: Optional[Callable[['FractalTree'], Any]] = None) -> List[
+        'FractalTree']:
         """
         :param layer:
         :param key:
@@ -457,6 +465,11 @@ class FractalTree(Tree):
 
     def get_permutation_order_matrix(self) -> PermutationOrderMatrix:
         if self.is_root:
+            if self._permutation_order_matrix is None:
+                raise FractalTreeSetMainPermutationOrderFirstError(
+                    create_error_message(message=FractalTreeSetMainPermutationOrderFirstError.msg,
+                                         class_name=self.__class__.__name__,
+                                         method_name='get_permutation_order_matrix'))
             return self._permutation_order_matrix
         else:
             return self.get_root().get_permutation_order_matrix()
@@ -469,8 +482,8 @@ class FractalTree(Tree):
         """
         return len(self.proportions)
 
-    def get_value(self) -> int:
-        return self._value  # type: ignore
+    def get_value(self) -> Fraction:
+        return self._value
 
     def merge_children(self, *lengths):
         """
@@ -516,7 +529,7 @@ class FractalTree(Tree):
         for chunk in chunks:
             _merge(chunk)
 
-    def reduce_children_by_condition(self, condition: Callable[['_TREE_TYPE'], bool]) -> None:
+    def reduce_children_by_condition(self, condition: Callable[['FractalTree'], bool]) -> None:
         if not self.get_children():
             raise ValueError(f'{self} has no children to be reduced')
         for child in [child for child in self.get_children() if condition(child)]:
@@ -590,7 +603,7 @@ class FractalTree(Tree):
         return self.get_children()
 
     # copy
-    def __copy__(self: '_TREE_TYPE') -> '_TREE_TYPE':
+    def __copy__(self: 'FractalTree') -> 'FractalTree':
         return self.__class__(value=self.get_value(),
                               proportions=self.proportions,
                               main_permutation_order=self.main_permutation_order,
