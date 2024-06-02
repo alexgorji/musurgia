@@ -21,9 +21,6 @@ from musurgia.tests.utils_for_tests import node_info
 from musurgia.utils import flatten
 
 
-# _TREE_TYPE = TypeVar('_TREE_TYPE', bound='FractalTree')
-
-
 class PermutationIndexCalculater:
     def __init__(self, size: PositiveInteger, parent_index: Optional[MatrixIndex] = None, *args, **kwargs):
         super().__init__(*args, **kwargs)

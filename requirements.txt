@@ -1,5 +1,5 @@
 matplotlib==3.9.0
 fpdf2==2.7.9
 musicscore==2.0.1
-verysimpletree==0.1.3b0
+verysimpletree==0.1.4b0
 types-fpdf2
