@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from musurgia.fractal.fractaltree import FractalTree
-from musurgia.tests._test_utils import node_info_with_permutation_order
+from musurgia.tests.utils_for_tests import node_info_with_permutation_order
 
 
 class TestGenerateChildrenReduce(TestCase):

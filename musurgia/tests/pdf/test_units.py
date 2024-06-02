@@ -8,7 +8,7 @@ from musurgia.pdf.line import HorizontalRuler, MarkLine
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdfunit import PdfUnit
 from musurgia.pdf.text import Text
-from musurgia.tests._test_utils import DummyMaster
+from musurgia.tests.utils_for_tests import DummyMaster
 
 
 class TestClippingArea(TestCase):

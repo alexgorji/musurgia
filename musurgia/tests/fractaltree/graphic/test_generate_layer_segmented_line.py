@@ -6,7 +6,7 @@ from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.rowcolumn import DrawObjectColumn
 from musurgia.pdf.text import PageText
-from musurgia.tests._test_utils import PdfTestCase
+from musurgia.tests.utils_for_tests import PdfTestCase
 
 path = Path(__file__)
 

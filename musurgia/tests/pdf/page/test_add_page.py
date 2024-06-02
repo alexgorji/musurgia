@@ -4,7 +4,7 @@ from musurgia.pdf.line import VerticalSegmentedLine
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler, draw_page_numbers
 from musurgia.pdf.text import Text
-from musurgia.tests._test_utils import PdfTestCase
+from musurgia.tests.utils_for_tests import PdfTestCase
 
 path = Path(__file__)
 

@@ -18,7 +18,7 @@ from musurgia.pdf.positioned import Positioned
 from musurgia.pdf.rowcolumn import DrawObjectColumn, DrawObjectRow
 from musurgia.permutation.permutation import permute, get_self_permutation_2d
 from musurgia.permutation.limited_permutation import LimitedPermutationOrders
-from musurgia.tests._test_utils import node_info
+from musurgia.tests.utils_for_tests import node_info
 from musurgia.utils import flatten
 
 _TREE_TYPE = TypeVar('_TREE_TYPE', bound='FractalTree')

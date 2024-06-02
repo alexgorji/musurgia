@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from musurgia.fractal.fractaltree import FractalTree
-from musurgia.tests._test_utils import node_info
+from musurgia.tests.utils_for_tests import node_info
 from musurgia.utils import flatten
 
 

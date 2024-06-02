@@ -1,5 +1,5 @@
 from musurgia.musurgia_types import check_matrix_data_type
-from musurgia.tests._test_utils import PdfTestCase
+from musurgia.tests.utils_for_tests import PdfTestCase
 from musurgia.permutation.limited_permutation import LimitedPermutationOrders
 
 

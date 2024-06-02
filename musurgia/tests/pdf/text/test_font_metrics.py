@@ -4,7 +4,7 @@ import matplotlib as mpl
 import pytest
 
 from musurgia.pdf.font import _make_afm_path_dictionary
-from musurgia.tests._test_utils import PdfTestCase
+from musurgia.tests.utils_for_tests import PdfTestCase
 
 afm_path = Path(mpl.get_data_path(), 'fonts', 'afm', 'ptmr8a.afm')
 

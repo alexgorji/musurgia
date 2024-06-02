@@ -1,5 +1,5 @@
 from musurgia.magicrandom import Random
-from musurgia.tests._test_utils import PdfTestCase
+from musurgia.tests.utils_for_tests import PdfTestCase
 
 
 class TestRandom(PdfTestCase):

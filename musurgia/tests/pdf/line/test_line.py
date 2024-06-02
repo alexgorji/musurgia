@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from musurgia.pdf.line import StraightLine
-from musurgia.tests._test_utils import DummyMaster
+from musurgia.tests.utils_for_tests import DummyMaster
 
 
 class TestStraightLine(TestCase):
