@@ -20,6 +20,8 @@ from musurgia.permutation.permutation import permute
 from musurgia.tests.utils_for_tests import node_info
 from musurgia.utils import flatten
 
+__all__ = ['FractalTree']
+
 
 class PermutationIndexCalculater:
     def __init__(self, size: PositiveInteger, parent_index: Optional[MatrixIndex] = None, *args, **kwargs):

@@ -5,6 +5,8 @@ from musurgia.pdf.line import HorizontalRuler, VerticalRuler
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.text import PageText
 
+__all__ = ['draw_page_numbers', 'draw_ruler']
+
 
 def draw_page_numbers(pdf: Pdf, **kwargs: Any) -> None:
     for page in pdf.pages:

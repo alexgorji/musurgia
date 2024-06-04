@@ -3,6 +3,8 @@ from typing import Optional, Protocol, Any
 
 from musurgia.musurgia_types import ConvertibleToFloat, check_type, MarginType
 
+__all__ = []
+
 
 class HasMarginsProtocol(Protocol):
     @property
@@ -128,5 +130,3 @@ class Margined(AbstractMargined):
     def right_margin(self, val: ConvertibleToFloat) -> None:
         check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='right_margin')
         self._right_margin = float(val)
-
-

@@ -1,12 +1,14 @@
 from abc import ABC, abstractmethod
 from math import ceil
-from typing import Optional, Protocol, Any, Union, TYPE_CHECKING
+from typing import Optional, Protocol, Any
 
 from musurgia.musurgia_exceptions import PdfAttributeError, RelativePositionNotSettableError, MarginNotSettableError
 from musurgia.musurgia_types import create_error_message, check_type, MusurgiaTypeError, PositionType, MarginType
 from musurgia.pdf.margined import AbstractMargined, Margined
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.positioned import AbstractPositioned, Positioned
+
+__all__ = ['ClippingArea']
 
 
 class HasGetHeightProtocol(Protocol):

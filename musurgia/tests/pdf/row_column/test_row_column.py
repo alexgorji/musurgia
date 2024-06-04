@@ -13,8 +13,8 @@ path = Path(__file__)
 class TestRowColumn(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf(orientation='l')
-        self._make_row()
-        self._make_column()
+        self.row = self._make_row()
+        self.column = self._make_column()
 
     def _make_row(self):
         r = DrawObjectRow()
@@ -22,7 +22,9 @@ class TestRowColumn(PdfTestCase):
         do2 = r.add_draw_object(HorizontalLineSegment(20))
         r.add_draw_object(VerticalSegmentedLine(lengths=[5, 6, 7, 8]))
         do2.start_mark_line.length = 6
-        self.row = r
+        r.add_text_label(TextLabel('row', placement='left'))
+        return r
+        # print(self.row.draw_objects)
 
     def _make_column(self):
         c = DrawObjectColumn()
@@ -30,7 +32,7 @@ class TestRowColumn(PdfTestCase):
         do2 = c.add_draw_object(HorizontalLineSegment(20))
         c.add_draw_object(VerticalSegmentedLine(lengths=[5, 6, 7, 8]))
         do2.start_mark_line.length = 6
-        self.column = c
+        return c
 
     def test_draw_row(self):
         self.pdf.translate_page_margins()

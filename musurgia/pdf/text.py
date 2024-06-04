@@ -11,6 +11,8 @@ from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdfunit import PdfUnit
 from musurgia.pdf.positioned import Positioned
 
+__all__ = ['Text', 'PageText']
+
 
 class AbstractText(DrawObject, ABC):
     DEFAULT_FONT_FAMILY: FontFamily = 'Courier'

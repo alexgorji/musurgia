@@ -8,6 +8,8 @@ from musurgia.pdf.margined import Margined
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.positioned import Positioned
 
+__all__ = ['DrawObjectColumn', 'DrawObjectRow']
+
 
 class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
     def __init__(self, *args: Any, **kwargs: Any):

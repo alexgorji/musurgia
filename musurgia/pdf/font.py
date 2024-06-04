@@ -1,10 +1,11 @@
 from pathlib import Path
-from typing import Optional, Union, Any
+from typing import Any
 
 import matplotlib as mpl
 from matplotlib._afm import AFM
+from musurgia.musurgia_types import FontFamily, FontWeight, FontStyle, check_type
 
-from musurgia.musurgia_types import FontFamily, FontWeight, FontStyle, check_type, ConvertibleToFloat
+__all__ = ['Font']
 
 
 def _make_afm_path_dictionary() -> 'dict[tuple[Any, Any, str], AFM]':

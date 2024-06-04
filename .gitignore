@@ -1,3 +1,4 @@
 docs/_build
 .coverage
 musurgia.egg-info
+build

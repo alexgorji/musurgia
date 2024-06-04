@@ -11,6 +11,8 @@ from musurgia.pdf.pdfunit import PdfUnit
 if TYPE_CHECKING:
     from musurgia.pdf.drawobject import DrawObject  # pragma: no cover
 
+__all__ = ['Pdf']
+
 
 def sprintf(fmt: str, *args: Any) -> str: return fmt % args
 

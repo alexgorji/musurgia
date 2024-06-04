@@ -7,6 +7,8 @@ from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.positioned import HasPositionsProtocol
 from musurgia.pdf.text import AbstractText
 
+__all__ = ['TextLabel']
+
 
 class TextLabel(PositionedSlave, AbstractText, Margined):
     def __init__(self, value: Any, master: Optional[Master] = None, placement: LabelPlacement = 'above',

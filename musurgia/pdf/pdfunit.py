@@ -2,6 +2,8 @@ from typing import Any
 
 from musurgia.musurgia_types import check_type, PdfUnitType
 
+__all__ = []
+
 
 class PdfUnitTypeCheckMeta(type):
     def __setattr__(cls, key: str, value: Any) -> None:

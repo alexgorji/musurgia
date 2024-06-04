@@ -3,6 +3,8 @@ from typing import Optional, Protocol, Any
 
 from musurgia.musurgia_types import ConvertibleToFloat, check_type
 
+__all__ = []
+
 
 class HasPositionsProtocol(Protocol):
     @property
@@ -71,5 +73,3 @@ class Positioned(AbstractPositioned):
     def relative_y(self, val: ConvertibleToFloat) -> None:
         check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='relative_y')
         self._relative_y = float(val)
-
-

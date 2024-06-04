@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from quicktions import Fraction
+from fractions import Fraction
 
 from musurgia.fractal.fractaltree import FractalTree
 from musurgia.tests.utils_for_tests import node_info
