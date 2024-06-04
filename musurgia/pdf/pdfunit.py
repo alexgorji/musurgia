@@ -2,7 +2,7 @@ from typing import Any
 
 from musurgia.musurgia_types import check_type, PdfUnitType
 
-__all__ = []
+__all__ = []  # type: ignore
 
 
 class PdfUnitTypeCheckMeta(type):

@@ -3,7 +3,7 @@ from typing import Optional, Protocol, Any
 
 from musurgia.musurgia_types import ConvertibleToFloat, check_type
 
-__all__ = []
+__all__ = []  # type: ignore
 
 
 class HasPositionsProtocol(Protocol):
