@@ -25,7 +25,7 @@ class TestFractalTreeGraphic(PdfTestCase):
     def test_draw_clipped(self):
         unit = 20
         ft = make_ft()
-        ft.graphic.unit = unit
+        ft.graphic.set_unit(unit)
         c = DrawObjectColumn()
 
         c.bottom_margin = 50
@@ -45,7 +45,7 @@ class TestFractalTreeGraphic(PdfTestCase):
             draw_ruler(self.pdf, 'h')
             draw_ruler(self.pdf, 'v')
             self.pdf.translate(10, 10)
-            ft.graphic.unit = 2
+            ft.graphic.set_unit(2)
             ft.graphic.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
 
@@ -67,7 +67,7 @@ class TestFractalTreeGraphic(PdfTestCase):
             ruler = generate_ruler()
             ruler.draw(self.pdf)
             self.pdf.translate(0, 10)
-            ft.graphic.unit = 3
+            ft.graphic.set_unit(3)
             ft.graphic.add_labels(lambda node: node.get_fractal_order() if node.get_fractal_order() is not None else '',
                                   font_size=8, bottom_margin=3)
             ft.graphic.add_labels(lambda node: round(float(node.get_value()), 2), placement='below', font_size=6,

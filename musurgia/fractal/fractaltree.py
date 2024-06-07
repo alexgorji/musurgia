@@ -613,72 +613,140 @@ class FractalTree(Tree[Any]):
 class _Graphic(DrawObject, Margined, Positioned):
     def __init__(self, fractal_tree, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._draw_object_column = None
+        self._draw_object_column: Optional[DrawObjectColumn] = None
+        self._children_row: Optional[DrawObjectRow] = None
         self._fractal_tree = fractal_tree
-        self._unit = 1
-        self._large_mark_line_max_length = 6
-        self._large_mark_line_min_length = 3
+        self._unit: Optional[int] = None
+        self._distance: int = 6
+        self._large_mark_line_length = None
+        # self._large_mark_line_max_length = 6
+        # self._large_mark_line_min_length = 3
+
+    def _get_markline_length(self):
+        return 6
+
+    # def update_draw_object_columns(self):
+    #     unit = self.unit
+    #     max_large_ml = self.large_mark_line_max_length
+    #     min_large_ml = self.large_mark_line_min_length
+    #
+    #     def _make_segment():
+    #         segment = HorizontalLineSegment(length=node.get_value() * unit)
+    #         ml_length = (max_large_ml - (
+    #                 node.get_distance() * (
+    #                 max_large_ml - min_large_ml) / self._fractal_tree.get_number_of_layers())) / 2
+    #         segment.start_mark_line.length = ml_length
+    #         segment.end_mark_line.length = ml_length
+    #         return segment
+    #
+    #     for node in self._fractal_tree.traverse():
+    #         node.graphic._draw_object_column = DrawObjectColumn()
+    #         node.graphic._draw_object_column.add_draw_object(_make_segment())
+    #
+    #         if node.get_children():
+    #             node.graphic._draw_object_column.add_draw_object(DrawObjectRow(top_margin=3))
+    #         if node.up:
+    #             node.up.graphic._draw_object_column.draw_objects[1].add_draw_object(node.graphic)
+    #         if not node.up or node.up.get_children().index(node) == len(node.up.get_children()) - 1:
+    #             node.graphic._draw_object_column.draw_objects[0].end_mark_line.show = True
+    #             node.graphic._draw_object_column.draw_objects[0].end_mark_line.length *= 2
+    #         if not node.up or node.up.get_children().index(node) == 0:
+    #             node.graphic._draw_object_column.draw_objects[0].start_mark_line.length *= 2
+
+    def create_segment(self):
+        # max_large_ml = self.large_mark_line_max_length
+        # min_large_ml = self.large_mark_line_min_length
+        segment = HorizontalLineSegment(length=self._fractal_tree.get_value() * self.get_unit())
+        # ml_length = (max_large_ml - (
+        #         node.get_distance() * (
+        #         max_large_ml - min_large_ml) / self._fractal_tree.get_number_of_layers())) / 2
+        segment.start_mark_line.length = self._get_markline_length()
+        segment.end_mark_line.length = self._get_markline_length()
+        segment.bottom_margin = self.distance
+        return segment
+
+    def create_draw_object_column(self):
+        self._draw_object_column = DrawObjectColumn()
+        self._draw_object_column.add_draw_object(self.create_segment())
+        if not self._fractal_tree.is_leaf:
+            self._children_row = DrawObjectRow()
+            for child in self._fractal_tree.get_children():
+                self._children_row.add_draw_object(child.graphic.get_draw_object_column())
+            print()
+            print(self._children_row.draw_objects)
+            self.get_draw_object_column().add_draw_object(self._children_row)
+        # for node in self._fractal_tree.traverse():
+        #     # node.graphic._draw_object_column = DrawObjectColumn()
+        #     node.graphic.get_draw_object_column().add_draw_object(self.create_segment())
+        #     if not node.is_leaf:
+        #         self._children_row = DrawObjectRow(top_margin=3)
+        #         for child in node.get_children():
+        #             self._children_row.add_draw_object(child.get_graphic().get_draw_object_column())
+        #         self._
+
+        # if node.get_children():
+        #     node.graphic.get_draw_object_column().add_draw_object(DrawObjectRow(top_margin=3))
+
+        # if node.up:
+        #     node.up.graphic.get_draw_object_column().draw_objects[1].add_draw_object(node.graphic)
+        # if not node.up or node.up.get_children().index(node) == len(node.up.get_children()) - 1:
+        #     node.graphic.get_draw_object_column().draw_objects[0].end_mark_line.show = True
+        #     node.graphic.get_draw_object_column().draw_objects[0].end_mark_line.length *= 2
+        # if not node.up or node.up.get_children().index(node) == 0:
+        #     node.graphic.get_draw_object_column().draw_objects[0].start_mark_line.length *= 2
 
     @property
-    def unit(self):
-        return self._unit
+    def distance(self) -> int:
+        return self._distance
 
-    @unit.setter
-    def unit(self, val):
-        self._unit = val
-
-    @property
-    def large_mark_line_max_length(self):
-        return self._large_mark_line_max_length
-
-    @large_mark_line_max_length.setter
-    def large_mark_line_max_length(self, val):
-        self._large_mark_line_max_length = val
+    @distance.setter
+    def distance(self, value: int) -> None:
+        self._distance = value
 
     @property
-    def large_mark_line_min_length(self):
-        return self._large_mark_line_min_length
+    def unit(self) -> int:
+        return self.get_unit()
 
-    @large_mark_line_min_length.setter
-    def large_mark_line_min_length(self, val):
-        self._large_mark_line_min_length = val
+    # @unit.setter
+    # def unit(self, val: Optional[int]) -> None:
+    #     self.set_unit(val)
+
+    # @property
+    # def large_mark_line_max_length(self):
+    #     return self._large_mark_line_max_length
+    #
+    # @large_mark_line_max_length.setter
+    # def large_mark_line_max_length(self, val):
+    #     self._large_mark_line_max_length = val
+    #
+    # @property
+    # def large_mark_line_min_length(self):
+    #     return self._large_mark_line_min_length
+    #
+    # @large_mark_line_min_length.setter
+    # def large_mark_line_min_length(self, val):
+    #     self._large_mark_line_min_length = val
 
     def get_draw_object_column(self):
         if self._draw_object_column is None:
-            self.create_draw_object_columns()
+            self.create_draw_object_column()
         return self._draw_object_column
+
+    def set_unit(self, val: Optional[int]):
+        self._unit = val
+
+    def get_unit(self) -> int:
+        if self._unit is None:
+            if not self._fractal_tree.is_root:
+                return self._fractal_tree.up.graphic.get_unit()
+            else:
+                return 1
+        else:
+            return self._unit
 
     def add_labels(self, function, **kwargs):
         for node in self._fractal_tree.traverse():
             node.graphic.get_straight_line().add_label(function(node), **kwargs)
-
-    def create_draw_object_columns(self):
-        unit = self.unit
-        max_large_ml = self.large_mark_line_max_length
-        min_large_ml = self.large_mark_line_min_length
-
-        def _make_segment():
-            segment = HorizontalLineSegment(length=node.get_value() * unit)
-            ml_length = (max_large_ml - (
-                    node.get_distance() * (
-                    max_large_ml - min_large_ml) / self._fractal_tree.get_number_of_layers())) / 2
-            segment.start_mark_line.length = ml_length
-            segment.end_mark_line.length = ml_length
-            return segment
-
-        for node in self._fractal_tree.traverse():
-            node.graphic._draw_object_column = DrawObjectColumn()
-            node.graphic._draw_object_column.add_draw_object(_make_segment())
-
-            if node.get_children():
-                node.graphic._draw_object_column.add_draw_object(DrawObjectRow(top_margin=3))
-            if node.up:
-                node.up.graphic._draw_object_column.draw_objects[1].add_draw_object(node.graphic)
-            if not node.up or node.up.get_children().index(node) == len(node.up.get_children()) - 1:
-                node.graphic._draw_object_column.draw_objects[0].end_mark_line.show = True
-                node.graphic._draw_object_column.draw_objects[0].end_mark_line.length *= 2
-            if not node.up or node.up.get_children().index(node) == 0:
-                node.graphic._draw_object_column.draw_objects[0].start_mark_line.length *= 2
 
     def get_start_mark_line(self):
         return self.get_draw_object_column().draw_objects[0].start_mark_line
@@ -711,7 +779,7 @@ class _Graphic(DrawObject, Margined, Positioned):
             if layer_number > self._fractal_tree.get_number_of_layers():
                 layer_number = self._fractal_tree.get_number_of_layers()
             layer_nodes = flatten(self._fractal_tree.get_layer(layer_number))
-            lengths = [node.get_value() * self.unit for node in layer_nodes]
+            lengths = [node.get_value() * self.get_unit() for node in layer_nodes]
             hsl = HorizontalSegmentedLine(lengths)
             for segment, node in zip(hsl.segments, layer_nodes):
                 segment.node = node
@@ -738,3 +806,132 @@ class _Graphic(DrawObject, Margined, Positioned):
 
     def draw(self, pdf):
         self.get_draw_object_column().draw(pdf)
+
+# class _Graphic(DrawObject, Margined, Positioned):
+#     def __init__(self, fractal_tree, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self._draw_object_column = None
+#         self._fractal_tree = fractal_tree
+#         self._unit = 1
+#         self._large_mark_line_max_length = 6
+#         self._large_mark_line_min_length = 3
+#
+#     @property
+#     def unit(self):
+#         return self._unit
+#
+#     @unit.setter
+#     def unit(self, val):
+#         self._unit = val
+#
+#     @property
+#     def large_mark_line_max_length(self):
+#         return self._large_mark_line_max_length
+#
+#     @large_mark_line_max_length.setter
+#     def large_mark_line_max_length(self, val):
+#         self._large_mark_line_max_length = val
+#
+#     @property
+#     def large_mark_line_min_length(self):
+#         return self._large_mark_line_min_length
+#
+#     @large_mark_line_min_length.setter
+#     def large_mark_line_min_length(self, val):
+#         self._large_mark_line_min_length = val
+#
+#     def get_draw_object_column(self):
+#         if self._draw_object_column is None:
+#             self.create_draw_object_columns()
+#         return self._draw_object_column
+#
+#     def add_labels(self, function, **kwargs):
+#         for node in self._fractal_tree.traverse():
+#             node.graphic.get_straight_line().add_label(function(node), **kwargs)
+#
+#     def create_draw_object_columns(self):
+#         unit = self.unit
+#         max_large_ml = self.large_mark_line_max_length
+#         min_large_ml = self.large_mark_line_min_length
+#
+#         def _make_segment():
+#             segment = HorizontalLineSegment(length=node.get_value() * unit)
+#             ml_length = (max_large_ml - (
+#                     node.get_distance() * (
+#                     max_large_ml - min_large_ml) / self._fractal_tree.get_number_of_layers())) / 2
+#             segment.start_mark_line.length = ml_length
+#             segment.end_mark_line.length = ml_length
+#             return segment
+#
+#         for node in self._fractal_tree.traverse():
+#             node.graphic._draw_object_column = DrawObjectColumn()
+#             node.graphic._draw_object_column.add_draw_object(_make_segment())
+#
+#             if node.get_children():
+#                 node.graphic._draw_object_column.add_draw_object(DrawObjectRow(top_margin=3))
+#             if node.up:
+#                 node.up.graphic._draw_object_column.draw_objects[1].add_draw_object(node.graphic)
+#             if not node.up or node.up.get_children().index(node) == len(node.up.get_children()) - 1:
+#                 node.graphic._draw_object_column.draw_objects[0].end_mark_line.show = True
+#                 node.graphic._draw_object_column.draw_objects[0].end_mark_line.length *= 2
+#             if not node.up or node.up.get_children().index(node) == 0:
+#                 node.graphic._draw_object_column.draw_objects[0].start_mark_line.length *= 2
+#
+#     def get_start_mark_line(self):
+#         return self.get_draw_object_column().draw_objects[0].start_mark_line
+#
+#     def get_end_mark_line(self):
+#         return self.get_draw_object_column().draw_objects[0].end_mark_line
+#
+#     def get_straight_line(self):
+#         return self.get_draw_object_column().draw_objects[0].straight_line
+#
+#     def get_relative_x2(self):
+#         return self.get_draw_object_column().get_relative_x2()
+#
+#     def get_relative_y2(self):
+#         return self.get_draw_object_column().get_relative_y2()
+#
+#     def get_line_segment(self):
+#         return self.get_draw_object_column().draw_objects[0]
+#
+#     def get_children_draw_object_row(self):
+#         return self.get_draw_object_column().draw_objects[1]
+#
+#     def change_segment_attributes(self, **kwargs):
+#         for node in self._fractal_tree.traverse():
+#             for key in kwargs:
+#                 setattr(node.graphic.get_line_segment(), key, kwargs[key])
+#
+#     def generate_layer_segmented_line(self, layer_number, max_mark_line=6, shrink_factor=0.7):
+#         def get_segmented_line(layer_number):
+#             if layer_number > self._fractal_tree.get_number_of_layers():
+#                 layer_number = self._fractal_tree.get_number_of_layers()
+#             layer_nodes = flatten(self._fractal_tree.get_layer(layer_number))
+#             lengths = [node.get_value() * self.unit for node in layer_nodes]
+#             hsl = HorizontalSegmentedLine(lengths)
+#             for segment, node in zip(hsl.segments, layer_nodes):
+#                 segment.node = node
+#                 segment.start_mark_line.length = get_ml_length(node)
+#             return hsl
+#
+#         def get_ml_length(node):
+#             if not node.up:
+#                 return max_mark_line
+#             else:
+#                 if node.up.get_children().index(node) == 0:
+#                     return get_ml_length(node.up)
+#                 else:
+#                     return max_mark_line * shrink_factor / node.get_distance()
+#
+#         def set_last_mark_line_length(row):
+#             last_mark_line = row.draw_objects[-1].end_mark_line
+#             last_mark_line.length = max_mark_line
+#             last_mark_line.show = True
+#
+#         hls = get_segmented_line(layer_number)
+#         set_last_mark_line_length(hls)
+#         return hls
+#
+#     def draw(self, pdf):
+#         self.get_draw_object_column().draw(pdf)
