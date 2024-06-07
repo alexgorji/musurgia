@@ -619,7 +619,40 @@ class _Graphic(DrawObject, Margined, Positioned):
         self._large_mark_line_max_length = 6
         self._large_mark_line_min_length = 3
 
-    def update_draw_object_columns(self):
+    @property
+    def unit(self):
+        return self._unit
+
+    @unit.setter
+    def unit(self, val):
+        self._unit = val
+
+    @property
+    def large_mark_line_max_length(self):
+        return self._large_mark_line_max_length
+
+    @large_mark_line_max_length.setter
+    def large_mark_line_max_length(self, val):
+        self._large_mark_line_max_length = val
+
+    @property
+    def large_mark_line_min_length(self):
+        return self._large_mark_line_min_length
+
+    @large_mark_line_min_length.setter
+    def large_mark_line_min_length(self, val):
+        self._large_mark_line_min_length = val
+
+    def get_draw_object_column(self):
+        if self._draw_object_column is None:
+            self.create_draw_object_columns()
+        return self._draw_object_column
+
+    def add_labels(self, function, **kwargs):
+        for node in self._fractal_tree.traverse():
+            node.graphic.get_straight_line().add_label(function(node), **kwargs)
+
+    def create_draw_object_columns(self):
         unit = self.unit
         max_large_ml = self.large_mark_line_max_length
         min_large_ml = self.large_mark_line_min_length
@@ -647,60 +680,26 @@ class _Graphic(DrawObject, Margined, Positioned):
             if not node.up or node.up.get_children().index(node) == 0:
                 node.graphic._draw_object_column.draw_objects[0].start_mark_line.length *= 2
 
-    @property
-    def unit(self):
-        return self._unit
-
-    @unit.setter
-    def unit(self, val):
-        self._unit = val
-
-    @property
-    def large_mark_line_max_length(self):
-        return self._large_mark_line_max_length
-
-    @large_mark_line_max_length.setter
-    def large_mark_line_max_length(self, val):
-        self._large_mark_line_max_length = val
-
-    @property
-    def large_mark_line_min_length(self):
-        return self._large_mark_line_min_length
-
-    @large_mark_line_min_length.setter
-    def large_mark_line_min_length(self, val):
-        self._large_mark_line_min_length = val
-
-    @property
-    def draw_object_column(self):
-        if self._draw_object_column is None:
-            self.update_draw_object_columns()
-        return self._draw_object_column
-
-    def add_labels(self, function, **kwargs):
-        for node in self._fractal_tree.traverse():
-            node.graphic.get_straight_line().add_label(function(node), **kwargs)
-
     def get_start_mark_line(self):
-        return self.draw_object_column.draw_objects[0].start_mark_line
+        return self.get_draw_object_column().draw_objects[0].start_mark_line
 
     def get_end_mark_line(self):
-        return self.draw_object_column.draw_objects[0].end_mark_line
+        return self.get_draw_object_column().draw_objects[0].end_mark_line
 
     def get_straight_line(self):
-        return self.draw_object_column.draw_objects[0].straight_line
+        return self.get_draw_object_column().draw_objects[0].straight_line
 
     def get_relative_x2(self):
-        return self.draw_object_column.get_relative_x2()
+        return self.get_draw_object_column().get_relative_x2()
 
     def get_relative_y2(self):
-        return self.draw_object_column.get_relative_y2()
+        return self.get_draw_object_column().get_relative_y2()
 
     def get_line_segment(self):
-        return self.draw_object_column.draw_objects[0]
+        return self.get_draw_object_column().draw_objects[0]
 
     def get_children_draw_object_row(self):
-        return self.draw_object_column.draw_objects[1]
+        return self.get_draw_object_column().draw_objects[1]
 
     def change_segment_attributes(self, **kwargs):
         for node in self._fractal_tree.traverse():
@@ -738,4 +737,4 @@ class _Graphic(DrawObject, Margined, Positioned):
         return hls
 
     def draw(self, pdf):
-        self.draw_object_column.draw(pdf)
+        self.get_draw_object_column().draw(pdf)
