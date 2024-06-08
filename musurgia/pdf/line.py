@@ -156,6 +156,10 @@ class LineSegment(MasterDrawObject, ABC):
     def length(self) -> float:
         return self.straight_line.length
 
+    @length.setter
+    def length(self, value: ConvertibleToFloat) -> None:
+        self.straight_line.length = value
+
     def get_slave_margin(self, slave: StraightLine, margin: MarginType) -> float:
         check_type(margin, 'MarginType', class_name='self.__class__.__name__', method_name='get_slave_margin',
                    argument_name='margin')

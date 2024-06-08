@@ -108,3 +108,27 @@ class TestRowColumn(PdfTestCase):
         c.draw(self.pdf)
         with self.file_path(path, 'draw_column', 'pdf') as pdf_path:
             self.pdf.write_to_path(pdf_path)
+
+    def test_travers_column(self):
+        c = DrawObjectColumn()
+        r = DrawObjectRow()
+        c.add_draw_object(r)
+        c_1 = c.add_draw_object(HorizontalLineSegment(length=10))
+        r_1 = r.add_draw_object(HorizontalLineSegment(length=20))
+        assert list(c.traverse()) == [c, r, r_1, c_1]
+
+    def test_travers_row(self):
+        r = DrawObjectRow()
+        c = DrawObjectColumn()
+        cc = DrawObjectColumn()
+
+        r.add_draw_object(c)
+        r_1 = r.add_draw_object(HorizontalLineSegment(length=10))
+        r.add_draw_object(cc)
+        rr = DrawObjectRow()
+        c.add_draw_object(rr)
+        rr_1 = rr.add_draw_object(HorizontalLineSegment(length=10))
+        c_1 = c.add_draw_object(HorizontalLineSegment(length=10))
+        cc_1 = cc.add_draw_object(HorizontalLineSegment(length=10))
+        cc_2 = cc.add_draw_object(HorizontalLineSegment(length=10))
+        assert list(r.traverse()) == [r, c, rr, rr_1, c_1, r_1, cc, cc_1, cc_2]

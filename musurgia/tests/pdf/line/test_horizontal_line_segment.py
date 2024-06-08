@@ -53,6 +53,11 @@ class TestHorizontalLineSegment(PdfTestCase):
         expected = 3
         self.assertEqual(expected, actual)
 
+    def test_set_and_get_length(self):
+        assert self.hls.length == 10
+        self.hls.length = 20
+        assert self.hls.length == 20
+
     def test_draw(self):
         with self.file_path(parent_path=path, name='draw', extension='pdf') as pdf_path:
             self.pdf.translate_page_margins()

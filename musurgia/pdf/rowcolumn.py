@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Any
+from typing import Any, Iterator
 
 from musurgia.musurgia_types import create_error_message
 from musurgia.pdf.labeled import Labeled
@@ -26,6 +26,15 @@ class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
 
     def get_draw_objects(self) -> list[DrawObject]:
         return self._draw_objects
+
+    def traverse(self) -> Iterator['DrawObjectContainer']:
+        yield self
+        for do in self.get_draw_objects():
+            try:
+                for dodo in do.traverse():
+                    yield dodo
+            except AttributeError:
+                yield do
 
 
 class DrawObjectRow(DrawObjectContainer):

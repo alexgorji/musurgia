@@ -10,8 +10,10 @@ from musurgia.musurgia_exceptions import FractalTreeHasChildrenError, \
     FractalTreeNonRootCannotSetMainPermutationOrderError, PermutationIndexCalculaterNoParentIndexError, \
     FractalTreePermutationIndexError, FractalTreeSetMainPermutationOrderFirstError
 from musurgia.musurgia_types import ConvertibleToFraction, FractalTreeReduceChildrenMode, convert_to_fraction, \
-    MatrixIndex, PermutationOrder, check_type, PositiveInteger, check_matrix_index_values, create_error_message
+    MatrixIndex, PermutationOrder, check_type, PositiveInteger, check_matrix_index_values, create_error_message, \
+    ConvertibleToFloat
 from musurgia.pdf.drawobject import DrawObject
+from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.line import HorizontalLineSegment, HorizontalSegmentedLine
 from musurgia.pdf.margined import Margined
 from musurgia.pdf.positioned import Positioned
@@ -64,6 +66,33 @@ class PermutationIndexCalculater:
         return r, column_number
 
 
+class FractalTreeNodeSegment(HorizontalLineSegment):
+    def __init__(self, node: 'FractalTree', unit=1, *args, **kwargs):
+        super().__init__(length=node.get_value() * unit, *args, **kwargs)
+        self._node: FractalTree = node
+        self._unit: int
+        self.unit = unit
+
+    @property
+    def length(self) -> float:
+        return super().length
+
+    @property
+    def unit(self) -> int:
+        return self._unit
+
+    @unit.setter
+    def unit(self, value: int) -> None:
+        self._unit = value
+        self.straight_line.length = self.get_node().get_value() * self.unit
+
+    def get_node(self):
+        return self._node
+
+    def __copy__(self) -> 'FractalTreeNodeSegment':
+        return self.__class__(node=self.get_node(), unit=self.unit)
+
+
 class FractalTree(Tree[Any]):
     """
     FractalTree represents the node of a fractal tree with a mechanism of limited permutations.
@@ -96,6 +125,7 @@ class FractalTree(Tree[Any]):
         self.fertile = fertile
 
         self._pic = None
+        self._node_segment: FractalTreeNodeSegment = FractalTreeNodeSegment(node=self)
         self._graphic = _Graphic(self)
 
     # private methods
@@ -483,6 +513,40 @@ class FractalTree(Tree[Any]):
 
     def get_value(self) -> Fraction:
         return self._value
+
+    def get_node_segment(self):
+        return self._node_segment
+
+    def create_graphic(self, distance=5, unit=1, mark_line_length: float = 6, shrink_factor=0.7, layer_number=1,
+                       layer_top_margin=0):
+        gr = DrawObjectColumn()
+        first_row = gr.add_draw_object(DrawObjectRow())
+        segment = self.get_node_segment().__copy__()
+        segment.unit = unit
+        if layer_number == 1:
+            segment.end_mark_line.length = segment.start_mark_line.length = mark_line_length
+            segment.end_mark_line.show = True
+            children_layer_top_margin = 0
+        else:
+            segment.end_mark_line.length = segment.start_mark_line.length = mark_line_length * shrink_factor
+            children_layer_top_margin = (mark_line_length - segment.start_mark_line.length)
+            if self.is_last_child:
+                segment.end_mark_line.length = mark_line_length
+                segment.end_mark_line.show = True
+                children_layer_top_margin = 0
+            if self.is_first_child:
+                segment.start_mark_line.length = mark_line_length
+                children_layer_top_margin = 0
+        segment.bottom_margin = distance
+        segment.top_margin = layer_top_margin
+        first_row.add_draw_object(segment)
+        if not self.is_leaf:
+            second_row = gr.add_draw_object(DrawObjectRow())
+            for ch in self.get_children():
+                second_row.add_draw_object(
+                    ch.create_graphic(distance, unit, mark_line_length * shrink_factor, shrink_factor,
+                                      layer_number + 1, children_layer_top_margin))
+        return gr
 
     def merge_children(self, *lengths):
         """
