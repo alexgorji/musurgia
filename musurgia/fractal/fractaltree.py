@@ -617,13 +617,9 @@ class _Graphic(DrawObject, Margined, Positioned):
         self._children_row: Optional[DrawObjectRow] = None
         self._fractal_tree = fractal_tree
         self._unit: Optional[int] = None
-        self._distance: int = 6
+        self._distance: int = 3
         self._large_mark_line_length = None
-        # self._large_mark_line_max_length = 6
-        # self._large_mark_line_min_length = 3
-
-    def _get_markline_length(self):
-        return 6
+        self._markline_length_range: tuple[int, int] = (6, 3)
 
     # def update_draw_object_columns(self):
     #     unit = self.unit
@@ -654,14 +650,7 @@ class _Graphic(DrawObject, Margined, Positioned):
     #             node.graphic._draw_object_column.draw_objects[0].start_mark_line.length *= 2
 
     def create_segment(self):
-        # max_large_ml = self.large_mark_line_max_length
-        # min_large_ml = self.large_mark_line_min_length
         segment = HorizontalLineSegment(length=self._fractal_tree.get_value() * self.get_unit())
-        # ml_length = (max_large_ml - (
-        #         node.get_distance() * (
-        #         max_large_ml - min_large_ml) / self._fractal_tree.get_number_of_layers())) / 2
-        segment.start_mark_line.length = self._get_markline_length()
-        segment.end_mark_line.length = self._get_markline_length()
         segment.bottom_margin = self.distance
         return segment
 
@@ -672,8 +661,6 @@ class _Graphic(DrawObject, Margined, Positioned):
             self._children_row = DrawObjectRow()
             for child in self._fractal_tree.get_children():
                 self._children_row.add_draw_object(child.graphic.get_draw_object_column())
-            print()
-            print(self._children_row.draw_objects)
             self.get_draw_object_column().add_draw_object(self._children_row)
         # for node in self._fractal_tree.traverse():
         #     # node.graphic._draw_object_column = DrawObjectColumn()
@@ -704,28 +691,16 @@ class _Graphic(DrawObject, Margined, Positioned):
         self._distance = value
 
     @property
+    def markline_length_range(self):
+        return self._markline_length_range
+
+    @markline_length_range.setter
+    def markline_length_range(self, val):
+        self._markline_length_range = val
+
+    @property
     def unit(self) -> int:
         return self.get_unit()
-
-    # @unit.setter
-    # def unit(self, val: Optional[int]) -> None:
-    #     self.set_unit(val)
-
-    # @property
-    # def large_mark_line_max_length(self):
-    #     return self._large_mark_line_max_length
-    #
-    # @large_mark_line_max_length.setter
-    # def large_mark_line_max_length(self, val):
-    #     self._large_mark_line_max_length = val
-    #
-    # @property
-    # def large_mark_line_min_length(self):
-    #     return self._large_mark_line_min_length
-    #
-    # @large_mark_line_min_length.setter
-    # def large_mark_line_min_length(self, val):
-    #     self._large_mark_line_min_length = val
 
     def get_draw_object_column(self):
         if self._draw_object_column is None:
@@ -745,7 +720,7 @@ class _Graphic(DrawObject, Margined, Positioned):
             return self._unit
 
     def add_labels(self, function, **kwargs):
-        for node in self._fractal_tree.traverse():
+        for node in self.get_fractal_tree().traverse():
             node.graphic.get_straight_line().add_label(function(node), **kwargs)
 
     def get_start_mark_line(self):
@@ -753,6 +728,9 @@ class _Graphic(DrawObject, Margined, Positioned):
 
     def get_end_mark_line(self):
         return self.get_draw_object_column().draw_objects[0].end_mark_line
+
+    def get_line_segment(self):
+        return self.get_draw_object_column().draw_objects[0]
 
     def get_straight_line(self):
         return self.get_draw_object_column().draw_objects[0].straight_line
@@ -763,14 +741,14 @@ class _Graphic(DrawObject, Margined, Positioned):
     def get_relative_y2(self):
         return self.get_draw_object_column().get_relative_y2()
 
-    def get_line_segment(self):
-        return self.get_draw_object_column().draw_objects[0]
+    def get_fractal_tree(self):
+        return self._fractal_tree
 
-    def get_children_draw_object_row(self):
-        return self.get_draw_object_column().draw_objects[1]
+    # def get_children_draw_object_row(self):
+    #     return self.get_draw_object_column().draw_objects[1]
 
     def change_segment_attributes(self, **kwargs):
-        for node in self._fractal_tree.traverse():
+        for node in self.get_fractal_tree().traverse():
             for key in kwargs:
                 setattr(node.graphic.get_line_segment(), key, kwargs[key])
 
@@ -805,7 +783,25 @@ class _Graphic(DrawObject, Margined, Positioned):
         return hls
 
     def draw(self, pdf):
-        self.get_draw_object_column().draw(pdf)
+        draw_object = self.get_draw_object_column()
+        max_large_ml, min_large_ml = self.markline_length_range
+        for node in self.get_fractal_tree().traverse():
+            # node.graphic.bottom_margin = self.distance
+            if node == self.get_fractal_tree():
+                node.graphic.get_end_mark_line().length = node.graphic.get_start_mark_line().length = max_large_ml
+                node.graphic.get_end_mark_line().show = True
+            else:
+                ml_length = (max_large_ml - (
+                        node.get_distance(self.get_fractal_tree()) * (
+                        max_large_ml - min_large_ml) / self.get_fractal_tree().get_number_of_layers())) / 2
+                node.graphic.get_start_mark_line().length = node.graphic.get_end_mark_line().length = ml_length
+                if node == self.get_fractal_tree() or node.is_last_child:
+                    node.graphic.get_end_mark_line().length *= 2
+                    node.graphic.get_end_mark_line().show = True
+                if node == self.get_fractal_tree() or node.is_first_child:
+                    node.graphic.get_start_mark_line().length *= 2
+
+        draw_object.draw(pdf)
 
 # class _Graphic(DrawObject, Margined, Positioned):
 #     def __init__(self, fractal_tree, *args, **kwargs):

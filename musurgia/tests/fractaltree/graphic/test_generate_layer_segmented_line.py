@@ -25,7 +25,7 @@ def change_layer_graphic(layer_graphic):
 
 
 def change_ft_graphic(ft, unit):
-    ft.graphic.unit = unit
+    ft.graphic.set_unit(unit)
     ft.graphic.add_labels(lambda node: round(float(node.get_value()), 2), placement='above', font_size=6,
                           bottom_margin=2, left_margin=0.5)
     ft.graphic.add_labels(lambda node: node.get_fractal_order(), placement='below', font_size=6, top_margin=1,

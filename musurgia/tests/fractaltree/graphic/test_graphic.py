@@ -72,7 +72,20 @@ class TestFractalTreeGraphic(PdfTestCase):
                                   font_size=8, bottom_margin=3)
             ft.graphic.add_labels(lambda node: round(float(node.get_value()), 2), placement='below', font_size=6,
                                   top_margin=2)
-            ft.graphic.change_segment_attributes(bottom_margin=5)
+            ft.graphic.change_segment_attributes(bottom_margin=8)
 
             ft.graphic.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
+
+    def test_children_graphic(self):
+        ft = make_ft()
+        child = ft.get_children()[-1]
+        with self.file_path(path, f'draw_last_child', 'pdf') as pdf_path:
+            pdf = Pdf()
+            pdf.translate_page_margins()
+            draw_ruler(pdf, 'h')
+            draw_ruler(pdf, 'v')
+            pdf.translate(10, 10)
+            child.graphic.set_unit(2)
+            child.graphic.draw(pdf)
+            pdf.write_to_path(pdf_path)
