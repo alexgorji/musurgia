@@ -215,7 +215,7 @@ class AbstractSegmentedLine(DrawObjectContainer):
 
     @property
     def segments(self) -> list[LineSegment]:
-        return cast(list[LineSegment], self.draw_objects)
+        return cast(list[LineSegment], self.get_draw_objects())
 
     @abstractmethod
     def _make_segments(self, lengths: list[ConvertibleToFloat]) -> None:

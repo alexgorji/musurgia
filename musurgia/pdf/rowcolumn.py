@@ -24,18 +24,17 @@ class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
         self._draw_objects.append(draw_object)
         return draw_object
 
-    @property
-    def draw_objects(self) -> list[DrawObject]:
+    def get_draw_objects(self) -> list[DrawObject]:
         return self._draw_objects
 
 
 class DrawObjectRow(DrawObjectContainer):
 
     def get_relative_x2(self) -> float:
-        return self.relative_x + sum([do.get_width() for do in self.draw_objects])
+        return self.relative_x + sum([do.get_width() for do in self.get_draw_objects()])
 
     def get_relative_y2(self) -> float:
-        return self.relative_y + max([do.get_height() for do in self.draw_objects])
+        return self.relative_y + max([do.get_height() for do in self.get_draw_objects()])
 
     def draw(self, pdf: Pdf) -> None:
         with pdf.prepare_draw_object(self):
@@ -43,17 +42,17 @@ class DrawObjectRow(DrawObjectContainer):
             self.draw_left_text_labels(pdf)
             if self.get_below_text_labels():
                 self.draw_below_text_labels(pdf)
-            for do in self.draw_objects:
+            for do in self.get_draw_objects():
                 do.draw(pdf)
                 pdf.translate(do.get_width(), 0)
 
 
 class DrawObjectColumn(DrawObjectContainer):
     def get_relative_x2(self) -> float:
-        return self.relative_x + max([do.get_width() for do in self.draw_objects])
+        return self.relative_x + max([do.get_width() for do in self.get_draw_objects()])
 
     def get_relative_y2(self) -> float:
-        return self.relative_y + sum([do.get_height() for do in self.draw_objects])
+        return self.relative_y + sum([do.get_height() for do in self.get_draw_objects()])
 
     def draw(self, pdf: Pdf) -> None:
         with pdf.prepare_draw_object(self):
@@ -61,6 +60,6 @@ class DrawObjectColumn(DrawObjectContainer):
             self.draw_left_text_labels(pdf)
             if self.get_below_text_labels():
                 self.draw_below_text_labels(pdf)
-            for do in self.draw_objects:
+            for do in self.get_draw_objects():
                 do.draw(pdf)
                 pdf.translate(0, do.get_height())

@@ -24,7 +24,7 @@ class TestRowColumn(PdfTestCase):
         do2.start_mark_line.length = 6
         r.add_text_label(TextLabel('row', placement='left'))
         return r
-        # print(self.row.draw_objects)
+        # print(self.row.get_draw_objects())
 
     def _make_column(self):
         c = DrawObjectColumn()

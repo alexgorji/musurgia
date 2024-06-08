@@ -642,12 +642,12 @@ class _Graphic(DrawObject, Margined, Positioned):
     #         if node.get_children():
     #             node.graphic._draw_object_column.add_draw_object(DrawObjectRow(top_margin=3))
     #         if node.up:
-    #             node.up.graphic._draw_object_column.draw_objects[1].add_draw_object(node.graphic)
+    #             node.up.graphic._draw_object_column.get_draw_objects()[1].add_draw_object(node.graphic)
     #         if not node.up or node.up.get_children().index(node) == len(node.up.get_children()) - 1:
-    #             node.graphic._draw_object_column.draw_objects[0].end_mark_line.show = True
-    #             node.graphic._draw_object_column.draw_objects[0].end_mark_line.length *= 2
+    #             node.graphic._draw_object_column.get_draw_objects()[0].end_mark_line.show = True
+    #             node.graphic._draw_object_column.get_draw_objects()[0].end_mark_line.length *= 2
     #         if not node.up or node.up.get_children().index(node) == 0:
-    #             node.graphic._draw_object_column.draw_objects[0].start_mark_line.length *= 2
+    #             node.graphic._draw_object_column.get_draw_objects()[0].start_mark_line.length *= 2
 
     def create_segment(self):
         segment = HorizontalLineSegment(length=self._fractal_tree.get_value() * self.get_unit())
@@ -675,12 +675,12 @@ class _Graphic(DrawObject, Margined, Positioned):
         #     node.graphic.get_draw_object_column().add_draw_object(DrawObjectRow(top_margin=3))
 
         # if node.up:
-        #     node.up.graphic.get_draw_object_column().draw_objects[1].add_draw_object(node.graphic)
+        #     node.up.graphic.get_draw_object_column().get_draw_objects()[1].add_draw_object(node.graphic)
         # if not node.up or node.up.get_children().index(node) == len(node.up.get_children()) - 1:
-        #     node.graphic.get_draw_object_column().draw_objects[0].end_mark_line.show = True
-        #     node.graphic.get_draw_object_column().draw_objects[0].end_mark_line.length *= 2
+        #     node.graphic.get_draw_object_column().get_draw_objects()[0].end_mark_line.show = True
+        #     node.graphic.get_draw_object_column().get_draw_objects()[0].end_mark_line.length *= 2
         # if not node.up or node.up.get_children().index(node) == 0:
-        #     node.graphic.get_draw_object_column().draw_objects[0].start_mark_line.length *= 2
+        #     node.graphic.get_draw_object_column().get_draw_objects()[0].start_mark_line.length *= 2
 
     @property
     def distance(self) -> int:
@@ -724,16 +724,16 @@ class _Graphic(DrawObject, Margined, Positioned):
             node.graphic.get_straight_line().add_label(function(node), **kwargs)
 
     def get_start_mark_line(self):
-        return self.get_draw_object_column().draw_objects[0].start_mark_line
+        return self.get_draw_object_column().get_draw_objects()[0].start_mark_line
 
     def get_end_mark_line(self):
-        return self.get_draw_object_column().draw_objects[0].end_mark_line
+        return self.get_draw_object_column().get_draw_objects()[0].end_mark_line
 
     def get_line_segment(self):
-        return self.get_draw_object_column().draw_objects[0]
+        return self.get_draw_object_column().get_draw_objects()[0]
 
     def get_straight_line(self):
-        return self.get_draw_object_column().draw_objects[0].straight_line
+        return self.get_draw_object_column().get_draw_objects()[0].straight_line
 
     def get_relative_x2(self):
         return self.get_draw_object_column().get_relative_x2()
@@ -745,7 +745,7 @@ class _Graphic(DrawObject, Margined, Positioned):
         return self._fractal_tree
 
     # def get_children_draw_object_row(self):
-    #     return self.get_draw_object_column().draw_objects[1]
+    #     return self.get_draw_object_column().get_draw_objects()[1]
 
     def change_segment_attributes(self, **kwargs):
         for node in self.get_fractal_tree().traverse():
@@ -774,7 +774,7 @@ class _Graphic(DrawObject, Margined, Positioned):
                     return max_mark_line * shrink_factor / node.get_distance()
 
         def set_last_mark_line_length(row):
-            last_mark_line = row.draw_objects[-1].end_mark_line
+            last_mark_line = row.get_draw_objects()[-1].end_mark_line
             last_mark_line.length = max_mark_line
             last_mark_line.show = True
 
@@ -866,21 +866,21 @@ class _Graphic(DrawObject, Margined, Positioned):
 #             if node.get_children():
 #                 node.graphic._draw_object_column.add_draw_object(DrawObjectRow(top_margin=3))
 #             if node.up:
-#                 node.up.graphic._draw_object_column.draw_objects[1].add_draw_object(node.graphic)
+#                 node.up.graphic._draw_object_column.get_draw_objects()[1].add_draw_object(node.graphic)
 #             if not node.up or node.up.get_children().index(node) == len(node.up.get_children()) - 1:
-#                 node.graphic._draw_object_column.draw_objects[0].end_mark_line.show = True
-#                 node.graphic._draw_object_column.draw_objects[0].end_mark_line.length *= 2
+#                 node.graphic._draw_object_column.get_draw_objects()[0].end_mark_line.show = True
+#                 node.graphic._draw_object_column.get_draw_objects()[0].end_mark_line.length *= 2
 #             if not node.up or node.up.get_children().index(node) == 0:
-#                 node.graphic._draw_object_column.draw_objects[0].start_mark_line.length *= 2
+#                 node.graphic._draw_object_column.get_draw_objects()[0].start_mark_line.length *= 2
 #
 #     def get_start_mark_line(self):
-#         return self.get_draw_object_column().draw_objects[0].start_mark_line
+#         return self.get_draw_object_column().get_draw_objects()[0].start_mark_line
 #
 #     def get_end_mark_line(self):
-#         return self.get_draw_object_column().draw_objects[0].end_mark_line
+#         return self.get_draw_object_column().get_draw_objects()[0].end_mark_line
 #
 #     def get_straight_line(self):
-#         return self.get_draw_object_column().draw_objects[0].straight_line
+#         return self.get_draw_object_column().get_draw_objects()[0].straight_line
 #
 #     def get_relative_x2(self):
 #         return self.get_draw_object_column().get_relative_x2()
@@ -889,10 +889,10 @@ class _Graphic(DrawObject, Margined, Positioned):
 #         return self.get_draw_object_column().get_relative_y2()
 #
 #     def get_line_segment(self):
-#         return self.get_draw_object_column().draw_objects[0]
+#         return self.get_draw_object_column().get_draw_objects()[0]
 #
 #     def get_children_draw_object_row(self):
-#         return self.get_draw_object_column().draw_objects[1]
+#         return self.get_draw_object_column().get_draw_objects()[1]
 #
 #     def change_segment_attributes(self, **kwargs):
 #         for node in self._fractal_tree.traverse():
@@ -921,7 +921,7 @@ class _Graphic(DrawObject, Margined, Positioned):
 #                     return max_mark_line * shrink_factor / node.get_distance()
 #
 #         def set_last_mark_line_length(row):
-#             last_mark_line = row.draw_objects[-1].end_mark_line
+#             last_mark_line = row.get_draw_objects()[-1].end_mark_line
 #             last_mark_line.length = max_mark_line
 #             last_mark_line.show = True
 #
