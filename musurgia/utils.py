@@ -1,3 +1,6 @@
+from typing import Type, Any
+
+
 def flatten(input):
     """
     :param input:
@@ -18,3 +21,10 @@ def flatten(input):
         else:
             output.append(item)
     return output
+
+
+def is_instance_as_string(object_: Any, class_name: str) -> bool:
+    if class_name in [str(c.__name__) for c in object_.__class__.__mro__]:
+        return True
+    else:
+        return False

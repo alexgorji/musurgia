@@ -35,11 +35,13 @@ class TestCreatLayerGraphic(PdfTestCase):
         graphic.bottom_margin = 10
 
         graphic_layer_2 = self.fractal_tree.create_layer_graphic(layer_number=2, unit=unit, shrink_factor=0.6)
-        # graphic_layer_2.get_draw_objects()[0].add_text_label(TextLabel(value='layer 2', placement='left', font_size=8))
+        graphic_layer_2.get_draw_objects()[0].start_mark_line.add_text_label(
+            TextLabel(value='layer 2', placement='left', font_size=8, right_margin=2))
         graphic_layer_2.bottom_margin = 10
 
         graphic_layer_3 = self.fractal_tree.create_layer_graphic(layer_number=3, unit=unit, shrink_factor=0.6)
-        graphic_layer_3.add_text_label(TextLabel(value='layer 3', placement='left', font_size=8))
+        graphic_layer_3.get_draw_objects()[0].start_mark_line.add_text_label(
+            TextLabel(value='layer 3', placement='left', font_size=8, right_margin=2))
 
         c = DrawObjectColumn()
 

@@ -1,6 +1,8 @@
+import copy
 from pathlib import Path
+from unittest import skip
 
-from musurgia.pdf.line import HorizontalLineSegment, VerticalSegmentedLine
+from musurgia.pdf.line import HorizontalLineSegment, VerticalSegmentedLine, VerticalLineSegment
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn
@@ -132,3 +134,81 @@ class TestRowColumn(PdfTestCase):
         cc_1 = cc.add_draw_object(HorizontalLineSegment(length=10))
         cc_2 = cc.add_draw_object(HorizontalLineSegment(length=10))
         assert list(r.traverse()) == [r, c, rr, rr_1, c_1, r_1, cc, cc_1, cc_2]
+
+    @skip
+    def test_row_column_borders_and_labels(self):
+        def add_text_labels(do):
+            if isinstance(do, HorizontalLineSegment):
+                do = do.start_mark_line
+            do.add_text_label(label=TextLabel('below label', placement='below'))
+            do.add_text_label(label=TextLabel(f'rel_x: {round(do.relative_x)}', placement='below'))
+            do.add_text_label(label=TextLabel(f'rel_x2: {round(do.get_relative_x2())}', placement='below'))
+            do.add_text_label(label=TextLabel('above label', placement='above'))
+            do.add_text_label(label=TextLabel(f'rel_y: {round(do.relative_y)}', placement='above'))
+            do.add_text_label(label=TextLabel(f'rel_y2: {round(do.get_relative_y2())}', placement='above'))
+            do.add_text_label(label=TextLabel(f'left label', placement='left'))
+            do.add_text_label(label=TextLabel(f'left label', placement='left'))
+            do.add_text_label(label=TextLabel(f'left label', placement='left'))
+            for tl in do.get_text_labels():
+                tl.font_size = 8
+
+        hls = HorizontalLineSegment(length=20)
+        hls.start_mark_line.length = 10
+
+        vls = VerticalLineSegment(length=15)
+        vls.start_mark_line.length = vls.end_mark_line.length = 10
+
+        control_hls = copy.deepcopy(hls)
+        control_hls.top_margin = 10
+        control_hls.left_margin = 20
+        control_hls.bottom_margin = 20
+
+        add_text_labels(control_hls)
+
+        r = DrawObjectRow(show_borders=True, show_margins=True)
+        first_hls = copy.deepcopy(hls)
+        first_hls.left_margin = 5
+        second_hls = copy.deepcopy(hls)
+        second_hls.start_mark_line.length *= 0.5
+        second_hls.end_mark_line.show = True
+
+        r.add_draw_object(first_hls)
+        r.add_draw_object(second_hls)
+
+        first_vls = copy.deepcopy(vls)
+        second_vls = copy.deepcopy(vls)
+
+        second_vls.end_mark_line.show = first_vls.end_mark_line.show = True
+        first_vls.left_margin = 10
+        first_vls.right_margin = 5
+        r.add_draw_object(first_vls)
+        r.add_draw_object(second_vls)
+
+        r.top_margin = 10
+        r.left_margin = 20
+        r.bottom_margin = 20
+
+        add_text_labels(r)
+
+        c = DrawObjectColumn(show_borders=True)
+        first_hls = copy.deepcopy(hls)
+        second_hls = copy.deepcopy(hls)
+        first_hls.bottom_margin = 10
+        c.add_draw_object(first_hls)
+        c.add_draw_object(second_hls)
+        c.top_margin = 10
+        c.left_margin = 20
+
+        add_text_labels(c)
+
+        main_column = DrawObjectColumn()
+        main_column.add_draw_object(control_hls)
+        main_column.add_draw_object(r)
+        main_column.add_draw_object(c)
+
+        with self.file_path(path, 'borders_and_labels', 'pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            draw_ruler(self.pdf, mode='v')
+            draw_ruler(self.pdf, mode='h')
+            main_column.draw(self.pdf)
+            self.pdf.write_to_path(pdf_path)
