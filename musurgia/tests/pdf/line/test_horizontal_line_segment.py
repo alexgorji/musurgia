@@ -108,3 +108,14 @@ class TestHorizontalLineSegment(PdfTestCase):
             self.hls.draw(self.pdf)
 
             self.pdf.write_to_path(pdf_path)
+
+    def test_infos(self):
+        hls = HorizontalLineSegment(length=100)
+        hls.start_mark_line.length = 6
+        hls.end_mark_line.length = 10
+        hls.relative_y = 5
+        hls.relative_y = 5
+        assert hls.get_positions() == {'x': 5.0, 'y': 5.0}
+        assert (hls.get_relative_x2(), hls.get_relative_y2()) == (100.0, 5.0)
+        assert hls.get_height() == 0
+        assert hls.get_width() == 100
