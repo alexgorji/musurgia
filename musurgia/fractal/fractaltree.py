@@ -1,3 +1,4 @@
+import copy
 import itertools
 from fractions import Fraction
 from typing import Union, Optional, List, Callable, Any, cast, Sequence
@@ -67,11 +68,14 @@ class PermutationIndexCalculater:
 
 
 class FractalTreeNodeSegment(HorizontalLineSegment):
-    def __init__(self, node: 'FractalTree', unit=1, *args, **kwargs):
-        super().__init__(length=node.get_value() * unit, *args, **kwargs)
-        self._node: FractalTree = node
+    def __init__(self, node_value, unit=1, *args, **kwargs):
+        super().__init__(length=node_value * unit, *args, **kwargs)
+        self._node_value = node_value
         self._unit: int
         self.unit = unit
+
+    def _update_length(self):
+        self.straight_line.length = self.get_node_value() * self.unit
 
     @property
     def length(self) -> float:
@@ -84,13 +88,14 @@ class FractalTreeNodeSegment(HorizontalLineSegment):
     @unit.setter
     def unit(self, value: int) -> None:
         self._unit = value
-        self.straight_line.length = self.get_node().get_value() * self.unit
+        self._update_length()
 
-    def get_node(self):
-        return self._node
+    def get_node_value(self):
+        return self._node_value
 
-    def __copy__(self) -> 'FractalTreeNodeSegment':
-        return self.__class__(node=self.get_node(), unit=self.unit)
+    def set_node_value(self, val):
+        self._node_value = val
+        self._update_length()
 
 
 class FractalTree(Tree[Any]):
@@ -117,6 +122,7 @@ class FractalTree(Tree[Any]):
         self._children_fractal_values = None
         self._children_permutation_order_matrices = None
         self._permutation_order = None
+        self._node_segment: FractalTreeNodeSegment
         self._set_value(value)
 
         self.proportions = proportions
@@ -125,7 +131,7 @@ class FractalTree(Tree[Any]):
         self.fertile = fertile
 
         self._pic = None
-        self._node_segment: FractalTreeNodeSegment = FractalTreeNodeSegment(node=self)
+
         self._graphic = _Graphic(self)
 
     # private methods
@@ -143,7 +149,7 @@ class FractalTree(Tree[Any]):
 
     def _change_children_value(self, factor: Union[int, float, Fraction]) -> None:
         for child in self.get_children():
-            child._value *= factor
+            child._set_value(child._value * factor)
             child._change_children_value(factor)
 
     def _get_children_fractal_values(self) -> List['Fraction']:
@@ -193,6 +199,10 @@ class FractalTree(Tree[Any]):
         if not isinstance(val, Fraction):
             val = Fraction(val)
         self._value = val
+        try:
+            self.get_node_segment().set_node_value(val)
+        except AttributeError:
+            self._node_segment = FractalTreeNodeSegment(node_value=val)
 
     # properties
     @property
@@ -331,7 +341,7 @@ class FractalTree(Tree[Any]):
         factor = Fraction(Fraction(new_value), self.get_value())
         self._set_value(new_value)
         for node in self.get_reversed_path_to_root()[1:]:
-            node._value = sum([child.get_value() for child in node.get_children()])
+            node._set_value(sum([child.get_value() for child in node.get_children()]))
 
         self._change_children_value(factor)
 
@@ -521,7 +531,7 @@ class FractalTree(Tree[Any]):
                        layer_top_margin=0):
         gr = DrawObjectColumn()
         first_row = gr.add_draw_object(DrawObjectRow())
-        segment = self.get_node_segment().__copy__()
+        segment = copy.deepcopy(self.get_node_segment())
         segment.unit = unit
         if layer_number == 1:
             segment.end_mark_line.length = segment.start_mark_line.length = mark_line_length
@@ -537,8 +547,8 @@ class FractalTree(Tree[Any]):
             if self.is_first_child:
                 segment.start_mark_line.length = mark_line_length
                 children_layer_top_margin = 0
-        segment.bottom_margin = distance
-        segment.top_margin = layer_top_margin
+        segment.bottom_margin += distance
+        segment.top_margin += layer_top_margin
         first_row.add_draw_object(segment)
         if not self.is_leaf:
             second_row = gr.add_draw_object(DrawObjectRow())

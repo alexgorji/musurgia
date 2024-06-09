@@ -1,8 +1,9 @@
+import copy
 from pathlib import Path
 
 from musurgia.fractal import FractalTree
 from musurgia.fractal.fractaltree import FractalTreeNodeSegment
-from musurgia.pdf import DrawObjectRow, DrawObjectColumn, Pdf, draw_ruler
+from musurgia.pdf import DrawObjectRow, DrawObjectColumn, Pdf, draw_ruler, HorizontalRuler
 from musurgia.tests.utils_for_tests import PdfTestCase
 
 path = Path(__file__)
@@ -32,7 +33,7 @@ class TestCreateGraphic(PdfTestCase):
         segment.end_mark_line.show = True
 
         segment.start_mark_line.add_text_label('something')
-        copied_segment = segment.__copy__()
+        copied_segment = copy.deepcopy(segment)
         assert isinstance(copied_segment, FractalTreeNodeSegment)
         assert copied_segment.unit == segment.unit
         assert copied_segment.length == self.fractal_tree.get_value() * 10
@@ -44,6 +45,20 @@ class TestCreateGraphic(PdfTestCase):
         assert segment.end_mark_line.show
         assert not copied_segment.end_mark_line.show
         assert copied_segment.start_mark_line.get_text_labels()[0].value == 'something'
+
+    def test_set_node_value(self):
+        seg = FractalTreeNodeSegment(node_value=10)
+        assert seg.length == 10
+        assert seg.get_node_value() == 10
+        seg.set_node_value(20)
+        assert seg.get_node_value() == 20
+        assert seg.length == 20
+        seg.unit = 2
+        assert seg.get_node_value() == 20
+        assert seg.length == 40
+        seg.set_node_value(10)
+        assert seg.get_node_value() == 10
+        assert seg.length == 20
 
     def test_create_graphic_types(self):
         graphic = self.fractal_tree.create_graphic()
@@ -63,23 +78,57 @@ class TestCreateGraphic(PdfTestCase):
 
     def test_create_graphic(self):
         for node in self.fractal_tree.traverse():
-            node.get_node_segment().unit = 2
+            if node.get_distance() == 1:
+                node.get_node_segment().start_mark_line.add_text_label(f'value:{round(node.get_value(), 2)}',
+                                                                       font_size=8,
+                                                                       bottom_margin=1)
+                node.get_node_segment().top_margin = 3
             if node.get_distance() < 3:
-                node.get_node_segment().start_mark_line.add_text_label(f'{node.get_fractal_order()}', font_size=6)
-        graphic = self.fractal_tree.create_graphic(unit=10)
+                node.get_node_segment().start_mark_line.add_text_label(f'{node.get_fractal_order()}', font_size=6,
+                                                                       bottom_margin=1)
+                node.get_node_segment().start_mark_line.add_text_label(f'{node.get_position_in_tree()}', font_size=4,
+                                                                       bottom_margin=1)
+        unit = 15
+        graphic = self.fractal_tree.create_graphic(unit=unit)
 
-        # for index, do in enumerate(graphic.traverse()):
-        #     if isinstance(do, FractalTreeNodeSegment):
-        #         do.straight_line.add_text_label(f's: {index}', font_size=5)
-        #     elif isinstance(do, DrawObjectRow):
-        #         do.add_text_label(f'r: {index}', font_size=5, placement='below', top_margin=2)
-        #     else:
-        #         do.add_text_label(f'c: {index}', font_size=5, placement='below', top_margin=4)
         pdf = Pdf()
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
             pdf.translate_page_margins()
-            draw_ruler(pdf, 'h')
-            draw_ruler(pdf, 'v')
-            pdf.translate(10, 10)
+            draw_ruler(pdf, 'h', unit=unit, first_label=-1)
+            draw_ruler(pdf, 'v', unit=10)
+            pdf.translate(unit, 10)
             graphic.draw(pdf)
+            pdf.write_to_path(pdf_path)
+
+    def test_draw_clipped(self):
+        self.fractal_tree.change_value(50)
+        for node in self.fractal_tree.traverse():
+            if node.get_distance() == 1:
+                node.get_node_segment().start_mark_line.add_text_label(f'value:{round(node.get_value(), 2)}',
+                                                                       font_size=12,
+                                                                       bottom_margin=1)
+                node.get_node_segment().top_margin = 3
+            node.get_node_segment().start_mark_line.add_text_label(f'{node.get_fractal_order()}', font_size=10,
+                                                                   bottom_margin=1)
+            node.get_node_segment().start_mark_line.add_text_label(f'{node.get_position_in_tree()}', font_size=8,
+                                                                   bottom_margin=1)
+            if node.get_position_in_tree() == '4.1.4':
+                node.get_node_segment().start_mark_line.get_above_text_labels()[-1].left_margin = 3
+            elif node.get_position_in_tree() == '4.2.3':
+                node.get_node_segment().start_mark_line.get_above_text_labels()[-1].left_margin = 5
+
+        unit = 20
+        graphic = self.fractal_tree.create_graphic(unit=unit, distance=10)
+        graphic.top_margin = 10
+        pdf = Pdf(orientation='l')
+
+        c = DrawObjectColumn()
+        c.bottom_margin = 20
+        ruler = HorizontalRuler(unit=unit, length=graphic.get_width(), bottom_margin=5)
+        c.add_draw_object(ruler)
+        c.add_draw_object(graphic)
+        pdf.r_margin = pdf.l_margin = ((pdf.w - 13 * unit) / 2)
+        pdf.translate_page_margins()
+        c.clipped_draw(pdf)
+        with self.file_path(path, 'draw_clipped', 'pdf') as pdf_path:
             pdf.write_to_path(pdf_path)
