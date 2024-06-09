@@ -23,7 +23,7 @@ from musurgia.permutation.permutation import permute
 from musurgia.tests.utils_for_tests import node_info
 from musurgia.utils import flatten
 
-__all__ = ['FractalTree']
+__all__ = ['FractalTree', 'FractalTreeNodeSegment']
 
 
 class PermutationIndexCalculater:
@@ -556,6 +556,29 @@ class FractalTree(Tree[Any]):
                 second_row.add_draw_object(
                     ch.create_graphic(distance, unit, mark_line_length * shrink_factor, shrink_factor,
                                       layer_number + 1, children_layer_top_margin))
+        return gr
+
+    def create_layer_graphic(self, layer_number, unit=1, mark_line_length: float = 6, shrink_factor=0.7):
+        def get_ml_length(node):
+            distance = node.get_distance(self)
+            if distance == 0:
+                return mark_line_length
+            else:
+                if node.is_first_child:
+                    return get_ml_length(node.up)
+                else:
+                    return mark_line_length * shrink_factor / distance
+
+        gr = DrawObjectRow()
+        nodes = flatten(self.get_layer(layer_number))
+        for node in nodes:
+            copied_segment = copy.deepcopy(node.get_node_segment())
+            copied_segment.unit = unit
+            copied_segment.start_mark_line.length = get_ml_length(node)
+            if node == nodes[-1]:
+                copied_segment.end_mark_line.length = mark_line_length
+                copied_segment.end_mark_line.show = True
+            gr.add_draw_object(copied_segment)
         return gr
 
     def merge_children(self, *lengths):
