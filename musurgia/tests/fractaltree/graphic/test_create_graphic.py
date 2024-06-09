@@ -3,7 +3,7 @@ from pathlib import Path
 
 from musurgia.fractal import FractalTree
 from musurgia.fractal.fractaltree import FractalTreeNodeSegment
-from musurgia.pdf import DrawObjectRow, DrawObjectColumn, Pdf, draw_ruler, HorizontalRuler
+from musurgia.pdf import DrawObjectRow, DrawObjectColumn, Pdf, draw_ruler, HorizontalRuler, TextLabel
 from musurgia.tests.utils_for_tests import PdfTestCase
 
 path = Path(__file__)
@@ -131,4 +131,27 @@ class TestCreateGraphic(PdfTestCase):
         pdf.translate_page_margins()
         c.clipped_draw(pdf)
         with self.file_path(path, 'draw_clipped', 'pdf') as pdf_path:
+            pdf.write_to_path(pdf_path)
+
+    def test_children_graphic(self):
+        child = self.fractal_tree.get_children()[-1]
+        child.change_value(15)
+        for index, node in enumerate(child.traverse()):
+            text_label = TextLabel(f'{node.get_position_in_tree()}', font_size=8)
+            if node.get_distance(child) > 1 and index % 2 == 1:
+                text_label.placement = 'below'
+                text_label.top_margin = 1
+            else:
+                text_label.bottom_margin = 2
+            node.get_node_segment().start_mark_line.add_text_label(text_label)
+
+        unit = 10
+        graphic = child.create_graphic(unit=unit, distance=20)
+        pdf = Pdf()
+        with self.file_path(path, f'draw_last_child', 'pdf') as pdf_path:
+            pdf.translate_page_margins()
+            draw_ruler(pdf, 'h', unit=unit, first_label=-1)
+            draw_ruler(pdf, 'v', unit=10)
+            pdf.translate(unit, 10)
+            graphic.draw(pdf)
             pdf.write_to_path(pdf_path)
