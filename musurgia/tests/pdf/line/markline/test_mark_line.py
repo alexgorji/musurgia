@@ -37,8 +37,6 @@ class TestMarkLine(PdfTestCase):
     def test_draw(self):
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, 'h')
-            draw_ruler(self.pdf, 'v')
             self.ml.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
 
@@ -47,9 +45,6 @@ class TestMarkLine(PdfTestCase):
         self.ml.master.get_slave_margin = lambda slave, margin: 0
         with self.file_path(path, 'draw_multiple', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, 'h')
-            draw_ruler(self.pdf, 'v')
-            self.pdf.translate(20, 20)
             self.ml.draw(self.pdf)
             self.ml.master.get_slave_margin = lambda slave, margin: 5 if margin in ['l', 'left'] else 0
             self.ml.draw(self.pdf)

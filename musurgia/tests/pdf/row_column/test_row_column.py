@@ -2,7 +2,7 @@ import copy
 from pathlib import Path
 from unittest import skip
 
-from musurgia.pdf.line import HorizontalLineSegment, VerticalSegmentedLine, VerticalLineSegment
+from musurgia.pdf.line import HorizontalLineSegment, VerticalSegmentedLine, VerticalLineSegment, StraightLine
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn
@@ -10,6 +10,32 @@ from musurgia.pdf.labeled import TextLabel
 from musurgia.tests.utils_for_tests import PdfTestCase
 
 path = Path(__file__)
+
+
+class TestRowColumnSimpleLines(PdfTestCase):
+    def setUp(self) -> None:
+        self.pdf = Pdf(orientation='l')
+        self.h_lines = [StraightLine(length=l, mode='h') for l in range(5, 20, 5)]
+        self.v_lines = [StraightLine(length=l, mode='v') for l in range(5, 20, 5)]
+
+    def test_simple_lines_row(self):
+        row = DrawObjectRow(show_margins=True, show_borders=True)
+        row.margins = (10, 10, 10, 10)
+        for l in self.h_lines + self.v_lines:
+            row.add_draw_object(l)
+
+        for l in self.h_lines + self.v_lines:
+            copied = copy.deepcopy(l)
+            copied.top_margin = 10
+            copied.left_margin = 10
+            row.add_draw_object(copied)
+        self.v_lines[-1].right_margin = 10
+
+        with self.file_path(path, 'simple_lines_row', 'pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            self.pdf.translate(10, 10)
+            row.draw(self.pdf)
+            self.pdf.write_to_path(pdf_path)
 
 
 class TestRowColumn(PdfTestCase):
@@ -55,16 +81,73 @@ class TestRowColumn(PdfTestCase):
             r.add_draw_object('something')
 
     def test_draw_row_of_segments(self):
-        r = DrawObjectRow()
-        r.add_draw_object(HorizontalLineSegment(30))
-        r.add_draw_object(HorizontalLineSegment(10))
-        r.add_draw_object(HorizontalLineSegment(20))
+        draw_object_rows = [DrawObjectRow(show_segments=True, show_margins=True) for _ in range(4)]
+        line_segments = [HorizontalLineSegment(l) for l in [30, 10, 20]]
+        line_segments[-1].end_mark_line.show = True
+        line_segments[-1].right_margin = 10
+        for l in line_segments:
+            draw_object_rows[0].add_draw_object(l)
+
+        for i, l in enumerate(line_segments):
+            copied = copy.deepcopy(l)
+            copied.start_mark_line.length *= (i + 1)
+            draw_object_rows[1].add_draw_object(copied)
+            if i == len(line_segments) - 1:
+                copied.end_mark_line.length += copied.start_mark_line.length
+            copied.right_margin = 10
+
+        for i, l in enumerate(line_segments):
+            copied = copy.deepcopy(l)
+            copied.start_mark_line.length *= (i + 1)
+            draw_object_rows[2].add_draw_object(copied)
+            if i == len(line_segments) - 1:
+                copied.end_mark_line.length += copied.start_mark_line.length
+
+        for i, l in enumerate(line_segments):
+            copied = copy.deepcopy(l)
+            copied.start_mark_line.length *= (i + 1)
+            draw_object_rows[3].add_draw_object(copied)
+            if i == len(line_segments) - 1:
+                copied.end_mark_line.length += copied.start_mark_line.length
+            copied.set_straight_line_relative_y(1.5)
+
         with self.file_path(path, 'draw_row_of_segments', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, 'h')
-            draw_ruler(self.pdf, 'v')
-            self.pdf.translate(10, 10)
-            r.draw(self.pdf)
+            for l in line_segments:
+                copied = copy.deepcopy(l)
+                copied.draw(self.pdf)
+                self.pdf.translate(50, 0)
+
+            self.pdf.reset_position()
+            self.pdf.translate_page_margins()
+            self.pdf.translate(0, 30)
+            for i, l in enumerate(line_segments):
+                copied = copy.deepcopy(l)
+                copied.start_mark_line.length *= (i + 1)
+                copied.draw(self.pdf)
+                self.pdf.translate(50, 0)
+
+            self.pdf.reset_position()
+            self.pdf.translate_page_margins()
+            self.pdf.translate(0, 60)
+            for i, l in enumerate(line_segments):
+                copied = copy.deepcopy(l)
+                copied.start_mark_line.length *= (i + 1)
+                copied.relative_y -= (i * 3)
+                copied.start_mark_line.add_text_label(str(copied.relative_y), font_size=8)
+                copied.start_mark_line.add_text_label(str(copied.start_mark_line.length), font_size=8, placement='left')
+                copied.straight_line.add_text_label(str(copied.straight_line.length), font_size=8, placement='below',
+                                                    left_margin=5, top_margin=2)
+                copied.draw(self.pdf)
+                self.pdf.translate(50, 0)
+
+            self.pdf.reset_position()
+            self.pdf.translate_page_margins()
+            self.pdf.translate(0, 90)
+            for do in draw_object_rows:
+                do.draw(self.pdf)
+                self.pdf.translate(0, 20)
+
             self.pdf.write_to_path(pdf_path)
 
     def test_draw_column_of_row_of_segments(self):

@@ -80,8 +80,16 @@ class AbstractMargined(ABC):
         """right_margin setter must be provided"""
 
     def get_margins(self) -> dict[MarginType, float]:
-        return {'left': self.left_margin, 'top': self.top_margin, 'right': self.right_margin,
-                'bottom': self.bottom_margin}
+        return {'top': self.top_margin, 'right': self.right_margin, 'bottom': self.bottom_margin,
+                'left': self.left_margin}
+
+    @property
+    def margins(self):
+        return self.top_margin, self.right_margin, self.bottom_margin, self.left_margin
+
+    @margins.setter
+    def margins(self, value):
+        self.top_margin, self.right_margin, self.bottom_margin, self.left_margin = value
 
 
 class Margined(AbstractMargined):

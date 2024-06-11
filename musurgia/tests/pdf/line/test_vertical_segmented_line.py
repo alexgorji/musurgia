@@ -16,9 +16,6 @@ class TestVerticalSegmentedLine(PdfTestCase):
     def test_draw(self):
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, 'h')
-            draw_ruler(self.pdf, 'v')
-            self.pdf.translate(10, 10)
             self.vsl.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
 

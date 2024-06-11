@@ -4,7 +4,7 @@ from musurgia.musurgia_exceptions import PdfAttributeError
 from musurgia.musurgia_types import MusurgiaTypeError
 from musurgia.pdf.drawobject import ClippingArea
 from musurgia.pdf.labeled import TextLabel, Labeled
-from musurgia.pdf.line import HorizontalRuler, MarkLine
+from musurgia.pdf.line import HorizontalRuler, MarkLine, StraightLine
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdfunit import PdfUnit
 from musurgia.pdf.text import Text
@@ -103,3 +103,16 @@ class TestNoPdfError(TestCase):
         with self.assertRaises(TypeError):
             t.draw(pdf=None)
 
+
+class TestMarginsPositions(TestCase):
+    def test_set_get_margins(self):
+        l = StraightLine(mode='h', length=10)
+        l.margins = (1, 2, 3, 4)
+        assert l.get_margins() == {'bottom': 3.0, 'left': 4.0, 'right': 2.0, 'top': 1.0}
+        assert l.margins == (1, 2, 3, 4)
+
+    def test_set_get_positions(self):
+        l = StraightLine(mode='h', length=10)
+        l.positions = (10, 20)
+        assert l.get_positions() == {'x': 10.0, 'y': 20.0}
+        assert l.positions == (10, 20)

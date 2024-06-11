@@ -12,8 +12,6 @@ from musurgia.pdf.positioned import Positioned
 
 __all__ = ['DrawObjectColumn', 'DrawObjectRow']
 
-from musurgia.utils import is_instance_as_string
-
 
 class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
     def __init__(self, show_borders=False, show_margins=False, *args: Any, **kwargs: Any):
@@ -24,12 +22,6 @@ class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
         self._show_margins: bool
         self.show_margins = show_margins
 
-    # def _get_dy_for_horizontal_line_segments(self):
-    #     hlss = [do for do in self.get_draw_objects() if is_instance_as_string(do, 'HorizontalLineSegment')]
-    #     if hlss:
-    #         return max([hls.start_mark_line.length for hls in hlss]) / 2
-    #     else:
-    #         return 0
 
     @property
     def show_borders(self) -> bool:
@@ -88,9 +80,6 @@ class DrawObjectRow(DrawObjectContainer):
     def get_relative_y2(self) -> float:
         return self.relative_y + max([do.get_height() for do in self.get_draw_objects()])
 
-        # return self.relative_y + max(
-        #     [do.get_height() for do in self.get_draw_objects()]) + self._get_dy_for_horizontal_line_segments()
-
     def draw(self, pdf: Pdf) -> None:
         with pdf.prepare_draw_object(self):
             self.draw_borders(pdf)
@@ -98,7 +87,6 @@ class DrawObjectRow(DrawObjectContainer):
             self.draw_above_text_labels(pdf)
             self.draw_left_text_labels(pdf)
             self.draw_below_text_labels(pdf)
-            # pdf.translate(0, self._get_dy_for_horizontal_line_segments())
             for do in self.get_draw_objects():
                 do.draw(pdf)
                 pdf.translate(do.get_width(), 0)

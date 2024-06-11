@@ -50,6 +50,14 @@ class AbstractPositioned(ABC):
     def get_positions(self) -> dict[str, float]:
         return {'x': self.relative_x, 'y': self.relative_y}
 
+    @property
+    def positions(self):
+        return self.relative_x, self.relative_y
+
+    @positions.setter
+    def positions(self, val):
+        self.relative_x, self.relative_y = val
+
 
 class Positioned(AbstractPositioned):
     def __init__(self, relative_x: ConvertibleToFloat = 0, relative_y: ConvertibleToFloat = 0, *args: Any,

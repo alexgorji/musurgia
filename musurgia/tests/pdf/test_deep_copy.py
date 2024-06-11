@@ -1,6 +1,6 @@
 import copy
 from unittest import TestCase
-from musurgia.pdf import HorizontalLineSegment
+from musurgia.pdf import HorizontalLineSegment, StraightLine
 
 
 class TestDeepCopy(TestCase):
@@ -34,3 +34,33 @@ class TestDeepCopy(TestCase):
 
         assert start_mark_text_label.value == copied_start_mark_text_label.value
         assert end_mark_text_label.value == copied_end_mark_text_label.value
+
+    def test_margins_and_positions(self):
+        line = StraightLine(length=20, mode='h')
+        line.margins = (10, 20, 30, 40)
+        line.positions = (5, 10)
+
+        copied = copy.deepcopy(line)
+
+        line.margins = (1, 2, 3, 4)
+        line.positions = (1, 2)
+
+        assert copied.length == 20
+        assert copied.mode == 'h'
+        assert copied.margins == (10, 20, 30, 40)
+        assert copied.positions == (5, 10)
+
+        copied.length = 10
+        copied.margins = (0, 0, 0, 0)
+        copied.positions = (0, 0)
+        copied.mode = 'v'
+
+        assert copied.length == 10
+        assert copied.mode == 'v'
+        assert copied.margins == (0, 0, 0, 0)
+        assert copied.positions == (0, 0)
+
+        assert line.length == 20
+        assert line.mode == 'h'
+        assert line.margins == (1, 2, 3, 4)
+        assert line.positions == (1, 2)
