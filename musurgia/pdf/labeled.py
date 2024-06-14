@@ -94,8 +94,7 @@ class Labeled(Master, HasPositionsProtocol, HasGetHeightProtocol):
     def draw_below_text_labels(self, pdf: Pdf) -> None:
         if self.get_below_text_labels():
             with pdf.saved_state():
-                pdf.translate(0, self.get_height())
-                # pdf.translate(self.relative_x, self.get_relative_y2())
+                pdf.translate(0, self.get_relative_y2() - self.relative_y)
                 for text_label in self.get_below_text_labels():
                     pdf.translate(0, text_label.get_height())
                     text_label.draw(pdf)
@@ -120,12 +119,11 @@ class Labeled(Master, HasPositionsProtocol, HasGetHeightProtocol):
                                      argument_name='slave'))
         if not slave.master == self:
             raise AttributeError(create_error_message(message=f'slave hat wrong master'))
-
         if position == 'x':
             return 0
         elif position == 'y':
             if slave.placement in ['l', 'left']:
-                return self.get_height() / 2
+                return (self.get_relative_y2() - self.relative_y) / 2
             return 0
 
     def get_above_text_labels_height(self) -> float:

@@ -78,14 +78,13 @@ class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
                 raise DrawObjectInContainerHasNegativePositionError()
 
 
-
 class DrawObjectRow(DrawObjectContainer):
 
     def get_relative_x2(self) -> float:
         return self.relative_x + sum([do.relative_x + do.get_width() for do in self.get_draw_objects()])
 
     def get_relative_y2(self) -> float:
-        return self.relative_y + max([do.get_relative_y2() for do in self.get_draw_objects()])
+        return self.relative_y + max([do.relative_y + do.get_height() for do in self.get_draw_objects()])
 
     def draw(self, pdf: Pdf) -> None:
         self._check_draw_objects_positions()

@@ -27,8 +27,8 @@ class TestPdfUtil(PdfTestCase):
         add_test_labels(self.line)
         with self.file_path(path, 'add_test_labels', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, 'v')
-            draw_ruler(self.pdf, 'h')
+            # draw_ruler(self.pdf, 'v')
+            # draw_ruler(self.pdf, 'h')
             self.pdf.translate(10, 10)
             self.line.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)

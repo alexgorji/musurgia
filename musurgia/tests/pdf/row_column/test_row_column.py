@@ -82,10 +82,9 @@ class TestRowPositionAndMargins(TestCase):
     def test_change_hls_and_row_positions(self):
         self.r.positions = (20, 30)
         self.hls.positions = (40, 50)
-        assert self.hls.get_relative_x2() == 50
-        assert self.hls.get_relative_y2() == 55
-        assert self.r.get_relative_x2() == 70
-        assert self.r.get_relative_y2() == 85
+        assert self.hls.length == 10
+        assert self.hls.get_end_positions() == (50, 55)
+        assert self.r.get_end_positions() == (70, 85)
 
     def test_change_one_hls_positions(self):
         hl2 = copy.deepcopy(self.hls)
@@ -105,11 +104,30 @@ class TestRowColumnSimpleLines(PdfTestCase):
         self.pdf = Pdf(orientation='l')
         self.h_lines = [StraightLine(length=l, mode='h') for l in range(5, 20, 5)]
         self.v_lines = [StraightLine(length=l, mode='v') for l in range(5, 20, 5)]
+        self.v_lines[-1].right_margin = 10
+
+    def test_simple_line_row_positions(self):
+        row = DrawObjectRow(show_margins=True, show_borders=True)
+        for l in self.h_lines + self.v_lines:
+            l.top_margin = 10
+            l.left_margin = 10
+            row.add_draw_object(l)
+
+        assert self.v_lines[2].get_end_positions() == (0.0, 15.0)
+        assert self.v_lines[2].get_height() == 25
+        add_control_positions_to_draw_object(row)
+        assert row.get_end_positions() == (100, 25)
+        with self.file_path(path, 'simple_lines_row_positions', 'pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            draw_ruler(mode='v', pdf=self.pdf)
+            draw_ruler(mode='h', pdf=self.pdf)
+            self.pdf.translate(10, 10)
+            row.draw(self.pdf)
+            self.pdf.write_to_path(pdf_path)
 
     def test_simple_lines_row(self):
         row = DrawObjectRow(show_margins=True, show_borders=True)
         row.margins = (10, 10, 10, 10)
-        self.v_lines[-1].right_margin = 10
         end_line = StraightLine(mode='h', length=70)
         end_line.add_text_label('control end_line', bottom_margin=2)
         for l in self.h_lines + self.v_lines:
@@ -120,15 +138,15 @@ class TestRowColumnSimpleLines(PdfTestCase):
             copied.top_margin = 10
             copied.left_margin = 10
             row.add_draw_object(copied)
+
         add_control_positions_to_draw_object(row)
+        row.add_text_label(f'{row.get_height()}', placement='left')
         with self.file_path(path, 'simple_lines_row', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
             draw_ruler(mode='v', pdf=self.pdf)
             draw_ruler(mode='h', pdf=self.pdf)
             self.pdf.translate(20, 20)
             row.draw(self.pdf)
-            self.pdf.translate(0, row.get_height())
-            end_line.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
 
 
@@ -185,7 +203,6 @@ class TestRowColumn(PdfTestCase):
             draw_object_rows[3].add_draw_object(copied)
             if i == len(line_segments) - 1:
                 copied.end_mark_line.length += copied.start_mark_line.length
-            # copied.set_straight_line_relative_y(1.5)
 
         with self.file_path(path, 'row_of_segments', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
@@ -213,7 +230,7 @@ class TestRowColumn(PdfTestCase):
                 copied.start_mark_line.add_text_label(str(copied.relative_y), font_size=8)
                 copied.start_mark_line.add_text_label(str(copied.start_mark_line.length), font_size=8, placement='left')
                 copied.straight_line.add_text_label(str(copied.straight_line.length), font_size=8, placement='below',
-                                                    left_margin=5, top_margin=2)
+                                                    top_margin=2)
                 copied.draw(self.pdf)
                 self.pdf.translate(50, 0)
 
