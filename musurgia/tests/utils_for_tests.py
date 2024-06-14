@@ -4,6 +4,7 @@ from pathlib import Path
 
 from diff_pdf_visually import pdf_similar  # type: ignore
 
+from musurgia.pdf import Text, TextLabel
 from musurgia.pdf.drawobject import MasterDrawObject
 
 
@@ -109,3 +110,54 @@ class DummyMaster(MasterDrawObject):
 
     def get_relative_y2(self):
         pass
+
+
+def add_control_positions_to_draw_object(draw_object):
+    text_1 = TextLabel(draw_object.positions, font_size=8)
+    text_2 = TextLabel(draw_object.get_end_positions(), placement='below', font_size=8,
+                       left_margin=(draw_object.get_relative_x2() - draw_object.relative_x))
+
+    draw_object.add_text_label(text_1)
+    draw_object.add_text_label(text_2)
+
+
+numbers = ['one', 'two', 'three']
+
+
+def add_test_left_labels(drawobject):
+    for t in numbers:
+        drawobject.add_text_label(f'left label {t}', placement='left', font_size=8)
+
+
+def add_test_below_labels(drawobject):
+    for t in numbers:
+        drawobject.add_text_label(f'below label {t}', placement='below', font_size=8)
+
+
+# def add_test_right_labels(drawobject):
+#     for t in numbers:
+#         drawobject.add_text_label(f'right label {t}', placement='right', font_size=8)
+
+
+def add_test_above_labels(drawobject):
+    for t in numbers:
+        drawobject.add_text_label(f'above label {t}', placement='above', font_size=8)
+
+
+def add_test_right_above_labels(drawobject):
+    for t in numbers:
+        drawobject.add_text_label(f'right above label {t}', placement='right_above', font_size=8)
+
+
+def add_test_right_below_labels(drawobject):
+    for t in numbers:
+        drawobject.add_text_label(f'right below label {t}', placement='right_below', font_size=8)
+
+
+def add_test_labels(drawobject):
+    add_test_above_labels(drawobject)
+    add_test_below_labels(drawobject)
+    add_test_left_labels(drawobject)
+    # add_test_right_labels(drawobject)
+    # add_test_right_above_labels(drawobject)
+    # add_test_right_below_labels(drawobject)

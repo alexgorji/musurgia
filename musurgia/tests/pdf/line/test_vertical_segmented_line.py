@@ -24,3 +24,14 @@ class TestVerticalSegmentedLine(PdfTestCase):
         actual = self.vsl.get_width()
         expected = 5
         self.assertEqual(expected, actual)
+
+    def test_align_segments(self):
+        for index, sg in enumerate(self.vsl.segments):
+            sg.start_mark_line.length += index * 5
+        self.vsl.segments[-1].end_mark_line.length = self.vsl.segments[-1].start_mark_line.length + 5
+        self.vsl.segments[-1].end_mark_line.show = True
+        self.vsl._align_segments()
+        for seg in self.vsl.segments:
+            assert seg.relative_y >= 0
+            assert seg.relative_x >= 0
+        assert 0 in set([seg.relative_x for seg in self.vsl.segments])

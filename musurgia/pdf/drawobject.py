@@ -42,6 +42,9 @@ class DrawObject(AbstractPositioned, AbstractMargined, ABC):
     def get_relative_y2(self) -> float:
         """ this property is needed to get relative_y2 """
 
+    def get_end_positions(self):
+        return self.get_relative_x2(), self.get_relative_y2()
+
     def get_height(self) -> float:
         return self.top_margin + self.get_relative_y2() - self.relative_y + self.bottom_margin
 

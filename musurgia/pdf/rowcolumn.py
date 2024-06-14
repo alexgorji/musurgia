@@ -3,6 +3,7 @@ from typing import Any, Iterator
 
 from fpdf.drawing import DeviceGray
 
+from musurgia.musurgia_exceptions import DrawObjectInContainerHasNegativePositionError
 from musurgia.musurgia_types import create_error_message
 from musurgia.pdf.drawobject import DrawObject
 from musurgia.pdf.labeled import Labeled
@@ -21,7 +22,6 @@ class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
         self.show_borders = show_borders
         self._show_margins: bool
         self.show_margins = show_margins
-
 
     @property
     def show_borders(self) -> bool:
@@ -49,7 +49,8 @@ class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
     def draw_borders(self, pdf):
         if self.show_borders:
             with pdf.local_context(draw_color=DeviceGray(0.5), dash_pattern={'dash': 2, 'gap': 1}):
-                pdf.rect(self.relative_x, self.relative_y, self.get_relative_x2(), self.get_relative_y2())
+                pdf.rect(self.relative_x, self.relative_y, self.get_relative_x2() - self.relative_x,
+                         self.get_relative_y2() - self.relative_y)
 
     def add_draw_object(self, draw_object: DrawObject) -> DrawObject:
         if not isinstance(draw_object, DrawObject):
@@ -71,19 +72,26 @@ class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
             except AttributeError:
                 yield do
 
+    def _check_draw_objects_positions(self):
+        for do in self.get_draw_objects():
+            if do.relative_y < 0 or do.relative_x < 0:
+                raise DrawObjectInContainerHasNegativePositionError()
+
+
 
 class DrawObjectRow(DrawObjectContainer):
 
     def get_relative_x2(self) -> float:
-        return self.relative_x + sum([do.get_width() for do in self.get_draw_objects()])
+        return self.relative_x + sum([do.relative_x + do.get_width() for do in self.get_draw_objects()])
 
     def get_relative_y2(self) -> float:
-        return self.relative_y + max([do.get_height() for do in self.get_draw_objects()])
+        return self.relative_y + max([do.get_relative_y2() for do in self.get_draw_objects()])
 
     def draw(self, pdf: Pdf) -> None:
-        with pdf.prepare_draw_object(self):
-            self.draw_borders(pdf)
-            self.draw_margins(pdf)
+        self._check_draw_objects_positions()
+        self.draw_borders(pdf)
+        self.draw_margins(pdf)
+        with pdf.prepare_draw_object(self, translate_margins=False):
             self.draw_above_text_labels(pdf)
             self.draw_left_text_labels(pdf)
             self.draw_below_text_labels(pdf)
@@ -100,13 +108,13 @@ class DrawObjectColumn(DrawObjectContainer):
         return self.relative_y + sum([do.get_height() for do in self.get_draw_objects()])
 
     def draw(self, pdf: Pdf) -> None:
-        with pdf.prepare_draw_object(self):
-            self.draw_borders(pdf)
-            self.draw_margins(pdf)
+        self._check_draw_objects_positions()
+        self.draw_borders(pdf)
+        self.draw_margins(pdf)
+        with pdf.prepare_draw_object(self, translate_margins=False):
             self.draw_above_text_labels(pdf)
             self.draw_left_text_labels(pdf)
             self.draw_below_text_labels(pdf)
-            # pdf.translate(0, self._get_dy_for_horizontal_line_segments())
             for do in self.get_draw_objects():
                 do.draw(pdf)
                 pdf.translate(0, do.get_height())

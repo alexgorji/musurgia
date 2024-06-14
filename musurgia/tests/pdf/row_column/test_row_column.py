@@ -1,15 +1,103 @@
 import copy
 from pathlib import Path
-from unittest import skip
+from unittest import skip, TestCase
 
+from musurgia.musurgia_exceptions import DrawObjectInContainerHasNegativePositionError
 from musurgia.pdf.line import HorizontalLineSegment, VerticalSegmentedLine, VerticalLineSegment, StraightLine
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn
 from musurgia.pdf.labeled import TextLabel
-from musurgia.tests.utils_for_tests import PdfTestCase
+from musurgia.tests.utils_for_tests import PdfTestCase, add_control_positions_to_draw_object
 
 path = Path(__file__)
+
+
+def _make_draw_objects():
+    h_segments = [HorizontalLineSegment(10), HorizontalLineSegment(20)]
+    h_segments[1].start_mark_line.length = 6
+
+    vsl = VerticalSegmentedLine(lengths=[5, 6, 7, 8])
+    return h_segments, vsl
+
+
+def make_row():
+    r = DrawObjectRow()
+    h_segments, vsl = _make_draw_objects()
+    for segment in h_segments:
+        r.add_draw_object(segment)
+    r.add_draw_object(vsl)
+    r.add_text_label(TextLabel('row', placement='left'))
+    return r
+
+
+def make_column():
+    c = DrawObjectColumn()
+    h_segments, vsl = _make_draw_objects()
+    for segment in h_segments:
+        c.add_draw_object(segment)
+    c.add_draw_object(vsl)
+    return c
+
+
+class TestRowPositionAndMargins(TestCase):
+    def setUp(self):
+        self.r = DrawObjectRow()
+        self.hls = HorizontalLineSegment(length=10)
+        self.hls.start_mark_line.length = 5
+        self.r.add_draw_object(self.hls)
+
+    def test_default_positions(self):
+        assert self.r.positions == self.hls.positions == (0, 0)
+        assert self.r.get_relative_x2() == self.hls.get_relative_x2() == 10
+        assert self.r.get_relative_y2() == self.hls.get_relative_y2() == 5
+
+    def test_change_row_positions(self):
+        self.r.positions = (20, 30)
+        assert self.hls.positions == (0, 0)
+        assert self.r.get_relative_x2() == 30
+        assert self.r.get_relative_y2() == 35
+        assert self.hls.positions == (0, 0)
+        assert self.hls.get_relative_x2() == 10
+        assert self.hls.get_relative_y2() == 5
+
+    def test_change_hls_positions(self):
+        self.hls.positions = (20, 30)
+        assert self.hls.get_relative_x2() == 30
+        assert self.hls.get_relative_y2() == 35
+        assert self.hls.get_width() == 10
+
+        assert self.r.positions == (0, 0)
+        assert self.r.get_relative_x2() == 30
+        assert self.r.get_relative_y2() == 35
+
+    def test_change_hls_negative_positions_error(self):
+        self.hls.positions = (-20, -30)
+        assert self.hls.get_relative_x2() == -10
+        assert self.hls.get_relative_y2() == -25
+
+        with self.assertRaises(DrawObjectInContainerHasNegativePositionError):
+            self.r.draw(Pdf())
+
+    def test_change_hls_and_row_positions(self):
+        self.r.positions = (20, 30)
+        self.hls.positions = (40, 50)
+        assert self.hls.get_relative_x2() == 50
+        assert self.hls.get_relative_y2() == 55
+        assert self.r.get_relative_x2() == 70
+        assert self.r.get_relative_y2() == 85
+
+    def test_change_one_hls_positions(self):
+        hl2 = copy.deepcopy(self.hls)
+        self.r.add_draw_object(hl2)
+        hl2.positions = (20, 30)
+        assert self.hls.positions == (0, 0)
+        assert self.hls.get_relative_x2(), self.hls.get_relative_y2() == (10, 5)
+        assert hl2.positions == (20, 30)
+        assert (hl2.get_relative_x2(), hl2.get_relative_y2()) == (30, 35)
+
+        assert self.r.get_relative_x2() == 40
+        assert self.r.get_relative_y2() == 35
 
 
 class TestRowColumnSimpleLines(PdfTestCase):
@@ -21,6 +109,9 @@ class TestRowColumnSimpleLines(PdfTestCase):
     def test_simple_lines_row(self):
         row = DrawObjectRow(show_margins=True, show_borders=True)
         row.margins = (10, 10, 10, 10)
+        self.v_lines[-1].right_margin = 10
+        end_line = StraightLine(mode='h', length=70)
+        end_line.add_text_label('control end_line', bottom_margin=2)
         for l in self.h_lines + self.v_lines:
             row.add_draw_object(l)
 
@@ -29,38 +120,23 @@ class TestRowColumnSimpleLines(PdfTestCase):
             copied.top_margin = 10
             copied.left_margin = 10
             row.add_draw_object(copied)
-        self.v_lines[-1].right_margin = 10
-
+        add_control_positions_to_draw_object(row)
         with self.file_path(path, 'simple_lines_row', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
-            self.pdf.translate(10, 10)
+            draw_ruler(mode='v', pdf=self.pdf)
+            draw_ruler(mode='h', pdf=self.pdf)
+            self.pdf.translate(20, 20)
             row.draw(self.pdf)
+            self.pdf.translate(0, row.get_height())
+            end_line.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
 
 
 class TestRowColumn(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf(orientation='l')
-        self.row = self._make_row()
-        self.column = self._make_column()
-
-    def _make_row(self):
-        r = DrawObjectRow()
-        r.add_draw_object(HorizontalLineSegment(10))
-        do2 = r.add_draw_object(HorizontalLineSegment(20))
-        r.add_draw_object(VerticalSegmentedLine(lengths=[5, 6, 7, 8]))
-        do2.start_mark_line.length = 6
-        r.add_text_label(TextLabel('row', placement='left'))
-        return r
-        # print(self.row.get_draw_objects())
-
-    def _make_column(self):
-        c = DrawObjectColumn()
-        c.add_draw_object(HorizontalLineSegment(10))
-        do2 = c.add_draw_object(HorizontalLineSegment(20))
-        c.add_draw_object(VerticalSegmentedLine(lengths=[5, 6, 7, 8]))
-        do2.start_mark_line.length = 6
-        return c
+        self.row = make_row()
+        self.column = make_column()
 
     def test_draw_row(self):
         self.pdf.translate_page_margins()
@@ -72,7 +148,7 @@ class TestRowColumn(PdfTestCase):
 
         r.draw(self.pdf)
 
-        with self.file_path(path, 'draw_row', 'pdf') as pdf_path:
+        with self.file_path(path, 'row', 'pdf') as pdf_path:
             self.pdf.write_to_path(pdf_path)
 
     def test_wrong_add_draw_object(self):
@@ -109,9 +185,9 @@ class TestRowColumn(PdfTestCase):
             draw_object_rows[3].add_draw_object(copied)
             if i == len(line_segments) - 1:
                 copied.end_mark_line.length += copied.start_mark_line.length
-            copied.set_straight_line_relative_y(1.5)
+            # copied.set_straight_line_relative_y(1.5)
 
-        with self.file_path(path, 'draw_row_of_segments', 'pdf') as pdf_path:
+        with self.file_path(path, 'row_of_segments', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
             for l in line_segments:
                 copied = copy.deepcopy(l)
@@ -159,7 +235,7 @@ class TestRowColumn(PdfTestCase):
         c.add_draw_object(HorizontalLineSegment(60))
         c.add_draw_object(r)
 
-        with self.file_path(path, 'draw_column_of_row_of_segments', 'pdf') as pdf_path:
+        with self.file_path(path, 'column_of_row_of_segments', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
             draw_ruler(self.pdf, 'h')
             draw_ruler(self.pdf, 'v')
@@ -175,7 +251,7 @@ class TestRowColumn(PdfTestCase):
         r = DrawObjectRow()
         r.add_draw_object(c)
 
-        with self.file_path(path, 'draw_row_of_column_of_segments', 'pdf') as pdf_path:
+        with self.file_path(path, 'row_of_column_of_segments', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
             draw_ruler(self.pdf, 'h')
             draw_ruler(self.pdf, 'v')
@@ -191,7 +267,7 @@ class TestRowColumn(PdfTestCase):
         c = self.column
         c.add_text_label(TextLabel('below label', placement='below', top_margin=3))
         c.draw(self.pdf)
-        with self.file_path(path, 'draw_column', 'pdf') as pdf_path:
+        with self.file_path(path, 'column', 'pdf') as pdf_path:
             self.pdf.write_to_path(pdf_path)
 
     def test_travers_column(self):
@@ -218,8 +294,7 @@ class TestRowColumn(PdfTestCase):
         cc_2 = cc.add_draw_object(HorizontalLineSegment(length=10))
         assert list(r.traverse()) == [r, c, rr, rr_1, c_1, r_1, cc, cc_1, cc_2]
 
-    @skip
-    def test_row_column_borders_and_labels(self):
+    def test_row_column_borders_margins_and_labels(self):
         def add_text_labels(do):
             if isinstance(do, HorizontalLineSegment):
                 do = do.start_mark_line
@@ -247,6 +322,7 @@ class TestRowColumn(PdfTestCase):
         control_hls.bottom_margin = 20
 
         add_text_labels(control_hls)
+        control_hls.straight_line.add_text_label('control_hsl')
 
         r = DrawObjectRow(show_borders=True, show_margins=True)
         first_hls = copy.deepcopy(hls)
@@ -289,9 +365,10 @@ class TestRowColumn(PdfTestCase):
         main_column.add_draw_object(r)
         main_column.add_draw_object(c)
 
-        with self.file_path(path, 'borders_and_labels', 'pdf') as pdf_path:
+        with self.file_path(path, 'borders_margins_and_labels', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()
             draw_ruler(self.pdf, mode='v')
             draw_ruler(self.pdf, mode='h')
+            self.pdf.translate(20, 20)
             main_column.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)

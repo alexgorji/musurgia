@@ -120,13 +120,13 @@ class TestClip(PdfTestCase):
         c = DrawObjectColumn()
         c.clipping_area.top_margin = c.clipping_area.left_margin = 10
         c.bottom_margin = 60
-        c.add_draw_object(HorizontalRuler(length=1200, bottom_margin=5))
+        c.add_draw_object(HorizontalRuler(length=1200, bottom_margin=0, show_borders=True))
         c.add_draw_object(HorizontalSegmentedLine(lengths=600 * [2]))
         title = PageText('A very nice title', h_position='center', font_weight='bold', font_size=12, top_margin=10)
         title.draw(self.pdf)
 
         self.pdf.translate_page_margins()
-        self.pdf.translate(0, title.get_height())
+        self.pdf.translate(0, 20)
         c.clipped_draw(self.pdf)
 
         for page in self.pdf.pages:

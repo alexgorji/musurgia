@@ -113,7 +113,7 @@ class MarginNotSettableError(MarginedObjectException):
     pass
 
 
-class PositionedObjectException(Exception):
+class PositionedObjectException(AttributeError):
     pass
 
 
@@ -126,6 +126,18 @@ class RelativeXNotSettableError(RelativePositionNotSettableError):
 
 
 class RelativeYNotSettableError(RelativePositionNotSettableError):
+    pass
+
+
+class DrawObjectInContainerHasNegativePositionError(PositionedObjectException):
+    pass
+
+
+class SegmentedLineError(Exception):
+    pass
+
+
+class SegmentedLineSegmentHasMarginsError(SegmentedLineError, AttributeError):
     pass
 
 

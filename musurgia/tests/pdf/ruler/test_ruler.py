@@ -31,3 +31,10 @@ class TestRuler(PdfTestCase):
             draw_ruler(self.pdf, mode='h')
             draw_ruler(self.pdf, mode='v')
             self.pdf.write_to_path(pdf_path)
+
+    def test_rulers_borders_and_margins(self):
+        with self.file_path(path, 'both_rulers_borders_and_margins', 'pdf') as pdf_path:
+            self.pdf.translate_page_margins()
+            draw_ruler(self.pdf, mode='h', show_borders=True, show_margins=True)
+            draw_ruler(self.pdf, mode='v', show_borders=True, show_margins=True)
+            self.pdf.write_to_path(pdf_path)

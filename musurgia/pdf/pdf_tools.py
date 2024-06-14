@@ -17,17 +17,19 @@ def draw_page_numbers(pdf: Pdf, **kwargs: Any) -> None:
 
 
 def draw_ruler(pdf: Pdf, mode: HorizontalVertical = 'h', unit: int = 10, first_label: int = 0,
-               show_first_label: bool = False, label_show_interval: int = 1) -> None:
+               show_first_label: bool = False, label_show_interval: int = 1, **kwargs) -> None:
     check_type(mode, 'HorizontalVertical', function_name='draw_ruler', argument_name='mode')
     ruler: Union[HorizontalRuler, VerticalRuler]
     if mode in ['h', 'horizontal']:
         length = pdf.w - pdf.l_margin - pdf.r_margin
         ruler = HorizontalRuler(length=length, unit=unit, first_label=first_label,
-                                show_first_label=show_first_label, label_show_interval=label_show_interval)
+                                show_first_label=show_first_label, label_show_interval=label_show_interval, **kwargs)
+        ruler.set_straight_line_relative_y(0)
     elif mode in ['v', 'vertical']:
         length = pdf.h - pdf.t_margin - pdf.b_margin
         ruler = VerticalRuler(length=length, unit=unit, first_label=first_label,
-                              show_first_label=show_first_label, label_show_interval=label_show_interval)
+                              show_first_label=show_first_label, label_show_interval=label_show_interval, **kwargs)
+        ruler.set_straight_line_relative_x(0)
     else:
         raise NotImplementedError  # pragma: no cover
 

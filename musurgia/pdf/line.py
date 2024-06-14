@@ -1,6 +1,7 @@
 from abc import abstractmethod, ABC
 from typing import Any, cast
 
+from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
 from musurgia.musurgia_types import HorizontalVertical, check_type, ConvertibleToFloat, MarkLinePlacement, PositionType, \
     MarginType
 from musurgia.pdf.drawobject import SlaveDrawObject, MasterDrawObject, DrawObject
@@ -70,13 +71,13 @@ class AbstractStraightLine(ABC):
             raise NotImplementedError  # pragma: no cover
 
     def get_relative_x2(self) -> float:
-        if self.mode in ['h', 'horizontal']:
+        if self.is_horizontal:
             return self.relative_x + self.length
         else:
             return self.relative_x
 
     def get_relative_y2(self) -> float:
-        if self.mode in ['v', 'vertical']:
+        if self.is_vertical:
             return self.relative_y + self.length
         else:
             return self.relative_y
@@ -86,10 +87,10 @@ class AbstractStraightLine(ABC):
             with pdf.prepare_draw_object(self):
                 self.draw_above_text_labels(pdf)
                 self.draw_left_text_labels(pdf)
+                self.draw_below_text_labels(pdf)
                 x2 = self.get_relative_x2() - self.relative_x
                 y2 = self.get_relative_y2() - self.relative_y
                 pdf.line(0, 0, x2, y2)
-                self.draw_below_text_labels(pdf)
 
 
 class StraightLine(AbstractStraightLine, DrawObject, Positioned, Margined, Labeled):
@@ -257,6 +258,10 @@ class AbstractSegmentedLine(DrawObjectContainer):
         super().__init__(*args, **kwargs)
         self._make_segments(lengths)
 
+    def _check_segment_margins(self):
+        for seg in self.segments:
+            if seg.margins != (0, 0, 0, 0):
+                raise SegmentedLineSegmentHasMarginsError()
     @property
     def segments(self) -> list[LineSegment]:
         return cast(list[LineSegment], self.get_draw_objects())
@@ -264,6 +269,28 @@ class AbstractSegmentedLine(DrawObjectContainer):
     @abstractmethod
     def _make_segments(self, lengths: list[ConvertibleToFloat]) -> None:
         """private method for making segments"""
+
+    @property
+    def is_vertical(self):
+        return self.segments[0].is_vertical
+
+    @property
+    def is_horizontal(self):
+        return self.segments[0].is_horizontal
+
+    def set_straight_line_relative_y(self, val):
+        if self.is_horizontal:
+            delta = val - self.segments[0].straight_line.relative_y
+            self.relative_y += delta
+        else:
+            raise NotImplementedError
+
+    def set_straight_line_relative_x(self, val):
+        if self.is_vertical:
+            delta = val - self.segments[0].straight_line.relative_x
+            self.relative_x += delta
+        else:
+            raise NotImplementedError
 
 
 class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):
@@ -274,10 +301,13 @@ class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):
         self.segments[-1].end_mark_line.show = True
 
     def _align_segments(self):
-        for segment in self.segments[1:]:
-            segment.set_straight_line_relative_y(self.segments[0].straight_line.relative_y)
+        reference_segment = max(self.segments, key=lambda seg: seg.get_height())
+        for segment in self.segments:
+            if segment != reference_segment:
+                segment.set_straight_line_relative_y(reference_segment.straight_line.relative_y)
 
     def draw(self, pdf: Pdf) -> None:
+        self._check_segment_margins()
         self._align_segments()
         super().draw(pdf)
 
@@ -290,10 +320,13 @@ class VerticalSegmentedLine(AbstractSegmentedLine, DrawObjectColumn):
         self.segments[-1].end_mark_line.show = True
 
     def _align_segments(self):
-        for segment in self.segments[1:]:
-            segment.set_straight_line_relative_x(self.segments[0].straight_line.relative_x)
+        reference_segment = max(self.segments, key=lambda seg: seg.get_width())
+        for segment in self.segments:
+            if segment != reference_segment:
+                segment.set_straight_line_relative_x(reference_segment.straight_line.relative_x)
 
     def draw(self, pdf: Pdf) -> None:
+        self._check_segment_margins()
         self._align_segments()
         super().draw(pdf)
 
@@ -353,11 +386,9 @@ class AbstractRuler(AbstractSegmentedLine, ABC):
 
 class HorizontalRuler(AbstractRuler, HorizontalSegmentedLine):
     def draw(self, pdf: Pdf) -> None:
-        self.segments[0].set_straight_line_relative_y(self.relative_y)
         super().draw(pdf)
 
 
 class VerticalRuler(AbstractRuler, VerticalSegmentedLine):
     def draw(self, pdf: Pdf) -> None:
-        self.segments[0].set_straight_line_relative_x(self.relative_x)
         super().draw(pdf)

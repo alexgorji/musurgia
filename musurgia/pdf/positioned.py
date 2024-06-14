@@ -13,6 +13,10 @@ class HasPositionsProtocol(Protocol):
     @property
     def relative_y(self) -> float: ...
 
+    def get_relative_x2(self) -> float: ...
+
+    def get_relative_y2(self) -> float: ...
+
 
 class AbstractPositioned(ABC):
     """

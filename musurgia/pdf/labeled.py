@@ -94,7 +94,7 @@ class Labeled(Master, HasPositionsProtocol, HasGetHeightProtocol):
     def draw_below_text_labels(self, pdf: Pdf) -> None:
         if self.get_below_text_labels():
             with pdf.saved_state():
-                pdf.translate(self.relative_x, self.get_height())
+                pdf.translate(0, self.get_height())
                 # pdf.translate(self.relative_x, self.get_relative_y2())
                 for text_label in self.get_below_text_labels():
                     pdf.translate(0, text_label.get_height())
@@ -109,24 +109,6 @@ class Labeled(Master, HasPositionsProtocol, HasGetHeightProtocol):
                     with pdf.saved_state():
                         pdf.translate(-(text_label.get_width()), 0)
                         text_label.draw(pdf)
-
-# if self.get_left_text_labels():
-        #     with pdf.saved_state():
-        #         pdf.translate(self.relative_x, self.get_relative_y2())
-        #         for text_label in self.get_left_text_labels():
-        #             pdf.translate(0, text_label.get_height())
-        #             text_label.draw(pdf)
-        # if self.get_left_text_labels():
-        #     with pdf.saved_state():
-        #         pdf.translate(self.relative_x, self.get_relative_y2())
-        #         # pdf.translate(self.relative_x, self.get_relative_y2() / 2)
-        #         # pdf.translate(0, -self.get_left_text_labels_height() / 2)
-        #         for text_label in self.get_left_text_labels():
-        #             pdf.translate(0, text_label.get_height())
-        #             text_label.draw(pdf)
-        #             # with pdf.saved_state():
-        #             #     pdf.translate(-(text_label.get_width()), 0)
-        #             #     text_label.draw(pdf)
 
     def get_slave_position(self, slave: TextLabel, position: PositionType) -> float:
         check_type(position, 'PositionType', class_name=self.__class__.__name__, method_name='get_slave_position',

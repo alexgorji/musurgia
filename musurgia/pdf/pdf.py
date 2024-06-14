@@ -30,14 +30,18 @@ class SavedState:
 
 
 class PrepareDrawObject:
-    def __init__(self, pdf: 'Pdf', draw_object: 'DrawObject') -> None:
+    def __init__(self, pdf: 'Pdf', draw_object: 'DrawObject', translate_positions=True, translate_margins=True) -> None:
         self.pdf = pdf
         self.draw_object = draw_object
+        self.translate_positions = translate_positions
+        self.translate_margins = translate_margins
 
     def __enter__(self) -> None:
         self.pdf._push_state()
-        self.pdf.translate(self.draw_object.relative_x, self.draw_object.relative_y)
-        self.pdf.translate(self.draw_object.left_margin, self.draw_object.top_margin)
+        if self.translate_positions:
+            self.pdf.translate(self.draw_object.relative_x, self.draw_object.relative_y)
+        if self.translate_margins:
+            self.pdf.translate(self.draw_object.left_margin, self.draw_object.top_margin)
 
     def __exit__(self, exc_type: Optional[type[BaseException]], exc_val: Optional[BaseException],
                  exc_tb: Optional[TracebackType]) -> None:
@@ -137,8 +141,8 @@ class Pdf(FPDF, HasOutProtocol):
                           x * self.k, (self.h - y) * self.k,
                           w * self.k, -h * self.k))
 
-    def prepare_draw_object(self, draw_object: 'DrawObject') -> PrepareDrawObject:
-        return PrepareDrawObject(self, draw_object=draw_object)
+    def prepare_draw_object(self, draw_object: 'DrawObject', **kwargs) -> PrepareDrawObject:
+        return PrepareDrawObject(self, draw_object=draw_object, **kwargs)
 
     def reset_font(self) -> None:
         # https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf
