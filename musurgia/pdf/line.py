@@ -8,13 +8,13 @@ from musurgia.pdf.drawobject import SlaveDrawObject, MasterDrawObject, DrawObjec
 from musurgia.pdf.labeled import Labeled, TextLabel
 from musurgia.pdf.margined import Margined
 from musurgia.pdf.pdf import Pdf
-from musurgia.pdf.positioned import Positioned
+from musurgia.pdf.positioned import Positioned, HasPositionsProtocol
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn, DrawObjectContainer
 
 __all__ = ['HorizontalLineSegment', 'VerticalLineSegment', 'HorizontalRuler', 'VerticalRuler', 'StraightLine']
 
 
-class AbstractStraightLine(ABC):
+class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol):
     def __init__(self, mode: HorizontalVertical, length: ConvertibleToFloat, show: bool = True, *args: Any,
                  **kwargs: Any):
         super().__init__(*args, **kwargs)
@@ -93,11 +93,11 @@ class AbstractStraightLine(ABC):
                 pdf.line(0, 0, x2, y2)
 
 
-class StraightLine(AbstractStraightLine, DrawObject, Positioned, Margined, Labeled):
+class StraightLine(AbstractStraightLine, DrawObject, Positioned, Margined):
     pass
 
 
-class SlaveStraightLine(AbstractStraightLine, SlaveDrawObject, Labeled):
+class SlaveStraightLine(AbstractStraightLine, SlaveDrawObject):
     pass
 
 
@@ -262,6 +262,7 @@ class AbstractSegmentedLine(DrawObjectContainer):
         for seg in self.segments:
             if seg.margins != (0, 0, 0, 0):
                 raise SegmentedLineSegmentHasMarginsError()
+
     @property
     def segments(self) -> list[LineSegment]:
         return cast(list[LineSegment], self.get_draw_objects())
