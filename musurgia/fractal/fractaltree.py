@@ -11,13 +11,8 @@ from musurgia.musurgia_exceptions import FractalTreeHasChildrenError, \
     FractalTreeNonRootCannotSetMainPermutationOrderError, PermutationIndexCalculaterNoParentIndexError, \
     FractalTreePermutationIndexError, FractalTreeSetMainPermutationOrderFirstError
 from musurgia.musurgia_types import ConvertibleToFraction, FractalTreeReduceChildrenMode, convert_to_fraction, \
-    MatrixIndex, PermutationOrder, check_type, PositiveInteger, check_matrix_index_values, create_error_message, \
-    ConvertibleToFloat
-from musurgia.pdf.drawobject import DrawObject
-from musurgia.pdf.labeled import Labeled
-from musurgia.pdf.line import HorizontalLineSegment, HorizontalSegmentedLine
-from musurgia.pdf.margined import Margined
-from musurgia.pdf.positioned import Positioned
+    MatrixIndex, PermutationOrder, check_type, PositiveInteger, check_matrix_index_values, create_error_message
+from musurgia.pdf.line import HorizontalLineSegment
 from musurgia.pdf.rowcolumn import DrawObjectColumn, DrawObjectRow
 from musurgia.permutation.permutation import permute
 from musurgia.tests.utils_for_tests import node_info
@@ -96,6 +91,7 @@ class FractalTreeNodeSegment(HorizontalLineSegment):
     def set_node_value(self, val):
         self._node_value = val
         self._update_length()
+
 
 
 class FractalTree(Tree[Any]):
@@ -345,6 +341,63 @@ class FractalTree(Tree[Any]):
 
         self._change_children_value(factor)
 
+    def create_graphic(self, distance=5, unit=1, mark_line_length: float = 6, shrink_factor=0.7, layer_number=1,
+                       layer_top_margin=0):
+        gr = DrawObjectColumn()
+        first_row = gr.add_draw_object(DrawObjectRow())
+        segment = copy.deepcopy(self.get_node_segment())
+        segment.unit = unit
+        if layer_number == 1:
+            segment.end_mark_line.length = segment.start_mark_line.length = mark_line_length
+            segment.end_mark_line.show = True
+            children_layer_top_margin = 0
+        else:
+            segment.end_mark_line.length = segment.start_mark_line.length = mark_line_length * shrink_factor
+            children_layer_top_margin = (mark_line_length - segment.start_mark_line.length)
+            # children_layer_top_margin = 0
+            if self.is_last_child:
+                segment.end_mark_line.length = mark_line_length
+                segment.end_mark_line.show = True
+                children_layer_top_margin = 0
+            if self.is_first_child:
+                segment.start_mark_line.length = mark_line_length
+                children_layer_top_margin = 0
+        segment.bottom_margin += distance
+        segment.top_margin += layer_top_margin
+        first_row.add_draw_object(segment)
+        if not self.is_leaf:
+            second_row = gr.add_draw_object(DrawObjectRow())
+            for ch in self.get_children():
+                second_row.add_draw_object(
+                    ch.create_graphic(distance, unit, mark_line_length * shrink_factor, shrink_factor,
+                                      layer_number + 1, children_layer_top_margin))
+
+        return gr
+
+    def create_layer_graphic(self, layer_number, unit=1, mark_line_length: float = 6, shrink_factor=0.7):
+        def get_ml_length(node):
+            distance = node.get_distance(self)
+            if distance == 0:
+                return mark_line_length
+            else:
+                if node.is_first_child:
+                    return get_ml_length(node.up)
+                else:
+                    return mark_line_length * shrink_factor / distance
+
+        gr = DrawObjectRow()
+        nodes = flatten(self.get_layer(layer_number))
+        for node in nodes:
+            copied_segment = copy.deepcopy(node.get_node_segment())
+            copied_segment.unit = unit
+            copied_segment.start_mark_line.length = get_ml_length(node)
+            if node == nodes[-1]:
+                copied_segment.end_mark_line.length = mark_line_length
+                copied_segment.end_mark_line.show = True
+            gr.add_draw_object(copied_segment)
+
+        return gr
+
     def calculate_permutation_index(self):
         if self.is_root:
             raise FractalTreePermutationIndexError(
@@ -526,60 +579,6 @@ class FractalTree(Tree[Any]):
 
     def get_node_segment(self):
         return self._node_segment
-
-    def create_graphic(self, distance=5, unit=1, mark_line_length: float = 6, shrink_factor=0.7, layer_number=1,
-                       layer_top_margin=0):
-        gr = DrawObjectColumn()
-        first_row = gr.add_draw_object(DrawObjectRow())
-        segment = copy.deepcopy(self.get_node_segment())
-        segment.unit = unit
-        if layer_number == 1:
-            segment.end_mark_line.length = segment.start_mark_line.length = mark_line_length
-            segment.end_mark_line.show = True
-            children_layer_top_margin = 0
-        else:
-            segment.end_mark_line.length = segment.start_mark_line.length = mark_line_length * shrink_factor
-            children_layer_top_margin = (mark_line_length - segment.start_mark_line.length)
-            if self.is_last_child:
-                segment.end_mark_line.length = mark_line_length
-                segment.end_mark_line.show = True
-                children_layer_top_margin = 0
-            if self.is_first_child:
-                segment.start_mark_line.length = mark_line_length
-                children_layer_top_margin = 0
-        segment.bottom_margin += distance
-        segment.top_margin += layer_top_margin
-        first_row.add_draw_object(segment)
-        if not self.is_leaf:
-            second_row = gr.add_draw_object(DrawObjectRow())
-            for ch in self.get_children():
-                second_row.add_draw_object(
-                    ch.create_graphic(distance, unit, mark_line_length * shrink_factor, shrink_factor,
-                                      layer_number + 1, children_layer_top_margin))
-        return gr
-
-    def create_layer_graphic(self, layer_number, unit=1, mark_line_length: float = 6, shrink_factor=0.7):
-        def get_ml_length(node):
-            distance = node.get_distance(self)
-            if distance == 0:
-                return mark_line_length
-            else:
-                if node.is_first_child:
-                    return get_ml_length(node.up)
-                else:
-                    return mark_line_length * shrink_factor / distance
-
-        gr = DrawObjectRow()
-        nodes = flatten(self.get_layer(layer_number))
-        for node in nodes:
-            copied_segment = copy.deepcopy(node.get_node_segment())
-            copied_segment.unit = unit
-            copied_segment.start_mark_line.length = get_ml_length(node)
-            if node == nodes[-1]:
-                copied_segment.end_mark_line.length = mark_line_length
-                copied_segment.end_mark_line.show = True
-            gr.add_draw_object(copied_segment)
-        return gr
 
     def merge_children(self, *lengths):
         """
