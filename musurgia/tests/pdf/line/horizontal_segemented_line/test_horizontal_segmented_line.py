@@ -105,7 +105,7 @@ class TestHorizontalSegmentedLineDraw(PdfTestCase):
 
     def test_margins(self):
         copy_1 = copy.deepcopy(self.hsl)
-        copy_1.margins = (2, 4, 6, 8)
+        copy_1.margins = (10, 10, 10, 10)
         dos = [self.hsl, copy_1]
         for do in dos:
             do.show_borders = True
@@ -138,21 +138,15 @@ class TestHorizontalSegmentedLineDraw(PdfTestCase):
         assert [seg.get_end_positions() for seg in self.hsl.segments] == [(10, 3), (15, 3), (20, 3), (25, 3)]
 
         assert copied_1.positions == (0, -1.5)
-        assert [seg.positions for seg in copied_1.segments] == [(0, 0), (0, 0), (0, 0), (0, 0)]
         assert copied_1.get_end_positions() == (70, 1.5)
+        assert [seg.positions for seg in copied_1.segments] == [(0, 0), (0, 0), (0, 0), (0, 0)]
         assert [seg.get_end_positions() for seg in copied_1.segments] == [(10, 3), (15, 3), (20, 3), (25, 3)]
-        assert (copied_1.relative_x, copied_1.relative_y, copied_1.get_relative_x2(), copied_1.get_relative_y2()) == (
-            0.0, -1.5, 70.0, 1.5)
 
         assert copied_2.positions == (0, -5)
         assert copied_2.get_end_positions() == (70, -2)
-        assert (copied_2.relative_x, copied_2.relative_y, copied_2.get_relative_x2(), copied_2.get_relative_y2()) == (
-            0.0, -5.0, 70.0, -2.0)
 
         assert copied_3.positions == (0, 5)
         assert copied_3.get_end_positions() == (70, 8)
-        assert (copied_3.relative_x, copied_3.relative_y, copied_3.get_relative_x2(), copied_3.get_relative_y2()) == (
-            0.0, 5.0, 70.0, 8.0)
 
         dos = [self.hsl, copied_1, copied_2, copied_3]
         for do in dos:

@@ -31,6 +31,11 @@ class TestStraightLine(TestCase):
         assert self.sl_v.get_height() == 10
         assert self.sl_v.get_width() == 0
 
+    def test_width_and_height(self):
+        sl = StraightLine('h', 30)
+        sl.margins = (10, 10, 10, 10)
+        assert sl.get_width() == 50
+        assert sl.get_height() == 20
 
 class TestStraightLineDraw(PdfTestCase):
     def setUp(self) -> None:
@@ -92,6 +97,7 @@ class TestSlaveStraightLineDraw(PdfTestCase):
         self.pdf = Pdf()
         self.master = DummyMaster()
         self.sl = SlaveStraightLine(mode='h', length=20, name='straight_test', master=self.master)
+
 
     def test_draw(self):
         with self.file_path(path, 'draw_slave', 'pdf') as pdf_path:

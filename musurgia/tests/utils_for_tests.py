@@ -4,7 +4,7 @@ from pathlib import Path
 
 from diff_pdf_visually import pdf_similar  # type: ignore
 
-from musurgia.pdf import Text, TextLabel
+from musurgia.pdf import Text, TextLabel, DrawObjectColumn, StraightLine
 from musurgia.pdf.drawobject import MasterDrawObject
 
 
@@ -161,3 +161,17 @@ def add_test_labels(drawobject):
     # add_test_right_labels(drawobject)
     # add_test_right_above_labels(drawobject)
     # add_test_right_below_labels(drawobject)
+
+
+def create_simple_column(list_of_draw_objects):
+    c = DrawObjectColumn(show_borders=True, show_margins=True)
+    for do in list_of_draw_objects:
+        do.relative_y = 5
+        do.margins = (10, 10, 10, 10)
+    divider = StraightLine('h', max([do.get_width() for do in list_of_draw_objects]))
+    for do in list_of_draw_objects:
+        c.add_draw_object(do)
+        if do != list_of_draw_objects[-1]:
+            c.add_draw_object(divider)
+
+    return c

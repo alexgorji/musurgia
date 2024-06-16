@@ -109,7 +109,7 @@ class TestClip(PdfTestCase):
         c.add_draw_object(HorizontalRuler(length=1200, bottom_margin=5))
         c.add_draw_object(HorizontalSegmentedLine(lengths=600 * [2]))
         ca = ClippingArea(self.pdf, draw_object=c)
-        ca.left_margin = c.top_margin = 10
+        ca.left_margin = 10
         self.pdf.translate_page_margins()
         ca.draw()
         with self.file_path(path, 'with_clipping_area', 'pdf') as pdf_path:

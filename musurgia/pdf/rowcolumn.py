@@ -88,9 +88,9 @@ class DrawObjectRow(DrawObjectContainer):
 
     def draw(self, pdf: Pdf) -> None:
         self._check_draw_objects_positions()
-        self.draw_borders(pdf)
-        self.draw_margins(pdf)
-        with pdf.prepare_draw_object(self, translate_margins=False):
+        with pdf.prepare_draw_object(self):
+            self.draw_borders(pdf)
+            self.draw_margins(pdf)
             self.draw_above_text_labels(pdf)
             self.draw_left_text_labels(pdf)
             self.draw_below_text_labels(pdf)
@@ -104,16 +104,17 @@ class DrawObjectColumn(DrawObjectContainer):
         return self.relative_x + max([do.get_width() for do in self.get_draw_objects()])
 
     def get_relative_y2(self) -> float:
-        return self.relative_y + sum([do.get_height() for do in self.get_draw_objects()])
+        return self.relative_y + sum([do.relative_y + do.get_height() for do in self.get_draw_objects()])
 
     def draw(self, pdf: Pdf) -> None:
         self._check_draw_objects_positions()
-        self.draw_borders(pdf)
-        self.draw_margins(pdf)
-        with pdf.prepare_draw_object(self, translate_margins=False):
+
+        with pdf.prepare_draw_object(self):
+            self.draw_borders(pdf)
+            self.draw_margins(pdf)
             self.draw_above_text_labels(pdf)
             self.draw_left_text_labels(pdf)
             self.draw_below_text_labels(pdf)
             for do in self.get_draw_objects():
                 do.draw(pdf)
-                pdf.translate(0, do.get_height())
+                pdf.translate(0, do.relative_y + do.get_height())

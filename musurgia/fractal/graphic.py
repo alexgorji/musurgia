@@ -76,6 +76,43 @@ class ChildrenSegmentedLine(DrawObjectRow):
         super().draw(pdf)
 
 
+class GraphicChildrenSegmentedLine(DrawObjectRow):
+    def __init__(self, graphic_children, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._children = graphic_children
+        self._create_segments()
+
+    def _create_segments(self):
+        segments = [copy.deepcopy(node.get_segment()) for node in self._children]
+        for seg in segments:
+            self.add_draw_object(seg)
+
+    def _check_segment_margins(self):
+        for seg in self.segments:
+            if seg.margins != (0, 0, 0, 0):
+                raise SegmentedLineSegmentHasMarginsError()
+
+    @property
+    def segments(self) -> list[LineSegment]:
+        return cast(list[LineSegment], self.get_draw_objects())
+
+    def set_straight_line_relative_y(self, val):
+        delta = val - self.segments[0].straight_line.relative_y
+        self.relative_y += delta
+
+    def _align_segments(self):
+        reference_segment = max(self.segments, key=lambda seg: seg.get_height())
+        for segment in self.segments:
+            if segment != reference_segment:
+                segment.set_straight_line_relative_y(reference_segment.straight_line.relative_y)
+
+    def draw(self, pdf: Pdf) -> None:
+        self._check_segment_margins()
+        self._align_segments()
+        self.segments[-1].end_mark_line.show = True
+        super().draw(pdf)
+
+
 class GraphicTree(Tree):
     def __init__(self, fractal_tree, distance=5, unit=1, mark_line_length=6, shrink_factor=0.7, *args,
                  **kwargs) -> None:
@@ -203,6 +240,11 @@ class GraphicTree(Tree):
     @shrink_factor.setter
     def shrink_factor(self, val):
         self._shrink_factor = val
+
+    def create_layer_graphic(self, layer_number):
+        self._update_mark_line_lengths()
+        children = self.get_layer(layer_number)
+        return GraphicChildrenSegmentedLine(graphic_children=children)
 
     def get_segment(self):
         return self._segment

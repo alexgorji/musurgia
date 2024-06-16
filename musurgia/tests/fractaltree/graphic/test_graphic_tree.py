@@ -159,14 +159,13 @@ class TestGraphicTreeDraw(PdfTestCase):
         self.ft.change_value(50)
         gt = GraphicTree(self.ft, unit=unit, distance=5)
         add_infos(self.ft, gt)
-        gt.set_all_distances(12)
+        gt.set_all_distances(10)
         graphic = gt.get_graphic()
-        graphic.top_margin = 10
-        graphic.bottom_margin = 20
+        graphic.bottom_margin = 15
         graphic._draw_objects = graphic._draw_objects[1:]
         c = DrawObjectColumn()
-        c.bottom_margin = 60
-        ruler = HorizontalRuler(unit=unit, length=graphic.get_width(), bottom_margin=5)
+        c.bottom_margin = 10
+        ruler = HorizontalRuler(unit=unit, length=graphic.get_width())
         c.add_draw_object(ruler)
         c.add_draw_object(graphic)
 
