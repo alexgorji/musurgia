@@ -29,7 +29,7 @@ class TestGraphicTree(PdfTestCase):
         traversed_gt = list(self.gt.traverse())
         assert len(traversed_ft) == len(traversed_gt)
         for fnode, gnode in zip(traversed_ft, traversed_gt):
-            assert gnode.get_node_segment().length == float(fnode.get_value() * self.gt.unit)
+            assert gnode.get_segment().length == float(fnode.get_value() * self.gt.unit)
 
     def test_graphic(self):
         for node in self.gt.traverse():
@@ -39,23 +39,48 @@ class TestGraphicTree(PdfTestCase):
             else:
                 number_draw_objects = 2
             assert len(node.get_graphic().get_draw_objects()) == number_draw_objects
-            assert node.get_graphic().get_draw_objects()[0] == node.get_node_segment()
+            assert node.get_graphic().get_draw_objects()[0] == node.get_segment()
             if not node.is_leaf:
                 assert isinstance(node.get_graphic().get_draw_objects()[1], DrawObjectRow)
                 for ch, do in zip(node.get_children(), node.get_graphic().get_draw_objects()[1].get_draw_objects()):
                     assert isinstance(do, DrawObjectColumn)
-                    assert do.get_draw_objects()[0] == ch.get_node_segment()
+                    assert do.get_draw_objects()[0] == ch.get_segment()
 
     def test_end_mark_lines(self):
         self.gt._show_last_mark_lines()
         for node in self.gt.traverse():
             if node.is_last_child:
-                assert node.get_node_segment().end_mark_line.show is True
+                assert node.get_segment().end_mark_line.show is True
             else:
-                assert node.get_node_segment().end_mark_line.show is False
+                assert node.get_segment().end_mark_line.show is False
 
-    # def test_add_distance(self):
-    #     self.gt._add_distance()
+    def test_mark_line_lengths(self):
+        for node in self.gt.traverse():
+            node._update_mark_line_length()
+        for node in self.gt.traverse():
+            if node.is_first_child:
+                assert node.get_segment().start_mark_line.length == node.mark_line_length
+            else:
+                self.assertAlmostEqual(node.mark_line_length * node.shrink_factor,
+                                       node.get_segment().start_mark_line.length)
+            if node.is_last_child:
+                assert node.get_segment().end_mark_line.length == node.mark_line_length
+
+    def test_align_layer_segments(self):
+        self.gt._update_mark_line_lengths()
+        self.gt._align_layer_segments()
+        for layer_number in range(1, self.gt.get_number_of_layers() + 1):
+            layer = self.gt.get_layer(layer_number)
+            straight_lines_y = set([node.get_segment().straight_line.relative_y for node in layer])
+            assert len(straight_lines_y) == 1
+
+    def test_add_distance(self):
+        self.gt._update_distance()
+        for layer_number in range(1, self.gt.get_number_of_layers() + 1):
+            layer = self.gt.get_layer(layer_number)
+            reference = max(layer, key=lambda layer: layer)
+        #     for node in layer:
+        #
 
     def test_draw_graphic(self):
         unit = 10

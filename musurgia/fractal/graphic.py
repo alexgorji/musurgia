@@ -9,6 +9,23 @@ from musurgia.pdf import DrawObjectRow, Pdf, DrawObjectColumn
 from musurgia.pdf.line import LineSegment
 
 
+def _get_reference_segment(segments):
+    end_mark_reference = max(segments, key=lambda seg: seg.end_mark_line.length)
+    start_mark_reference = max(segments, key=lambda seg: seg.start_mark_line.length)
+    reference_segment = start_mark_reference if start_mark_reference.start_mark_line.length >= end_mark_reference.end_mark_line.length else end_mark_reference
+    return reference_segment
+
+
+def get_largest_mark_line(segments):
+    output = segments[0].start_mark_line
+    for seg in segments:
+        if seg.start_mark_line.length > output.length:
+            output = seg.start_mark_line
+        if seg.end_mark_line.length > output.length:
+            output = seg.end_mark_line
+    return output
+
+
 class GraphicTree(Tree):
     def __init__(self, fractal_tree, distance=5, unit=10, mark_line_length=6, shrink_factor=0.7, *args,
                  **kwargs) -> None:
@@ -24,7 +41,7 @@ class GraphicTree(Tree):
         self.mark_line_length = mark_line_length
         self.shrink_factor = shrink_factor
 
-        self._node_segment: FractalTreeNodeSegment
+        self._segment: FractalTreeNodeSegment
         self._graphic: DrawObjectColumn
         self._populate_tree()
         self._create_graphic()
@@ -37,7 +54,7 @@ class GraphicTree(Tree):
 
     def _create_graphic(self):
         self._graphic = DrawObjectColumn()
-        self._graphic.add_draw_object(self.get_node_segment())
+        self._graphic.add_draw_object(self.get_segment())
         if not self.is_leaf:
             second_row = DrawObjectRow()
             for ch in self.get_children():
@@ -46,17 +63,47 @@ class GraphicTree(Tree):
             self._graphic.add_draw_object(second_row)
 
     def _populate_tree(self):
-        self._node_segment = FractalTreeNodeSegment(node_value=self.get_fractal_tree().get_value(), unit=self.unit)
+        self._segment = FractalTreeNodeSegment(node_value=self.get_fractal_tree().get_value(), unit=self.unit)
+        self._segment.start_mark_line.length = self.mark_line_length
+        self._segment.end_mark_line.length = self.mark_line_length
         for ch in self.get_fractal_tree().get_children():
-            self.add_child(GraphicTree(ch))
+            self.add_child(GraphicTree(ch, unit=self.unit, mark_line_length=self.mark_line_length * self.shrink_factor))
 
     def _show_last_mark_lines(self):
         for node in self.traverse():
             if node.is_last_child:
-                node.get_node_segment().end_mark_line.show = True
+                node.get_segment().end_mark_line.show = True
+
+    def _update_mark_line_length(self):
+        if self.is_first_child:
+            self.get_segment().start_mark_line.length = self.mark_line_length
+        else:
+            self.get_segment().start_mark_line.length = round(self.mark_line_length * self.shrink_factor, 2)
+        if self.is_last_child:
+            self.get_segment().end_mark_line.length = self.mark_line_length
+
+    def _update_mark_line_lengths(self):
+        for node in self.traverse():
+            node._update_mark_line_length()
+
+    # def _align_layer_segments(self):
+    #     for layer_number in range(1, self.get_number_of_layers() + 1):
+    #         current_layer = self.get_layer(layer_number)
+    #         segments = [l.get_segment() for l in current_layer]
+    #         current_layer_largeste_mark_line = get_largest_mark_line(segments)
+    #         for seg in segments:
+    #             max_mark_line_length = max([seg.start_mark_line.length, seg.end_mark_line.length])
+    #             dy = (current_layer_largeste_mark_line.length - max_mark_line_length) / 2
+    #             seg.relative_y += dy
+    def _update_distance(self):
+        for node in self.traverse():
+            if not node.is_leaf:
+                node.get_graphic().get_draw_objects()[1].relative_y += node.distance
 
     def finalize(self):
         self._show_last_mark_lines()
+        self._update_mark_line_lengths()
+        self._update_distance()
 
     @property
     def distance(self):
@@ -82,7 +129,7 @@ class GraphicTree(Tree):
     def unit(self, value):
         self._unit = value
         try:
-            self._node_segment.unit = self.unit
+            self._segment.unit = self.unit
         except AttributeError:
             pass
 
@@ -94,8 +141,8 @@ class GraphicTree(Tree):
     def shrink_factor(self, val):
         self._shrink_factor = val
 
-    def get_node_segment(self):
-        return self._node_segment
+    def get_segment(self):
+        return self._segment
 
     def get_fractal_tree(self):
         return self._fractal_tree
