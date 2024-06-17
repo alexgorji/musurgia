@@ -2,8 +2,7 @@ import copy
 from pathlib import Path
 from unittest import TestCase
 
-from musurgia.fractal import FractalTreeNodeSegment
-from musurgia.fractal.graphic import GraphicTree
+from musurgia.fractal.graphic import GraphicTree, FractalTreeNodeSegment
 from musurgia.pdf import DrawObjectColumn, DrawObjectRow, Pdf, draw_ruler, TextLabel, HorizontalRuler
 from musurgia.tests.fractaltree.graphic.graphic_test_utils import create_test_fractal_tree, add_infos
 from musurgia.tests.utils_for_tests import PdfTestCase

@@ -1,79 +1,42 @@
 import copy
-from typing import cast, Optional
+from typing import cast
 
 from verysimpletree.tree import Tree, T
 
-from musurgia.fractal import FractalTreeNodeSegment
 from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
-from musurgia.pdf import DrawObjectRow, Pdf, DrawObjectColumn
+from musurgia.pdf import DrawObjectRow, Pdf, DrawObjectColumn, HorizontalLineSegment
 from musurgia.pdf.line import LineSegment
 
 
-def _get_reference_segment(segments):
-    end_mark_reference = max(segments, key=lambda seg: seg.end_mark_line.length)
-    start_mark_reference = max(segments, key=lambda seg: seg.start_mark_line.length)
-    reference_segment = start_mark_reference if start_mark_reference.start_mark_line.length >= end_mark_reference.end_mark_line.length else end_mark_reference
-    return reference_segment
+class FractalTreeNodeSegment(HorizontalLineSegment):
+    def __init__(self, node_value, unit=1, *args, **kwargs):
+        super().__init__(length=node_value * unit, *args, **kwargs)
+        self._node_value = node_value
+        self._unit: int
+        self.unit = unit
 
-
-def get_largest_mark_line(segments):
-    output = segments[0].start_mark_line
-    for seg in segments:
-        if seg.start_mark_line.length > output.length:
-            output = seg.start_mark_line
-        if seg.end_mark_line.length > output.length:
-            output = seg.end_mark_line
-    return output
-
-
-class ChildrenSegmentedLine(DrawObjectRow):
-    def __init__(self, fractal_tree_children, unit=1, mark_line_length=6, shrink_factor=0.7, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._children = fractal_tree_children
-        self._unit = unit
-        self._mark_line_length = mark_line_length
-        self._shrink_factor = shrink_factor
-        self._create_segments()
-
-    def _create_segments(self):
-        segments = [copy.deepcopy(node.get_node_segment()) for node in self.get_fractal_tree_children()]
-        for seg in segments:
-            seg.unit = self._unit
-            seg.end_mark_line.length = self._mark_line_length
-            seg.start_mark_line.length = self._mark_line_length
-            if seg != segments[0]:
-                seg.start_mark_line.length *= self._shrink_factor
-            if seg != segments[-1]:
-                seg.end_mark_line.length *= self._shrink_factor
-            self.add_draw_object(seg)
-
-    def _check_segment_margins(self):
-        for seg in self.segments:
-            if seg.margins != (0, 0, 0, 0):
-                raise SegmentedLineSegmentHasMarginsError()
+    def _update_length(self):
+        self.straight_line.length = self.get_node_value() * self.unit
 
     @property
-    def segments(self) -> list[LineSegment]:
-        return cast(list[LineSegment], self.get_draw_objects())
+    def length(self) -> float:
+        return super().length
 
-    def get_fractal_tree_children(self):
-        return self._children
+    @property
+    def unit(self) -> int:
+        return self._unit
 
-    def set_straight_line_relative_y(self, val):
-        delta = val - self.segments[0].straight_line.relative_y
-        self.relative_y += delta
+    @unit.setter
+    def unit(self, value: int) -> None:
+        self._unit = value
+        self._update_length()
 
-    def _align_segments(self):
-        reference_segment = max(self.segments, key=lambda seg: seg.get_height())
-        for segment in self.segments:
-            if segment != reference_segment:
-                segment.set_straight_line_relative_y(reference_segment.straight_line.relative_y)
+    def get_node_value(self):
+        return self._node_value
 
-    def draw(self, pdf: Pdf) -> None:
-        self._check_segment_margins()
-        self._align_segments()
-        self.segments[-1].end_mark_line.show = True
-        super().draw(pdf)
+    def set_node_value(self, val):
+        self._node_value = val
+        self._update_length()
 
 
 class GraphicChildrenSegmentedLine(DrawObjectRow):

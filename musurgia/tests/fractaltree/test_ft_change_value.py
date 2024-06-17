@@ -24,15 +24,6 @@ class Test(TestCase):
         self.assertEqual([Fraction(15, 2), Fraction(5, 2), Fraction(5, 1)],
                          [child.get_value() for child in self.ft.get_children()])
 
-    def test_node_segment(self):
-        self.ft.add_layer()
-        self.ft.add_layer(lambda node: node.get_fractal_order() > 1)
-        assert [round(node.get_node_segment().length, 2) for node in self.ft.traverse()] == [
-            round(float(node.get_value()), 2) for node in self.ft.traverse()]
-        self.ft.change_value(15)
-        assert [round(node.get_node_segment().length, 2) for node in self.ft.traverse()] == [
-            round(float(node.get_value()), 2) for node in self.ft.traverse()]
-
     def test_change_leaf_value(self):
         self.ft.add_layer()
         self.ft.get_children()[0].change_value(10)
