@@ -2,7 +2,8 @@ import copy
 from pathlib import Path
 from unittest import TestCase
 
-from musurgia.fractal.graphic import GraphicTree, FractalTreeNodeSegment
+from musurgia.fractal.graphic import GraphicTree, FractalTreeNodeSegment, GraphicChildrenSegmentedLine
+from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
 from musurgia.pdf import DrawObjectColumn, DrawObjectRow, Pdf, draw_ruler, TextLabel, HorizontalRuler
 from musurgia.tests.utils_for_tests import PdfTestCase, create_test_fractal_tree, add_node_infos_to_graphic
 
@@ -109,6 +110,10 @@ class TestGraphicTree(TestCase):
         for node in self.gt.traverse():
             assert node.distance == 20
 
+    def test_wrong_child_type(self):
+        with self.assertRaises(TypeError):
+            self.gt.add_child('string')
+
 
 class TestGraphicTreeDraw(PdfTestCase):
     def setUp(self):
@@ -172,3 +177,22 @@ class TestGraphicTreeDraw(PdfTestCase):
             self.pdf.translate_page_margins()
             c.clipped_draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
+
+
+class TestGraphicChildrenSegmentedLine(TestCase):
+    def setUp(self):
+        self.ft = create_test_fractal_tree()
+        self.gt = GraphicTree(self.ft)
+
+    def test_check_segment_margins(self):
+        gcsl = GraphicChildrenSegmentedLine(self.gt.get_children())
+        gcsl.segments[0].margins = (1, 2, 3, 4)
+        with self.assertRaises(SegmentedLineSegmentHasMarginsError):
+            gcsl.draw(Pdf())
+
+    def test_set_straight_line_relative_y(self):
+        gcsl = GraphicChildrenSegmentedLine(self.gt.get_children())
+        assert set([seg.get_height() for seg in gcsl.segments]) == {4.2}
+        gcsl.set_straight_line_relative_y(0)
+        assert set([seg.relative_y for seg in gcsl.segments]) == {0}
+        assert gcsl.relative_y == -2.1
