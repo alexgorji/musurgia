@@ -104,7 +104,7 @@ class AbstractText(DrawObject, ABC):
             else:
                 style = ''
             pdf.set_font(self.font.family, style=style, size=self.font_size)
-            with pdf.prepare_draw_object(self):
+            with pdf.pdf_draw_object_translate(self):
                 pdf.text(x=0, y=0, text=self.value)
 
 

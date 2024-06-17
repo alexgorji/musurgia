@@ -84,7 +84,7 @@ class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol):
 
     def draw(self, pdf: Pdf) -> None:
         if self.show:
-            with pdf.prepare_draw_object(cast(DrawObject, self)):
+            with pdf.pdf_draw_object_translate(cast(DrawObject, self)):
                 self.draw_above_text_labels(pdf)
                 self.draw_left_text_labels(pdf)
                 self.draw_below_text_labels(pdf)

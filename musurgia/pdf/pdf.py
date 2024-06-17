@@ -29,7 +29,7 @@ class SavedState:
         self.pdf._pop_state()
 
 
-class PrepareDrawObject:
+class PdfDrawObjectTranslations:
     def __init__(self, pdf: 'Pdf', draw_object: 'DrawObject', translate_positions=True, translate_margins=True) -> None:
         self.pdf = pdf
         self.draw_object = draw_object
@@ -141,8 +141,8 @@ class Pdf(FPDF, HasOutProtocol):
                           x * self.k, (self.h - y) * self.k,
                           w * self.k, -h * self.k))
 
-    def prepare_draw_object(self, draw_object: 'DrawObject', **kwargs) -> PrepareDrawObject:
-        return PrepareDrawObject(self, draw_object=draw_object, **kwargs)
+    def pdf_draw_object_translate(self, draw_object: 'DrawObject', **kwargs) -> PdfDrawObjectTranslations:
+        return PdfDrawObjectTranslations(self, draw_object=draw_object, **kwargs)
 
     def reset_font(self) -> None:
         # https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.7old.pdf

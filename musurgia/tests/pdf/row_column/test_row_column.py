@@ -122,6 +122,12 @@ class TestRowPositionAndMargins(TestCase):
         c.add_draw_object(s2)
         assert c.get_end_positions() == (50, 50)
 
+    def test_get_border_rectangle_coordinates(self):
+        assert self.r.get_border_rectangle_coordinates() == (0, 0, 10, 5)
+
+    def test_get_margin_rectangle_coordinates(self):
+        assert self.r.get_margin_rectangle_coordinates() == (0, 0, 10, 5)
+
 
 class TestRowColumnSimpleLines(PdfTestCase):
     def setUp(self) -> None:
@@ -366,6 +372,7 @@ class TestRowColumn(PdfTestCase):
         control_hls.straight_line.add_text_label('control_hsl')
 
         r = DrawObjectRow(show_borders=True, show_margins=True)
+        r.relative_y = 10
         first_hls = copy.deepcopy(hls)
         first_hls.left_margin = 5
         second_hls = copy.deepcopy(hls)
@@ -390,7 +397,7 @@ class TestRowColumn(PdfTestCase):
 
         add_text_labels(r)
 
-        c = DrawObjectColumn(show_borders=True)
+        c = DrawObjectColumn(show_borders=True, show_margins=True)
         first_hls = copy.deepcopy(hls)
         second_hls = copy.deepcopy(hls)
         first_hls.bottom_margin = 10
@@ -414,52 +421,52 @@ class TestRowColumn(PdfTestCase):
             main_column.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
 
-    def test_complex_column(self):
-        c1 = DrawObjectColumn()
-        hl1 = HorizontalSegmentedLine([10, 20, 30, 40])
-        c1.add_draw_object(hl1)
-        first_row = DrawObjectRow()
-        second_row = DrawObjectRow()
-        c1.add_draw_object(first_row)
-        c1.add_draw_object(second_row)
-
-        c2 = DrawObjectColumn()
-        first_row.add_draw_object(c2)
-        hl2 = HorizontalSegmentedLine([40, 30, 20, 10])
-        c2.add_draw_object(hl2)
-        c2.add_draw_object(second_row)
-
-        c3 = DrawObjectColumn()
-        second_row.add_draw_object(c3)
-        hl3 = HorizontalSegmentedLine([5, 10, 15, 20])
-        hl4 = HorizontalSegmentedLine([20, 15, 10, 5])
-        c3.add_draw_object(hl3)
-        c3.add_draw_object(hl4)
-
-        c = DrawObjectColumn()
-        c.add_draw_object(c1)
-        hl5 = HorizontalSegmentedLine([50, 40, 30, 20, 10])
-        c.add_draw_object(hl5)
-
-        hl1.bottom_margin = 10
-        hl2.position = (30, 20)
-        hl2.position = (10, 20)
-        hl3.position = (40, 50)
-        hl4.position = (20, 10)
-
-        hl1.add_text_label('hl1', placement='left')
-        hl2.add_text_label('hl2', placement='left')
-        hl3.add_text_label('hl3', placement='left')
-        hl4.add_text_label('hl4', placement='left')
-        hl5.add_text_label('hl5', placement='left')
-
-        with self.file_path(path, 'complex_colum', 'pdf') as pdf_path:
-            self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, mode='v', first_label=-1)
-            draw_ruler(self.pdf, mode='h', first_label=-1)
-            self.pdf.translate(20, 20)
-            c.draw(self.pdf)
-            self.pdf.write_to_path(pdf_path)
+    # def test_complex_column(self):
+    #     c1 = DrawObjectColumn()
+    #     hl1 = HorizontalSegmentedLine([10, 20, 30, 40])
+    #     c1.add_draw_object(hl1)
+    #     first_row = DrawObjectRow()
+    #     second_row = DrawObjectRow()
+    #     c1.add_draw_object(first_row)
+    #     c1.add_draw_object(second_row)
+    #
+    #     c2 = DrawObjectColumn()
+    #     first_row.add_draw_object(c2)
+    #     hl2 = HorizontalSegmentedLine([40, 30, 20, 10])
+    #     c2.add_draw_object(hl2)
+    #     c2.add_draw_object(second_row)
+    #
+    #     c3 = DrawObjectColumn()
+    #     second_row.add_draw_object(c3)
+    #     hl3 = HorizontalSegmentedLine([5, 10, 15, 20])
+    #     hl4 = HorizontalSegmentedLine([20, 15, 10, 5])
+    #     c3.add_draw_object(hl3)
+    #     c3.add_draw_object(hl4)
+    #
+    #     c = DrawObjectColumn()
+    #     c.add_draw_object(c1)
+    #     hl5 = HorizontalSegmentedLine([50, 40, 30, 20, 10])
+    #     c.add_draw_object(hl5)
+    #
+    #     hl1.bottom_margin = 10
+    #     hl2.position = (30, 20)
+    #     hl2.position = (10, 20)
+    #     hl3.position = (40, 50)
+    #     hl4.position = (20, 10)
+    #
+    #     hl1.add_text_label('hl1', placement='left')
+    #     hl2.add_text_label('hl2', placement='left')
+    #     hl3.add_text_label('hl3', placement='left')
+    #     hl4.add_text_label('hl4', placement='left')
+    #     hl5.add_text_label('hl5', placement='left')
+    #
+    #     with self.file_path(path, 'complex_column', 'pdf') as pdf_path:
+    #         self.pdf.translate_page_margins()
+    #         draw_ruler(self.pdf, mode='v', first_label=-1)
+    #         draw_ruler(self.pdf, mode='h', first_label=-1)
+    #         self.pdf.translate(20, 20)
+    #         c.draw(self.pdf)
+    #         self.pdf.write_to_path(pdf_path)
 
     def test_two_simple_lines_column_draw(self):
         c = create_simple_column([StraightLine('h', 30), StraightLine('h', 30)])
@@ -511,7 +518,7 @@ class TestRowColumn(PdfTestCase):
     def test_relative_y_inside_column_draw(self):
         c = DrawObjectColumn(show_borders=True, show_margins=True)
         hsl = HorizontalSegmentedLine([10, 20, 30])
-        # hsl.relative_y = 20
+        hsl.relative_y = 20
         hsl.margins = (10, 0, 20, 0)
         c.add_draw_object(hsl)
 

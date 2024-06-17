@@ -54,6 +54,26 @@ class TestHorizontalSegmentedLine(TestCase):
         with self.assertRaises(SegmentedLineSegmentHasMarginsError):
             self.hsl.draw(Pdf())
 
+    def test_relative_y(self):
+        assert isinstance(self.hsl, DrawObjectRow)
+        assert self.hsl.positions == (0, 0)
+        assert self.hsl.get_end_positions() == (70, 3)
+        self.hsl.relative_y = 10
+        assert self.hsl.positions == (0, 10)
+        assert self.hsl.get_end_positions() == (70, 13)
+
+    def test_borders(self):
+        assert self.hsl.get_border_rectangle_coordinates() == (0, 0, 70, 3)
+
+        self.hsl.set_straight_line_relative_y(0)
+        assert self.hsl.get_border_rectangle_coordinates() == (0, -1.5, 70, 3)
+
+        self.hsl.relative_y = -5
+        assert self.hsl.get_border_rectangle_coordinates() == (0, -5, 70, 3)
+
+        self.hsl.relative_y = 5
+        assert self.hsl.get_border_rectangle_coordinates() == (0, 5, 70, 3)
+
 
 class TestHorizontalSegmentedLineDraw(PdfTestCase):
     def setUp(self) -> None:
@@ -132,6 +152,8 @@ class TestHorizontalSegmentedLineDraw(PdfTestCase):
         copied_2.relative_y = -5
         copied_3.relative_y = 5
 
+        assert isinstance(copied_3, DrawObjectRow)
+
         assert self.hsl.positions == (0, 0)
         assert [seg.positions for seg in self.hsl.segments] == [(0, 0), (0, 0), (0, 0), (0, 0)]
         assert self.hsl.get_end_positions() == (70, 3)
@@ -151,6 +173,7 @@ class TestHorizontalSegmentedLineDraw(PdfTestCase):
         dos = [self.hsl, copied_1, copied_2, copied_3]
         for do in dos:
             do.show_borders = True
+
             add_positions(do)
 
         with self.file_path(parent_path=path, name='borders', extension='pdf') as pdf_path:

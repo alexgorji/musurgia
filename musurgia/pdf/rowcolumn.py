@@ -42,15 +42,12 @@ class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
     def draw_margins(self, pdf):
         if self.show_margins:
             with pdf.local_context(draw_color=DeviceGray(0.5), dash_pattern={'dash': 1, 'gap': 1}):
-                pdf.rect(self.relative_x - self.left_margin, self.relative_y - self.top_margin,
-                         self.get_relative_x2() + self.right_margin + self.left_margin,
-                         self.get_relative_y2() + self.bottom_margin + self.top_margin)
+                pdf.rect(*self.get_margin_rectangle_coordinates())
 
     def draw_borders(self, pdf):
         if self.show_borders:
             with pdf.local_context(draw_color=DeviceGray(0.5), dash_pattern={'dash': 2, 'gap': 1}):
-                pdf.rect(self.relative_x, self.relative_y, self.get_relative_x2() - self.relative_x,
-                         self.get_relative_y2() - self.relative_y)
+                pdf.rect(*self.get_border_rectangle_coordinates())
 
     def add_draw_object(self, draw_object: DrawObject) -> DrawObject:
         if not isinstance(draw_object, DrawObject):
@@ -59,6 +56,12 @@ class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
                                                  message=f'draw_object must be of type DrawObject, not {type(draw_object)}'))
         self._draw_objects.append(draw_object)
         return draw_object
+
+    def get_border_rectangle_coordinates(self):
+        return self.relative_x, self.relative_y, self.get_relative_x2() - self.relative_x, self.get_relative_y2() - self.relative_y
+
+    def get_margin_rectangle_coordinates(self):
+        return self.relative_x, self.relative_y, self.get_relative_x2() - self.relative_x + self.right_margin + self.left_margin, self.get_relative_y2() - self.relative_y + self.bottom_margin + self.top_margin
 
     def get_draw_objects(self) -> list[DrawObject]:
         return self._draw_objects
@@ -88,9 +91,10 @@ class DrawObjectRow(DrawObjectContainer):
 
     def draw(self, pdf: Pdf) -> None:
         self._check_draw_objects_positions()
-        with pdf.prepare_draw_object(self):
+        self.draw_margins(pdf)
+        with pdf.pdf_draw_object_translate(self, translate_positions=False):
             self.draw_borders(pdf)
-            self.draw_margins(pdf)
+        with pdf.pdf_draw_object_translate(self):
             self.draw_above_text_labels(pdf)
             self.draw_left_text_labels(pdf)
             self.draw_below_text_labels(pdf)
@@ -108,10 +112,12 @@ class DrawObjectColumn(DrawObjectContainer):
 
     def draw(self, pdf: Pdf) -> None:
         self._check_draw_objects_positions()
-
-        with pdf.prepare_draw_object(self):
+        self.draw_margins(pdf)
+        with pdf.pdf_draw_object_translate(self, translate_positions=False):
             self.draw_borders(pdf)
-            self.draw_margins(pdf)
+        with pdf.pdf_draw_object_translate(self):
+            # self.draw_borders(pdf)
+            # self.draw_margins(pdf)
             self.draw_above_text_labels(pdf)
             self.draw_left_text_labels(pdf)
             self.draw_below_text_labels(pdf)
