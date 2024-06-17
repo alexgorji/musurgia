@@ -9,7 +9,8 @@ from musurgia.fractal.graphic import FractalTreeNodeSegment
 from musurgia.matrix.matrix import PermutationOrderMatrix, PermutationOrderMatrixGenerator
 from musurgia.musurgia_exceptions import FractalTreeHasChildrenError, \
     FractalTreeNonRootCannotSetMainPermutationOrderError, PermutationIndexCalculaterNoParentIndexError, \
-    FractalTreePermutationIndexError, FractalTreeSetMainPermutationOrderFirstError
+    FractalTreePermutationIndexError, FractalTreeSetMainPermutationOrderFirstError, FractalTreeMergeWrongValuesError, \
+    FractalTreeHasNoChildrenError
 from musurgia.musurgia_types import ConvertibleToFraction, FractalTreeReduceChildrenMode, convert_to_fraction, \
     MatrixIndex, PermutationOrder, check_type, PositiveInteger, check_matrix_index_values, create_error_message
 from musurgia.permutation.permutation import permute
@@ -55,7 +56,9 @@ class PermutationIndexCalculater:
         check_type(column_number, 'PositiveInteger', class_name=self.__class__.__name__, method_name='get_index',
                    argument_name='column_number')
         if column_number > self.size:
-            raise ValueError(f'Column number {column_number} cannot be less than size {self.size}')
+            raise ValueError(create_error_message(class_name=self.__class__.__name__, method_name='get_index',
+                                                  argument_name='column_number',
+                                                  message=f'Column number {column_number} cannot be less than size {self.size}'))
         r = sum(self.parent_index) % self.size
         if r == 0:
             r = self.size
@@ -104,7 +107,7 @@ class FractalTree(Tree[Any]):
                 raise FractalTreeNonRootCannotSetMainPermutationOrderError
             return True
         else:
-            return False
+            raise TypeError(f'Wrong child type. Child must be of type FractalTree not {type(child)}')
 
     def _calculate_children_fractal_values(self) -> list['Fraction']:
         return permute([self.get_value() * prop for prop in self.proportions], self.get_permutation_order())
@@ -236,8 +239,6 @@ class FractalTree(Tree[Any]):
         """
 
         leaves = list(self.iterate_leaves())
-        if not leaves:
-            leaves = [self]
 
         if conditions is not None:
             for leaf in leaves:
@@ -385,7 +386,7 @@ class FractalTree(Tree[Any]):
     def get_children_fractal_orders(self) -> list[int]:
         if self.is_root:
             if self.main_permutation_order is None:
-                raise AttributeError(
+                raise FractalTreeSetMainPermutationOrderFirstError(
                     create_error_message(message='Set main_permutation_order first', class_name=self.__class__.__name__,
                                          method_name='get_children_fractal_orders'))
             else:
@@ -444,9 +445,6 @@ class FractalTree(Tree[Any]):
                         output.append(child.get_layer(layer - 1, key))
                 return output
 
-    # def get_node_segment(self):
-    #     return self._node_segment
-
     def get_number_of_layers(self) -> int:
         if self.get_leaves() == [self]:
             return 0
@@ -454,8 +452,6 @@ class FractalTree(Tree[Any]):
             return self.get_farthest_leaf().get_distance(self)
 
     def get_permutation_index(self) -> MatrixIndex:
-        if not self._permutation_index:
-            self._permutation_index = self.calculate_permutation_index()
         return self._permutation_index
 
     def get_permutation_order(self) -> tuple[int, ...]:
@@ -511,9 +507,9 @@ class FractalTree(Tree[Any]):
         """
         children = self.get_children()
         if not children:
-            raise Exception('FractalTree.merge_children:There are no children to be merged')
+            raise FractalTreeHasNoChildrenError('FractalTree.merge_children: There are no children to be merged')
         if sum(lengths) != len(children):
-            raise ValueError(
+            raise FractalTreeMergeWrongValuesError(
                 f'FractalTree.merge_children: Sum of lengths {sum(lengths)} must be the same as length of children {len(children)}')
 
         def _merge(nodes):
@@ -531,7 +527,7 @@ class FractalTree(Tree[Any]):
 
     def reduce_children_by_condition(self, condition: Callable[['FractalTree'], bool]) -> None:
         if not self.get_children():
-            raise ValueError(f'{self} has no children to be reduced')
+            raise FractalTreeHasNoChildrenError(f'{self} has no children to be reduced')
         for child in [child for child in self.get_children() if condition(child)]:
             self.remove(child)
             del child
@@ -548,8 +544,8 @@ class FractalTree(Tree[Any]):
                    method_name='reduce_children_by_size', argument_name='mode')
         if mode == 'merge':
             if merge_index is None:
-                raise TypeError(f'reduce_children.merge_index must be set for mode merge')
-            if 0 > merge_index > self.get_size() - 1:
+                raise ValueError(f'reduce_children.merge_index must be set for mode merge')
+            if merge_index > self.get_size() - 1:
                 raise ValueError(
                     f'reduce_children_by_size.merge_index {merge_index} must be a positive int not greater than {self.get_size() - 1}')
 
@@ -587,6 +583,8 @@ class FractalTree(Tree[Any]):
         self._permutation_index = index
 
     def split(self, *proportions):
+        if self.get_children():
+            raise FractalTreeHasChildrenError
 
         if hasattr(proportions[0], '__iter__'):
             proportions = proportions[0]
@@ -601,11 +599,3 @@ class FractalTree(Tree[Any]):
             new_node.calculate_permutation_index()
 
         return self.get_children()
-
-    # copy
-    def __copy__(self: 'FractalTree') -> 'FractalTree':
-        return self.__class__(value=self.get_value(),
-                              proportions=self.proportions,
-                              main_permutation_order=self.main_permutation_order,
-                              permutation_index=self._permutation_index,
-                              fertile=self.fertile)

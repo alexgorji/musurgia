@@ -81,6 +81,14 @@ class FractalTreeSetMainPermutationOrderFirstError(FractalTreeException, ValueEr
         super().__init__(msg)
 
 
+class FractalTreeMergeWrongValuesError(FractalTreeException, ValueError):
+    pass
+
+
+class FractalTreeHasNoChildrenError(FractalTreeException):
+    pass
+
+
 class FractalTreeHasChildrenError(FractalTreeException):
     pass
 
