@@ -107,6 +107,9 @@ class TestMatrix(TestCase):
         assert self.big_mat.get_element((1, 2)) == (1, 2)
         assert self.big_mat.get_element((3, 4)) == (3, 4)
 
+        with self.assertRaises(MatrixIndexOutOfRangeError):
+            self.mat.get_element((20, 30))
+
     def test_transpose(self):
         expected = [[(1, 1), (2, 1), (3, 1), (4, 1), (5, 1)],
                     [(1, 2), (2, 2), (3, 2), (4, 2), (5, 2)],
@@ -176,6 +179,11 @@ class TestGeneratePermutationOrderMatrix(TestCase):
                    [(2, 4, 1, 3), (3, 1, 4, 2), (1, 2, 3, 4), (4, 3, 2, 1)],
                    [(1, 2, 3, 4), (2, 4, 1, 3), (4, 3, 2, 1), (3, 1, 4, 2)],
                    [(4, 3, 2, 1), (1, 2, 3, 4), (3, 1, 4, 2), (2, 4, 1, 3)]]
+        pomg = PermutationOrderMatrixGenerator(
+            main_permutation_order=(3, 1, 4, 2))
+        assert pomg.main_permutation_order == (3, 1, 4, 2)
+        pomg.main_permutation_order = (1, 2)
+        assert pomg.main_permutation_order == (1, 2)
 
 
 class TestPermutationOrderMatrix(TestCase):
