@@ -1,4 +1,3 @@
-import copy
 import itertools
 from fractions import Fraction
 from typing import Union, Optional, List, Callable, Any, cast, Sequence
@@ -13,12 +12,13 @@ from musurgia.musurgia_exceptions import FractalTreeHasChildrenError, \
     FractalTreePermutationIndexError, FractalTreeSetMainPermutationOrderFirstError
 from musurgia.musurgia_types import ConvertibleToFraction, FractalTreeReduceChildrenMode, convert_to_fraction, \
     MatrixIndex, PermutationOrder, check_type, PositiveInteger, check_matrix_index_values, create_error_message
-from musurgia.pdf.rowcolumn import DrawObjectColumn, DrawObjectRow
 from musurgia.permutation.permutation import permute
-from musurgia.tests.utils_for_tests import node_info
-from musurgia.utils import flatten
 
 __all__ = ['FractalTree']
+
+
+def node_info(node):
+    return f'{node.get_fractal_order()}: {node.get_permutation_index()}: {round(float(node.get_value()), 2)}'
 
 
 class PermutationIndexCalculater:

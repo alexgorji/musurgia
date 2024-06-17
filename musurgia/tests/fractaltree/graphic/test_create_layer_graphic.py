@@ -3,8 +3,7 @@ from pathlib import Path
 from musurgia.fractal import FractalTree
 from musurgia.fractal.graphic import GraphicTree
 from musurgia.pdf import Pdf, draw_ruler, TextLabel, DrawObjectColumn
-from musurgia.tests.fractaltree.graphic.graphic_test_utils import create_test_fractal_tree, add_infos
-from musurgia.tests.utils_for_tests import PdfTestCase
+from musurgia.tests.utils_for_tests import PdfTestCase, create_test_fractal_tree, add_node_infos_to_graphic
 
 path = Path(__file__)
 
@@ -17,7 +16,7 @@ class TestCreatLayerGraphic(PdfTestCase):
     def test_create_layer_graphic(self):
         unit = 24
         gt = GraphicTree(self.ft, unit=unit, distance=12, shrink_factor=0.6)
-        add_infos(self.ft, gt)
+        add_node_infos_to_graphic(self.ft, gt)
 
         graphic = gt.get_graphic()
         graphic.bottom_margin = 30

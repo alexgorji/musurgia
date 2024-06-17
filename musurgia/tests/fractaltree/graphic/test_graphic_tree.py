@@ -4,8 +4,7 @@ from unittest import TestCase
 
 from musurgia.fractal.graphic import GraphicTree, FractalTreeNodeSegment
 from musurgia.pdf import DrawObjectColumn, DrawObjectRow, Pdf, draw_ruler, TextLabel, HorizontalRuler
-from musurgia.tests.fractaltree.graphic.graphic_test_utils import create_test_fractal_tree, add_infos
-from musurgia.tests.utils_for_tests import PdfTestCase
+from musurgia.tests.utils_for_tests import PdfTestCase, create_test_fractal_tree, add_node_infos_to_graphic
 
 path = Path(__file__)
 
@@ -116,7 +115,7 @@ class TestGraphicTreeDraw(PdfTestCase):
         self.ft = create_test_fractal_tree()
         self.gt = GraphicTree(self.ft)
         self.pdf = Pdf(orientation='l')
-        add_infos(self.ft, self.gt)
+        add_node_infos_to_graphic(self.ft, self.gt)
 
     def test_draw_graphic(self):
         unit = 25
@@ -157,7 +156,7 @@ class TestGraphicTreeDraw(PdfTestCase):
         unit = 15
         self.ft.change_value(50)
         gt = GraphicTree(self.ft, unit=unit, distance=5)
-        add_infos(self.ft, gt)
+        add_node_infos_to_graphic(self.ft, gt)
         gt.set_all_distances(10)
         graphic = gt.get_graphic()
         graphic.bottom_margin = 15
