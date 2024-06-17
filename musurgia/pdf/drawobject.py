@@ -176,16 +176,6 @@ class SlaveDrawObject(DrawObject, PositionedSlave, MarginedSlave, ABC):
                                     class_name=self.__class__.__name__, property_name='master')
         self._master = val
 
-    @property
-    def simple_name(self) -> Optional[str]:
-        return self._simple_name
-
-    @simple_name.setter
-    def simple_name(self, val: Optional[str]) -> None:
-        if val is not None:
-            check_type(val, str, class_name=self.__class__.__name__, property_name='simple_name')
-        self._simple_name = val
-
 
 class ClippingArea:
     def __init__(self, pdf: Optional[Pdf], draw_object: DrawObject, left_margin: float = 0, right_margin: float = 0,

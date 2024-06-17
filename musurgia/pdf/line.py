@@ -212,12 +212,12 @@ class LineSegment(MasterDrawObject, ABC):
 
     def set_straight_line_relative_y(self, val):
         if self.is_vertical:
-            raise NotImplementedError
+            raise NotImplementedError  # pragma: no cover
         self.relative_y = val - self._get_max_markline_length() / 2
 
     def set_straight_line_relative_x(self, val):
         if self.is_horizontal:
-            raise NotImplementedError
+            raise NotImplementedError  # pragma: no cover
         self.relative_x = val - self._get_max_markline_length() / 2
 
 
@@ -284,14 +284,14 @@ class AbstractSegmentedLine(DrawObjectContainer):
             delta = val - self.segments[0].straight_line.relative_y
             self.relative_y += delta
         else:
-            raise NotImplementedError
+            raise NotImplementedError  # pragma: no cover
 
     def set_straight_line_relative_x(self, val):
         if self.is_vertical:
             delta = val - self.segments[0].straight_line.relative_x
             self.relative_x += delta
         else:
-            raise NotImplementedError
+            raise NotImplementedError  # pragma: no cover
 
 
 class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):

@@ -34,6 +34,11 @@ class TestMarkLine(PdfTestCase):
         expected = self.ml.top_margin + self.ml.length + self.ml.bottom_margin
         self.assertEqual(expected, actual)
 
+    def test_placement(self):
+        assert self.ml.placement == 'start'
+        self.ml.placement = 'end'
+        assert self.ml.placement == 'end'
+
     def test_draw(self):
         with self.file_path(path, 'draw', 'pdf') as pdf_path:
             self.pdf.translate_page_margins()

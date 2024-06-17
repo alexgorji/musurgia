@@ -30,7 +30,7 @@ class DummyPositionMaster(Master):
             return 0
 
     def get_slave_margin(self, slave: Any, margin: MarginType) -> float:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 class TestTextLabel(PdfTestCase):
