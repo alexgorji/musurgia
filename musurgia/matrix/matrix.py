@@ -136,7 +136,7 @@ class PermutationOrderMatrixGenerator:
     def main_permutation_order(self, value: PermutationOrder) -> None:
         self._lp.main_permutation_order = value
 
-    def generate_permutation_order_matrix(self):
+    def generate_permutation_order_matrix(self) -> 'PermutationOrderMatrix':
         return PermutationOrderMatrix(matrix_data=self._lp.get_permutation_orders())
 
 
@@ -224,8 +224,6 @@ class MatrixIndexController:
 
         elif self.reading_direction == 'vertical':
             return self._convert_flatten_index_to_index_vertical(flatten_index)
-        # else:
-        #     raise AttributeError(self.reading_direction)
 
     def _convert_index_to_flatten_index(self, index: MatrixIndex) -> PositiveInteger:
         r = index[0]

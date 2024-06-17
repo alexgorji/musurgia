@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 
 class MatrixIndexException(Exception):
@@ -75,7 +75,7 @@ class FractalTreePermutationIndexError(FractalTreeException, ValueError):
 class FractalTreeSetMainPermutationOrderFirstError(FractalTreeException, ValueError):
     msg = "set root's main_permutation_order first"
 
-    def __init__(self, msg=None):
+    def __init__(self, msg: Optional[str] = None):
         if msg is None:
             msg = self.msg
         super().__init__(msg)

@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from typing import Any, cast
+from typing import Any, cast, Union
 
 from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
 from musurgia.musurgia_types import HorizontalVertical, check_type, ConvertibleToFloat, MarkLinePlacement, PositionType, \
@@ -22,7 +22,7 @@ class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol):
         self._length: ConvertibleToFloat
 
         self.mode = mode
-        self.length = float(length)
+        self.length = length
         self.show = show
 
     @property
@@ -41,7 +41,7 @@ class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol):
     @length.setter
     def length(self, val: ConvertibleToFloat) -> None:
         check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='length')
-        self._length = val
+        self._length = float(val)
 
     @property
     def is_vertical(self) -> bool:
@@ -130,13 +130,13 @@ class LineSegment(MasterDrawObject, ABC):
                                        show=False)
 
     @property
-    def is_vertical(self):
+    def is_vertical(self) -> bool:
         if self.mode in ['v', 'vertical']:
             return True
         return False
 
     @property
-    def is_horizontal(self):
+    def is_horizontal(self) -> bool:
         if self.mode in ['h', 'horizontal']:
             return True
         return False
@@ -170,10 +170,10 @@ class LineSegment(MasterDrawObject, ABC):
                    argument_name='margin')
         return 0
 
-    def _get_max_markline_length(self):
+    def _get_max_markline_length(self) -> float:
         return max([self.start_mark_line.length, self.end_mark_line.length])
 
-    def _get_slave_x(self, slave):
+    def _get_slave_x(self, slave: SlaveStraightLine) -> float:
         max_markline_length = self._get_max_markline_length()
         if self.is_horizontal:
             if slave == self.end_mark_line:
@@ -188,7 +188,7 @@ class LineSegment(MasterDrawObject, ABC):
             else:
                 return self.relative_x + (max_markline_length - slave.length) / 2
 
-    def _get_slave_y(self, slave):
+    def _get_slave_y(self, slave: SlaveStraightLine) -> float:
         max_markline_length = self._get_max_markline_length()
         if self.is_vertical:
             if slave == self.end_mark_line:
@@ -210,12 +210,12 @@ class LineSegment(MasterDrawObject, ABC):
         else:
             return self._get_slave_y(slave)
 
-    def set_straight_line_relative_y(self, val):
+    def set_straight_line_relative_y(self, val: Union[int, float]) -> None:
         if self.is_vertical:
             raise NotImplementedError  # pragma: no cover
         self.relative_y = val - self._get_max_markline_length() / 2
 
-    def set_straight_line_relative_x(self, val):
+    def set_straight_line_relative_x(self, val: Union[int, float]) -> None:
         if self.is_horizontal:
             raise NotImplementedError  # pragma: no cover
         self.relative_x = val - self._get_max_markline_length() / 2
@@ -258,7 +258,7 @@ class AbstractSegmentedLine(DrawObjectContainer):
         super().__init__(*args, **kwargs)
         self._make_segments(lengths)
 
-    def _check_segment_margins(self):
+    def _check_segment_margins(self) -> None:
         for seg in self.segments:
             if seg.margins != (0, 0, 0, 0):
                 raise SegmentedLineSegmentHasMarginsError()
@@ -272,21 +272,21 @@ class AbstractSegmentedLine(DrawObjectContainer):
         """private method for making segments"""
 
     @property
-    def is_vertical(self):
+    def is_vertical(self) -> bool:
         return self.segments[0].is_vertical
 
     @property
-    def is_horizontal(self):
+    def is_horizontal(self) -> bool:
         return self.segments[0].is_horizontal
 
-    def set_straight_line_relative_y(self, val):
+    def set_straight_line_relative_y(self, val: Union[float, int]) -> None:
         if self.is_horizontal:
             delta = val - self.segments[0].straight_line.relative_y
             self.relative_y += delta
         else:
             raise NotImplementedError  # pragma: no cover
 
-    def set_straight_line_relative_x(self, val):
+    def set_straight_line_relative_x(self, val: Union[float, int]) -> None:
         if self.is_vertical:
             delta = val - self.segments[0].straight_line.relative_x
             self.relative_x += delta
@@ -301,7 +301,7 @@ class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):
             self.add_draw_object(HorizontalLineSegment(length))
         self.segments[-1].end_mark_line.show = True
 
-    def _align_segments(self):
+    def _align_segments(self) -> None:
         reference_segment = max(self.segments, key=lambda seg: seg.get_height())
         for segment in self.segments:
             if segment != reference_segment:
@@ -320,7 +320,7 @@ class VerticalSegmentedLine(AbstractSegmentedLine, DrawObjectColumn):
             self.add_draw_object(VerticalLineSegment(length))
         self.segments[-1].end_mark_line.show = True
 
-    def _align_segments(self):
+    def _align_segments(self) -> None:
         reference_segment = max(self.segments, key=lambda seg: seg.get_width())
         for segment in self.segments:
             if segment != reference_segment:
