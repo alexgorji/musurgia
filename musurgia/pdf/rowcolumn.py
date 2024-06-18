@@ -15,7 +15,7 @@ __all__ = ['DrawObjectColumn', 'DrawObjectRow']
 
 
 class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
-    def __init__(self, show_borders=False, show_margins=False, *args: Any, **kwargs: Any):
+    def __init__(self, show_borders: bool = False, show_margins: bool = False, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._draw_objects: list[DrawObject] = []
         self._show_borders: bool
@@ -39,12 +39,12 @@ class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
     def show_margins(self, val: bool) -> None:
         self._show_margins = val
 
-    def draw_margins(self, pdf):
+    def draw_margins(self, pdf: Pdf) -> None:
         if self.show_margins:
             with pdf.local_context(draw_color=DeviceGray(0.5), dash_pattern={'dash': 1, 'gap': 1}):
                 pdf.rect(*self.get_margin_rectangle_coordinates())
 
-    def draw_borders(self, pdf):
+    def draw_borders(self, pdf: Pdf) -> None:
         if self.show_borders:
             with pdf.local_context(draw_color=DeviceGray(0.5), dash_pattern={'dash': 2, 'gap': 1}):
                 pdf.rect(*self.get_border_rectangle_coordinates())
@@ -57,25 +57,25 @@ class DrawObjectContainer(DrawObject, Labeled, Positioned, Margined, ABC):
         self._draw_objects.append(draw_object)
         return draw_object
 
-    def get_border_rectangle_coordinates(self):
+    def get_border_rectangle_coordinates(self) -> tuple[float, float, float, float]:
         return self.relative_x, self.relative_y, self.get_relative_x2() - self.relative_x, self.get_relative_y2() - self.relative_y
 
-    def get_margin_rectangle_coordinates(self):
+    def get_margin_rectangle_coordinates(self) -> tuple[float, float, float, float]:
         return self.relative_x, self.relative_y, self.get_relative_x2() - self.relative_x + self.right_margin + self.left_margin, self.get_relative_y2() - self.relative_y + self.bottom_margin + self.top_margin
 
     def get_draw_objects(self) -> list[DrawObject]:
         return self._draw_objects
 
-    def traverse(self) -> Iterator['DrawObjectContainer']:
+    def traverse(self) -> Iterator['DrawObject']:
         yield self
         for do in self.get_draw_objects():
-            try:
+            if isinstance(do, DrawObjectContainer):
                 for dodo in do.traverse():
                     yield dodo
-            except AttributeError:
+            else:
                 yield do
 
-    def _check_draw_objects_positions(self):
+    def _check_draw_objects_positions(self) -> None:
         for do in self.get_draw_objects():
             if do.relative_y < 0 or do.relative_x < 0:
                 raise DrawObjectInContainerHasNegativePositionError()
@@ -116,8 +116,6 @@ class DrawObjectColumn(DrawObjectContainer):
         with pdf.pdf_draw_object_translate(self, translate_positions=False):
             self.draw_borders(pdf)
         with pdf.pdf_draw_object_translate(self):
-            # self.draw_borders(pdf)
-            # self.draw_margins(pdf)
             self.draw_above_text_labels(pdf)
             self.draw_left_text_labels(pdf)
             self.draw_below_text_labels(pdf)

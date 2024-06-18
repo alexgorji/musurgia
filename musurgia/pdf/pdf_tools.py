@@ -17,7 +17,7 @@ def draw_page_numbers(pdf: Pdf, **kwargs: Any) -> None:
 
 
 def draw_ruler(pdf: Pdf, mode: HorizontalVertical = 'h', unit: int = 10, first_label: int = 0,
-               show_first_label: bool = False, label_show_interval: int = 1, **kwargs) -> None:
+               show_first_label: bool = False, label_show_interval: int = 1, **kwargs: Any) -> None:
     check_type(mode, 'HorizontalVertical', function_name='draw_ruler', argument_name='mode')
     ruler: Union[HorizontalRuler, VerticalRuler]
     if mode in ['h', 'horizontal']:

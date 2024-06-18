@@ -20,7 +20,7 @@ class FractalTreeNodeSegment(HorizontalLineSegment):
     def _update_length(self) -> None:
         self.straight_line.length = float(self.get_node_value() * self.unit)
 
-    @property
+    @property  # type: ignore
     def length(self) -> float:
         return super().length
 

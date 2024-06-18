@@ -19,10 +19,11 @@ class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol):
                  **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._mode: HorizontalVertical
-        self._length: ConvertibleToFloat
+        self._length: float
+        self._show: bool
 
         self.mode = mode
-        self.length = length
+        self.length = length  # type: ignore
         self.show = show
 
     @property
@@ -36,7 +37,7 @@ class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol):
 
     @property
     def length(self) -> float:
-        return float(self._length)
+        return self._length
 
     @length.setter
     def length(self, val: ConvertibleToFloat) -> None:
@@ -56,6 +57,14 @@ class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol):
             return True
         else:
             return False
+
+    @property
+    def show(self) -> bool:
+        return self._show
+
+    @show.setter
+    def show(self, val: bool) -> None:
+        self._show = val
 
     @staticmethod
     def get_opposite_mode(mode: HorizontalVertical) -> HorizontalVertical:
@@ -163,7 +172,7 @@ class LineSegment(MasterDrawObject, ABC):
 
     @length.setter
     def length(self, value: ConvertibleToFloat) -> None:
-        self.straight_line.length = value
+        self.straight_line.length = value  # type: ignore
 
     def get_slave_margin(self, slave: SlaveStraightLine, margin: MarginType) -> float:
         check_type(margin, 'MarginType', class_name='self.__class__.__name__', method_name='get_slave_margin',
