@@ -2,8 +2,6 @@ import copy
 from pathlib import Path
 from unittest import TestCase
 
-from fpdf.drawing import Line
-
 from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
 from musurgia.pdf import DrawObjectRow
 from musurgia.pdf.line import HorizontalSegmentedLine
