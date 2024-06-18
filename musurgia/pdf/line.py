@@ -4,7 +4,7 @@ from typing import Any, cast, Union
 from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
 from musurgia.musurgia_types import HorizontalVertical, check_type, ConvertibleToFloat, MarkLinePlacement, PositionType, \
     MarginType
-from musurgia.pdf.drawobject import SlaveDrawObject, MasterDrawObject, DrawObject
+from musurgia.pdf.drawobject import SlaveDrawObject, MasterDrawObject, DrawObject, HasShowProtocol
 from musurgia.pdf.labeled import Labeled, TextLabel
 from musurgia.pdf.margined import Margined
 from musurgia.pdf.pdf import Pdf
@@ -14,17 +14,15 @@ from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn, DrawObjectCo
 __all__ = ['HorizontalLineSegment', 'VerticalLineSegment', 'HorizontalRuler', 'VerticalRuler', 'StraightLine']
 
 
-class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol):
-    def __init__(self, mode: HorizontalVertical, length: ConvertibleToFloat, show: bool = True, *args: Any,
+class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol, HasShowProtocol):
+    def __init__(self, mode: HorizontalVertical, length: ConvertibleToFloat, *args: Any,
                  **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._mode: HorizontalVertical
         self._length: float
-        self._show: bool
 
         self.mode = mode
         self.length = length  # type: ignore
-        self.show = show
 
     @property
     def mode(self) -> HorizontalVertical:
@@ -57,14 +55,6 @@ class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol):
             return True
         else:
             return False
-
-    @property
-    def show(self) -> bool:
-        return self._show
-
-    @show.setter
-    def show(self, val: bool) -> None:
-        self._show = val
 
     @staticmethod
     def get_opposite_mode(mode: HorizontalVertical) -> HorizontalVertical:

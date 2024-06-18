@@ -239,9 +239,3 @@ class Random:
         :return: self.__iter__().__next__()`
         """
         return self.__iter__().__next__()
-
-    def __deepcopy__(self: 'T', memodict: dict[int, Any] = {}) -> 'T':
-        copied = self.__class__(pool=self.pool, periodicity=self.periodicity,
-                                forbidden_list=self.forbidden_list,
-                                seed=self.seed)
-        return copied

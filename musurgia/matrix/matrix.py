@@ -191,8 +191,6 @@ class MatrixIndexController:
     def _convert_flatten_index_to_index_horizontal(self, flatten_index: PositiveInteger) -> MatrixIndex:
         r = flatten_index // self.number_of_columns + 1
         c = flatten_index % self.number_of_columns + 1
-        if c == 0:
-            c = self.number_of_columns
         return r, c
 
     def _convert_flatten_index_to_index_diagonal(self, flatten_index: NonNegativeInteger) -> MatrixIndex:
@@ -207,8 +205,6 @@ class MatrixIndexController:
     def _convert_flatten_index_to_index_vertical(self, flatten_index: NonNegativeInteger) -> MatrixIndex:
         c = flatten_index // self.number_of_rows + 1
         r = flatten_index % self.number_of_rows + 1
-        if r == 0:
-            r = self.number_of_rows
         return r, c
 
     def _convert_flatten_index_to_index(self, flatten_index: NonNegativeInteger) -> MatrixIndex:

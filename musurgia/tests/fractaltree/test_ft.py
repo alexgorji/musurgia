@@ -25,6 +25,7 @@ class TestFt(TestCase):
 
     def test_calculate_permutation_index_error(self):
         ft = FractalTree(value=10, proportions=(1, 2, 3))
+        # ft.calculate_permutation_index()
         with self.assertRaises(FractalTreePermutationIndexError):
             ft.calculate_permutation_index()
 
@@ -79,3 +80,8 @@ class TestFt(TestCase):
     def test_split_error(self):
         with self.assertRaises(FractalTreeHasChildrenError):
             self.ft.split(1, 2, 3)
+
+    def test_calculate_permutation_index(self):
+        ft = FractalTree(value=10, proportions=(1, 2, 3))
+        with self.assertRaises(FractalTreePermutationIndexError):
+            ft.calculate_permutation_index()

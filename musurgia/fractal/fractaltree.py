@@ -98,7 +98,6 @@ class FractalTree(Tree[Any]):
         self.fertile = fertile
 
         self._pic: PermutationIndexCalculater
-        # self._pic = PermutationIndexCalculater(self.get_permutation_order_matrix().get_size())
 
     # private methods
 
@@ -161,8 +160,10 @@ class FractalTree(Tree[Any]):
             try:
                 return self._pic
             except AttributeError:
-                self._pic = PermutationIndexCalculater(self.get_permutation_order_matrix().get_size())
-                return self._pic
+                raise FractalTreeSetMainPermutationOrderFirstError
+            # except AttributeError:
+            #     self._pic = PermutationIndexCalculater(self.get_permutation_order_matrix().get_size())
+            #     return self._pic
 
         return cast(PermutationIndexCalculater, self.get_root()._get_pic())
 
@@ -268,10 +269,7 @@ class FractalTree(Tree[Any]):
         pic = self._get_pic()
         parent = cast(T, self.up)
         pic.parent_index = parent.get_permutation_index()
-        try:
-            self._permutation_index = pic.get_index(cast(list[T], parent.get_children()).index(self) + 1)
-        except PermutationIndexCalculaterNoParentIndexError:
-            raise FractalTreePermutationIndexError()
+        self._permutation_index = pic.get_index(cast(list[T], parent.get_children()).index(self) + 1)
 
     def change_value(self, new_value: Union[int, float, Fraction]) -> None:
         """
@@ -460,10 +458,8 @@ class FractalTree(Tree[Any]):
         try:
             return self._permutation_order
         except AttributeError:
-            permutation_index = self.get_permutation_index()
-            if permutation_index is None:
-                raise FractalTreePermutationIndexError()
-            self._permutation_order = self.get_permutation_order_matrix().get_element(permutation_index)
+            self._permutation_order = self.get_permutation_order_matrix().get_element(
+                cast(MatrixIndex, self.get_permutation_index()))
             return self._permutation_order
 
     def get_permutation_order_matrix(self) -> PermutationOrderMatrix:

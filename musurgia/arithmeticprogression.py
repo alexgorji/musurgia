@@ -3,6 +3,7 @@ from typing import Optional, Union, cast
 from fractions import Fraction
 
 from musurgia.musurgia_exceptions import DAndSError
+from musurgia.musurgia_types import check_type
 
 
 class ArithmeticProgression:
@@ -68,9 +69,9 @@ class ArithmeticProgression:
             output = Fraction((self.an - self.a1), (self.n - 1))
         elif self._an is None:
             output = Fraction(((self.s - (self.n * self.a1)) * 2), ((self.n - 1) * self.n))
-        elif self._n is None:
-            self._n = self._calculate_n()
-            output = Fraction((self.an - self.a1), (self.n - 1))
+        # elif self._n is None:
+        #     self._n = self._calculate_n()
+        #     output = Fraction((self.an - self.a1), (self.n - 1))
         else:
             output = Fraction((self.an - self.a1), (self.n - 1))
         return output
@@ -187,8 +188,7 @@ class ArithmeticProgression:
 
     @correct_s.setter
     def correct_s(self, val: bool) -> None:
-        if not isinstance(val, bool):
-            raise TypeError(f'correct_s.value must be of type bool not{val.__class__.__name__}')
+        check_type(val, bool, class_name=self.__class__.__name__, property_name='correct_s')
         self._correct_s = val
         self._correction_factor = None
 
@@ -228,7 +228,6 @@ class ArithmeticProgression:
     @d.setter
     def d(self, value: Optional[Union[int, float, Fraction]]) -> None:
         if value is not None:
-            value = self._to_fraction(value)
             self._check_args('d')
             if self._s is not None:
                 raise DAndSError()
@@ -370,12 +369,6 @@ class ArithmeticProgression:
         except AttributeError:
             self._check_args()
             self._current = self.a1
-        parameters = [self.a1, self.an, self.n, self.s, self.d]
-
-        if len([v for v in parameters if v is not None]) < 5:
-            err = 'Not enough parameter set to create an arithmetic progression. 3 parameters should be set first (s ' \
-                  'and d cannot be set together) '
-            raise Exception(err)
         try:
             if self._index + 1 >= self.n:
                 raise StopIteration()

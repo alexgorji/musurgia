@@ -2,6 +2,7 @@ from fractions import Fraction
 from unittest import TestCase
 
 from musurgia.arithmeticprogression import ArithmeticProgression
+from musurgia.musurgia_exceptions import DAndSError
 
 
 class TestArithmeticProgression(TestCase):
@@ -56,6 +57,10 @@ class TestArithmeticProgression(TestCase):
         assert arith.d == Fraction(4, 1)
         assert list(arith) == [Fraction(7, 1), Fraction(11, 1), Fraction(15, 1)]
 
+        arith = ArithmeticProgression(an=15, s=33)
+        with self.assertRaises(DAndSError):
+            arith.d = 2
+
     def test_n(self):
         arith = ArithmeticProgression(an=15, a1=7, d=4)
         assert arith.n == 3
@@ -64,6 +69,12 @@ class TestArithmeticProgression(TestCase):
         arith = ArithmeticProgression(an=15, a1=7, s=33)
         assert arith.n == 3
         assert list(arith) == [Fraction(7, 1), Fraction(11, 1), Fraction(15, 1)]
+
+        arith = ArithmeticProgression(a1=15, n=1, an=30)
+        assert arith.d == 0
+
+        with self.assertRaises(AttributeError):
+            ArithmeticProgression(a1=15, n=1.4, an=30)
 
     def test_s(self):
         arith = ArithmeticProgression(a1=7, an=15, d=4)
@@ -82,9 +93,14 @@ class TestArithmeticProgression(TestCase):
         assert arith.s == Fraction(33, 1)
         assert list(arith) == [Fraction(7, 1), Fraction(11, 1), Fraction(15, 1)]
 
+        arith = ArithmeticProgression(an=15, d=4)
+        with self.assertRaises(DAndSError):
+            arith.s = 30
+
     def test_get_current_index(self):
         arith = ArithmeticProgression(a1=1, d=2, n=3)
-        # assert arith.get_current_index() is None
+        with self.assertRaises(AttributeError):
+            assert arith.get_current_index() is None
         assert next(arith) == Fraction(1, 1)
         assert arith.get_current_index() == 0
         assert next(arith) == Fraction(3, 1)
@@ -100,3 +116,12 @@ class TestArithmeticProgression(TestCase):
                                                                                 'an': Fraction(29, 1), 'n': 15,
                                                                                 'd': Fraction(2, 1),
                                                                                 's': Fraction(225, 1)}
+
+    def test_check_args_error(self):
+        with self.assertRaises(AttributeError):
+            ArithmeticProgression(n=15, a1=1).__next__()
+
+        with self.assertRaises(AttributeError):
+            ArithmeticProgression(n=15, a1=1, an=20, d=10).__next__()
+
+

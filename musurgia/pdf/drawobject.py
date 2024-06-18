@@ -15,10 +15,16 @@ class HasGetHeightProtocol(Protocol):
     def get_height(self) -> float: ...
 
 
+class HasShowProtocol(Protocol):
+    @property
+    def show(self) -> bool: ...
+
+
 class DrawObject(AbstractPositioned, AbstractMargined, ABC):
-    def __init__(self, *args: Any, **kwargs: Any):
+    def __init__(self, show: bool = True, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self._show = True
+        self._show: bool
+        self.show = show
         self._clipping_area = ClippingArea(pdf=None, draw_object=self)
 
     @property
