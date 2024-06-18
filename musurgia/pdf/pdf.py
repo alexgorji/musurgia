@@ -30,7 +30,8 @@ class SavedState:
 
 
 class PdfDrawObjectTranslations:
-    def __init__(self, pdf: 'Pdf', draw_object: 'DrawObject', translate_positions=True, translate_margins=True) -> None:
+    def __init__(self, pdf: 'Pdf', draw_object: 'DrawObject', translate_positions: bool = True,
+                 translate_margins: bool = True) -> None:
         self.pdf = pdf
         self.draw_object = draw_object
         self.translate_positions = translate_positions
@@ -141,7 +142,7 @@ class Pdf(FPDF, HasOutProtocol):
                           x * self.k, (self.h - y) * self.k,
                           w * self.k, -h * self.k))
 
-    def pdf_draw_object_translate(self, draw_object: 'DrawObject', **kwargs) -> PdfDrawObjectTranslations:
+    def pdf_draw_object_translate(self, draw_object: 'DrawObject', **kwargs: Any) -> PdfDrawObjectTranslations:
         return PdfDrawObjectTranslations(self, draw_object=draw_object, **kwargs)
 
     def reset_font(self) -> None:

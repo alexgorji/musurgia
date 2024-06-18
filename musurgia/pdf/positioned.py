@@ -55,11 +55,11 @@ class AbstractPositioned(ABC):
         return {'x': self.relative_x, 'y': self.relative_y}
 
     @property
-    def positions(self):
+    def positions(self) -> tuple[float, float]:
         return self.relative_x, self.relative_y
 
     @positions.setter
-    def positions(self, val):
+    def positions(self, val: tuple[float, float]) -> None:
         self.relative_x, self.relative_y = val
 
 

@@ -241,7 +241,7 @@ class MatrixIndexController:
             flatten_index = (r - 1) + (c - 1) * self.number_of_rows
             return flatten_index
 
-    def _get_next_index(self):
+    def _get_next_index(self) -> MatrixIndex:
         return self._convert_flatten_index_to_index(self._flatten_index)
 
     @property
@@ -249,7 +249,7 @@ class MatrixIndexController:
         return self._number_of_rows
 
     @number_of_rows.setter
-    def number_of_rows(self, value):
+    def number_of_rows(self, value: NonNegativeInteger) -> None:
         check_type(value, 'NonNegativeInteger', class_name=self.__class__.__name__, property_name='number_of_rows')
         self._number_of_rows = value
         self.reset()
@@ -259,7 +259,7 @@ class MatrixIndexController:
         return self._number_of_columns
 
     @number_of_columns.setter
-    def number_of_columns(self, value):
+    def number_of_columns(self, value: NonNegativeInteger) -> None:
         check_type(value, 'NonNegativeInteger', class_name=self.__class__.__name__, property_name='number_of_columns')
         self._number_of_columns = value
         self.reset()
@@ -269,7 +269,7 @@ class MatrixIndexController:
         return self._reading_direction
 
     @reading_direction.setter
-    def reading_direction(self, value):
+    def reading_direction(self, value: MatrixReadingDirection) -> None:
         check_type(value, 'MatrixReadingDirection', class_name=self.__class__.__name__,
                    property_name='reading_direction')
         self._reading_direction = value
@@ -280,13 +280,13 @@ class MatrixIndexController:
         return self._first_index
 
     @first_index.setter
-    def first_index(self, value):
+    def first_index(self, value: MatrixIndex) -> None:
         check_type(value, 'MatrixIndex', class_name=self.__class__.__name__, property_name='index')
         check_matrix_index_values(value, self.number_of_rows, self.number_of_columns)
         self._first_index = value
         self._flatten_index = self._convert_index_to_flatten_index(value)
 
-    def get_next_in_row(self):
+    def get_next_in_row(self) -> MatrixIndex:
         if self.reading_direction != 'horizontal':
             raise MatrixIndexControllerReadingDirectionError
         next_index = self._get_next_index()
@@ -294,10 +294,10 @@ class MatrixIndexController:
             raise MatrixIndexEndOfRowError
         return self.__next__()
 
-    def get_next_flatten_index(self):
+    def get_next_flatten_index(self) -> int:
         return self._flatten_index
 
-    def reset(self):
+    def reset(self) -> None:
         try:
             self.first_index = self._first_index
         except AttributeError:

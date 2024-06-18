@@ -1,7 +1,7 @@
 from typing import Type, Any
 
 
-def flatten(input):
+def flatten(input: list[Any]) -> list[Any]:
     """
     :param input:
     :return:

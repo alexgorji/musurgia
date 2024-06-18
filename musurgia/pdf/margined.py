@@ -84,11 +84,11 @@ class AbstractMargined(ABC):
                 'left': self.left_margin}
 
     @property
-    def margins(self):
+    def margins(self) -> tuple[float, float, float, float]:
         return self.top_margin, self.right_margin, self.bottom_margin, self.left_margin
 
     @margins.setter
-    def margins(self, value):
+    def margins(self, value: tuple[float, float, float, float]) -> None:
         self.top_margin, self.right_margin, self.bottom_margin, self.left_margin = value
 
 

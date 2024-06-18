@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 from fractions import Fraction
 
@@ -6,29 +6,30 @@ from musurgia.musurgia_exceptions import DAndSError
 
 
 class ArithmeticProgression:
-    def __init__(self, a1: Union[int, float, Fraction, None] = None, an: Union[int, float, Fraction, None] = None,
-                 n: Optional[int] = None, d: Union[int, float, Fraction, None] = None,
-                 s: Union[int, float, Fraction, None] = None, correct_s: bool = False):
-        self._a1 = None
-        self._an = None
-        self._n = None
-        self._d = None
-        self._s = None
-        self._current = None
-        self._index = None
-        self._correction_factor = None
-        self._correct_s = None
+    def __init__(self, a1: Optional[Union[int, float, Fraction]] = None,
+                 an: Optional[Union[int, float, Fraction]] = None,
+                 n: Optional[int] = None, d: Optional[Union[int, float, Fraction]] = None,
+                 s: Optional[Union[int, float, Fraction]] = None, correct_s: bool = False):
+        self._a1: Optional[Union[int, float, Fraction]] = None
+        self._an: Optional[Union[int, float, Fraction]] = None
+        self._n: Optional[Union[int, float, Fraction]] = None
+        self._d: Optional[Union[int, float, Fraction]] = None
+        self._s: Optional[Union[int, float, Fraction]] = None
+        self._current: Fraction
+        self._index: int
+        self._correction_factor: Optional[Fraction] = None
+        self._correct_s: bool
 
-        self.a1 = a1
-        self.an = an
-        self.n = n
-        self.d = d
-        self.s = s
+        self.a1 = a1  # type: ignore
+        self.an = an  # type: ignore
+        self.n = n  # type: ignore
+        self.d = d  # type: ignore
+        self.s = s  # type: ignore
         self.correct_s = correct_s
 
     # private methods
 
-    def _check_args(self, arg=None):
+    def _check_args(self, arg: Optional[str] = None) -> None:
         if arg is None:
             err = 'Not enough attributes are set. Three are needed!'
             if len([v for v in self._get_private_parameters_dict().values() if v is not None]) < 3:
@@ -40,55 +41,57 @@ class ArithmeticProgression:
                       'created!'
                 raise AttributeError(err)
 
-    def _calculate_a1(self):
+    def _calculate_a1(self) -> Fraction:
         if self._d is None:
-            self._a1 = Fraction(2 * self.s, self.n) - self.an
+            return Fraction(2 * self.s, self.n) - self.an
         else:
-            self._a1 = self.an - ((self.n - 1) * self.d)
+            return self.an - ((self.n - 1) * self.d)
 
-    def _calculate_an(self):
+    def _calculate_an(self) -> Fraction:
         if self._s is None:
-            self._an = self.a1 + (self.n - 1) * self.d
+            return self.a1 + (self.n - 1) * self.d
         else:
-            self._an = Fraction(2 * self.s, self.n) - self.a1
+            return Fraction(2 * self.s, self.n) - self.a1
 
-    def _calculate_n(self):
+    def _calculate_n(self) -> int:
         if self._s is None:
-            self._n = Fraction((self.an - self.a1), self.d) + 1
+            output = Fraction((self.an - self.a1), self.d) + 1
         else:
-            self._n = 2 * Fraction(self.s, (self.a1 + self.an))
-        self._n = int(self._n)
+            output = 2 * Fraction(self.s, (self.a1 + self.an))
+        return int(output)
 
-    def _calculate_d(self):
+    def _calculate_d(self) -> Fraction:
         if self.n == 1:
-            self._d = 0
+            output = Fraction(0)
         elif self._a1 is None:
-            self._calculate_a1()
-            self._d = Fraction((self.an - self.a1), (self.n - 1))
+            self._a1 = self._calculate_a1()
+            output = Fraction((self.an - self.a1), (self.n - 1))
         elif self._an is None:
-            self._d = Fraction(((self.s - (self.n * self.a1)) * 2), ((self.n - 1) * self.n))
+            output = Fraction(((self.s - (self.n * self.a1)) * 2), ((self.n - 1) * self.n))
         elif self._n is None:
-            self._calculate_n()
-            self._d = Fraction((self.an - self.a1), (self.n - 1))
+            self._n = self._calculate_n()
+            output = Fraction((self.an - self.a1), (self.n - 1))
         else:
-            self._d = Fraction((self.an - self.a1), (self.n - 1))
+            output = Fraction((self.an - self.a1), (self.n - 1))
+        return output
 
-    def _calculate_s(self):
+    def _calculate_s(self) -> Fraction:
         if self._a1 is None:
-            self._calculate_a1()
-            self._s = (self.a1 + self.an) * Fraction(self.n, 2)
+            self._a1 = self._calculate_a1()
+            output = (self.a1 + self.an) * Fraction(self.n, 2)
         elif self._an is None:
-            self._s = self.n * self.a1 + ((self.n - 1) * Fraction(self.n, 2)) * self.d
+            output = self.n * self.a1 + ((self.n - 1) * Fraction(self.n, 2)) * self.d
         elif self._n is None:
-            self._calculate_n()
-            self._s = (self.a1 + self.an) * Fraction(self.n, 2)
+            self._n = self._calculate_n()
+            output = (self.a1 + self.an) * Fraction(self.n, 2)
         else:
-            self._s = (self.a1 + self.an) * Fraction(self.n, 2)
+            output = (self.a1 + self.an) * Fraction(self.n, 2)
+        return output
 
-    def _get_private_parameters_dict(self):
+    def _get_private_parameters_dict(self) -> dict[str, Optional[Union[int, Fraction, float]]]:
         return {'a1': self._a1, 'an': self._an, 'n': self._n, 'd': self._d, 's': self._s}
 
-    def _to_fraction(self, value):
+    def _to_fraction(self, value: Union[int, float, Fraction]) -> Fraction:
         if not isinstance(value, Fraction):
             value = Fraction(value)
         return value
@@ -96,7 +99,7 @@ class ArithmeticProgression:
     # public properties
 
     @property
-    def a1(self):
+    def a1(self) -> Fraction:
         """
         >>> arith = ArithmeticProgression(n=3, an=15, d=4)
         >>> arith.a1
@@ -115,18 +118,19 @@ class ArithmeticProgression:
         :return:
         """
         if self._a1 is None:
-            self._calculate_a1()
+            self._a1 = self._calculate_a1()
+        else:
+            self._a1 = self._to_fraction(self._a1)
         return self._a1
 
     @a1.setter
-    def a1(self, value):
+    def a1(self, value: Optional[Union[int, float, Fraction]]) -> None:
         if value is not None:
-            value = self._to_fraction(value)
             self._check_args('a1')
         self._a1 = value
 
     @property
-    def an(self):
+    def an(self) -> Fraction:
         """
         >>> arith = ArithmeticProgression(n=3, a1=7, d=4)
         >>> arith.an
@@ -143,18 +147,19 @@ class ArithmeticProgression:
         :return:
         """
         if self._an is None:
-            self._calculate_an()
+            self._an = self._calculate_an()
+        else:
+            self._an = self._to_fraction(self._an)
         return self._an
 
     @an.setter
-    def an(self, value):
+    def an(self, value: Optional[Union[int, float, Fraction]]) -> None:
         if value is not None:
-            value = self._to_fraction(value)
             self._check_args('an')
         self._an = value
 
     @property
-    def correct_s(self):
+    def correct_s(self) -> bool:
         """
         >>> arith = ArithmeticProgression(a1= 3, an=6, s=21)
         >>> arith.get_parameters_dict()
@@ -181,14 +186,14 @@ class ArithmeticProgression:
         return self._correct_s
 
     @correct_s.setter
-    def correct_s(self, val):
+    def correct_s(self, val: bool) -> None:
         if not isinstance(val, bool):
             raise TypeError(f'correct_s.value must be of type bool not{val.__class__.__name__}')
         self._correct_s = val
         self._correction_factor = None
 
     @property
-    def d(self):
+    def d(self) -> Fraction:
         """"
         >>> arith = ArithmeticProgression(a1= 7, an=15, s=33)
         >>> arith.d
@@ -215,11 +220,13 @@ class ArithmeticProgression:
         [Fraction(7, 1), Fraction(11, 1), Fraction(15, 1)]
         """
         if self._d is None:
-            self._calculate_d()
+            self._d = self._calculate_d()
+        else:
+            self._d = self._to_fraction(self._d)
         return self._d
 
     @d.setter
-    def d(self, value):
+    def d(self, value: Optional[Union[int, float, Fraction]]) -> None:
         if value is not None:
             value = self._to_fraction(value)
             self._check_args('d')
@@ -228,7 +235,7 @@ class ArithmeticProgression:
         self._d = value
 
     @property
-    def n(self):
+    def n(self) -> int:
         """
         >>> arith = ArithmeticProgression(an=15, a1=7, d=4)
         >>> arith.n
@@ -246,11 +253,11 @@ class ArithmeticProgression:
         """
 
         if self._n is None:
-            self._calculate_n()
-        return self._n
+            self._n = self._calculate_n()
+        return int(self._n)
 
     @n.setter
-    def n(self, value):
+    def n(self, value: Optional[int]) -> None:
         if value is not None:
             if not isinstance(value, int):
                 raise AttributeError('n {} must be int'.format(value))
@@ -258,7 +265,7 @@ class ArithmeticProgression:
         self._n = value
 
     @property
-    def s(self):
+    def s(self) -> Fraction:
         """
         >>> arith = ArithmeticProgression(a1= 7, an=15, d=4)
         >>> arith.s
@@ -287,11 +294,13 @@ class ArithmeticProgression:
         """
 
         if self._s is None:
-            self._calculate_s()
+            self._s = self._calculate_s()
+        else:
+            self._s = self._to_fraction(self._s)
         return self._s
 
     @s.setter
-    def s(self, value):
+    def s(self, value: Optional[Union[int, float, Fraction]]) -> None:
         if value is not None:
             value = self._to_fraction(value)
             self._check_args('s')
@@ -301,24 +310,23 @@ class ArithmeticProgression:
 
     # public methods
 
-    def get_actual_s(self):
+    def get_actual_s(self) -> Fraction:
         return self.n * Fraction((self.a1 + self.an), 2)
 
-    def get_correction_factor(self):
-        def _calculate_correction_factor():
+    def get_correction_factor(self) -> Fraction:
+        def _calculate_correction_factor() -> Fraction:
             if self.correct_s:
                 return Fraction(self.s, self.get_actual_s())
             else:
-                return 1
+                return Fraction(1, 1)
 
         if self._correction_factor is None:
             self._correction_factor = _calculate_correction_factor()
         return self._correction_factor
 
-    def get_current_index(self):
+    def get_current_index(self) -> Optional[int]:
         """
         >>> arith = ArithmeticProgression(a1=1, d=2, n=3)
-        >>> arith.get_current_index()
         >>> next(arith)
         Fraction(1, 1)
         >>> arith.get_current_index()
@@ -340,7 +348,7 @@ class ArithmeticProgression:
         """
         return self._index
 
-    def get_parameters_dict(self):
+    def get_parameters_dict(self) -> dict[str, Union[int, Fraction]]:
         """
         >>> ArithmeticProgression(n=15, a1=1, d=2).get_parameters_dict()
         {'a1': Fraction(1, 1), 'an': Fraction(29, 1), 'n': 15, 'd': Fraction(2, 1), 's': Fraction(225, 1)}
@@ -349,39 +357,31 @@ class ArithmeticProgression:
         """
         return {'a1': self.a1, 'an': self.an, 'n': self.n, 'd': self.d, 's': self.s}
 
-    def reset_iterator(self):
-        self._current = None
-        self._index = None
+    def reset_iterator(self) -> None:
+        del self._current
+        del self._index
 
-    def __iter__(self):
+    def __iter__(self) -> 'ArithmeticProgression':
         return self
 
-    def __next__(self):
-        if self._current is None:
+    def __next__(self) -> Fraction:
+        try:
+            self._current
+        except AttributeError:
             self._check_args()
+            self._current = self.a1
         parameters = [self.a1, self.an, self.n, self.s, self.d]
 
         if len([v for v in parameters if v is not None]) < 5:
             err = 'Not enough parameter set to create an arithmetic progression. 3 parameters should be set first (s ' \
                   'and d cannot be set together) '
             raise Exception(err)
-
-        if self._current is None:
-            self._current = self.a1
-            self._index = 0
-        else:
+        try:
             if self._index + 1 >= self.n:
                 raise StopIteration()
             self._index += 1
             self._current += self.d
+        except AttributeError:
+            self._index = 0
 
         return self._current * self.get_correction_factor()
-
-    def __deepcopy__(self, memodict={}):
-        copy = self.__class__(correct_s=self.correct_s)
-        copy._a1 = self._a1
-        copy._an = self._an
-        copy._n = self._n
-        copy._d = self._d
-        copy._s = self._s
-        return copy
