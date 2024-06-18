@@ -1,6 +1,6 @@
 import itertools
 from fractions import Fraction
-from typing import Union, Optional, List, Callable, Any, cast, Sequence, T
+from typing import Union, Optional, List, Callable, Any, cast, Sequence, TypeVar
 
 from verysimpletree.tree import Tree
 
@@ -16,13 +16,15 @@ from musurgia.permutation.permutation import permute
 
 __all__ = ['FractalTree']
 
+T = TypeVar('T', bound='FractalTree')
 
-def node_info(node):
+
+def node_info(node: 'FractalTree') -> str:
     return f'{node.get_fractal_order()}: {node.get_permutation_index()}: {round(float(node.get_value()), 2)}'
 
 
 class PermutationIndexCalculater:
-    def __init__(self, size: PositiveInteger, parent_index: Optional[MatrixIndex] = None, *args, **kwargs):
+    def __init__(self, size: PositiveInteger, parent_index: Optional[MatrixIndex] = None, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._size: PositiveInteger
         self._parent_index: Optional[MatrixIndex] = None
@@ -74,8 +76,8 @@ class FractalTree(Tree[Any]):
                  main_permutation_order: Optional[PermutationOrder] = None,
                  permutation_index: Optional[MatrixIndex] = None,
                  fertile: bool = True,
-                 *args,
-                 **kwargs):
+                 *args: Any,
+                 **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._permutation_order_matrix: Optional[PermutationOrderMatrix] = None
         self._value: Fraction
@@ -85,7 +87,7 @@ class FractalTree(Tree[Any]):
         self._fertile: bool
 
         self._fractal_order: Optional[int] = None
-        self._children_fractal_values: list['FractalTree']
+        self._children_fractal_values: list[Fraction]
         self._children_permutation_order_matrices = None
         self._permutation_order: tuple[int, int]
         self._set_value(value)
@@ -95,7 +97,8 @@ class FractalTree(Tree[Any]):
         self.set_permutation_index(permutation_index)
         self.fertile = fertile
 
-        self._pic = None
+        self._pic: PermutationIndexCalculater
+        # self._pic = PermutationIndexCalculater(self.get_permutation_order_matrix().get_size())
 
     # private methods
 
@@ -149,16 +152,19 @@ class FractalTree(Tree[Any]):
             sliced_lengths[pointer] = temp[:-1]
             sliced_lengths.insert(pointer + 1, temp[-1:])
 
-        sliced_lengths = [len(x) for x in sliced_lengths]
+        output = [len(x) for x in sliced_lengths]
 
-        return sliced_lengths
+        return output
 
-    def _get_pic(self):
+    def _get_pic(self) -> PermutationIndexCalculater:
         if self.is_root:
-            if self._pic is None:
+            try:
+                return self._pic
+            except AttributeError:
                 self._pic = PermutationIndexCalculater(self.get_permutation_order_matrix().get_size())
-            return self._pic
-        return self.get_root()._get_pic()
+                return self._pic
+
+        return cast(PermutationIndexCalculater, self.get_root()._get_pic())
 
     def _set_value(self, val: ConvertibleToFraction) -> None:
         if not isinstance(val, Fraction):
@@ -179,7 +185,7 @@ class FractalTree(Tree[Any]):
         if self.is_root:
             return self._main_permutation_order
         else:
-            return self.get_root().main_permutation_order
+            return cast(FractalTree, self.get_root()).main_permutation_order
 
     @main_permutation_order.setter
     def main_permutation_order(self, value: Optional[PermutationOrder]) -> None:
@@ -190,9 +196,9 @@ class FractalTree(Tree[Any]):
                 raise FractalTreeNonRootCannotSetMainPermutationOrderError
             check_type(value, 'PermutationOrder', class_name=self.__class__.__name__,
                        property_name='main_permutation_order')
-            self._pic = None
             self._permutation_order_matrix = PermutationOrderMatrixGenerator(
                 main_permutation_order=value).generate_permutation_order_matrix()
+            self._pic = PermutationIndexCalculater(self.get_permutation_order_matrix().get_size())
         else:
             self._permutation_order_matrix = None
         self._main_permutation_order = value
@@ -260,8 +266,12 @@ class FractalTree(Tree[Any]):
             raise FractalTreePermutationIndexError(
                 f'{self.__class__.__name__}:calculate_permutation_index: Set permutation_index of root')
         pic = self._get_pic()
-        pic.parent_index = self.up.get_permutation_index()
-        self._permutation_index = pic.get_index(cast(list[T], self.up.get_children()).index(self) + 1)
+        parent = cast(T, self.up)
+        pic.parent_index = parent.get_permutation_index()
+        try:
+            self._permutation_index = pic.get_index(cast(list[T], parent.get_children()).index(self) + 1)
+        except PermutationIndexCalculaterNoParentIndexError:
+            raise FractalTreePermutationIndexError()
 
     def change_value(self, new_value: Union[int, float, Fraction]) -> None:
         """
@@ -308,7 +318,7 @@ class FractalTree(Tree[Any]):
 
         self._change_children_value(factor)
 
-    def generate_children(self, number_of_children: Union[int, tuple],
+    def generate_children(self, number_of_children: Union[int, tuple[int, ...], tuple[tuple[int, ...], ...]],
                           reduce_mode: FractalTreeReduceChildrenMode = 'backwards',
                           merge_index: int = 0) -> None:
         """
@@ -400,7 +410,7 @@ class FractalTree(Tree[Any]):
         """
         return self._fractal_order
 
-    def get_layer(self, layer: int, key: Optional[Callable[['FractalTree'], Any]] = None) -> list['FractalTree']:
+    def get_layer(self, layer: int, key: Optional[Callable[['FractalTree'], Any]] = None) -> Any:
         """
         :param layer:
         :param key:
@@ -425,7 +435,7 @@ class FractalTree(Tree[Any]):
             raise ValueError(f'FractalTree.get_layer: max layer number={self.get_number_of_layers()}')
         else:
             if layer == 0:
-                return self.get_self_with_key(key)
+                return cast('FractalTree', self.get_self_with_key(key))
             else:
                 if self.is_leaf:
                     return self.get_layer(layer=layer - 1, key=key)
@@ -441,16 +451,19 @@ class FractalTree(Tree[Any]):
         if self.get_leaves() == [self]:
             return 0
         else:
-            return self.get_farthest_leaf().get_distance(self)
+            return cast(int, self.get_farthest_leaf().get_distance(self))
 
     def get_permutation_index(self) -> Optional[MatrixIndex]:
         return self._permutation_index
 
-    def get_permutation_order(self) -> tuple[int, ...]:
+    def get_permutation_order(self) -> tuple[int, int]:
         try:
             return self._permutation_order
         except AttributeError:
-            self._permutation_order = self.get_permutation_order_matrix().get_element(self.get_permutation_index())
+            permutation_index = self.get_permutation_index()
+            if permutation_index is None:
+                raise FractalTreePermutationIndexError()
+            self._permutation_order = self.get_permutation_order_matrix().get_element(permutation_index)
             return self._permutation_order
 
     def get_permutation_order_matrix(self) -> PermutationOrderMatrix:
@@ -462,7 +475,7 @@ class FractalTree(Tree[Any]):
                                          method_name='get_permutation_order_matrix'))
             return self._permutation_order_matrix
         else:
-            return cast(PermutationOrderMatrix, self.get_root().get_permutation_order_matrix())
+            return cast(FractalTree, self.get_root()).get_permutation_order_matrix()
 
     def get_size(self) -> int:
         """
@@ -576,7 +589,7 @@ class FractalTree(Tree[Any]):
             check_matrix_index_values(index, size, size)
         self._permutation_index = index
 
-    def split(self: 'T', *proportions: Any) -> 'T':
+    def split(self: 'T', *proportions: Any) -> list['T']:
         if self.get_children():
             raise FractalTreeHasChildrenError
 
