@@ -1,1 +1,0 @@
-coverage run -m pytest --doctest-modules musurgia/pdf/font.py
