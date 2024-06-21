@@ -4,7 +4,8 @@ from unittest import TestCase
 
 from musurgia.fractal.graphic import GraphicTree, FractalTreeNodeSegment, GraphicChildrenSegmentedLine
 from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
-from musurgia.pdf import DrawObjectColumn, DrawObjectRow, Pdf, draw_ruler, TextLabel, HorizontalRuler
+from musurgia.pdf import DrawObjectColumn, DrawObjectRow, Pdf, draw_ruler, TextLabel
+from musurgia.pdf.ruler import HorizontalRuler
 from musurgia.tests.utils_for_tests import PdfTestCase, create_test_fractal_tree, add_node_infos_to_graphic
 
 path = Path(__file__)
