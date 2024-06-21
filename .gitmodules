@@ -1,0 +1,6 @@
+[submodule "musicscore"]
+	path = musicscore
+	url = https://github.com/alexgorji/musicscore
+[submodule "verysimpletree"]
+	path = verysimpletree
+	url = https://github.com/alexgorji/verysimpletree
