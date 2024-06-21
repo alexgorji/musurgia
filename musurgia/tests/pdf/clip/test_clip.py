@@ -1,7 +1,8 @@
 from math import ceil
 from pathlib import Path
 
-from musurgia.pdf.line import HorizontalRuler, HorizontalSegmentedLine
+from musurgia.pdf.line import HorizontalSegmentedLine
+from musurgia.pdf.ruler import HorizontalRuler
 from musurgia.pdf.drawobject import ClippingArea
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler

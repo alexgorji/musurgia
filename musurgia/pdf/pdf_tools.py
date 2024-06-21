@@ -1,7 +1,7 @@
 from typing import Union, Any
 
 from musurgia.musurgia_types import check_type, HorizontalVertical
-from musurgia.pdf.line import HorizontalRuler, VerticalRuler
+from musurgia.pdf.ruler import HorizontalRuler, VerticalRuler
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.text import PageText
 

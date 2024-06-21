@@ -4,7 +4,8 @@ from musurgia.musurgia_exceptions import PdfAttributeError
 from musurgia.musurgia_types import MusurgiaTypeError
 from musurgia.pdf.drawobject import ClippingArea
 from musurgia.pdf.labeled import TextLabel, Labeled
-from musurgia.pdf.line import HorizontalRuler, MarkLine, StraightLine
+from musurgia.pdf.line import MarkLine, StraightLine
+from musurgia.pdf.ruler import HorizontalRuler
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdfunit import PdfUnit
 from musurgia.pdf.text import Text
