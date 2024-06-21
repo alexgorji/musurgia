@@ -65,7 +65,3 @@ class HorizontalRuler(AbstractRuler, HorizontalSegmentedLine):
 
 class VerticalRuler(AbstractRuler, VerticalSegmentedLine):
     pass
-
-
-class TimeRuler(HorizontalRuler):
-    pass
