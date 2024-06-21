@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from musurgia.pdf.line import HorizontalRuler
+from musurgia.pdf.ruler import HorizontalRuler
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.tests.utils_for_tests import PdfTestCase
