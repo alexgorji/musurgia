@@ -13,7 +13,7 @@ def calculate_duration(quarter_duration: QuarterDuration, tempo: Metronome) -> F
 class MusicEvent(Chord):
     _ATTRIBUTES = Chord._ATTRIBUTES.union({'tempo'})
 
-    def __init__(self, quarter_duration: QuarterDuration, tempo: Metronome(60), *args: Any, **kwargs: Any):
+    def __init__(self, quarter_duration: QuarterDuration, tempo: Metronome = Metronome(60), *args: Any, **kwargs: Any):
         super().__init__(quarter_duration=quarter_duration, *args, **kwargs)
         self._tempo: Metronome
         self.tempo = tempo
