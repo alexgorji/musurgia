@@ -1,22 +1,31 @@
 from fractions import Fraction
-from typing import Any, Union
+from typing import Any
 
-from musicscore import QuarterDuration, Chord
+from musicscore import QuarterDuration, Chord, Metronome
+
+from musurgia.musurgia_types import check_type
+
+
+def calculate_duration(quarter_duration: QuarterDuration, tempo: Metronome) -> Fraction:
+    return 60 / (tempo.per_minute / tempo.beat_unit) * quarter_duration
 
 
 class MusicEvent(Chord):
-    def __init__(self, quarter_duration: QuarterDuration, tempo: Union[float, int] = 60, *args: Any, **kwargs: Any):
+    _ATTRIBUTES = Chord._ATTRIBUTES.union({'tempo'})
+
+    def __init__(self, quarter_duration: QuarterDuration, tempo: Metronome(60), *args: Any, **kwargs: Any):
         super().__init__(quarter_duration=quarter_duration, *args, **kwargs)
-        self._tempo: Union[float, int]
+        self._tempo: Metronome
         self.tempo = tempo
 
     @property
-    def tempo(self) -> Union[float, int]:
+    def tempo(self) -> Metronome:
         return self._tempo
 
     @tempo.setter
-    def tempo(self, val: Union[float, int]):
+    def tempo(self, val: Metronome):
+        check_type(val, Metronome, class_name=self.__class__.__name__, property_name='tempo')
         self._tempo = val
 
     def get_duration(self) -> Fraction:
-        pass
+        return calculate_duration(self.quarter_duration, self.tempo)

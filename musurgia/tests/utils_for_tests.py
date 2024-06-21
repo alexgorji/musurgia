@@ -5,7 +5,6 @@ from pathlib import Path
 from diff_pdf_visually import pdf_similar  # type: ignore
 
 from musurgia.fractal import FractalTree
-from musurgia.musicevent.musicevent import FractalMusic
 from musurgia.pdf import TextLabel, DrawObjectColumn, StraightLine
 from musurgia.pdf.drawobject import MasterDrawObject
 
