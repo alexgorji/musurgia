@@ -118,7 +118,7 @@ class TestClip(PdfTestCase):
 
     def test_clipped_draw(self):
         c = DrawObjectColumn()
-        c.clipping_area.top_margin = c.clipping_area.left_margin = 10
+        c.get_clipping_area().top_margin = c.get_clipping_area().left_margin = 10
         c.bottom_margin = 60
         c.add_draw_object(HorizontalRuler(length=1200, bottom_margin=0, show_borders=True))
         c.add_draw_object(HorizontalSegmentedLine(lengths=600 * [2]))

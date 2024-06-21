@@ -27,8 +27,7 @@ class DrawObject(AbstractPositioned, AbstractMargined, ABC):
         self.show = show
         self._clipping_area = ClippingArea(pdf=None, draw_object=self)
 
-    @property
-    def clipping_area(self) -> 'ClippingArea':
+    def get_clipping_area(self) -> 'ClippingArea':
         return self._clipping_area
 
     @property
@@ -62,8 +61,8 @@ class DrawObject(AbstractPositioned, AbstractMargined, ABC):
         """ this property is needed draw the DrawObject to pdf """
 
     def clipped_draw(self, pdf: Pdf) -> None:
-        self.clipping_area.pdf = pdf
-        self.clipping_area.draw()
+        self.get_clipping_area().pdf = pdf
+        self.get_clipping_area().draw()
 
 
 class Master(ABC):
