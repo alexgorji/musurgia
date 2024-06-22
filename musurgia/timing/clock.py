@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 from musurgia.musurgia_exceptions import ClockWrongSecondsTypeError, ClockWrongSecondsValueError, \
     ClockWrongMinutesTypeError, ClockWrongHoursTypeError, ClockWrongMinutesValueError
-from musurgia.musurgia_types import check_type, create_error_message, ClockMode
+from musurgia.musurgia_types import check_type, create_error_message, ClockMode, ConvertibleToFloat
 
 
 class Clock:
@@ -70,37 +70,46 @@ class Clock:
         check_type(mode, 'ClockMode', class_name=self.__class__.__name__, method_name='get_as_string',
                    argument_name='mode')
         s, m, h = self.seconds, self.minutes, self.hours
+
         if round_:
             s = round(s, round_)
 
         if m // 10 == 0 and mode != 'msreduced':
-            m = '0' + str(m)
+            string_m = '0' + str(m)
         else:
-            m = str(m)
+            string_m = str(m)
 
         if int(s // 10) == 0 and mode != 'msreduced':
-            s = '0' + str(s)
+            string_s = '0' + str(s)
         else:
-            s = str(s)
-        h = str(h)
+            string_s = str(s)
+
+        string_h = str(h)
 
         if not mode or mode == 'hms':
-            return h + ':' + m + ':' + s
+            return string_h + ':' + string_m + ':' + string_s
 
         elif mode == 'ms':
-            return m + ':' + s
+            return string_m + ':' + string_s
         elif mode == 'msreduced':
-            if m == '0':
-                return s
+            if string_m == '0':
+                return string_s
             else:
-                return m + ':' + s
+                return string_m + ':' + string_s
 
-    def calculate_in_seconds(self):
+    def calculate_in_seconds(self) -> float:
         return self.convert_clock_to_seconds(self.hours, self.minutes, self.seconds)
 
     @staticmethod
-    def convert_clock_to_seconds(hours, minutes, seconds):
-        return seconds + (60 * minutes) + (3600 * hours)
+    def convert_clock_to_seconds(hours: ConvertibleToFloat, minutes: ConvertibleToFloat,
+                                 seconds: ConvertibleToFloat) -> float:
+        check_type(hours, 'ConvertibleToFloat', class_name='Clock',
+                   method_name='convert_clock_to_seconds', argument_name='hours')
+        check_type(minutes, 'ConvertibleToFloat', class_name='Clock',
+                   method_name='convert_clock_to_seconds', argument_name='minutes')
+        check_type(seconds, 'ConvertibleToFloat', class_name='Clock',
+                   method_name='convert_clock_to_seconds', argument_name='seconds')
+        return float(seconds) + (60 * float(minutes)) + (3600 * float(hours))
 
     @staticmethod
     def convert_seconds_to_clock(seconds: float) -> 'Clock':
