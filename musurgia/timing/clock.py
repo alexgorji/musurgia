@@ -94,8 +94,6 @@ class Clock:
                 return s
             else:
                 return m + ':' + s
-        else:
-            raise ValueError('mode not known')
 
     def calculate_in_seconds(self):
         return self.convert_clock_to_seconds(self.hours, self.minutes, self.seconds)

@@ -20,10 +20,17 @@ class TestClock(TestCase):
 
     def test_clock_mode(self):
         c = Clock(4, 2, 0.5)
-        assert c.get_values() == (4, 2, 0.5)
         assert c.get_as_string(mode='hms') == '4:02:00.5'
         assert c.get_as_string(mode='ms') == '02:00.5'
         assert c.get_as_string(mode='msreduced') == '2:0.5'
+        assert c.get_as_string(mode='msreduced') == '2:0.5'
+
+        c.set_values(0, 0, 1.5)
+        assert c.get_as_string(mode='msreduced') == '1.5'
+
+    def test_get_as_string_round(self):
+        c = Clock(4, 2, 1.2568)
+        assert c.get_as_string(mode='hms', round_=2) == '4:02:01.26'
 
     def test_get_and_set_values(self):
         c = Clock(4, 2, 0.5)

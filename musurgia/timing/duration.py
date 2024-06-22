@@ -21,14 +21,15 @@ class Duration:
         self._minutes: int = 0
         self._hours: int = 0
         self._clock: Clock
-        self._set_clock(seconds=seconds, minutes=minutes, hours=hours)
+        self._set_clock(hours=float(hours), minutes=float(minutes), seconds=float(seconds))
 
-    def _set_clock(self, seconds, minutes, hours) -> None:
+    def _set_clock(self, hours, minutes, seconds) -> None:
         self.add_seconds(seconds)
         self.add_minutes(minutes)
         self.add_hours(hours)
         self.clock = Clock.convert_seconds_to_clock(
-            Clock.convert_clock_to_seconds(self.hours, self.minutes, self.seconds))
+            Clock.convert_clock_to_seconds(hours, minutes, seconds))
+        # self._seconds, self._minutes, self._hours = self.clock.get_values()
 
     @property
     def clock(self) -> Clock:
@@ -59,7 +60,7 @@ class Duration:
     @seconds.setter
     def seconds(self, val: ConvertibleToFloat) -> None:
         check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='seconds')
-        self._set_clock(seconds=val, minutes=self._minutes, hours=self._hours)
+        self._set_clock(hours=self._hours, minutes=self._minutes, seconds=val)
 
     @property
     def minutes(self) -> float:
@@ -68,7 +69,7 @@ class Duration:
     @minutes.setter
     def minutes(self, val: ConvertibleToFloat) -> None:
         check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='minutes')
-        self._set_clock(self._seconds, val, self._hours)
+        self._set_clock(self._hours, val, self._seconds)
 
     @property
     def hours(self) -> float:
@@ -77,8 +78,7 @@ class Duration:
     @hours.setter
     def hours(self, val: ConvertibleToFloat) -> None:
         check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='hours')
-        self._hours = float(val)
-        self._set_clock(self._seconds, self._minutes, val)
+        self._set_clock(val, self._minutes, self._seconds)
 
     def calculate_in_seconds(self) -> float:
         return self._seconds + (60 * self._minutes) + (3600 * self._hours)
@@ -93,19 +93,19 @@ class Duration:
         return self.clock.get_as_string(mode, round_)
 
     def __abs__(self):
-        return Duration(self.calculate_in_seconds().__abs__())
+        return self.__class__(self.calculate_in_seconds().__abs__())
 
     def __add__(self, other):
-        return Duration(self.calculate_in_seconds().__add__(other.calculate_in_seconds()))
+        return self.__class__(self.calculate_in_seconds().__add__(other.calculate_in_seconds()))
 
     def __ceil__(self):
-        return Duration(self.calculate_in_seconds().__ceil__())
+        return self.__class__(self.calculate_in_seconds().__ceil__())
 
     def __floor__(self):
-        return Duration(self.calculate_in_seconds().__floor__())
+        return self.__class__(self.calculate_in_seconds().__floor__())
 
     def __floordiv__(self, other):
-        return Duration(self.calculate_in_seconds().__floordiv__(_convert_other(other)))
+        return self.__class__(self.calculate_in_seconds().__floordiv__(_convert_other(other)))
 
     def __gt__(self, other):
         return self.calculate_in_seconds().__gt__(_convert_other(other))
@@ -113,20 +113,17 @@ class Duration:
     def __ge__(self, other):
         return self.calculate_in_seconds().__ge__(_convert_other(other))
 
-    def __hash__(self):
-        return self.calculate_in_seconds().__hash__()
-
     def __le__(self, other):
         return self.calculate_in_seconds().__le__(_convert_other(other))
 
     def __lt__(self, other):
-        return Duration(self.calculate_in_seconds().__lt__(_convert_other(other)))
+        return self.calculate_in_seconds().__lt__(_convert_other(other))
 
     def __mod__(self, other):
-        return Duration(self.calculate_in_seconds().__mod__(_convert_other(other)))
+        return self.__class__(self.calculate_in_seconds().__mod__(_convert_other(other)))
 
     def __mul__(self, other):
-        return Duration(self.calculate_in_seconds().__mul__(_convert_other(other)))
+        return self.__class__(self.calculate_in_seconds().__mul__(_convert_other(other)))
 
     def __neg__(self):
         return self.calculate_in_seconds().__neg__()
@@ -134,32 +131,32 @@ class Duration:
     def __pos__(self):
         return self.calculate_in_seconds().__pos__()
 
-    def __pow__(self, power, modulo=None):
-        return Duration(self.calculate_in_seconds().__pos__(power, modulo))
+    def __pow__(self, power):
+        return self.__class__(self.calculate_in_seconds() ** power)
 
     def __radd__(self, other):
-        return Duration(self.calculate_in_seconds().__radd__(_convert_other(other)))
+        return self.__class__(self.calculate_in_seconds().__radd__(_convert_other(other)))
 
     def __rfloordiv__(self, other):
-        return Duration(self.calculate_in_seconds().__rfloordiv__(_convert_other(other)))
+        return self.__class__(self.calculate_in_seconds().__rfloordiv__(_convert_other(other)))
 
     def __rmod__(self, other):
-        return Duration(self.calculate_in_seconds().__rmod__(_convert_other(other)))
+        return self.__class__(self.calculate_in_seconds().__rmod__(_convert_other(other)))
 
     def __rmul__(self, other):
-        return Duration(self.calculate_in_seconds().__rmul__(_convert_other(other)))
+        return self.__class__(self.calculate_in_seconds().__rmul__(_convert_other(other)))
 
     def __round__(self, n=None):
-        return Duration(self.calculate_in_seconds().__round__(n))
+        return self.__class__(self.calculate_in_seconds().__round__(n))
 
-    def __rpow__(self, other):
-        return Duration(self.calculate_in_seconds().__rpow__(_convert_other(other)))
+    # def __rpow__(self, other):
+    #     return self.__class__(self.calculate_in_seconds().__rpow__(_convert_other(other)))
 
     def __rtruediv__(self, other):
-        return Duration(self.calculate_in_seconds().__rtruediv__(_convert_other(other)))
+        return self.__class__(self.calculate_in_seconds().__rtruediv__(_convert_other(other)))
 
     def __truediv__(self, other):
-        return Duration(self.calculate_in_seconds().__truediv__(_convert_other(other)))
+        return self.__class__(self.calculate_in_seconds().__truediv__(_convert_other(other)))
 
     def __trunc__(self):
         return self.calculate_in_seconds().__trunc__()
