@@ -165,3 +165,28 @@ class PdfException(Exception):
 
 class PdfAttributeError(PdfException, AttributeError):
     pass
+
+
+# clock
+class ClockException(Exception):
+    pass
+
+
+class ClockWrongSecondsValueError(ClockException, ValueError):
+    pass
+
+
+class ClockWrongMinutesValueError(ClockException, ValueError):
+    pass
+
+
+class ClockWrongSecondsTypeError(ClockException, TypeError):
+    pass
+
+
+class ClockWrongMinutesTypeError(ClockException, TypeError):
+    pass
+
+
+class ClockWrongHoursTypeError(ClockException, TypeError):
+    pass

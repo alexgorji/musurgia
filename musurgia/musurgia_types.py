@@ -7,13 +7,13 @@ MUSURGIA_TYPES = ['MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegati
                   'PositiveInteger', 'ConvertibleToFraction', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection',
                   'ConvertibleToFloat', 'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType',
                   'FontFamily', 'FontWeight', 'FontStyle', 'VerticalPosition', 'HorizontalPosition',
-                  'MarkLinePlacement', 'PageOrientation', 'PageFormat', 'PageOrientation', 'MarginType']
+                  'MarkLinePlacement', 'PageOrientation', 'PageFormat', 'PageOrientation', 'MarginType', 'ClockMode']
 
 MusurgiaType = Literal[
     'MatrixData', 'MatrixIndex', 'MatrixTransposeMode', 'NonNegativeInteger', 'PermutationOrder', 'PositiveInteger',
     'ConvertibleToFraction', 'ConvertibleToFloat', 'FractalTreeReduceChildrenMode', 'MatrixReadingDirection',
     'LabelPlacement', 'HorizontalVertical', 'PdfUnitType', 'PositionType', 'FontFamily', 'FontWeight', 'FontStyle',
-    'VerticalPosition', 'HorizontalPosition', 'MarkLinePlacement', 'PageOrientation', 'PageFormat', 'PageOrientation', 'MarginType']
+    'VerticalPosition', 'HorizontalPosition', 'MarkLinePlacement', 'PageOrientation', 'PageFormat', 'PageOrientation', 'MarginType', 'ClockMode']
 
 
 class LiteralCheckGenerator:
@@ -283,6 +283,9 @@ check_page_format_type = LiteralCheckGenerator(PageFormat, 'PageFormat').generat
 
 MarginType = Literal['left', 'right', 'top', 'bottom']
 check_margin_type_type = LiteralCheckGenerator(MarginType, 'MarginType').generate_checker()
+
+ClockMode = Literal['hms', 'ms', 'msreduced']
+check_clock_mode_type = LiteralCheckGenerator(ClockMode, 'ClockMode').generate_checker()
 
 
 def _get_name_of_check_type_function(musurgia_type: MusurgiaType) -> str:

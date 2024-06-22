@@ -1,1 +1,1 @@
-pytest --cov-report term-missing --cov=musurgia -n auto musurgia
+pytest --cov-report term-missing --cov=musurgia -n auto
