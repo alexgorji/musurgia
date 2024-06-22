@@ -1,4 +1,4 @@
 matplotlib==3.9.0
 fpdf2==2.7.9
-./musicscore
-./verysimpletree
+./other_libraries/musicscore
+./other_libraries/verysimpletree
