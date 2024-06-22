@@ -1,7 +1,7 @@
 from fractions import Fraction
 from typing import Any, Optional, Union, TypeVar
 
-from musicscore import QuarterDuration, Metronome
+from musicscore import QuarterDuration, Metronome # type: ignore[import-untyped]
 from musurgia.musurgia_types import ConvertibleToFloat, check_type, ClockMode
 from musurgia.timing.clock import Clock
 
