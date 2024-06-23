@@ -174,21 +174,21 @@ def convert_duration_to_quarter_duration(duration: Union[Duration, float, int],
     else:
         seconds = Fraction(duration)
     if isinstance(metronome, int):
-        metronome = Metronome(metronome)  # type: ignore[no-untyped-call]
+        metronome = Metronome(metronome)
 
     quarter_per_minute = metronome.per_minute * metronome.beat_unit
     qd = Fraction(60 * seconds, quarter_per_minute)
 
-    return QuarterDuration(qd)  # type: ignore[no-untyped-call]
+    return QuarterDuration(qd)
 
 
 def convert_quarter_duration_to_duration(quarter_duration: Union[QuarterDuration, float, int],
                                          metronome: Union[Metronome, int]) -> Duration:
     if not isinstance(quarter_duration, QuarterDuration):
-        quarter_duration = QuarterDuration(quarter_duration)  # type: ignore[no-untyped-call]
+        quarter_duration = QuarterDuration(quarter_duration)
 
     if isinstance(metronome, int):
-        metronome = Metronome(metronome)  # type: ignore[no-untyped-call]
+        metronome = Metronome(metronome)
 
     quarter_per_minute = metronome.per_minute * metronome.beat_unit
 

@@ -199,6 +199,21 @@ class RulerCannotSetLengthsError(RulerException, AttributeError):
     pass
 
 
+class RulerLengthNotPositiveError(RulerException, AttributeError):
+    pass
+
+
+# time ruler
+
+class TimeRulerException(RulerException):
+    pass
+
+
+class TimeRulerCannotSetLength(TimeRulerException, AttributeError):
+    pass
+
+
+
 # clock
 class ClockException(Exception):
     pass

@@ -35,7 +35,7 @@ class TestClip(PdfTestCase):
         ruler = HorizontalRuler(length=800, unit=10)
         with self.file_path(path, 'line_break', 'pdf') as pdf_path:
             self.pdf.translate(10, 10)
-            number_of_rows = int(ceil(ruler.length / 190))
+            number_of_rows = int(ceil(ruler.get_length() / 190))
             for index in range(number_of_rows):
                 if index != 0:
                     self.pdf.translate(0, 30)

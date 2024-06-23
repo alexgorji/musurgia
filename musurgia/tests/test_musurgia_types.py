@@ -205,3 +205,10 @@ class TestLiteralCheckGenerator(TestCase):
         assert checker('v')
         with self.assertRaises(TypeError):
             checker('d')
+
+
+class TestBuiltInTypeChecker(TestCase):
+    def test_builtin_checker(self):
+        check_type(v=True, t=bool)
+        with self.assertRaises(MusurgiaTypeError):
+            check_type(v=True, t=int)

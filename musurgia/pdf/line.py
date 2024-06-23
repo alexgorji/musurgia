@@ -300,16 +300,17 @@ class AbstractSegmentedLine(DrawObjectContainer):
         else:
             raise NotImplementedError  # pragma: no cover
 
-    def get_lengths(self):
+    def get_lengths(self) -> list[float]:
         return [seg.length for seg in self.segments]
 
 
 class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):
 
     def _make_segments(self, lengths: list[ConvertibleToFloat]) -> None:
-        for length in lengths:
-            self.add_draw_object(HorizontalLineSegment(length))
-        self.segments[-1].end_mark_line.show = True
+        if lengths:
+            for length in lengths:
+                self.add_draw_object(HorizontalLineSegment(length))
+            self.segments[-1].end_mark_line.show = True
 
     def _align_segments(self) -> None:
         reference_segment = max(self.segments, key=lambda seg: seg.get_height())
@@ -326,9 +327,10 @@ class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):
 class VerticalSegmentedLine(AbstractSegmentedLine, DrawObjectColumn):
 
     def _make_segments(self, lengths: list[ConvertibleToFloat]) -> None:
-        for length in lengths:
-            self.add_draw_object(VerticalLineSegment(length))
-        self.segments[-1].end_mark_line.show = True
+        if lengths:
+            for length in lengths:
+                self.add_draw_object(VerticalLineSegment(length))
+            self.segments[-1].end_mark_line.show = True
 
     def _align_segments(self) -> None:
         reference_segment = max(self.segments, key=lambda seg: seg.get_width())

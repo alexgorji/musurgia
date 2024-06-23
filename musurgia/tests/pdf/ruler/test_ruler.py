@@ -1,10 +1,11 @@
 from pathlib import Path
 from unittest import TestCase
 
-from musurgia.musurgia_exceptions import RulerCannotSetLengthsError, SegmentedLineLengthsCannotBeSetError
-from musurgia.pdf.ruler import HorizontalRuler, TimeRuler
+from musurgia.musurgia_exceptions import RulerCannotSetLengthsError, SegmentedLineLengthsCannotBeSetError, \
+    RulerLengthNotPositiveError
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
+from musurgia.pdf.ruler import HorizontalRuler
 from musurgia.tests.utils_for_tests import PdfTestCase
 
 path = Path(__file__)
@@ -12,7 +13,7 @@ path = Path(__file__)
 
 class TestRuler(TestCase):
     def setUp(self) -> None:
-        self.r = HorizontalRuler(length=100)
+        self.r = HorizontalRuler(length=10, unit=1, label_show_interval=5)
 
     def test_setting_length_and_lengths(self):
         with self.assertRaises(RulerCannotSetLengthsError):
@@ -21,39 +22,54 @@ class TestRuler(TestCase):
         with self.assertRaises(SegmentedLineLengthsCannotBeSetError):
             self.r.lengths = [3, 2, 1]
 
+    def test_length(self):
+        hsl = HorizontalRuler(length=0)
+        assert hsl.get_length() == 0
+        with self.assertRaises(AttributeError):
+            hsl.length = 1
+        with self.assertRaises(RulerLengthNotPositiveError):
+            HorizontalRuler(length=-100)
 
-class TestTimeRuler(TestCase):
-    def setUp(self) -> None:
-        self.tr = TimeRuler(duration=200, unit=2, label_show_interval=10, shrink_factor=0.6, mark_line_length=5)
+    def test_get_labels(self):
+        assert [l.value for l in self.r.get_markline_text_labels()] == ['0', '5', '10']
+        assert [l.font_size for l in self.r.get_markline_text_labels()] == [10, 10, 10]
+        assert [l.font_weight for l in self.r.get_markline_text_labels()] == ['medium', 'medium', 'medium']
 
-    def test_duration(self):
-        assert self.tr.duration == 200
-        assert self.tr.unit == 2
-        assert self.tr.length == 400
+    def test_change_labels(self):
+        self.r.change_labels(font_size=6, font_weight='bold')
+        assert [l.value for l in self.r.get_markline_text_labels()] == ['0', '5', '10']
+        assert [l.font_size for l in self.r.get_markline_text_labels()] == [6, 6, 6]
+        assert [l.font_weight for l in self.r.get_markline_text_labels()] == ['bold', 'bold', 'bold']
 
-    def test_shrink(self):
-        assert self.tr.shrink_factor == 0.6
-        assert self.tr.mark_line_length == 5
-        for i, start_mark_line in enumerate([seg.start_mark_line for seg in self.tr.segments]):
-            if i % 10 == 0:
-                assert start_mark_line.length == 5
-            else:
-                assert start_mark_line.length == 3
+        self.r.change_labels(condition=lambda label: True if self.r.segments.index(label.master.master) == 5 else False,
+                             font_size=8)
+        assert [l.font_size for l in self.r.get_markline_text_labels()] == [6, 8, 6]
 
-        self.tr.mark_line_length = 10
-        self.tr.shrink_factor = 0.5
-        for i, start_mark_line in enumerate([seg.start_mark_line for seg in self.tr.segments]):
-            if i % 10 == 0:
-                assert start_mark_line.length == 10
-            else:
-                assert start_mark_line.length == 5
+    def test_getter_setters_errors(self):
+        with self.assertRaises(AttributeError):
+            self.r.length
+        with self.assertRaises(AttributeError):
+            self.r.length = 2
 
-        self.tr.label_show_interval = 3
-        for i, start_mark_line in enumerate([seg.start_mark_line for seg in self.tr.segments]):
-            if i % 3 == 0:
-                assert start_mark_line.length == 10
-            else:
-                assert start_mark_line.length == 5
+        with self.assertRaises(AttributeError):
+            self.r.unit
+        with self.assertRaises(AttributeError):
+            self.r.unit = 2
+
+        with self.assertRaises(AttributeError):
+            self.r.show_first_label
+        with self.assertRaises(AttributeError):
+            self.r.show_first_label = 2
+
+        with self.assertRaises(AttributeError):
+            self.r.label_show_interval
+        with self.assertRaises(AttributeError):
+            self.r.label_show_interval = 2
+
+        with self.assertRaises(AttributeError):
+            self.r.first_label
+        with self.assertRaises(AttributeError):
+            self.r.first_label = 2
 
 
 class TestRulerPdf(PdfTestCase):
@@ -85,14 +101,4 @@ class TestRulerPdf(PdfTestCase):
             self.pdf.translate_page_margins()
             draw_ruler(self.pdf, mode='h', show_borders=True, show_margins=True)
             draw_ruler(self.pdf, mode='v', show_borders=True, show_margins=True)
-            self.pdf.write_to_path(pdf_path)
-
-    def test_time_ruler(self):
-        r = TimeRuler(length=1000, unit=2, label_show_interval=10)
-        for l in [label for seg in r.segments for label in seg.start_mark_line.get_text_labels()]:
-            l.font_size = 5
-        r.bottom_margin = 15
-        with self.file_path(path, 'time_ruler', 'pdf') as pdf_path:
-            self.pdf.translate_page_margins()
-            r.clipped_draw(self.pdf)
             self.pdf.write_to_path(pdf_path)

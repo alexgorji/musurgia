@@ -332,7 +332,10 @@ def check_type(v: Any, t: Union[type, str], function_name: Optional[str] = None,
                                      class_attribute_name, message)
 
     if isinstance(t, type):
-        if not isinstance(v, t):
+        if t == int and isinstance(v, bool):
+            # in python bool is a subclass of int
+            raise _create_error()
+        elif not isinstance(v, t):
             raise _create_error()
     else:
         check_musurgia_type_type(t)
