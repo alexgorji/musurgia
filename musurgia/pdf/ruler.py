@@ -1,6 +1,7 @@
 from abc import ABC
 from typing import Any
 
+from musurgia.musurgia_exceptions import RulerCannotSetLengthsError
 from musurgia.musurgia_types import ConvertibleToFloat, check_type
 from musurgia.pdf import TextLabel, Pdf
 from musurgia.pdf.line import AbstractSegmentedLine, MarkLine, VerticalSegmentedLine, HorizontalSegmentedLine
@@ -9,6 +10,8 @@ from musurgia.pdf.line import AbstractSegmentedLine, MarkLine, VerticalSegmented
 class AbstractRuler(AbstractSegmentedLine, ABC):
     def __init__(self, length: ConvertibleToFloat, unit: ConvertibleToFloat = 10.0, first_label: int = 0,
                  label_show_interval: int = 1, show_first_label: bool = True, *args: Any, **kwargs: Any):
+        if 'lengths' in kwargs:
+            raise RulerCannotSetLengthsError
         check_type(length, 'ConvertibleToFloat', class_name='AbstractRuler', property_name='length')
         check_type(unit, 'ConvertibleToFloat', class_name='AbstractRuler', property_name='unit')
         check_type(first_label, int, class_name='AbstractRuler', property_name='first_label')
@@ -64,4 +67,8 @@ class HorizontalRuler(AbstractRuler, HorizontalSegmentedLine):
 
 
 class VerticalRuler(AbstractRuler, VerticalSegmentedLine):
+    pass
+
+
+class TimeRuler(HorizontalRuler):
     pass

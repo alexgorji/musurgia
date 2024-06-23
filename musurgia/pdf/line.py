@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 from typing import Any, cast, Union
 
-from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
+from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError, SegmentedLineLengthsCannotBeSetError
 from musurgia.musurgia_types import HorizontalVertical, check_type, ConvertibleToFloat, MarkLinePlacement, PositionType, \
     MarginType
 from musurgia.pdf.drawobject import SlaveDrawObject, MasterDrawObject, DrawObject, HasShowProtocol
@@ -257,6 +257,14 @@ class AbstractSegmentedLine(DrawObjectContainer):
         super().__init__(*args, **kwargs)
         self._make_segments(lengths)
 
+    @property
+    def lengths(self) -> None:
+        raise AttributeError('use get_lengths instead')
+
+    @lengths.setter
+    def lengths(self, lengths: Any) -> None:
+        raise SegmentedLineLengthsCannotBeSetError('lengths are not settable after initialization.')
+
     def _check_segment_margins(self) -> None:
         for seg in self.segments:
             if seg.margins != (0, 0, 0, 0):
@@ -291,6 +299,9 @@ class AbstractSegmentedLine(DrawObjectContainer):
             self.relative_x += delta
         else:
             raise NotImplementedError  # pragma: no cover
+
+    def get_lengths(self):
+        return [seg.length for seg in self.segments]
 
 
 class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):
@@ -329,5 +340,3 @@ class VerticalSegmentedLine(AbstractSegmentedLine, DrawObjectColumn):
         self._check_segment_margins()
         self._align_segments()
         super().draw(pdf)
-
-

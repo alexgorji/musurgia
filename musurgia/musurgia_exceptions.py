@@ -1,6 +1,19 @@
 from typing import Any, Optional
 
 
+# arithmetic progression
+class ArithmeticProgressionException(Exception):
+    pass
+
+
+class DAndSError(ArithmeticProgressionException):
+    def __init__(self, *args: Any):
+        msg = 'you cannot set both d an s!'
+        super().__init__(msg, *args)
+
+
+# matrix
+
 class MatrixIndexException(Exception):
     pass
 
@@ -44,6 +57,8 @@ class SquareMatrixDataError(SquareMatrixException):
     pass
 
 
+# permutation order matrix
+
 class PermutationOrderMatrixException(MatrixException):
     pass
 
@@ -52,13 +67,35 @@ class PermutationOrderMatrixDataError(PermutationOrderMatrixException):
     pass
 
 
-class PermutaionIndexCalculatorException(Exception):
+# permutation order
+
+class PermutationOrderException(Exception):
     pass
 
 
-class PermutationIndexCalculaterNoParentIndexError(PermutaionIndexCalculatorException, ValueError):
+class PermutationOrderError(PermutationOrderException):
     pass
 
+
+class PermutationOrderTypeError(PermutationOrderError, TypeError):
+    pass
+
+
+class PermutationOrderValueError(PermutationOrderError, ValueError):
+    pass
+
+
+# permutation index
+
+class PermutationIndexCalculatorException(Exception):
+    pass
+
+
+class PermutationIndexCalculaterNoParentIndexError(PermutationIndexCalculatorException, ValueError):
+    pass
+
+
+# fractal tree
 
 class FractalTreeException(Exception):
     pass
@@ -97,21 +134,17 @@ class FractalTreeNonRootCannotSetMainPermutationOrderError(FractalTreeException)
     pass
 
 
-class PermutationOrderException(Exception):
+# pdf
+
+class PdfException(Exception):
     pass
 
 
-class PermutationOrderError(PermutationOrderException):
+class PdfAttributeError(PdfException, AttributeError):
     pass
 
 
-class PermutationOrderTypeError(PermutationOrderError, TypeError):
-    pass
-
-
-class PermutationOrderValueError(PermutationOrderError, ValueError):
-    pass
-
+# pdf draw object margins
 
 class MarginedObjectException(Exception):
     pass
@@ -120,6 +153,8 @@ class MarginedObjectException(Exception):
 class MarginNotSettableError(MarginedObjectException):
     pass
 
+
+# pdf draw object positions
 
 class PositionedObjectException(AttributeError):
     pass
@@ -141,29 +176,26 @@ class DrawObjectInContainerHasNegativePositionError(PositionedObjectException):
     pass
 
 
-class SegmentedLineError(Exception):
+# pdf segmented line
+class SegmentedLineException(Exception):
     pass
 
 
-class SegmentedLineSegmentHasMarginsError(SegmentedLineError, AttributeError):
+class SegmentedLineSegmentHasMarginsError(SegmentedLineException, AttributeError):
     pass
 
 
-class ArithmeticProgressionException(Exception):
+class SegmentedLineLengthsCannotBeSetError(SegmentedLineException):
     pass
 
 
-class DAndSError(ArithmeticProgressionException):
-    def __init__(self, *args: Any):
-        msg = 'you cannot set both d an s!'
-        super().__init__(msg, *args)
+# pdf ruler
 
-
-class PdfException(Exception):
+class RulerException(SegmentedLineException):
     pass
 
 
-class PdfAttributeError(PdfException, AttributeError):
+class RulerCannotSetLengthsError(RulerException, AttributeError):
     pass
 
 

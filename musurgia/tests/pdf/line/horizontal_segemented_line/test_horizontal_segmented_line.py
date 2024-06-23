@@ -2,7 +2,7 @@ import copy
 from pathlib import Path
 from unittest import TestCase
 
-from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
+from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError, SegmentedLineLengthsCannotBeSetError
 from musurgia.pdf import DrawObjectRow
 from musurgia.pdf.line import HorizontalSegmentedLine
 from musurgia.pdf.pdf import Pdf
@@ -28,6 +28,13 @@ class TestHorizontalSegmentedLine(TestCase):
         assert self.hsl.segments[-1].end_mark_line.show is True
         assert set([seg.end_mark_line.show for seg in self.hsl.segments[:-1]]) == {False}
         assert set([seg.start_mark_line.show for seg in self.hsl.segments]) == {True}
+
+    def test_lengths(self):
+        with self.assertRaises(SegmentedLineLengthsCannotBeSetError):
+            self.hsl.lengths = [10, 15, 20, 25]
+        with self.assertRaises(AttributeError):
+            assert self.hsl.lengths == [10, 15, 20, 25]
+        assert self.hsl.get_lengths() == [10, 15, 20, 25]
 
     def test_get_height(self):
         self.hsl.segments[1].start_mark_line.length = 5
