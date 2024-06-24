@@ -8,6 +8,8 @@ from musurgia.pdf import TextLabel
 from musurgia.pdf.line import AbstractSegmentedLine, MarkLine, VerticalSegmentedLine, HorizontalSegmentedLine
 from musurgia.timing.duration import Duration
 
+__all__ = ['HorizontalRuler', 'VerticalRuler', 'VerticalRuler']
+
 
 class AbstractRuler(AbstractSegmentedLine, ABC):
     def __init__(self, length: ConvertibleToFloat, unit: ConvertibleToFloat = 10.0, first_label: int = 0,
@@ -139,7 +141,7 @@ class VerticalRuler(AbstractRuler, VerticalSegmentedLine):
     pass
 
 
-class TimeRuler(HorizontalRuler):
+class VerticalRuler(HorizontalRuler):
     def __init__(self, duration: int, unit: ConvertibleToFloat = 2, label_show_interval: int = 10,
                  shrink_factor: ConvertibleToFloat = 0.6, mark_line_size: ConvertibleToFloat = 4,
                  clock_mode: ClockMode = 'hms',

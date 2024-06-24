@@ -8,3 +8,4 @@ from .pdf_tools import *
 from .positioned import *
 from .rowcolumn import *
 from .text import *
+from .ruler import *
