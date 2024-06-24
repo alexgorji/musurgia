@@ -1,206 +1,345 @@
-from abc import ABC
-from typing import Any, cast, Optional, Callable
+from abc import abstractmethod, ABC
+from typing import Any, cast, Union
 
-from musurgia.musurgia_exceptions import RulerCannotSetLengthsError, RulerLengthNotPositiveError, \
-    TimeRulerCannotSetLength
-from musurgia.musurgia_types import ConvertibleToFloat, check_type, ClockMode
-from musurgia.pdf import TextLabel
-from musurgia.pdf.line import AbstractSegmentedLine, MarkLine, VerticalSegmentedLine, HorizontalSegmentedLine
-from musurgia.timing.duration import Duration
+from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError, SegmentedLineLengthsCannotBeSetError
+from musurgia.musurgia_types import HorizontalVertical, check_type, ConvertibleToFloat, MarkLinePlacement, PositionType, \
+    MarginType
+from musurgia.pdf.drawobject import SlaveDrawObject, MasterDrawObject, DrawObject, HasShowProtocol
+from musurgia.pdf.labeled import Labeled
+from musurgia.pdf.margined import Margined
+from musurgia.pdf.pdf import Pdf
+from musurgia.pdf.positioned import Positioned, HasPositionsProtocol
+from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn, DrawObjectContainer
 
-__all__ = ['HorizontalRuler', 'VerticalRuler', 'TimeRuler']
+__all__ = ['HorizontalLineSegment', 'VerticalLineSegment', 'StraightLine', 'HorizontalSegmentedLine',
+           'VerticalSegmentedLine']
 
 
-class AbstractRuler(AbstractSegmentedLine, ABC):
-    def __init__(self, length: ConvertibleToFloat, unit: ConvertibleToFloat = 10.0, first_label: int = 0,
-                 label_show_interval: int = 1, show_first_label: bool = True, *args: Any, **kwargs: Any):
-        if 'lengths' in kwargs:
-            raise RulerCannotSetLengthsError
-        check_type(length, 'ConvertibleToFloat', class_name='AbstractRuler', property_name='length')
-        length = float(length)
-        if length < 0:
-            raise RulerLengthNotPositiveError
-        check_type(unit, 'ConvertibleToFloat', class_name='AbstractRuler', property_name='unit')
-        check_type(first_label, int, class_name='AbstractRuler', property_name='first_label')
-        check_type(label_show_interval, int, class_name='AbstractRuler', property_name='label_show_interval')
-        check_type(show_first_label, bool, class_name='AbstractRuler', property_name='show_first_label')
+class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol, HasShowProtocol):
+    def __init__(self, mode: HorizontalVertical, length: ConvertibleToFloat, *args: Any,
+                 **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self._mode: HorizontalVertical
+        self._length: float
 
-        unit = float(unit)
-        number_of_units = float(length) / unit
-        partial_segment_length = number_of_units - int(number_of_units)
-        lengths = int(number_of_units) * [unit]
-        if partial_segment_length:
-            lengths += [partial_segment_length * unit]
-        super().__init__(lengths=lengths, *args, **kwargs)  # type: ignore
-        if partial_segment_length:
-            self.segments[-1].end_mark_line.show = False
-
-        self._unit = unit
-        self._first_label = first_label
-        self._label_show_interval = label_show_interval
-        self._show_first_label = show_first_label
-        self._set_labels()
-
-    def _set_labels(self) -> None:
-        def _add_label(mark_line: MarkLine, txt: str) -> None:
-            tl = TextLabel(txt, master=mark_line)
-            if isinstance(self, VerticalSegmentedLine):
-                tl.placement = 'left'
-                tl.right_margin = 1
-                tl.top_margin = 0
-            else:
-                tl.bottom_margin = 1
-            mark_line.add_text_label(tl)
-
-        for index, segment in enumerate(self.segments):
-            if not self.get_show_first_label() and index == 0:
-                pass
-            else:
-                if index % self.get_label_show_interval() == 0:
-                    mark_line = segment.start_mark_line
-                    _add_label(mark_line, str(index + self.get_first_label()))
-
-        if self.segments:
-            last_segment_end_mark_line = self.segments[-1].end_mark_line
-            if last_segment_end_mark_line.show and (len(self.segments)) % self.get_label_show_interval() == 0:
-                _add_label(last_segment_end_mark_line, str(len(self.segments) + self.get_first_label()))
-
-    def get_markline_text_labels(self) -> list[TextLabel]:
-        return [label for seg in self.segments for label in
-                seg.start_mark_line.get_text_labels() + seg.end_mark_line.get_text_labels()]
-
-    def change_labels(self, condition: Optional[Callable[[TextLabel], bool]] = None, **kwargs: Any) -> None:
-        if condition is None:
-            condition = lambda label: True
-        labels = [l for l in self.get_markline_text_labels() if condition(l)]
-        for label in labels:
-            for key, value in kwargs.items():
-                setattr(label, key, value)
+        self.mode = mode
+        self.length = length  # type: ignore
 
     @property
-    def length(self) -> None:
-        raise AttributeError('use get_length() instead')
+    def mode(self) -> HorizontalVertical:
+        return self._mode
+
+    @mode.setter
+    def mode(self, val: HorizontalVertical) -> None:
+        check_type(val, 'HorizontalVertical', class_name=self.__class__.__name__, property_name='mode')
+        self._mode = val
+
+    @property
+    def length(self) -> float:
+        return self._length
 
     @length.setter
-    def length(self, val: Any) -> None:
-        raise AttributeError('length is not settable after initialization.')
+    def length(self, val: ConvertibleToFloat) -> None:
+        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='length')
+        self._length = float(val)
 
     @property
-    def unit(self) -> None:
-        raise AttributeError('use get_unit() instead')
-
-    @unit.setter
-    def unit(self, val: Any) -> None:
-        raise AttributeError('unit is not settable after initialization.')
-
-    @property
-    def first_label(self) -> None:
-        raise AttributeError('use get_first_label() instead')
-
-    @first_label.setter
-    def first_label(self, val: Any) -> None:
-        raise AttributeError('first_label is not settable after initialization.')
+    def is_vertical(self) -> bool:
+        if self.mode in ['v', 'vertical']:
+            return True
+        else:
+            return False
 
     @property
-    def label_show_interval(self) -> None:
-        raise AttributeError('use get_label_show_interval() instead')
+    def is_horizontal(self) -> bool:
+        if self.mode in ['h', 'horizontal']:
+            return True
+        else:
+            return False
 
-    @label_show_interval.setter
-    def label_show_interval(self, val: Any) -> None:
-        raise AttributeError('label_show_interval is not settable after initialization.')
+    @staticmethod
+    def get_opposite_mode(mode: HorizontalVertical) -> HorizontalVertical:
+        if mode == 'h':
+            return 'v'
+        elif mode == 'v':
+            return 'h'
+        elif mode == 'horizontal':
+            return 'vertical'
+        elif mode == 'vertical':
+            return 'horizontal'
+        else:
+            raise NotImplementedError  # pragma: no cover
 
-    @property
-    def show_first_label(self) -> None:
-        raise AttributeError('use get_show_first_label() instead')
+    def get_relative_x2(self) -> float:
+        if self.is_horizontal:
+            return self.relative_x + self.length
+        else:
+            return self.relative_x
 
-    @show_first_label.setter
-    def show_first_label(self, val: Any) -> None:
-        raise AttributeError('show_first_label is not settable after initialization.')
+    def get_relative_y2(self) -> float:
+        if self.is_vertical:
+            return self.relative_y + self.length
+        else:
+            return self.relative_y
 
-    def get_unit(self) -> float:
-        return float(self._unit)
-
-    def get_length(self) -> float:
-        return float(sum([seg.length for seg in self.segments]))
-
-    def get_first_label(self) -> int:
-        return self._first_label
-
-    def get_label_show_interval(self) -> int:
-        return self._label_show_interval
-
-    def get_show_first_label(self) -> bool:
-        return self._show_first_label
+    def draw(self, pdf: Pdf) -> None:
+        if self.show:
+            with pdf.pdf_draw_object_translate(cast(DrawObject, self)):
+                self.draw_above_text_labels(pdf)
+                self.draw_left_text_labels(pdf)
+                self.draw_below_text_labels(pdf)
+                x2 = self.get_relative_x2() - self.relative_x
+                y2 = self.get_relative_y2() - self.relative_y
+                pdf.line(0, 0, x2, y2)
 
 
-class HorizontalRuler(AbstractRuler, HorizontalSegmentedLine):
+class StraightLine(AbstractStraightLine, DrawObject, Positioned, Margined):
     pass
 
 
-class VerticalRuler(AbstractRuler, VerticalSegmentedLine):
+class SlaveStraightLine(AbstractStraightLine, SlaveDrawObject):
     pass
 
 
-class TimeRuler(HorizontalRuler):
-    def __init__(self, duration: int, unit: ConvertibleToFloat = 2, label_show_interval: int = 10,
-                 shrink_factor: ConvertibleToFloat = 0.6, mark_line_size: ConvertibleToFloat = 4,
-                 clock_mode: ClockMode = 'hms',
-                 *args: Any,
-                 **kwargs: Any):
-        if 'length' in kwargs:
-            raise TimeRulerCannotSetLength
-        check_type(duration, 'PositiveInteger', class_name='TimeRuler', property_name='duration')
-        super().__init__(length=duration * unit, unit=unit, label_show_interval=label_show_interval, *args,
-                         **kwargs)  # type: ignore
-        self._clock_mode: ClockMode = clock_mode
-        self._change_label_texts()
-        self._shrink_factor: ConvertibleToFloat
-        self._mark_line_size: ConvertibleToFloat
-        self.shrink_factor = shrink_factor  # type: ignore
-        self.mark_line_size = mark_line_size  # type: ignore
+class MarkLine(SlaveStraightLine):
+    def __init__(self, placement: MarkLinePlacement, mode: HorizontalVertical, length: ConvertibleToFloat = 3,
+                 *args: Any, **kwargs: Any):
+        super().__init__(length=length, mode=mode, *args, **kwargs)  # type: ignore
+        self._placement: MarkLinePlacement
+        self.placement = placement
 
-    def _change_label_texts(self) -> None:
-        for label in self.get_markline_text_labels():
-            duration = Duration(float(label.value))
-            label.value = duration.get_clock_as_string(mode=self._clock_mode, round_=1)
-            if label.value[-2:] == '.0':
-                label.value = label.value[:-2]
+    @property
+    def placement(self) -> MarkLinePlacement:
+        return self._placement
 
-    def _change_mark_line_lengths(self) -> None:
-        try:
-            sf = self.shrink_factor
-            mls = self.mark_line_size
-            for i, seg in enumerate(self.segments):
-                if i % self.get_label_show_interval() == 0:
-                    seg.start_mark_line.length = mls
-                else:
-                    seg.start_mark_line.length = mls * sf
+    @placement.setter
+    def placement(self, val: MarkLinePlacement) -> None:
+        check_type(val, 'MarkLinePlacement', class_name=self.__class__.__name__, property_name='placement')
+        self._placement = val
 
-            if len(self.segments) % self.get_label_show_interval() == 0:
-                self.segments[-1].end_mark_line.length = mls
+
+class LineSegment(MasterDrawObject, ABC):
+
+    def __init__(self, mode: HorizontalVertical, length: ConvertibleToFloat, *args: Any, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self._straight_line = SlaveStraightLine(simple_name='straight_line', mode=mode, length=length, master=self)
+        marker_mode = SlaveStraightLine.get_opposite_mode(self.mode)
+        self._start_mark_line = MarkLine(simple_name='start_mark_line', mode=marker_mode, master=self,
+                                         placement='start')
+        self._end_mark_line = MarkLine(simple_name='end_mark_line', mode=marker_mode, master=self, placement='end',
+                                       show=False)
+
+    @property
+    def is_vertical(self) -> bool:
+        if self.mode in ['v', 'vertical']:
+            return True
+        return False
+
+    @property
+    def is_horizontal(self) -> bool:
+        if self.mode in ['h', 'horizontal']:
+            return True
+        return False
+
+    @property
+    def straight_line(self) -> SlaveStraightLine:
+        return self._straight_line
+
+    @property
+    def start_mark_line(self) -> MarkLine:
+        return self._start_mark_line
+
+    @property
+    def end_mark_line(self) -> MarkLine:
+        return self._end_mark_line
+
+    @property
+    def mode(self) -> HorizontalVertical:
+        return self.straight_line.mode
+
+    @property
+    def length(self) -> float:
+        return self.straight_line.length
+
+    @length.setter
+    def length(self, value: ConvertibleToFloat) -> None:
+        self.straight_line.length = value  # type: ignore
+
+    def get_slave_margin(self, slave: SlaveStraightLine, margin: MarginType) -> float:
+        check_type(margin, 'MarginType', class_name='self.__class__.__name__', method_name='get_slave_margin',
+                   argument_name='margin')
+        return 0
+
+    def _get_max_markline_length(self) -> float:
+        return max([self.start_mark_line.length, self.end_mark_line.length])
+
+    def _get_slave_x(self, slave: SlaveStraightLine) -> float:
+        max_markline_length = self._get_max_markline_length()
+        if self.is_horizontal:
+            if slave == self.end_mark_line:
+                return self.get_relative_x2()
             else:
-                self.segments[-1].end_mark_line.length = mls * sf
+                return self.relative_x
+        else:
+            if slave == self.straight_line:
+                return self.relative_x + max_markline_length / 2
+            elif slave.length == max_markline_length:
+                return self.relative_x
+            else:
+                return self.relative_x + (max_markline_length - slave.length) / 2
 
-        except AttributeError:
-            pass
+    def _get_slave_y(self, slave: SlaveStraightLine) -> float:
+        max_markline_length = self._get_max_markline_length()
+        if self.is_vertical:
+            if slave == self.end_mark_line:
+                return self.get_relative_y2()
+            return self.relative_y
+        else:
+            if slave == self.straight_line:
+                return self.relative_y + max_markline_length / 2
+            elif slave.length == max_markline_length:
+                return self.relative_y
+            else:
+                return self.relative_y + (max_markline_length - slave.length) / 2
 
-    def get_duration(self) -> float:
-        return self.get_length() / self.get_unit()
+    def get_slave_position(self, slave: SlaveStraightLine, position: PositionType) -> float:
+        check_type(position, 'PositionType', class_name='self.__class__.__name__', method_name='get_slave_position',
+                   argument_name='position')
+        if position == 'x':
+            return self._get_slave_x(slave)
+        else:
+            return self._get_slave_y(slave)
+
+    def set_straight_line_relative_y(self, val: Union[int, float]) -> None:
+        if self.is_vertical:
+            raise NotImplementedError  # pragma: no cover
+        self.relative_y = val - self._get_max_markline_length() / 2
+
+    def set_straight_line_relative_x(self, val: Union[int, float]) -> None:
+        if self.is_horizontal:
+            raise NotImplementedError  # pragma: no cover
+        self.relative_x = val - self._get_max_markline_length() / 2
+
+
+class HorizontalLineSegment(LineSegment):
+    def __init__(self, length: ConvertibleToFloat, *args: Any, **kwargs: Any):
+        super().__init__(mode='horizontal', length=length, *args, **kwargs)  # type: ignore
+
+    def get_relative_x2(self) -> float:
+        return self.relative_x + self.length
+
+    def get_relative_y2(self) -> float:
+        return self.relative_y + self._get_max_markline_length()
+
+    def draw(self, pdf: Pdf) -> None:
+        self.start_mark_line.draw(pdf)
+        self.straight_line.draw(pdf)
+        self.end_mark_line.draw(pdf)
+
+
+class VerticalLineSegment(LineSegment):
+    def __init__(self, length: ConvertibleToFloat, *args: Any, **kwargs: Any):
+        super().__init__(mode='vertical', length=length, *args, **kwargs)  # type: ignore
+
+    def get_relative_x2(self) -> float:
+        return self.relative_x + max([ml.get_width() for ml in [self.start_mark_line, self.end_mark_line]])
+
+    def get_relative_y2(self) -> float:
+        return self.relative_y + self.length
+
+    def draw(self, pdf: Pdf) -> None:
+        self.start_mark_line.draw(pdf)
+        self.straight_line.draw(pdf)
+        self.end_mark_line.draw(pdf)
+
+
+class AbstractSegmentedLine(DrawObjectContainer):
+    def __init__(self, lengths: list[ConvertibleToFloat], *args: Any, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self._make_segments(lengths)
 
     @property
-    def shrink_factor(self) -> float:
-        return cast(float, self._shrink_factor)
+    def lengths(self) -> None:
+        raise AttributeError('use get_lengths instead')
 
-    @shrink_factor.setter
-    def shrink_factor(self, val: ConvertibleToFloat) -> None:
-        self._shrink_factor = float(val)
-        self._change_mark_line_lengths()
+    @lengths.setter
+    def lengths(self, lengths: Any) -> None:
+        raise SegmentedLineLengthsCannotBeSetError('lengths are not settable after initialization.')
+
+    def _check_segment_margins(self) -> None:
+        for seg in self.segments:
+            if seg.margins != (0, 0, 0, 0):
+                raise SegmentedLineSegmentHasMarginsError()
 
     @property
-    def mark_line_size(self) -> float:
-        return cast(float, self._mark_line_size)
+    def segments(self) -> list[LineSegment]:
+        return cast(list[LineSegment], self.get_draw_objects())
 
-    @mark_line_size.setter
-    def mark_line_size(self, val: ConvertibleToFloat) -> None:
-        self._mark_line_size = float(val)
-        self._change_mark_line_lengths()
+    @abstractmethod
+    def _make_segments(self, lengths: list[ConvertibleToFloat]) -> None:
+        """private method for making segments"""
+
+    @property
+    def is_vertical(self) -> bool:
+        return self.segments[0].is_vertical
+
+    @property
+    def is_horizontal(self) -> bool:
+        return self.segments[0].is_horizontal
+
+    def set_straight_line_relative_y(self, val: Union[float, int]) -> None:
+        if self.is_horizontal:
+            delta = val - self.segments[0].straight_line.relative_y
+            self.relative_y += delta
+        else:
+            raise NotImplementedError  # pragma: no cover
+
+    def set_straight_line_relative_x(self, val: Union[float, int]) -> None:
+        if self.is_vertical:
+            delta = val - self.segments[0].straight_line.relative_x
+            self.relative_x += delta
+        else:
+            raise NotImplementedError  # pragma: no cover
+
+    def get_lengths(self) -> list[float]:
+        return [seg.length for seg in self.segments]
+
+
+class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):
+
+    def _make_segments(self, lengths: list[ConvertibleToFloat]) -> None:
+        if lengths:
+            for length in lengths:
+                self.add_draw_object(HorizontalLineSegment(length))
+            self.segments[-1].end_mark_line.show = True
+
+    def _align_segments(self) -> None:
+        reference_segment = max(self.segments, key=lambda seg: seg.get_height())
+        for segment in self.segments:
+            if segment != reference_segment:
+                segment.set_straight_line_relative_y(reference_segment.straight_line.relative_y)
+
+    def draw(self, pdf: Pdf) -> None:
+        self._check_segment_margins()
+        self._align_segments()
+        super().draw(pdf)
+
+
+class VerticalSegmentedLine(AbstractSegmentedLine, DrawObjectColumn):
+
+    def _make_segments(self, lengths: list[ConvertibleToFloat]) -> None:
+        if lengths:
+            for length in lengths:
+                self.add_draw_object(VerticalLineSegment(length))
+            self.segments[-1].end_mark_line.show = True
+
+    def _align_segments(self) -> None:
+        reference_segment = max(self.segments, key=lambda seg: seg.get_width())
+        for segment in self.segments:
+            if segment != reference_segment:
+                segment.set_straight_line_relative_x(reference_segment.straight_line.relative_x)
+
+    def draw(self, pdf: Pdf) -> None:
+        self._check_segment_margins()
+        self._align_segments()
+        super().draw(pdf)
