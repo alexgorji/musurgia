@@ -11,7 +11,8 @@ from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.positioned import Positioned, HasPositionsProtocol
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn, DrawObjectContainer
 
-__all__ = ['HorizontalLineSegment', 'VerticalLineSegment', 'StraightLine']
+__all__ = ['HorizontalLineSegment', 'VerticalLineSegment', 'StraightLine', 'HorizontalSegmentedLine',
+           'VerticalSegmentedLine']
 
 
 class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol, HasShowProtocol):
