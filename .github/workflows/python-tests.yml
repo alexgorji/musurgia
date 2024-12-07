@@ -38,6 +38,6 @@ jobs:
         poetry install --no-root --with=test
         poetry run pytest
         
-    # - name: run mypy
-    #   run: |
-    #     mypy musurgia
+    - name: Run mypy
+      run: |
+        poetry run mypy musurgia
