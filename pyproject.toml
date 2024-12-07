@@ -18,17 +18,15 @@ python = ">=3.9,<3.13"
 matplotlib = "^3.9.0"
 fpdf2 = "^2.7.9"
 musicscore = "^2.2.2"
-types-fpdf2 = "^2.8.1.20241204"
-
 
 [tool.poetry.group.test.dependencies]
-mypy = "^1.13.0"
 pytest-xdist = "^3.6.1"
 pytest-cov = "^6.0.0"
 xmltodict = "^0.14.2"
 deepdiff = "^8.0.1"
 diff_pdf_visually = "^1.8.0"
-
+mypy = "^1.13.0"
+types-fpdf2 = "^2.8.1.20241204"
 
 [[tool.poetry.source]]
 name = "PyPI"
