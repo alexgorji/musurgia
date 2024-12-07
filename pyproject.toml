@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "musurgia"
-version = "1.0beta"
+version = "3.0beta"
 description = "Tools for algorithmic composition."
 authors = ["Alex Gorji <aligorji@hotmail.com>"]
 license = "MIT"
