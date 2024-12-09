@@ -11,19 +11,20 @@ from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
 from musurgia.musurgia_types import ConvertibleToFloat
 from musurgia.pdf import DrawObjectRow, Pdf, DrawObjectColumn, HorizontalLineSegment
 from musurgia.pdf.line import LineSegment
+from musurgia.trees.valuedtree import ValuedTree
 
 
 __all__ = ['ValuedTreeNodeSegment', 'GraphicChildrenSegmentedLine', 'GraphicTree']
 
 class ValuedTreeNodeSegment(HorizontalLineSegment):
-    def __init__(self, node_duration: Duration, unit: int = 1, *args: Any, **kwargs: Any) -> None:
-        super().__init__(length=node_duration.seconds * unit, *args, **kwargs)  # type: ignore
-        self._node_duration = node_duration
+    def __init__(self, node_value: float, unit: int = 1, *args: Any, **kwargs: Any) -> None:
+        super().__init__(length=node_value * unit, *args, **kwargs)  # type: ignore
+        self._node_value = node_value
         self._unit: int
         self.unit = unit
 
     def _update_length(self) -> None:
-        self.straight_line.length = float(self.get_node_duration().seconds * self.unit)
+        self.straight_line.length = self.get_node_value() * self.unit
 
     @property  # type: ignore
     def length(self) -> float:
@@ -38,11 +39,11 @@ class ValuedTreeNodeSegment(HorizontalLineSegment):
         self._unit = value
         self._update_length()
 
-    def get_node_duration(self) -> Duration:
-        return self._node_duration
+    def get_node_value(self) -> float:
+        return self._node_value
 
-    def set_node_duration(self, val: Duration) -> None:
-        self._node_duration = val
+    def set_node_value(self, val: float) -> None:
+        self._node_value = val
         self._update_length()
 
 
@@ -84,11 +85,11 @@ class GraphicChildrenSegmentedLine(DrawObjectRow):
 
 
 class GraphicTree(Tree[Any]):
-    def __init__(self, timeline_tree: TimelineTree, distance: Union[int, float] = 5, unit: int = 1,
+    def __init__(self, valued_tree: ValuedTree, distance: Union[int, float] = 5, unit: int = 1,
                  mark_line_length: Union[int, float] = 6, shrink_factor: Union[int, float] = 0.7, *args: Any,
                  **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self._timeline_tree: TimelineTree = timeline_tree
+        self._valued_tree: ValuedTree = valued_tree
         self._distance: Union[int, float]
         self._unit: int
         self._mark_line_length: Union[int, float]
@@ -120,10 +121,10 @@ class GraphicTree(Tree[Any]):
             self._graphic.add_draw_object(second_row)
 
     def _populate_tree(self) -> None:
-        self._segment = ValuedTreeNodeSegment(node_duration=self.get_timeline_tree().get_duration(), unit=self.unit)
+        self._segment = ValuedTreeNodeSegment(node_value=float(self.get_valued_tree().get_value()), unit=self.unit)
         self._segment.start_mark_line.length = self.mark_line_length
         self._segment.end_mark_line.length = self.mark_line_length
-        for ch in self.get_timeline_tree().get_children():
+        for ch in self.get_valued_tree().get_children():
             self.add_child(GraphicTree(ch, distance=self.distance, unit=self.unit,
                                        mark_line_length=self.mark_line_length * self.shrink_factor))
 
@@ -153,10 +154,10 @@ class GraphicTree(Tree[Any]):
 #     #             max_mark_line_length = max([seg.start_mark_line.length, seg.end_mark_line.length])
 #     #             dy = (current_layer_largeste_mark_line.length - max_mark_line_length) / 2
 #     #             seg.relative_y += dy
-#     def _update_distance(self) -> None:
-#         for node in self.traverse():
-#             if not node.is_leaf:
-#                 node._graphic.get_draw_objects()[1].relative_y += node.distance
+    def _update_distance(self) -> None:
+        for node in self.traverse():
+            if not node.is_leaf:
+                node._graphic.get_draw_objects()[1].relative_y += node.distance
 
     def _finalize(self) -> None:
         self._show_last_mark_lines()
@@ -210,8 +211,8 @@ class GraphicTree(Tree[Any]):
     def get_segment(self) -> ValuedTreeNodeSegment:
         return self._segment
 
-    def get_timeline_tree(self) -> TimelineTree:
-        return self._timeline_tree
+    def get_valued_tree(self) -> ValuedTree:
+        return self._valued_tree
 
     def get_graphic(self) -> DrawObjectColumn:
         for node in self.traverse():

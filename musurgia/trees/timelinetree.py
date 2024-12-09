@@ -1,8 +1,9 @@
+from fractions import Fraction
 from typing import Any
-from verysimpletree.tree import Tree
 
 from musurgia.musurgia_exceptions import WrongNodeDurationError
 from musurgia.timing.duration import Duration
+from musurgia.trees.valuedtree import ValuedTree
 
 __all__ = ["TimeLineNodeContainer", "TimelineTree"]
 
@@ -26,8 +27,8 @@ class TimeLineNodeContainer:
         return self._timeline_node
 
 
-class TimelineTree(Tree[Any]):
-    def __init__(self, duration: Duration, *args, **kwargs):
+class TimelineTree(ValuedTree):
+    def __init__(self, duration: Duration, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self.content = TimeLineNodeContainer(self, duration)
 
@@ -38,17 +39,22 @@ class TimelineTree(Tree[Any]):
             raise TypeError(f'Wrong child type. Child must be of type FractalTree not {type(child)}')
         return True
 
+    def _set_value(self, value):
+        self.content.duration.seconds = value
 
-    def check_timeline_durations(self):
+    def check_timeline_durations(self) -> bool:
         for ch in self.traverse():
             if not ch.is_leaf:
                 if sum([gch.get_duration() for gch in ch.get_children()]) != ch.get_duration():
                     raise WrongNodeDurationError(f"Children of TimelineTree node of position {ch.get_position_in_tree()} with duration {ch.get_duration().seconds} have wrong durations {[gch.get_duration().seconds for gch in ch.get_children()]} ")
         return True
 
-    def get_duration(self):
+    def get_duration(self) -> Duration:
         return self.content.duration
     
-    def get_value(self):
-        return float(self.content.duration.seconds)
+    def get_value(self) -> Fraction:
+        return Fraction(self.content.duration.seconds)
+    
+
+    
     
