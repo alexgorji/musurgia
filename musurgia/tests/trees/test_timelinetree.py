@@ -43,4 +43,4 @@ class TimeLineTreeTestCase(TestCase):
         ├── 3.0
         └── 2.0
 """
-        self.assertEqual(tft.get_tree_representation(key=lambda node: node.get_value()), expected)
+        self.assertEqual(tft.get_tree_representation(key=lambda node: float(node.get_value())), expected)

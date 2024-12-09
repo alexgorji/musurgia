@@ -1,3 +1,4 @@
+from fractions import Fraction
 import os
 import unittest
 from pathlib import Path
@@ -9,6 +10,7 @@ from musurgia.pdf import Text, TextLabel, DrawObjectColumn, StraightLine
 from musurgia.pdf.drawobject import MasterDrawObject
 from musurgia.trees.timelinetree import TimelineTree
 from musurgia.timing.duration import Duration
+from musurgia.trees.valuedtree import ValuedTree
 
 
 def create_test_path(path, test_name):
@@ -90,11 +92,11 @@ class PdfTestCase(unittest.TestCase):
         return tfp
 
 
-def node_info(node):
+def fractal_node_info(node):
     return f'{node.get_fractal_order()}: {node.get_permutation_index()}: {round(float(node.get_value()), 2)}'
 
 
-def node_info_with_permutation_order(node):
+def fractal_node_info_with_permutation_order(node):
     return f'{node.get_fractal_order()}: {node.get_permutation_index()}: {node.get_permutation_order()}: {round(float(node.get_value()), 2)}'
 
 
@@ -199,25 +201,99 @@ def create_test_timeline_tree():
             child.add_child(TimelineTree(Duration(d)))
     return tlt
 
-def add_node_infos_to_graphic(ft, gt):
-    for index, (gn, fn) in enumerate(zip(gt.traverse(), ft.traverse())):
-        if gn.get_distance() == 1:
-            gn.get_segment().start_mark_line.add_text_label(f'value:{round(fn.get_value(), 2)}', font_size=10,
-                                                            bottom_margin=1)
-        gn.get_segment().start_mark_line.add_text_label(f'{fn.get_fractal_order()}', font_size=9,
+
+class DemoValuedTree(ValuedTree):
+    def __init__(self, value, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._value = value
+
+    def _check_child_to_be_added(self, child):
+        if not isinstance(child, ValuedTree):
+            raise TypeError
+        else:
+            return True
+    def _set_value(self, value):
+        self._value = value
+
+    def get_value(self):
+        return Fraction(self._value)
+    
+def copy_fractal_tree_to_valued_tree(ft_node):
+    vt_node = DemoValuedTree(value=ft_node.get_value())
+    for child in ft_node.get_children():
+        vt_child = copy_fractal_tree_to_valued_tree(child)
+        vt_node.add_child(vt_child)
+    return vt_node
+
+def create_test_valued_tree():
+    # fractal values: 
+    """└── 10
+    ├── 3
+    │   ├── 3/5
+    │   ├── 6/5
+    │   │   ├── 6/25
+    │   │   ├── 12/25
+    │   │   ├── 3/25
+    │   │   └── 9/25
+    │   ├── 3/10
+    │   └── 9/10
+    │       ├── 27/100
+    │       ├── 9/100
+    │       ├── 9/25
+    │       └── 9/50
+    ├── 1
+    ├── 4
+    │   ├── 2/5
+    │   ├── 4/5
+    │   ├── 6/5
+    │   │   ├── 6/25
+    │   │   ├── 12/25
+    │   │   ├── 3/25
+    │   │   └── 9/25
+    │   └── 8/5
+    │       ├── 4/25
+    │       ├── 8/25
+    │       ├── 12/25
+    │       └── 16/25
+    └── 2
+        ├── 4/5
+        │   ├── 4/25
+        │   ├── 8/25
+        │   ├── 2/25
+        │   └── 6/25
+        ├── 3/5
+        │   ├── 9/50
+        │   ├── 3/50
+        │   ├── 6/25
+        │   └── 3/25
+        ├── 2/5
+        └── 1/5
+    """
+    ft =  create_test_fractal_tree()
+    vt = copy_fractal_tree_to_valued_tree(create_test_fractal_tree())
+    return vt
+
+
+def add_node_infos_to_graphic(vt, gt):
+    for gn, vn in zip(gt.traverse(), vt.traverse()):
+        value_label = gn.get_segment().start_mark_line.add_text_label(round(float(vn.get_value()), 1), font_size=8,
                                                         bottom_margin=1)
 
-        position_in_tree_label = gn.get_segment().start_mark_line.add_text_label(f'{fn.get_position_in_tree()}',
+        position_in_tree_label = gn.get_segment().start_mark_line.add_text_label(f'{vn.get_position_in_tree()}',
                                                                                  font_size=8, placement='below',
                                                                                  top_margin=1)
         if gn.get_distance() == 3:
-            if fn.up.up.get_position_in_tree() == '4':
+            if vn.up.up.get_position_in_tree() == '4':
                 if gn.up.get_children().index(gn) % 4 == 1:
                     position_in_tree_label.top_margin = 3
+                    value_label.bottom_margin = 4
                 elif gn.up.get_children().index(gn) % 4 == 2:
                     position_in_tree_label.top_margin = 5
+                    value_label.bottom_margin = 7
                 elif gn.up.get_children().index(gn) % 4 == 3:
                     position_in_tree_label.top_margin = 7
+                    value_label.bottom_margin = 10
             else:
                 if gn.up.get_children().index(gn) % 2 == 1:
                     position_in_tree_label.top_margin = 3
+                    value_label.bottom_margin = 4

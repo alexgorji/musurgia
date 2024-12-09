@@ -3,7 +3,7 @@ from unittest import TestCase
 from fractions import Fraction
 
 from musurgia.fractal.fractaltree import FractalTree
-from musurgia.tests.utils_for_tests import node_info
+from musurgia.tests.utils_for_tests import fractal_node_info
 from musurgia.utils import flatten
 
 
@@ -46,7 +46,7 @@ class Test(TestCase):
         first_child.add_layer()
         first_child.add_layer()
         # print(self.ft.get_tree_representation(node_info))
-        assert self.ft.get_tree_representation(node_info) == """└── None: (1, 1): 10.0
+        assert self.ft.get_tree_representation(fractal_node_info) == """└── None: (1, 1): 10.0
     ├── 3: (2, 1): 5.0
     │   ├── 1: (3, 1): 0.83
     │   │   ├── 2: (1, 1): 0.28
@@ -65,7 +65,7 @@ class Test(TestCase):
 """
         first_child.remove(first_child.get_children()[1])
         # print(self.ft.get_tree_representation(node_info))
-        assert self.ft.get_tree_representation(node_info) == """└── None: (1, 1): 10.0
+        assert self.ft.get_tree_representation(fractal_node_info) == """└── None: (1, 1): 10.0
     ├── 3: (2, 1): 5.0
     │   ├── 1: (3, 1): 0.83
     │   │   ├── 2: (1, 1): 0.28
@@ -80,7 +80,7 @@ class Test(TestCase):
 """
         first_child.get_children()[0].change_value(2.5)
         # print(self.ft.get_tree_representation(node_info))
-        assert self.ft.get_tree_representation(node_info) == """└── None: (1, 1): 10.0
+        assert self.ft.get_tree_representation(fractal_node_info) == """└── None: (1, 1): 10.0
     ├── 3: (2, 1): 5.0
     │   ├── 1: (3, 1): 2.5
     │   │   ├── 2: (1, 1): 0.83
