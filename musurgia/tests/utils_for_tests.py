@@ -7,6 +7,8 @@ from diff_pdf_visually import pdf_similar  # type: ignore
 from musurgia.fractal import FractalTree
 from musurgia.pdf import Text, TextLabel, DrawObjectColumn, StraightLine
 from musurgia.pdf.drawobject import MasterDrawObject
+from musurgia.trees.timelinetree import TimelineTree
+from musurgia.timing.duration import Duration
 
 
 def create_test_path(path, test_name):
@@ -187,6 +189,15 @@ def create_test_fractal_tree():
     ft.add_layer(lambda node: node.get_fractal_order() > 2)
     return ft
 
+
+def create_test_timeline_tree():
+    tlt = TimelineTree(duration=Duration(60))
+    for d in [20, 10, 30]:
+        tlt.add_child(TimelineTree(Duration(d)))
+    for list_of_d, child in zip([[10, 2, 3, 5], [], [5, 20, 3, 2]], tlt.get_children()):
+        for d in list_of_d:
+            child.add_child(TimelineTree(Duration(d)))
+    return tlt
 
 def add_node_infos_to_graphic(ft, gt):
     for index, (gn, fn) in enumerate(zip(gt.traverse(), ft.traverse())):

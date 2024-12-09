@@ -1,27 +1,29 @@
 # import copy
-# from pathlib import Path
-# from unittest import TestCase
+from pathlib import Path
+from unittest import TestCase
 
 # from musurgia.fractal.graphic import GraphicTree, FractalTreeNodeSegment, GraphicChildrenSegmentedLine
 # from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
 # from musurgia.pdf import DrawObjectColumn, DrawObjectRow, Pdf, draw_ruler, TextLabel
 # from musurgia.pdf.ruler import HorizontalRuler
-# from musurgia.tests.utils_for_tests import PdfTestCase, create_test_fractal_tree, add_node_infos_to_graphic
+from musurgia.tests.utils_for_tests import PdfTestCase, create_test_timeline_tree, add_node_infos_to_graphic
+from musurgia.trees.graphictree import GraphicTree
 
-# path = Path(__file__)
+path = Path(__file__)
 
 
-# class TestGraphicTree(TestCase):
-#     def setUp(self):
-#         self.ft = create_test_fractal_tree()
-#         self.gt = GraphicTree(self.ft)
+class GraphicTreeTest(TestCase):
+    def setUp(self):
+        self.ft = create_test_timeline_tree()
+        # print(self.ft.get_tree_representation(key=lambda node: f"{node.get_position_in_tree()}: {node.get_duration().seconds}"))
+        self.gt = GraphicTree(self.ft)
 
-#     def test_populate(self):
-#         traversed_ft = list(self.ft.traverse())
-#         traversed_gt = list(self.gt.traverse())
-#         assert len(traversed_ft) == len(traversed_gt)
-#         for fnode, gnode in zip(traversed_ft, traversed_gt):
-#             assert gnode.get_segment().length == float(fnode.get_value() * self.gt.unit)
+    def test_populate(self):
+        traversed_ft = list(self.ft.traverse())
+        traversed_gt = list(self.gt.traverse())
+        assert len(traversed_ft) == len(traversed_gt)
+        for fnode, gnode in zip(traversed_ft, traversed_gt):
+            assert gnode.get_segment().length == float(fnode.get_value() * self.gt.unit)
 
 #     def test_set_node_value(self):
 #         seg = FractalTreeNodeSegment(node_value=10)

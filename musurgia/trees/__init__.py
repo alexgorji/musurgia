@@ -1,2 +1,2 @@
 from .timelinetree import *
-from .graphic import *
+from .graphictree import *
