@@ -49,3 +49,6 @@ class TimelineTree(Tree[Any]):
     def get_duration(self):
         return self.content.duration
     
+    def get_value(self):
+        return float(self.content.duration.seconds)
+    
