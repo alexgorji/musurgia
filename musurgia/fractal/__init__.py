@@ -1,2 +1,2 @@
 from .fractaltree import *
-from .graphic import *
+# from .graphic import *

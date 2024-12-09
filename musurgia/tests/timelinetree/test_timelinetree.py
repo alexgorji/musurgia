@@ -26,3 +26,4 @@ class TimeLineTreeTestCase(TestCase):
         with self.assertRaises(WrongNodeDurationError) as err:
             tlt.check_timeline_durations()
         self.assertAlmostEqual(str(err.exception), "Children of TimeLineTree node of position 0 with duration 2.0 have wrong durations [1.5, 0.5, 1.0] ")
+
