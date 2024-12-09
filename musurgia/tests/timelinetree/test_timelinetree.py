@@ -1,6 +1,6 @@
 from unittest import TestCase
 from musurgia.musurgia_exceptions import WrongNodeDurationError
-from musurgia.timelinetree.timelinetree import TimelineTree, TimeLineNodeContainer
+from musurgia.timelinetree import TimelineTree, TimeLineNodeContainer
 from musurgia.timing.duration import Duration
 
 

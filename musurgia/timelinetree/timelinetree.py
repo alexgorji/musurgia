@@ -4,6 +4,8 @@ from verysimpletree.tree import Tree
 from musurgia.musurgia_exceptions import WrongNodeDurationError
 from musurgia.timing.duration import Duration
 
+__all__ = ["TimeLineNodeContainer", "TimelineTree"]
+
 class TimeLineNodeContainer:
     def __init__(self, timeline_node: "TimelineTree", duration: Duration, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,3 +48,4 @@ class TimelineTree(Tree[Any]):
 
     def get_duration(self):
         return self.content.duration
+    
