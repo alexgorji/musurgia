@@ -9,6 +9,7 @@ from musurgia.pdf import Text, TextLabel, DrawObjectColumn, StraightLine
 from musurgia.pdf.drawobject import MasterDrawObject
 from musurgia.trees.timelinetree import TimelineTree
 from musurgia.timing.duration import Duration
+from musurgia.trees.valued_tree import ValuedTree
 
 
 def create_test_path(path, test_name):
@@ -199,19 +200,43 @@ def create_test_timeline_tree():
             child.add_child(TimelineTree(Duration(d)))
     return tlt
 
-def add_node_infos_to_graphic(ft, gt):
-    for index, (gn, fn) in enumerate(zip(gt.traverse(), ft.traverse())):
+
+class DemoValuedTree(ValuedTree):
+    def __init__(self, value, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.value = value
+
+    def _check_child_to_be_added(self, child):
+        if not isinstance(child, ValuedTree):
+            raise TypeError
+        else:
+            return True
+
+    def get_value(self):
+        return self.value
+
+def create_test_valued_tree():
+    vt = DemoValuedTree(value=60)
+    for v in [20, 10, 30]:
+        vt.add_child(DemoValuedTree(v))
+    for list_of_v, child in zip([[10, 2, 3, 5], [], [5, 20, 3, 2]], vt.get_children()):
+        for v in list_of_v:
+            child.add_child(DemoValuedTree(v))
+    return vt
+
+def add_node_infos_to_graphic(vt, gt):
+    for gn, vn in zip(gt.traverse(), vt.traverse()):
         if gn.get_distance() == 1:
-            gn.get_segment().start_mark_line.add_text_label(f'value:{round(fn.get_value(), 2)}', font_size=10,
+            gn.get_segment().start_mark_line.add_text_label(f'value:{round(vn.get_value(), 2)}', font_size=10,
                                                             bottom_margin=1)
-        gn.get_segment().start_mark_line.add_text_label(f'{fn.get_fractal_order()}', font_size=9,
+        gn.get_segment().start_mark_line.add_text_label(f'{vn.get_position_in_tree()}', font_size=9,
                                                         bottom_margin=1)
 
-        position_in_tree_label = gn.get_segment().start_mark_line.add_text_label(f'{fn.get_position_in_tree()}',
+        position_in_tree_label = gn.get_segment().start_mark_line.add_text_label(f'{vn.get_position_in_tree()}',
                                                                                  font_size=8, placement='below',
                                                                                  top_margin=1)
         if gn.get_distance() == 3:
-            if fn.up.up.get_position_in_tree() == '4':
+            if vn.up.up.get_position_in_tree() == '4':
                 if gn.up.get_children().index(gn) % 4 == 1:
                     position_in_tree_label.top_margin = 3
                 elif gn.up.get_children().index(gn) % 4 == 2:
