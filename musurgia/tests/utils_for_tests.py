@@ -212,6 +212,7 @@ class DemoValuedTree(ValuedTree):
             raise TypeError
         else:
             return True
+        
     def _set_value(self, value):
         self._value = value
 
