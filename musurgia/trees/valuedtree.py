@@ -5,17 +5,9 @@ from typing import Any, Union
 from musurgia.musurgia_types import ConvertibleToFraction
 
 class ValuedTree(Tree[Any]):
-    # def __init__(self, value: ConvertibleToFraction, *args: Any, **kwargs: Any):
-    #     super().__init__(*args, **kwargs)
-    #     self._value: Fraction
-    #     self._set_value(value)
-
     @abstractmethod
     def _set_value(self, val: ConvertibleToFraction) -> None:
         """_set_value must be defined."""
-        # if not isinstance(val, Fraction):
-        #     val = Fraction(val)
-        # self._value = val
  
     def _change_children_value(self, factor: Union[int, float, Fraction]) -> None:
         for child in self.get_children():
@@ -33,7 +25,4 @@ class ValuedTree(Tree[Any]):
     @abstractmethod
     def get_value(self) -> Fraction:
         """get_value must be defined."""
-    # def get_value(self) -> Fraction:
-    #     return self._value
-
 

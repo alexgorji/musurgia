@@ -5,8 +5,6 @@ from verysimpletree.tree import Tree, T
 
 from musurgia.pdf.line import HorizontalLineSegment
 from musurgia.pdf.rowcolumn import DrawObjectColumn
-from musurgia.trees.timelinetree import TimelineTree
-from musurgia.timing.duration import Duration
 from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
 from musurgia.musurgia_types import ConvertibleToFloat
 from musurgia.pdf import DrawObjectRow, Pdf, DrawObjectColumn, HorizontalLineSegment
