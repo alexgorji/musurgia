@@ -4,43 +4,24 @@ from typing import Any
 from musurgia.musurgia_exceptions import WrongNodeDurationError
 from musurgia.timing.duration import Duration
 from musurgia.trees.valuedtree import ValuedTree
+from musurgia.musurgia_types import ConvertibleToFraction
 
-__all__ = ["TimeLineNodeContainer", "TimelineTree"]
-
-class TimeLineNodeContainer:
-    def __init__(self, timeline_node: "TimelineTree", duration: Duration, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._timeline_node = timeline_node
-        self._duration: Duration
-        self.duration = duration
-
-    @property
-    def duration(self) -> Duration:
-        return self._duration
-    
-    @duration.setter
-    def duration(self, val: Duration) -> None:
-        self._duration = val
-
-    @property
-    def timeline_node(self):
-        return self._timeline_node
+__all__ = ["TimelineTree"]
 
 
 class TimelineTree(ValuedTree):
     def __init__(self, duration: Duration, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self.content = TimeLineNodeContainer(self, duration)
+        self._duration: Duration = duration
 
-    
     # private methods
     def _check_child_to_be_added(self, child: 'TimelineTree') -> bool:
         if not isinstance(child, TimelineTree):
             raise TypeError(f'Wrong child type. Child must be of type FractalTree not {type(child)}')
         return True
 
-    def _set_value(self, value):
-        self.content.duration.seconds = value
+    def _set_value(self, value: ConvertibleToFraction) -> None:
+        self._duration.seconds = float(value)
 
     def check_timeline_durations(self) -> bool:
         for ch in self.traverse():
@@ -50,10 +31,10 @@ class TimelineTree(ValuedTree):
         return True
 
     def get_duration(self) -> Duration:
-        return self.content.duration
+        return self._duration
     
     def get_value(self) -> Fraction:
-        return Fraction(self.content.duration.seconds)
+        return Fraction(self.get_duration().seconds)
     
 
     

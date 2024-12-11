@@ -1,15 +1,14 @@
 from unittest import TestCase
 from musurgia.musurgia_exceptions import WrongNodeDurationError
 from musurgia.tests.utils_for_tests import create_test_timeline_tree
-from musurgia.trees.timelinetree import TimelineTree, TimeLineNodeContainer
+from musurgia.trees.timelinetree import TimelineTree
 from musurgia.timing.duration import Duration
 
 
 class TimeLineTreeTestCase(TestCase):
     def test_create_timeline_tree_root(self):
         tlt = TimelineTree(Duration(2))
-        self.assertTrue(isinstance(tlt.content, TimeLineNodeContainer))
-        self.assertEqual(tlt.content.duration.seconds, 2)
+        self.assertEqual(tlt.get_duration().seconds, 2)
 
     def test_add_child_to_timeline(self):
         root_duration = Duration(2)
