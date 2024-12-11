@@ -12,7 +12,7 @@ class TestClock(TestCase):
         with self.assertRaises(ClockWrongMinutesValueError):
             Clock(0, 70, 0.0)
         with self.assertRaises(ClockWrongSecondsTypeError):
-            Clock(0, 0, 30)
+            Clock(0, 0, "30")
         with self.assertRaises(ClockWrongMinutesTypeError):
             Clock(0, 30.0, 0.0)
         with self.assertRaises(ClockWrongHoursTypeError):
@@ -27,6 +27,12 @@ class TestClock(TestCase):
 
         c.set_values(0, 0, 1.5)
         assert c.get_as_string(mode='msreduced') == '1.5'
+
+        c.set_values(4, 2, 1)
+        assert c.get_as_string(mode='hms') == '4:02:01.0'
+        assert c.get_as_string(mode='ms') == '02:01.0'
+        assert c.get_as_string(mode='msreduced') == '2:1.0'
+        assert c.get_as_string(mode='msreduced') == '2:1.0'
 
     def test_get_as_string_round(self):
         c = Clock(4, 2, 1.2568)
