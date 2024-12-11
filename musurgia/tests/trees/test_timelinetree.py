@@ -25,11 +25,13 @@ class TimeLineTreeTestCase(TestCase):
         tlt.add_child(TimelineTree(Duration(1)))
         with self.assertRaises(WrongNodeDurationError) as err:
             tlt.check_timeline_durations()
-        self.assertEqual(str(err.exception), "Children of TimelineTree node of position 0 with duration 2.0 have wrong durations [1.5, 0.5, 1.0] ")
+        expected = "Children of TimelineTree node of position 0 with duration 2 have wrong durations [Fraction(3, 2), Fraction(1, 2), Fraction(1, 1)] (sume=3)"
+        self.assertEqual(str(err.exception), expected)
 
     def test_timeline_get_value(self):
         tft = create_test_timeline_tree()
-        expected = """└── 0.0
+        self.assertEqual(tft.get_value(), 60)
+        expected = """└── 60.0
     ├── 20.0
     │   ├── 10.0
     │   ├── 2.0

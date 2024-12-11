@@ -1,3 +1,4 @@
+from fractions import Fraction
 from math import ceil, floor
 from unittest import TestCase
 
@@ -86,7 +87,7 @@ class TestDuration(TestCase):
 
     def test_calculate_in_hours(self):
         d = Duration(hours=1, minutes=30, seconds=30)
-        assert d.calculate_in_hours() == 1.5083333333333333
+        assert float(d.calculate_in_hours()) == 1.5083333333333333
 
     def test_convert_duration_to_quarter_duration(self):
         t = 60
@@ -257,12 +258,12 @@ class TestMagics(TestCase):
     def test_rtruediv(self):
         a = self.cl(3)
         b = self.cl(10)
-        assert a.__rtruediv__(b) == 10 / 3
+        assert a.__rtruediv__(b) == Duration(Fraction(10 , 3))
 
     def test_truediv(self):
         a = self.cl(10)
         b = self.cl(3)
-        assert a / b == 10 / 3
+        assert a / b == Duration(Fraction(10 , 3))
 
     def test_trunc(self):
         a = self.cl(10.233)

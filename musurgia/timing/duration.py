@@ -2,31 +2,31 @@ from fractions import Fraction
 from typing import Any, Optional, Union, TypeVar
 
 from musicscore import QuarterDuration, Metronome # type: ignore[import-untyped]
-from musurgia.musurgia_types import ConvertibleToFloat, check_type, ClockMode
+from musurgia.musurgia_types import ConvertibleToFloat, ConvertibleToFraction, check_type, ClockMode
 from musurgia.timing.clock import Clock
 
 T = TypeVar('T', bound='Duration')
 
 
-def _convert_other(other: Union['Duration', ConvertibleToFloat]) -> float:
+def _convert_other(other: Union['Duration', ConvertibleToFraction]) -> Fraction:
     if isinstance(other, Duration):
         return other.calculate_in_seconds()
-    check_type(other, 'ConvertibleToFloat', function_name='_convert_other')
+    check_type(other, 'ConvertibleToFraction', function_name='_convert_other')
 
-    return float(other)
+    return Fraction(other)
 
 
 class Duration:
-    def __init__(self, seconds: ConvertibleToFloat = 0, minutes: ConvertibleToFloat = 0, hours: ConvertibleToFloat = 0,
+    def __init__(self, seconds: ConvertibleToFraction = 0, minutes: ConvertibleToFraction = 0, hours: ConvertibleToFraction = 0,
                  *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self._seconds: float = 0.0
-        self._minutes: float = 0.0
-        self._hours: float = 0.0
+        self._seconds: Fraction = Fraction(0)
+        self._minutes: Fraction = Fraction(0)
+        self._hours: Fraction = Fraction(0)
         self._clock: Clock
-        self._set_clock(hours=float(hours), minutes=float(minutes), seconds=float(seconds))
+        self._set_clock(hours=hours, minutes=minutes, seconds=seconds)
 
-    def _set_clock(self, hours: ConvertibleToFloat, minutes: ConvertibleToFloat, seconds: ConvertibleToFloat) -> None:
+    def _set_clock(self, hours: ConvertibleToFraction, minutes: ConvertibleToFraction, seconds: ConvertibleToFraction) -> None:
         self.add_seconds(seconds)
         self.add_minutes(minutes)
         self.add_hours(hours)
@@ -41,55 +41,55 @@ class Duration:
     def clock(self, val: Clock) -> None:
         check_type(val, Clock, class_name=self.__class__.__name__, property_name='clock')
         self._clock = val
-        self._hours, self._minutes, self._seconds = self.clock.get_values()
+        self._hours, self._minutes, self._seconds = [Fraction(time) for time in self.clock.get_values()]
 
-    def add_seconds(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='seconds')
-        self._seconds += float(val)
+    def add_seconds(self, val: ConvertibleToFraction) -> None:
+        check_type(val, 'ConvertibleToFraction', class_name=self.__class__.__name__, property_name='seconds')
+        self._seconds += Fraction(val)
 
-    def add_hours(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='hours')
-        self._hours += float(val)
+    def add_hours(self, val: ConvertibleToFraction) -> None:
+        check_type(val, 'ConvertibleToFraction', class_name=self.__class__.__name__, property_name='hours')
+        self._hours += Fraction(val)
 
-    def add_minutes(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='minutes')
-        self._minutes += float(val)
+    def add_minutes(self, val: ConvertibleToFraction) -> None:
+        check_type(val, 'ConvertibleToFraction', class_name=self.__class__.__name__, property_name='minutes')
+        self._minutes += Fraction(val)
 
     @property
-    def seconds(self) -> float:
+    def seconds(self) -> Fraction:
         return self._seconds
 
     @seconds.setter
-    def seconds(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='seconds')
+    def seconds(self, val: ConvertibleToFraction) -> None:
+        check_type(val, 'ConvertibleToFraction', class_name=self.__class__.__name__, property_name='seconds')
         self._set_clock(hours=self._hours, minutes=self._minutes, seconds=val)
 
     @property
-    def minutes(self) -> float:
+    def minutes(self) -> Fraction:
         return self._minutes
 
     @minutes.setter
-    def minutes(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='minutes')
+    def minutes(self, val: ConvertibleToFraction) -> None:
+        check_type(val, 'ConvertibleToFraction', class_name=self.__class__.__name__, property_name='minutes')
         self._set_clock(self._hours, val, self._seconds)
 
     @property
-    def hours(self) -> float:
+    def hours(self) -> Fraction:
         return self._hours
 
     @hours.setter
-    def hours(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='hours')
+    def hours(self, val: ConvertibleToFraction) -> None:
+        check_type(val, 'ConvertibleToFraction', class_name=self.__class__.__name__, property_name='hours')
         self._set_clock(val, self._minutes, self._seconds)
 
-    def calculate_in_seconds(self) -> float:
+    def calculate_in_seconds(self) -> Fraction:
         return self.seconds + (60 * self.minutes) + (3600 * self.hours)
 
-    def calculate_in_minutes(self) -> float:
-        return (self.seconds / 60) + self.minutes + (60 * self.hours)
+    def calculate_in_minutes(self) -> Fraction:
+        return Fraction(self.seconds , 60) + self.minutes + (60 * self.hours)
 
-    def calculate_in_hours(self) -> float:
-        return (self.seconds / 3600) + (self.minutes / 60) + self.hours
+    def calculate_in_hours(self) -> Fraction:
+        return Fraction(self.seconds , 3600) + Fraction(self.minutes , 60) + self.hours
 
     def get_clock_as_string(self, mode: ClockMode = 'hms', round_: Optional[int] = None) -> str:
         return self.clock.get_as_string(mode, round_)
@@ -166,23 +166,25 @@ class Duration:
     def __eq__(self, other: Any) -> bool:
         return self.calculate_in_seconds().__eq__(_convert_other(other))
 
+    def __str__(self) -> str:
+        return f"Duration: {self.clock.get_as_string()}"
 
-def convert_duration_to_quarter_duration(duration: Union[Duration, float, int],
+def convert_duration_to_quarter_duration(duration: Union[Duration, float, int, Fraction],
                                          metronome: Union[Metronome, int]) -> QuarterDuration:
     if isinstance(duration, Duration):
-        seconds = Fraction(duration.calculate_in_seconds())
+        seconds = duration.calculate_in_seconds()
     else:
         seconds = Fraction(duration)
     if isinstance(metronome, int):
         metronome = Metronome(metronome)
-
-    quarter_per_minute = metronome.per_minute * metronome.beat_unit
+    
+    quarter_per_minute = Fraction(metronome.per_minute * metronome.beat_unit)
     qd = Fraction(60 * seconds, quarter_per_minute)
 
     return QuarterDuration(qd)
 
 
-def convert_quarter_duration_to_duration(quarter_duration: Union[QuarterDuration, float, int],
+def convert_quarter_duration_to_duration(quarter_duration: Union[QuarterDuration, float, int, Fraction],
                                          metronome: Union[Metronome, int]) -> Duration:
     if not isinstance(quarter_duration, QuarterDuration):
         quarter_duration = QuarterDuration(quarter_duration)
@@ -190,7 +192,7 @@ def convert_quarter_duration_to_duration(quarter_duration: Union[QuarterDuration
     if isinstance(metronome, int):
         metronome = Metronome(metronome)
 
-    quarter_per_minute = metronome.per_minute * metronome.beat_unit
+    quarter_per_minute = Fraction(metronome.per_minute * metronome.beat_unit)
 
-    seconds = quarter_duration.value * 60 / quarter_per_minute
+    seconds = Fraction(quarter_duration.value * 60 , quarter_per_minute)
     return Duration(seconds=seconds)
