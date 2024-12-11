@@ -103,6 +103,9 @@ class Duration:
     def __ceil__(self) -> 'Duration':
         return self.__class__(self.calculate_in_seconds().__ceil__())
 
+    def __eq__(self, other: Any) -> bool:
+        return self.calculate_in_seconds().__eq__(_convert_other(other))
+    
     def __floor__(self) -> 'Duration':
         return self.__class__(self.calculate_in_seconds().__floor__())
 
@@ -149,7 +152,7 @@ class Duration:
         return self.__class__(self.calculate_in_seconds().__rmul__(_convert_other(other)))
 
     def __round__(self, n: Optional[int] = None) -> 'Duration':
-        return self.__class__(self.calculate_in_seconds().__round__(n))
+        return self.__class__(float(self.calculate_in_seconds()).__round__(n))
 
     # def __rpow__(self, other):
     #     return self.__class__(self.calculate_in_seconds().__rpow__(_convert_other(other)))
@@ -162,9 +165,6 @@ class Duration:
 
     def __trunc__(self) -> int:
         return self.calculate_in_seconds().__trunc__()
-
-    def __eq__(self, other: Any) -> bool:
-        return self.calculate_in_seconds().__eq__(_convert_other(other))
 
     def __str__(self) -> str:
         return f"Duration: {self.clock.get_as_string()}"

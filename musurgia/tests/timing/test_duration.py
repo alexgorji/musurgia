@@ -119,6 +119,9 @@ class TestDuration(TestCase):
         d.minutes = 65
         assert d.clock.get_values() == (3, 5, 20)
 
+    def test_fractioned_clock(self):
+        d = Duration(Fraction(10, 3))
+        assert d.seconds == Fraction(10, 3)
 
 class TestMagics(TestCase):
     cl = Duration
@@ -247,6 +250,11 @@ class TestMagics(TestCase):
         assert not a == c
         assert not a == 11
         assert not 11 == a
+        d = self.cl(Fraction(10, 3))
+        assert Fraction(10, 3) == Fraction(10, 3)
+        assert Fraction(10, 3).__eq__(Fraction(10, 3))
+        assert d.__eq__(Fraction(10, 3))
+        assert d == Fraction(10, 3)
 
     def test_round(self):
         assert self.cl(70.7) == self.cl(70.7)
@@ -258,12 +266,12 @@ class TestMagics(TestCase):
     def test_rtruediv(self):
         a = self.cl(3)
         b = self.cl(10)
-        assert a.__rtruediv__(b) == Duration(Fraction(10 , 3))
+        assert a.__rtruediv__(b) == Fraction(10 , 3)
 
     def test_truediv(self):
         a = self.cl(10)
         b = self.cl(3)
-        assert a / b == Duration(Fraction(10 , 3))
+        assert a / b == Fraction(10 , 3)
 
     def test_trunc(self):
         a = self.cl(10.233)
