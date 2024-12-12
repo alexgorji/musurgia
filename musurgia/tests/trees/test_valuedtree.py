@@ -106,3 +106,6 @@ class ValuedTreeChangeValueTestCase(TestCase):
     ├── 2: 1.67
     └── 3: 3.33
 """
+
+class WrongValueErrorTest(TestCase):
+    pass

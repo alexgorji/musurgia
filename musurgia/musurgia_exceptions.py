@@ -238,11 +238,12 @@ class ClockWrongMinutesTypeError(ClockException, TypeError):
 class ClockWrongHoursTypeError(ClockException, TypeError):
     pass
 
-# timelinetree
+# valuedtree 
 
-class TimelineTreeException(Exception):
+class ValuedTree(Exception):
     pass
 
 
-class WrongNodeDurationError(TimelineTreeException, ValueError):
+class WrongTreeValueError(ValuedTree, ValueError):
     pass
+

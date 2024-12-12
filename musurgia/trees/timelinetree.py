@@ -1,7 +1,6 @@
 from fractions import Fraction
 from typing import Any
 
-from musurgia.musurgia_exceptions import WrongNodeDurationError
 from musurgia.timing.duration import Duration
 from musurgia.trees.valuedtree import ValuedTree
 from musurgia.musurgia_types import ConvertibleToFraction
@@ -22,13 +21,6 @@ class TimelineTree(ValuedTree):
 
     def _set_value(self, value: ConvertibleToFraction) -> None:
         self._duration.seconds = Fraction(value)
-
-    def check_timeline_durations(self) -> bool:
-        for ch in self.traverse():
-            if not ch.is_leaf:
-                if sum([gch.get_duration() for gch in ch.get_children()]) != ch.get_duration():
-                    raise WrongNodeDurationError(f"Children of TimelineTree node of position {ch.get_position_in_tree()} with duration {ch.get_duration().seconds} have wrong durations {[gch.get_duration().seconds for gch in ch.get_children()]} (sume={sum([gch.get_duration().seconds for gch in ch.get_children()])})")
-        return True
 
     def get_duration(self) -> Duration:
         return self._duration

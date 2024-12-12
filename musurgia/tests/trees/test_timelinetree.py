@@ -1,5 +1,5 @@
 from unittest import TestCase
-from musurgia.musurgia_exceptions import WrongNodeDurationError
+from musurgia.musurgia_exceptions import WrongTreeValueError
 from musurgia.tests.utils_for_tests import create_test_timeline_tree
 from musurgia.trees.timelinetree import TimelineTree
 from musurgia.timing.duration import Duration
@@ -21,11 +21,11 @@ class TimeLineTreeTestCase(TestCase):
         tlt = TimelineTree(Duration(2))
         tlt.add_child(TimelineTree(Duration(1.5)))
         tlt.add_child(TimelineTree(Duration(0.5)))
-        self.assertTrue(tlt.check_timeline_durations())
+        self.assertTrue(tlt.check_tree_values())
         tlt.add_child(TimelineTree(Duration(1)))
-        with self.assertRaises(WrongNodeDurationError) as err:
-            tlt.check_timeline_durations()
-        expected = "Children of TimelineTree node of position 0 with duration 2 have wrong durations [Fraction(3, 2), Fraction(1, 2), Fraction(1, 1)] (sume=3)"
+        with self.assertRaises(WrongTreeValueError) as err:
+            tlt.check_tree_values()
+        expected = "Children of ValuedTree node of position 0 with value 2 have wrong values [Fraction(3, 2), Fraction(1, 2), Fraction(1, 1)] (sume=3)"
         self.assertEqual(str(err.exception), expected)
 
     def test_timeline_get_value(self):

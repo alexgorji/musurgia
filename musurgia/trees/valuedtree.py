@@ -2,6 +2,7 @@ from abc import abstractmethod
 from fractions import Fraction
 from verysimpletree.tree import Tree
 from typing import Any, Union
+from musurgia.musurgia_exceptions import WrongTreeValueError
 from musurgia.musurgia_types import ConvertibleToFraction
 
 class ValuedTree(Tree[Any]):
@@ -26,3 +27,10 @@ class ValuedTree(Tree[Any]):
     def get_value(self) -> Fraction:
         """get_value must be defined."""
 
+    def check_tree_values(self) -> bool:
+        for ch in self.traverse():
+            if not ch.is_leaf:
+                children_values = [gch.get_value() for gch in ch.get_children()]
+                if sum([gch.get_value() for gch in ch.get_children()]) != ch.get_value():
+                    raise WrongTreeValueError(f"Children of ValuedTree node of position {ch.get_position_in_tree()} with value {ch.get_value()} have wrong values {children_values} (sume={sum(children_values)})")
+        return True
