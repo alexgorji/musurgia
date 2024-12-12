@@ -3,14 +3,15 @@ from unittest import TestCase
 
 from fractions import Fraction
 
-from musurgia.fractal.fractaltree import FractalTree
+from musurgia.timing.duration import Duration
+from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 
 path = os.path.abspath(__file__).split('.')[0]
 
 
 class TestAddLayer(TestCase):
     def setUp(self):
-        self.ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
+        self.ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
                               permutation_index=(1, 1))
 
     def test_two_layers(self):
@@ -34,3 +35,15 @@ class TestAddLayer(TestCase):
         self.ft.get_children()[0].add_layer()
         expected = [[0.83, 1.67, 2.5], 1.67, 3.33]
         self.assertEqual(expected, self.ft.get_leaves(key=lambda leaf: round(float(leaf.get_value()), 2)))
+
+
+    def test_complex_layers(self):
+        self.ft.add_layer()
+        self.ft.add_layer(lambda n: True if n.get_fractal_order() > 1 else False)
+        self.ft.add_layer(lambda n: True if n.get_fractal_order() > 1 else False)
+        self.ft.add_layer(lambda n: True if n.get_fractal_order() > 1 else False)
+        self.ft.add_layer(lambda n: True if n.get_fractal_order() > 1 else False)
+        assert self.ft.get_layer(1, key=lambda node: node.get_fractal_order()) == [3, 1, 2]
+        assert self.ft.get_layer(2, key=lambda node: node.get_fractal_order()) == [1, 2, 3, 1, 2, 3, 1]
+        assert self.ft.get_layer(3, key=lambda node: node.get_fractal_order()) == [1, 1, 2, 3, 3, 1, 2, 1, 1, 2, 3, 3, 1, 2, 1]
+        assert self.ft.get_layer(4, key=lambda node: node.get_fractal_order()) == [1, 1, 3, 1, 2, 2, 3, 1, 2, 3, 1, 1, 3, 1, 2, 1, 1, 1, 2, 3, 3, 1, 2, 3, 1, 2, 1, 1, 2, 3, 1]

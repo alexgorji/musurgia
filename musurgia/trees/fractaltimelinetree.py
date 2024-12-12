@@ -1,27 +1,26 @@
+from musurgia.timing.duration import Duration
+from musurgia.trees.timelinetree import TimelineTree
 import itertools
 from fractions import Fraction
 from typing import Union, Optional, List, Callable, Any, cast, Sequence, TypeVar
 
-from verysimpletree.tree import Tree
 
 from musurgia.arithmeticprogression import ArithmeticProgression
 from musurgia.matrix.matrix import PermutationOrderMatrix, PermutationOrderMatrixGenerator
-from musurgia.musurgia_exceptions import FractalTreeHasChildrenError, \
-    FractalTreeNonRootCannotSetMainPermutationOrderError, PermutationIndexCalculaterNoParentIndexError, \
-    FractalTreePermutationIndexError, FractalTreeSetMainPermutationOrderFirstError, FractalTreeMergeWrongValuesError, \
-    FractalTreeHasNoChildrenError
+from musurgia.musurgia_exceptions import FractalTimelineTreeHasChildrenError, \
+    FractalTimelineTreeNoneRootCannotSetMainPermutationOrderError, PermutationIndexCalculaterNoParentIndexError, \
+    FractalTimelineTreePermutationIndexError, FractalTimelineTreeSetMainPermutationOrderFirstError, FractalTimelineTreeMergeWrongValuesError, \
+    FractalTimelineTreeHasNoChildrenError
 from musurgia.musurgia_types import ConvertibleToFraction, FractalTreeReduceChildrenMode, convert_to_fraction, \
     MatrixIndex, PermutationOrder, check_type, PositiveInteger, check_matrix_index_values, create_error_message
 from musurgia.permutation.permutation import permute
 
-__all__ = ['FractalTree']
+__all__ = ['FractalTimelineTree']
 
-T = TypeVar('T', bound='FractalTree')
+T = TypeVar('T', bound='FractalTimelineTree')
 
-
-def node_info(node: 'FractalTree') -> str:
+def node_info(node: 'FractalTimelineTree') -> str:
     return f'{node.get_fractal_order()}: {node.get_permutation_index()}: {round(float(node.get_value()), 2)}'
-
 
 class PermutationIndexCalculater:
     def __init__(self, size: PositiveInteger, parent_index: Optional[MatrixIndex] = None, *args: Any, **kwargs: Any):
@@ -65,14 +64,8 @@ class PermutationIndexCalculater:
             r = self.size
         return r, column_number
 
-
-class FractalTree(Tree[Any]):
-    """
-    FractalTree represents the node of a fractal tree with a mechanism of limited permutations.
-    """
-
-    def __init__(self, value: ConvertibleToFraction,
-                 proportions: Sequence[ConvertibleToFraction],
+class FractalTimelineTree(TimelineTree):
+    def __init__(self, proportions: Sequence[ConvertibleToFraction],
                  main_permutation_order: Optional[PermutationOrder] = None,
                  permutation_index: Optional[MatrixIndex] = None,
                  fertile: bool = True,
@@ -90,7 +83,6 @@ class FractalTree(Tree[Any]):
         self._children_fractal_values: list[Fraction]
         self._children_permutation_order_matrices = None
         self._permutation_order: tuple[int, int]
-        self._set_value(value)
 
         self.proportions = proportions
         self.main_permutation_order = main_permutation_order
@@ -98,28 +90,13 @@ class FractalTree(Tree[Any]):
         self.fertile = fertile
 
         self._pic: PermutationIndexCalculater
-
-    # private methods
-
-    def _check_child_to_be_added(self, child: 'FractalTree') -> bool:
-        if isinstance(child, FractalTree):
-            if child._main_permutation_order is not None:
-                raise FractalTreeNonRootCannotSetMainPermutationOrderError
-            return True
-        else:
-            raise TypeError(f'Wrong child type. Child must be of type FractalTree not {type(child)}')
-
+        
     def _calculate_children_fractal_values(self) -> list['Fraction']:
         return permute([self.get_value() * prop for prop in self.proportions], self.get_permutation_order())
-
-    def _change_children_value(self, factor: Union[int, float, Fraction]) -> None:
-        for child in self.get_children():
-            child._set_value(child._value * factor)
-            child._change_children_value(factor)
-
+    
     def _get_children_fractal_values(self) -> list['Fraction']:
         """
-        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
+        >>> ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         >>> ft.add_layer()
         >>> ft._get_children_fractal_values()
         [Fraction(5, 1), Fraction(5, 3), Fraction(10, 3)]
@@ -160,18 +137,13 @@ class FractalTree(Tree[Any]):
             try:
                 return self._pic
             except AttributeError:
-                raise FractalTreeSetMainPermutationOrderFirstError
+                raise FractalTimelineTreeSetMainPermutationOrderFirstError
             # except AttributeError:
             #     self._pic = PermutationIndexCalculater(self.get_permutation_order_matrix().get_size())
             #     return self._pic
 
         return cast(PermutationIndexCalculater, self.get_root()._get_pic())
-
-    def _set_value(self, val: ConvertibleToFraction) -> None:
-        if not isinstance(val, Fraction):
-            val = Fraction(val)
-        self._value = val
-
+    
     # properties
     @property
     def fertile(self) -> bool:
@@ -186,15 +158,15 @@ class FractalTree(Tree[Any]):
         if self.is_root:
             return self._main_permutation_order
         else:
-            return cast(FractalTree, self.get_root()).main_permutation_order
+            return cast(FractalTimelineTree, self.get_root()).main_permutation_order
 
     @main_permutation_order.setter
     def main_permutation_order(self, value: Optional[PermutationOrder]) -> None:
         if self.get_children():
-            raise FractalTreeHasChildrenError
+            raise FractalTimelineTreeHasChildrenError
         if value is not None:
             if not self.is_root:
-                raise FractalTreeNonRootCannotSetMainPermutationOrderError
+                raise FractalTimelineTreeNoneRootCannotSetMainPermutationOrderError
             check_type(value, 'PermutationOrder', class_name=self.__class__.__name__,
                        property_name='main_permutation_order')
             self._permutation_order_matrix = PermutationOrderMatrixGenerator(
@@ -215,9 +187,9 @@ class FractalTree(Tree[Any]):
         self._proportions = [Fraction(value, total) for value in converted_values]
 
     # public methods
-    def add_layer(self, *conditions: Optional[Callable[['FractalTree'], bool]]) -> None:
+    def add_layer(self, *conditions: Optional[Callable[['FractalTimelineTree'], bool]]) -> None:
         """
-        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
+        >>> ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         >>> ft.add_layer()
         >>> ft.get_leaves(key=lambda leaf: leaf.get_fractal_order())
         [3, 1, 2]
@@ -232,7 +204,7 @@ class FractalTree(Tree[Any]):
         [[0.83, 1.67, 2.5], [0.83, 0.28, 0.56], [1.11, 1.67, 0.56]]
 
 
-        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
+        >>> ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         >>> ft.add_layer()
         >>> ft.get_children()[0].add_layer()
         >>> ft.get_leaves(key=lambda leaf: leaf.get_fractal_order())
@@ -246,7 +218,7 @@ class FractalTree(Tree[Any]):
         if conditions is not None:
             for leaf in leaves:
                 for condition in conditions:
-                    if cast(Callable[['FractalTree'], bool], condition)(leaf) is False:
+                    if cast(Callable[['FractalTimelineTree'], bool], condition)(leaf) is False:
                         leaf.fertile = False
                         break
 
@@ -254,7 +226,7 @@ class FractalTree(Tree[Any]):
             if leaf.fertile is True:
                 for i in range(leaf.get_size()):
                     value = leaf._get_children_fractal_values()[i]
-                    new_node = self.__class__(value=value, proportions=self.get_root().proportions,
+                    new_node = self.__class__(duration=Duration(value), proportions=self.get_root().proportions,
                                               permutation_index=None)
                     leaf.add_child(new_node)
                     new_node.calculate_permutation_index()
@@ -264,58 +236,13 @@ class FractalTree(Tree[Any]):
 
     def calculate_permutation_index(self: T) -> None:
         if self.is_root:
-            raise FractalTreePermutationIndexError(
+            raise FractalTimelineTreePermutationIndexError(
                 f'{self.__class__.__name__}:calculate_permutation_index: Set permutation_index of root')
         pic = self._get_pic()
         parent = cast(T, self.up)
         pic.parent_index = parent.get_permutation_index()
         self._permutation_index = pic.get_index(cast(list[T], parent.get_children()).index(self) + 1)
-
-    def change_value(self, new_value: Union[int, float, Fraction]) -> None:
-        """
-        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
-        >>> ft.change_value(20)
-        >>> ft.get_value()
-        Fraction(20, 1)
-        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
-        >>> ft.add_layer()
-        >>> ft.get_children()[0].change_value(10)
-        >>> ft.get_value()
-        Fraction(15, 1)
-        >>> [child.get_value() for child in ft.get_children()]
-        [Fraction(10, 1), Fraction(5, 3), Fraction(10, 3)]
-        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
-        >>> ft.add_layer()
-        >>> ft.change_value(15)
-        >>> [child.get_value() for child in ft.get_children()]
-        [Fraction(15, 2), Fraction(5, 2), Fraction(5, 1)]
-        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
-        >>> ft.add_layer()
-        >>> ft.add_layer()
-        >>> ft.get_children()[0].change_value(10)
-        >>> print(ft.get_tree_representation(key=lambda node: node.get_value()))
-        └── 15
-            ├── 10
-            │   ├── 5/3
-            │   ├── 10/3
-            │   └── 5
-            ├── 5/3
-            │   ├── 5/6
-            │   ├── 5/18
-            │   └── 5/9
-            └── 10/3
-                ├── 10/9
-                ├── 5/3
-                └── 5/9
-        <BLANKLINE>
-        """
-        factor = Fraction(Fraction(new_value), self.get_value())
-        self._set_value(new_value)
-        for node in self.get_reversed_path_to_root()[1:]:
-            node._set_value(sum([child.get_value() for child in node.get_children()]))
-
-        self._change_children_value(factor)
-
+    
     def generate_children(self, number_of_children: Union[int, tuple[int, ...], tuple[tuple[int, ...], ...]],
                           reduce_mode: FractalTreeReduceChildrenMode = 'backwards',
                           merge_index: int = 0) -> None:
@@ -324,7 +251,7 @@ class FractalTree(Tree[Any]):
         :param mode:
         :param merge_index:
 
-        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
+        >>> ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         >>> ft.generate_children(number_of_children=((1, 3), 2, (1, (1, 3), 3)))
         >>> print(ft.get_tree_representation(key=lambda node: str(node.get_fractal_order())))
         └── None
@@ -358,7 +285,7 @@ class FractalTree(Tree[Any]):
         # this error must be moved to add_layer()
         if self.get_children():
             raise ValueError(
-                f'FractalTree.generate_children: node has already children: {[ch.get_value() for ch in self.get_children()]}')
+                f'FractalTimelineTree.generate_children: node has already children: {[ch.get_value() for ch in self.get_children()]}')
 
         if isinstance(number_of_children, int):
             if number_of_children > self.get_size():
@@ -385,12 +312,12 @@ class FractalTree(Tree[Any]):
                 child.generate_children(number_of_grand_children, reduce_mode=reduce_mode, merge_index=merge_index)
 
         else:
-            raise TypeError('generate_children.number_of_children must be of type int or tuple')
-
+            raise TypeError('generate_children.number_of_children must be of type int or tuple')   
+    
     def get_children_fractal_orders(self) -> list[int]:
         if self.is_root:
             if self.main_permutation_order is None:
-                raise FractalTreeSetMainPermutationOrderFirstError(
+                raise FractalTimelineTreeSetMainPermutationOrderFirstError(
                     create_error_message(message='Set main_permutation_order first', class_name=self.__class__.__name__,
                                          method_name='get_children_fractal_orders'))
             else:
@@ -401,59 +328,50 @@ class FractalTree(Tree[Any]):
         """
         :return:
 
-        >>> ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
+        >>> ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         >>> ft.add_layer()
         >>> [node.get_fractal_order() for node in ft.traverse()]
         [None, 3, 1, 2]
         """
         return self._fractal_order
+    
+    # def get_layer(self, layer: int, key: Optional[Callable[['FractalTree'], Any]] = None) -> Any:
+        # """
+        # :param layer:
+        # :param key:
+        # :return:
 
-    def get_layer(self, layer: int, key: Optional[Callable[['FractalTree'], Any]] = None) -> Any:
-        """
-        :param layer:
-        :param key:
-        :return:
-
-        >>> ft = FractalTree(10, (1, 2, 3), (3, 1, 2), (1, 1))
-        >>> ft.add_layer()
-        >>> for i in range(3):
-        ...     ft.add_layer(lambda n: True if n.get_fractal_order() > 1 else False)
-        >>> print(ft.get_layer(0, key=lambda node: node.get_fractal_order()))
-        None
-        >>> ft.get_layer(1, key=lambda node: node.get_fractal_order())
-        [3, 1, 2]
-        >>> ft.get_layer(2, key=lambda node: node.get_fractal_order())
-        [[1, 2, 3], 1, [2, 3, 1]]
-        >>> ft.get_layer(3, key=lambda node: node.get_fractal_order())
-        [[1, [1, 2, 3], [3, 1, 2]], 1, [[1, 2, 3], [3, 1, 2], 1]]
-        >>> ft.get_layer(4, key=lambda node: node.get_fractal_order())
-        [[1, [1, [3, 1, 2], [2, 3, 1]], [[2, 3, 1], 1, [3, 1, 2]]], 1, [[1, [1, 2, 3], [3, 1, 2]], [[3, 1, 2], 1, [1, 2, 3]], 1]]
-        """
-        if layer > self.get_root().get_number_of_layers():
-            raise ValueError(f'FractalTree.get_layer: max layer number={self.get_number_of_layers()}')
-        else:
-            if layer == 0:
-                return cast('FractalTree', self.get_self_with_key(key))
-            else:
-                if self.is_leaf:
-                    return self.get_layer(layer=layer - 1, key=key)
-                output = []
-                for child in self.get_children():
-                    if child.get_farthest_leaf().get_distance() == 1:
-                        output.append(child.get_self_with_key(key))
-                    else:
-                        output.append(child.get_layer(layer - 1, key))
-                return output
-
-    def get_number_of_layers(self) -> int:
-        if self.get_leaves() == [self]:
-            return 0
-        else:
-            return cast(int, self.get_farthest_leaf().get_distance(self))
-
-    def get_permutation_index(self) -> Optional[MatrixIndex]:
-        return self._permutation_index
-
+        # >>> ft = FractalTree(10, (1, 2, 3), (3, 1, 2), (1, 1))
+        # >>> ft.add_layer()
+        # >>> for i in range(3):
+        # ...     ft.add_layer(lambda n: True if n.get_fractal_order() > 1 else False)
+        # >>> print(ft.get_layer(0, key=lambda node: node.get_fractal_order()))
+        # None
+        # >>> ft.get_layer(1, key=lambda node: node.get_fractal_order())
+        # [3, 1, 2]
+        # >>> ft.get_layer(2, key=lambda node: node.get_fractal_order())
+        # [[1, 2, 3], 1, [2, 3, 1]]
+        # >>> ft.get_layer(3, key=lambda node: node.get_fractal_order())
+        # [[1, [1, 2, 3], [3, 1, 2]], 1, [[1, 2, 3], [3, 1, 2], 1]]
+        # >>> ft.get_layer(4, key=lambda node: node.get_fractal_order())
+        # [[1, [1, [3, 1, 2], [2, 3, 1]], [[2, 3, 1], 1, [3, 1, 2]]], 1, [[1, [1, 2, 3], [3, 1, 2]], [[3, 1, 2], 1, [1, 2, 3]], 1]]
+        # """
+        # if layer > self.get_root().get_number_of_layers():
+        #     raise ValueError(f'FractalTree.get_layer: max layer number={self.get_number_of_layers()}')
+        # else:
+        #     if layer == 0:
+        #         return cast('FractalTree', self.get_self_with_key(key))
+        #     else:
+        #         if self.is_leaf:
+        #             return self.get_layer(layer=layer - 1, key=key)
+        #         output = []
+        #         for child in self.get_children():
+        #             if child.get_farthest_leaf().get_distance() == 1:
+        #                 output.append(child.get_self_with_key(key))
+        #             else:
+        #                 output.append(child.get_layer(layer - 1, key))
+        #         return output
+    
     def get_permutation_order(self) -> tuple[int, int]:
         try:
             return self._permutation_order
@@ -461,36 +379,36 @@ class FractalTree(Tree[Any]):
             self._permutation_order = self.get_permutation_order_matrix().get_element(
                 cast(MatrixIndex, self.get_permutation_index()))
             return self._permutation_order
-
+        
+    def get_permutation_index(self) -> Optional[MatrixIndex]:
+        return self._permutation_index
+    
     def get_permutation_order_matrix(self) -> PermutationOrderMatrix:
         if self.is_root:
             if self._permutation_order_matrix is None:
-                raise FractalTreeSetMainPermutationOrderFirstError(
-                    create_error_message(message=FractalTreeSetMainPermutationOrderFirstError.msg,
+                raise FractalTimelineTreeSetMainPermutationOrderFirstError(
+                    create_error_message(message=FractalTimelineTreeSetMainPermutationOrderFirstError.msg,
                                          class_name=self.__class__.__name__,
                                          method_name='get_permutation_order_matrix'))
             return self._permutation_order_matrix
         else:
-            return cast(FractalTree, self.get_root()).get_permutation_order_matrix()
-
+            return cast(FractalTimelineTree, self.get_root()).get_permutation_order_matrix()
+    
     def get_size(self) -> int:
         """
-        >>> ft = FractalTree(10, (1, 2, 3), (3, 1, 2))
+        >>> ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
         >>> ft.get_size()
         3
         """
         return len(self.proportions)
-
-    def get_value(self) -> Fraction:
-        return self._value
-
+    
     def merge_children(self, *lengths: int) -> None:
         """
 
         :param lengths:
         :return:
 
-        >>> ft = FractalTree(proportions=(1, 2, 3, 4, 5), main_permutation_order=(3, 5, 1, 2, 4), value=10, permutation_index=(1, 1))
+        >>> ft = FractalTimelineTree(proportions=(1, 2, 3, 4, 5), main_permutation_order=(3, 5, 1, 2, 4), duration=Duration(10), permutation_index=(1, 1))
         >>> ft.add_layer()
         >>> print(ft.get_tree_representation(node_info))
         └── None: (1, 1): 10.0
@@ -510,12 +428,12 @@ class FractalTree(Tree[Any]):
         """
         children = self.get_children()
         if not children:
-            raise FractalTreeHasNoChildrenError('FractalTree.merge_children: There are no children to be merged')
+            raise FractalTimelineTreeHasNoChildrenError('FractalTimelineTree.merge_children: There are no children to be merged')
         if sum(lengths) != len(children):
-            raise FractalTreeMergeWrongValuesError(
-                f'FractalTree.merge_children: Sum of lengths {sum(lengths)} must be the same as length of children {len(children)}')
+            raise FractalTimelineTreeMergeWrongValuesError(
+                f'FractalTimelineTree.merge_children: Sum of lengths {sum(lengths)} must be the same as length of children {len(children)}')
 
-        def _merge(nodes: list['FractalTree']) -> None:
+        def _merge(nodes: list['FractalTimelineTree']) -> None:
             node_values = [node.get_value() for node in nodes]
             new_value = sum(node_values)
             for node in nodes[1:]:
@@ -523,14 +441,14 @@ class FractalTree(Tree[Any]):
             nodes[0].change_value(new_value)
 
         iter_children = iter(children)
-        chunks = [list(itertools.islice(iter_children, l)) for l in lengths]
+        chunks = [list(itertools.islice(iter_children, l)) for l in lengths]      
 
         for chunk in chunks:
             _merge(chunk)
 
-    def reduce_children_by_condition(self, condition: Callable[['FractalTree'], bool]) -> None:
+    def reduce_children_by_condition(self, condition: Callable[['FractalTimelineTree'], bool]) -> None:
         if not self.get_children():
-            raise FractalTreeHasNoChildrenError(f'{self} has no children to be reduced')
+            raise FractalTimelineTreeHasNoChildrenError(f'{self} has no children to be reduced')
         for child in [child for child in self.get_children() if condition(child)]:
             self.remove(child)
             del child
@@ -586,8 +504,9 @@ class FractalTree(Tree[Any]):
         self._permutation_index = index
 
     def split(self: 'T', *proportions: Any) -> list['T']:
+
         if self.get_children():
-            raise FractalTreeHasChildrenError
+            raise FractalTimelineTreeHasChildrenError
 
         if hasattr(proportions[0], '__iter__'):
             proportions = proportions[0]
@@ -595,8 +514,8 @@ class FractalTree(Tree[Any]):
         proportions_list = [Fraction(prop) for prop in proportions]
 
         for prop in proportions_list:
-            value = self.get_value() * prop / sum(proportions_list)
-            new_node = self.__class__(value=value, proportions=self.get_root().proportions, permutation_index=None)
+            duration = self.get_duration() * prop / sum(proportions_list)
+            new_node = self.__class__(duration=duration, proportions=self.get_root().proportions, permutation_index=None)
             new_node._fractal_order = self.get_fractal_order()
             self.add_child(new_node)
             new_node.calculate_permutation_index()

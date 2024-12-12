@@ -2,14 +2,15 @@ from unittest import TestCase
 
 from fractions import Fraction
 
-from musurgia.fractal.fractaltree import FractalTree
+from musurgia.timing.duration import Duration
+from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.tests.utils_for_tests import fractal_node_info
 from musurgia.utils import flatten
 
 
 class Test(TestCase):
     def setUp(self) -> None:
-        self.ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
+        self.ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
                               permutation_index=(1, 1))
 
     def test_change_root_value_without_children(self):

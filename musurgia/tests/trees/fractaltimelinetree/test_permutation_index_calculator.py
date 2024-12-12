@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from musurgia.fractal.fractaltree import PermutationIndexCalculater
+from musurgia.trees.fractaltimelinetree import PermutationIndexCalculater
 from musurgia.musurgia_exceptions import PermutationIndexCalculaterNoParentIndexError
 
 

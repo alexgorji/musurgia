@@ -95,21 +95,21 @@ class PermutationIndexCalculaterNoParentIndexError(PermutationIndexCalculatorExc
     pass
 
 
-# fractal tree
+# fractal timline tree
 
-class FractalTreeException(Exception):
+class FractalTimelineTreeException(Exception):
     pass
 
 
-class FractalTreePermutationOrderError(FractalTreeException):
+class FractalTimelineTreePermutationOrderError(FractalTimelineTreeException):
     pass
 
 
-class FractalTreePermutationIndexError(FractalTreeException, ValueError):
+class FractalTimelineTreePermutationIndexError(FractalTimelineTreeException, ValueError):
     pass
 
 
-class FractalTreeSetMainPermutationOrderFirstError(FractalTreeException, ValueError):
+class FractalTimelineTreeSetMainPermutationOrderFirstError(FractalTimelineTreeException, ValueError):
     msg = "set root's main_permutation_order first"
 
     def __init__(self, msg: Optional[str] = None):
@@ -118,19 +118,19 @@ class FractalTreeSetMainPermutationOrderFirstError(FractalTreeException, ValueEr
         super().__init__(msg)
 
 
-class FractalTreeMergeWrongValuesError(FractalTreeException, ValueError):
+class FractalTimelineTreeMergeWrongValuesError(FractalTimelineTreeException, ValueError):
     pass
 
 
-class FractalTreeHasNoChildrenError(FractalTreeException):
+class FractalTimelineTreeHasNoChildrenError(FractalTimelineTreeException):
     pass
 
 
-class FractalTreeHasChildrenError(FractalTreeException):
+class FractalTimelineTreeHasChildrenError(FractalTimelineTreeException):
     pass
 
 
-class FractalTreeNonRootCannotSetMainPermutationOrderError(FractalTreeException):
+class FractalTimelineTreeNoneRootCannotSetMainPermutationOrderError(FractalTimelineTreeException):
     pass
 
 

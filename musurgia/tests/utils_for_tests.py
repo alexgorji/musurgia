@@ -5,7 +5,7 @@ from pathlib import Path
 
 from diff_pdf_visually import pdf_similar  # type: ignore
 
-from musurgia.fractal import FractalTree
+from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.pdf import Text, TextLabel, DrawObjectColumn, StraightLine
 from musurgia.pdf.drawobject import MasterDrawObject
 from musurgia.trees.timelinetree import TimelineTree
@@ -182,8 +182,8 @@ def create_simple_column(list_of_draw_objects):
     return c
 
 
-def create_test_fractal_tree():
-    ft = FractalTree(value=10, proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2),
+def create_test_fractal_timline_tree():
+    ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2),
                      permutation_index=(1, 1))
     ft.add_layer()
 
@@ -270,8 +270,8 @@ def create_test_valued_tree():
         ├── 2/5
         └── 1/5
     """
-    ft =  create_test_fractal_tree()
-    vt = copy_fractal_tree_to_valued_tree(create_test_fractal_tree())
+    ft =  create_test_fractal_timline_tree()
+    vt = copy_fractal_tree_to_valued_tree(create_test_fractal_timline_tree())
     return vt
 
 

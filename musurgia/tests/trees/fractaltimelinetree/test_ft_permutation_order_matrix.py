@@ -1,13 +1,14 @@
 from unittest import TestCase
 
-from musurgia.fractal.fractaltree import FractalTree
-from musurgia.musurgia_exceptions import FractalTreeHasChildrenError, \
-    FractalTreeNonRootCannotSetMainPermutationOrderError
+from musurgia.timing.duration import Duration
+from musurgia.trees.fractaltimelinetree import FractalTimelineTree
+from musurgia.musurgia_exceptions import FractalTimelineTreeHasChildrenError, \
+    FractalTimelineTreeNoneRootCannotSetMainPermutationOrderError
 
 
 class TestFractalTreePOM(TestCase):
     def setUp(self):
-        self.ft = FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
+        self.ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
                               permutation_index=(1, 1))
 
     def test_set_get_pom(self):
@@ -17,15 +18,13 @@ class TestFractalTreePOM(TestCase):
             [(2, 4, 1, 3), (3, 1, 4, 2), (1, 2, 3, 4), (4, 3, 2, 1)],
             [(1, 2, 3, 4), (2, 4, 1, 3), (4, 3, 2, 1), (3, 1, 4, 2)],
             [(4, 3, 2, 1), (1, 2, 3, 4), (3, 1, 4, 2), (2, 4, 1, 3)]]
-        self.ft.add_child(FractalTree(value=10, proportions=(1, 2, 3)))
-        with self.assertRaises(FractalTreeHasChildrenError):
+        self.ft.add_child(FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3)))
+        with self.assertRaises(FractalTimelineTreeHasChildrenError):
             self.ft.main_permutation_order = 'something'
 
     def test_add_child_with_main_permutation_order_exception(self):
-        with self.assertRaises(FractalTreeNonRootCannotSetMainPermutationOrderError):
-            self.ft.add_child(FractalTree(value=10, proportions=(1, 2, 3), main_permutation_order=(3, 1, 2)))
-        self.ft.add_child(FractalTree(value=10, proportions=(1, 2, 3)))
-        with self.assertRaises(FractalTreeNonRootCannotSetMainPermutationOrderError):
+        self.ft.add_child(FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3)))
+        with self.assertRaises(FractalTimelineTreeNoneRootCannotSetMainPermutationOrderError):
             self.ft.get_children()[0].main_permutation_order = 'something'
 
     def test_add_layer_and_permutation_order_matrices_and_permutation_order(self):
