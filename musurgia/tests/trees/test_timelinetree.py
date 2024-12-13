@@ -8,7 +8,7 @@ from musurgia.timing.duration import Duration
 class TimeLineTreeTestCase(TestCase):
     def test_create_timeline_tree_root(self):
         tlt = TimelineTree(Duration(2))
-        self.assertEqual(tlt.get_duration().seconds, 2)
+        self.assertEqual(tlt.get_duration().calculate_in_seconds(), 2)
 
     def test_add_child_to_timeline(self):
         root_duration = Duration(2)

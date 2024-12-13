@@ -8,7 +8,9 @@ from musurgia.timing.clock import Clock
 T = TypeVar('T', bound='Duration')
 
 
-def _convert_other(other: Union['Duration', ConvertibleToFraction]) -> Fraction:
+def _convert_other(other: Optional[Union['Duration', ConvertibleToFraction]]) -> Fraction:
+    if other is None:
+        return
     if isinstance(other, Duration):
         return other.calculate_in_seconds()
     check_type(other, 'ConvertibleToFraction', function_name='_convert_other')
@@ -169,30 +171,24 @@ class Duration:
     def __str__(self) -> str:
         return f"Duration: {self.clock.get_as_string()}"
 
-def convert_duration_to_quarter_duration(duration: Union[Duration, float, int, Fraction],
-                                         metronome: Union[Metronome, int]) -> QuarterDuration:
+def convert_duration_to_quarter_duration_value(metronome: Union[Metronome, int], duration: Union[Duration, float, int, Fraction]) -> Fraction:
     if isinstance(duration, Duration):
         seconds = duration.calculate_in_seconds()
     else:
         seconds = Fraction(duration)
+
     if isinstance(metronome, int):
         metronome = Metronome(metronome)
     
-    quarter_per_minute = Fraction(metronome.per_minute * metronome.beat_unit)
-    qd = Fraction(60 * seconds, quarter_per_minute)
-
-    return QuarterDuration(qd)
+    return seconds * (Fraction(metronome.per_minute) / 60) * Fraction(metronome.beat_unit)
 
 
-def convert_quarter_duration_to_duration(quarter_duration: Union[QuarterDuration, float, int, Fraction],
-                                         metronome: Union[Metronome, int]) -> Duration:
+def convert_quarter_duration_to_duration_value(metronome: Union[Metronome, int], quarter_duration: Union[QuarterDuration, float, int, Fraction]) -> Fraction:
     if not isinstance(quarter_duration, QuarterDuration):
         quarter_duration = QuarterDuration(quarter_duration)
 
     if isinstance(metronome, int):
         metronome = Metronome(metronome)
 
-    quarter_per_minute = Fraction(metronome.per_minute * metronome.beat_unit)
+    return quarter_duration.value / (Fraction(metronome.per_minute) / 60 * Fraction(metronome.beat_unit))
 
-    seconds = Fraction(quarter_duration.value * 60 , quarter_per_minute)
-    return Duration(seconds=seconds)

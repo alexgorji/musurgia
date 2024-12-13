@@ -5,8 +5,7 @@ from unittest import TestCase
 from musicscore import QuarterDuration
 
 from musicscore import Metronome
-from musurgia.timing.duration import Duration, convert_duration_to_quarter_duration, \
-    convert_quarter_duration_to_duration
+from musurgia.timing.duration import Duration, convert_duration_to_quarter_duration_value, convert_quarter_duration_to_duration_value
 
 
 class TestDuration(TestCase):
@@ -89,24 +88,6 @@ class TestDuration(TestCase):
         d = Duration(hours=1, minutes=30, seconds=30)
         assert float(d.calculate_in_hours()) == 1.5083333333333333
 
-    def test_convert_duration_to_quarter_duration(self):
-        t = 60
-        d = Duration(seconds=3)
-        assert convert_duration_to_quarter_duration(d, t) == 3
-        t = 30
-        assert convert_duration_to_quarter_duration(d, t) == QuarterDuration(6)
-        assert convert_duration_to_quarter_duration(3, 120) == 1.5
-        t = Metronome(60, 2)
-        assert convert_duration_to_quarter_duration(3, t) == 1.5
-
-    def test_convert_quarter_duration_to_duration(self):
-        qd = QuarterDuration(2)
-        t = 60
-        assert convert_quarter_duration_to_duration(qd, t) == Duration(seconds=2) == 2
-        t = 120
-        assert convert_quarter_duration_to_duration(qd, t) == Duration(seconds=1) == 1
-        assert convert_quarter_duration_to_duration(2, t) == Duration(seconds=1) == 1
-
     def test_set_and_get_values(self):
         d = Duration(hours=1, minutes=30, seconds=30)
         assert d.clock.get_values() == (1, 30, 30)
@@ -122,6 +103,144 @@ class TestDuration(TestCase):
     def test_fractioned_clock(self):
         d = Duration(Fraction(10, 3))
         assert d.seconds == Fraction(10, 3)
+
+# class TestConvertors(TestCase):
+#     def test_convert_duration_to_quarter_duration(self):
+#         t = 60
+#         d = Duration(seconds=3)
+#         assert convert_duration_to_quarter_duration_value(d, t) == 3
+#         t = 30
+#         assert convert_duration_to_quarter_duration_value(d, t) == QuarterDuration(1.5)
+#         assert convert_duration_to_quarter_duration_value(3, 120) == 6
+#         t = Metronome(60, 2)
+#         assert convert_duration_to_quarter_duration_value(3, t) == 6
+
+#     import unittest
+
+class QuarterDurationConversionTestCase(TestCase):
+
+    def test_basic_case(self):
+        # Test case 1: 60 quarters per minute, 60 seconds duration
+        metronome = Metronome(per_minute=60, beat_unit=1)  # 60 quarters per minute
+        duration = 60  # 60 seconds
+        self.assertEqual(convert_duration_to_quarter_duration_value(metronome, duration), 60)
+
+    def test_half_quarters(self):
+        # Test case 2: 120 quarters per minute, 30 seconds duration
+        metronome = Metronome(per_minute=120, beat_unit=1)  # 120 quarters per minute
+        duration = 30  # 30 seconds
+        self.assertEqual(convert_duration_to_quarter_duration_value(metronome, duration), 60)
+
+    def test_triplet_quarters(self):
+        # Test case 3: 90 quarters per minute, 20 seconds duration
+        metronome = Metronome(per_minute=90, beat_unit=1)  # 90 quarters per minute
+        duration = 20  # 20 seconds
+        self.assertEqual(convert_duration_to_quarter_duration_value(metronome, duration), 30)
+
+    def test_fractional_duration(self):
+        # Test case 4: 120 quarters per minute, 2.5 seconds duration
+        metronome = Metronome(per_minute=120, beat_unit=1)  # 120 quarters per minute
+        duration = 2.5  # 2.5 seconds
+        self.assertEqual(convert_duration_to_quarter_duration_value(metronome, duration), 5)
+
+    def test_zero_duration(self):
+        # Test case 5: 120 quarters per minute, 0 seconds duration
+        metronome = Metronome(per_minute=120, beat_unit=1)  # 120 quarters per minute
+        duration = 0  # 0 seconds
+        self.assertEqual(convert_duration_to_quarter_duration_value(metronome, duration), 0)
+
+    def test_high_bpm_short_duration(self):
+        # Test case 6: 240 quarters per minute, 0.5 seconds duration
+        metronome = Metronome(per_minute=240, beat_unit=1)  # 240 quarters per minute
+        duration = 0.5  # 0.5 seconds
+        self.assertEqual(convert_duration_to_quarter_duration_value(metronome, duration), 2)
+
+    def test_low_bpm_long_duration(self):
+        # Test case 7: 30 quarters per minute, 120 seconds duration
+        metronome = Metronome(per_minute=30, beat_unit=1)  # 30 quarters per minute
+        duration = 120  # 120 seconds
+        self.assertEqual(convert_duration_to_quarter_duration_value(metronome, duration), 60)
+
+    def test_edge_case_small_bpm(self):
+        # Test case 8: 15 quarters per minute, 60 seconds duration
+        metronome = Metronome(per_minute=15, beat_unit=1)  # 15 quarters per minute
+        duration = 60  # 60 seconds
+        self.assertEqual(convert_duration_to_quarter_duration_value(metronome, duration), 15)
+
+    def test_edge_case_large_bpm(self):
+        # Test case 9: 480 quarters per minute, 1 second duration
+        metronome = Metronome(per_minute=480, beat_unit=1)  # 480 quarters per minute
+        duration = 1  # 1 second
+        self.assertEqual(convert_duration_to_quarter_duration_value(metronome, duration), 8)
+
+    def test_exact_quarter_duration(self):
+        # Test case 10: 60 quarters per minute, 1 second duration
+        metronome = Metronome(per_minute=60, beat_unit=1)  # 60 quarters per minute
+        duration = 1  # 1 second
+        self.assertEqual(convert_duration_to_quarter_duration_value(metronome, duration), 1)
+
+
+class DurationToQuarterDurationConversionTestCase(TestCase):
+    
+    def test_basic_case(self):
+        # Test case 1: Convert 60 quarters to seconds with metronome 120 BPM and beat unit 1 (quarter note per beat)
+        metronome = Metronome(per_minute=120, beat_unit=1)
+        quarter_duration = 60  # 60 quarters
+        self.assertEqual(convert_quarter_duration_to_duration_value(metronome, quarter_duration), 30)
+
+    def test_half_note_case(self):
+        # Test case 2: Convert 60 quarters to seconds with metronome 120 BPM and beat unit 2 (half note per beat)
+        metronome = Metronome(per_minute=120, beat_unit=2)  # 2 quarters per beat (half note)
+        quarter_duration = 60  # 60 quarters
+        self.assertEqual(convert_quarter_duration_to_duration_value(metronome, quarter_duration), 15)
+
+    def test_eighth_note_case(self):
+        # Test case 3: Convert 15 quarters to seconds with metronome 90 BPM and beat unit 0.5 (eighth note per beat)
+        metronome = Metronome(per_minute=90, beat_unit=0.5)  # 0.5 quarters per beat (eighth note)
+        quarter_duration = 15  # 15 quarters
+        self.assertEqual(convert_quarter_duration_to_duration_value(metronome, quarter_duration), 20)
+
+    def test_zero_quarter_duration(self):
+        # Test case 4: Convert 0 quarters to seconds (edge case)
+        metronome = Metronome(per_minute=120, beat_unit=1)  # 1 quarter per beat
+        quarter_duration = 0  # 0 quarters
+        self.assertEqual(convert_quarter_duration_to_duration_value(metronome, quarter_duration), 0)
+
+    def test_fractional_quarters(self):
+        # Test case 5: Convert 5 quarters to seconds with metronome 60 BPM and beat unit 0.5 (eighth note per beat)
+        metronome = Metronome(per_minute=60, beat_unit=0.5)  # 0.5 quarters per beat (eighth note)
+        quarter_duration = 5  # 5 quarters
+        self.assertEqual(convert_quarter_duration_to_duration_value(metronome, quarter_duration), 10)
+
+    def test_large_bpm_case(self):
+        # Test case 6: Convert 120 quarters to seconds with metronome 240 BPM and beat unit 1 (quarter note per beat)
+        metronome = Metronome(per_minute=240, beat_unit=1)  # 1 quarter per beat
+        quarter_duration = 120  # 120 quarters
+        self.assertEqual(convert_quarter_duration_to_duration_value(metronome, quarter_duration), 30)
+
+    def test_small_bpm_case(self):
+        # Test case 7: Convert 10 quarters to seconds with metronome 30 BPM and beat unit 1 (quarter note per beat)
+        metronome = Metronome(per_minute=30, beat_unit=1)  # 1 quarter per beat
+        quarter_duration = 10  # 10 quarters
+        self.assertEqual(convert_quarter_duration_to_duration_value(metronome, quarter_duration), 20)
+
+    def test_large_quarter_duration(self):
+        # Test case 8: Convert 500 quarters to seconds with metronome 60 BPM and beat unit 1 (quarter note per beat)
+        metronome = Metronome(per_minute=60, beat_unit=1)  # 1 quarter per beat
+        quarter_duration = 500  # 500 quarters
+        self.assertEqual(convert_quarter_duration_to_duration_value(metronome, quarter_duration), 500)
+
+    def test_fractional_bpm_case(self):
+        # Test case 9: Convert 40 quarters to seconds with metronome 75 BPM and beat unit 1 (quarter note per beat)
+        metronome = Metronome(per_minute=75, beat_unit=1)  # 1 quarter per beat
+        quarter_duration = 40  # 40 quarters
+        self.assertEqual(convert_quarter_duration_to_duration_value(metronome, quarter_duration), 32)
+
+    def test_edge_case_high_beat_unit(self):
+        # Test case 10: Convert 10 quarters to seconds with metronome 120 BPM and beat unit 2 (half note per beat)
+        metronome = Metronome(per_minute=120, beat_unit=2)  # 2 quarters per beat (half note)
+        quarter_duration = 10  # 10 quarters
+        self.assertEqual(convert_quarter_duration_to_duration_value(metronome, quarter_duration), 2.5)
 
 class TestMagics(TestCase):
     cl = Duration
@@ -255,6 +374,7 @@ class TestMagics(TestCase):
         assert Fraction(10, 3).__eq__(Fraction(10, 3))
         assert d.__eq__(Fraction(10, 3))
         assert d == Fraction(10, 3)
+        assert a != None
 
     def test_round(self):
         assert self.cl(70.7) == self.cl(70.7)
