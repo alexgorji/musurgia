@@ -1,16 +1,14 @@
 from fractions import Fraction
-from typing import Any, Optional, Union, TypeVar
+from typing import Any, Optional, Union, TypeVar, cast
 
-from musicscore import QuarterDuration, Metronome # type: ignore[import-untyped]
+from musicscore import QuarterDuration, Metronome # type: ignore
 from musurgia.musurgia_types import ConvertibleToFraction, check_type, ClockMode
 from musurgia.timing.clock import Clock
 
 T = TypeVar('T', bound='Duration')
 
 
-def _convert_other(other: Optional[Union['Duration', ConvertibleToFraction]]) -> Fraction:
-    if other is None:
-        return
+def _convert_other(other: Union['Duration', ConvertibleToFraction]) -> Fraction:
     if isinstance(other, Duration):
         return other.calculate_in_seconds()
     check_type(other, 'ConvertibleToFraction', function_name='_convert_other')
@@ -106,6 +104,8 @@ class Duration:
         return self.__class__(self.calculate_in_seconds().__ceil__())
 
     def __eq__(self, other: Any) -> bool:
+        if other is None: 
+            return False
         return self.calculate_in_seconds().__eq__(_convert_other(other))
     
     def __floor__(self) -> 'Duration':
@@ -190,5 +190,5 @@ def convert_quarter_duration_to_duration_value(metronome: Union[Metronome, int],
     if isinstance(metronome, int):
         metronome = Metronome(metronome)
 
-    return quarter_duration.value / (Fraction(metronome.per_minute) / 60 * Fraction(metronome.beat_unit))
+    return cast(Fraction, quarter_duration.value) / (Fraction(metronome.per_minute) / 60 * Fraction(metronome.beat_unit))
 
