@@ -1,7 +1,7 @@
 from fractions import Fraction
 from typing import Any
 
-from musurgia.timing.duration import Duration
+from musurgia.timing.duration import ReadonlyDuration
 from musurgia.trees.valuedtree import ValuedTree
 from musurgia.musurgia_types import ConvertibleToFraction
 
@@ -9,9 +9,9 @@ __all__ = ["TimelineTree"]
 
 
 class TimelineTree(ValuedTree):
-    def __init__(self, duration: Duration, *args: Any, **kwargs: Any):
+    def __init__(self, duration: ReadonlyDuration, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self._duration: Duration = duration
+        self._duration: ReadonlyDuration = duration
 
     # private methods
     def _check_child_to_be_added(self, child: 'TimelineTree') -> bool:
@@ -22,7 +22,7 @@ class TimelineTree(ValuedTree):
     def _set_value(self, value: ConvertibleToFraction) -> None:
         self._duration.seconds = Fraction(value)
 
-    def get_duration(self) -> Duration:
+    def get_duration(self) -> ReadonlyDuration:
         return self._duration
     
     def get_value(self) -> Fraction:
