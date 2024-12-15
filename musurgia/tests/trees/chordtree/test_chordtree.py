@@ -8,6 +8,22 @@ from musicscore.metronome import Metronome
 from musicscore.quarterduration import QuarterDuration
 
 
+class ChordFactoryTestCase(TestCase):
+    def setUp(self):
+        self.chf = ChordFactory()
+        
+    def test_update_duration(self):
+        self.chf.duration.seconds = 2
+        self.assertEqual(self.chf.duration, 2)
+        self.assertEqual(self.chf.get_chord().quarter_duration, 2)
+
+        self.chf.duration = Duration(5)
+        self.assertEqual(self.chf.get_chord().quarter_duration, 5)
+
+    def test_update_metronome(self):
+        self.chf.metronome = Metronome(120, 2)
+        self.assertEqual(self.chf.get_chord().quarter_duration, 4)
+
 class ChordTreeTestCase(TestCase):
     def setUp(self):
         self.mt = ChordTree(duration=Duration(4))
@@ -21,12 +37,25 @@ class ChordTreeTestCase(TestCase):
         self.assertTrue(isinstance(ch, Chord))
         with self.assertRaises(AttributeError):
             self.mt.chord = Chord(60, 2)
+        self.assertEqual(ch.metronome.per_minute, 60)
+        self.assertEqual(ch.quarter_duration, self.mt.get_value())
+        self.assertEqual(ch.get_chord().midis[0].value, 60)
 
-    def test_tree_chord_quarter_duration(self):
+    def test_tree_chord_update_quarter_duration(self):
         self.mt.metronome = Metronome(120)
         self.mt.duration = Duration(4)
         ch = self.mt.get_chord()
         self.assertEqual(ch.quarter_duration, 8)
+        self.assertEqual(self.chf.duration, 2)
+        self.assertEqual(self.chf.get_chord().quarter_duration, 2)
+
+        self.chf.duration = Duration(5)
+        self.assertEqual(self.chf.get_chord().quarter_duration, 5)
+
+
+        self.chf.metronome = Metronome(120, 2)
+        self.assertEqual(self.chf.get_chord().quarter_duration, 4)
+
 
 
 # class ChordTreeToScoreTestCase(TestCase):

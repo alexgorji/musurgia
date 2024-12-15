@@ -43,47 +43,21 @@ class AbstractChordFactory(ABC, metaclass=EnsureInitializationMetaclass):
     def get_chord(self) -> "Chord":
         pass
 
-class ChordFactory(AbstractChordFactory):
-
-    def __init__(self, *args: Any, **kwargs: Any):
-        super().__init__(*args, **kwargs)
-        self._duration: "Duration" = Duration(1)
-        self._metronome: "Metronome" = Metronome(60)
-        self.initiliaze_chord()
-
-    @property
-    def duration(self) -> "Duration":
-        return self._duration
+class TreeChordFactory:
+    __CHORD_UPDATE_METHODS = {'_update_chord_quarter_duration'}
     
-    @duration.setter
-    def duration(self, value: "Duration") -> None:
-        self._duration = value
-
-    @property
-    def metronome(self) -> "Metronome":
-        return self._metronome
-    
-    @metronome.setter
-    def metronome(self, value: "Metronome") -> None:
-        self._metronome = value
-
-    def get_chord(self) -> "Chord":
-        self.update_chord_quarter_duration()
-        return self._chord
-    
-    def get_duration(self) -> "Duration":
-        return self._duration
-    
-    def get_metronome(self) -> "Metronome":
-        return self._metronome
-    
-
-class TreeChordFactory(AbstractChordFactory):
     def __init__(self, chord_tree: "ChordTree", *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
+        self._chord: Chord = Chord(60, 1)
         self._chord_tree = chord_tree
-        self.initiliaze_chord()
+    
 
+    def _update_chord_quarter_duration(self):
+        self._chord.quarter_duration.value = convert_duration_to_quarter_duration_value(self.get_metronome(), self.get_duration())
+
+    def _update_chord(self):
+        for method_name in self.__class__.__CHORD_UPDATE_METHODS:
+            getattr(self, method_name)
 
     def get_duration(self) -> "Duration":
         return self._chord_tree.get_duration()
@@ -92,7 +66,7 @@ class TreeChordFactory(AbstractChordFactory):
         return self._chord_tree.get_metronome()
     
     def get_chord(self) -> "Chord":
-        self.update_chord_quarter_duration()
+        self._update_chord()
         return self._chord
     
 
@@ -103,16 +77,16 @@ class ChordTree(TimelineTree):
         self._chord_factory: "TreeChordFactory" = TreeChordFactory(self)
 
     @property
-    def chord_factory(self) -> "TreeChordFactory":
-        return self._chord_factory
+    def chord(self):
+        raise AttributeError('Use get_chord() instead.')
     
     @property
-    def chord(self) -> None:
-        raise AttributeError("Use chord_factory for updating the chord")
-    
-    @chord.setter
-    def chord(self, value: Any) -> None:
-        raise AttributeError("Use get_chord() instead.")
+    def chord(self, value):
+        raise AttributeError('Update self.chord_factory instead.')
+
+    @property
+    def chord_factory(self) -> "TreeChordFactory":
+        return self._chord_factory
 
     @property
     def metronome(self) -> "Metronome":
