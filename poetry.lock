@@ -568,10 +568,13 @@ dev = ["meson-python (>=0.13.1,<0.17.0)", "numpy (>=1.25)", "pybind11 (>=2.6,!=2
 [[package]]
 name = "musicscore"
 version = "2.3.2"
+version = "2.3.2"
 description = "Generating musicxml files."
 optional = false
 python-versions = "<3.13,>=3.9"
 files = [
+    {file = "musicscore-2.3.2-py3-none-any.whl", hash = "sha256:7a47f38736d54f33606bf40c964a5ca5bd43244136753dcedee9e67979fdf38f"},
+    {file = "musicscore-2.3.2.tar.gz", hash = "sha256:de88cf0db8876525f944a6d5f752ca29c76a09201ba0d892b6277b14043fec07"},
     {file = "musicscore-2.3.2-py3-none-any.whl", hash = "sha256:7a47f38736d54f33606bf40c964a5ca5bd43244136753dcedee9e67979fdf38f"},
     {file = "musicscore-2.3.2.tar.gz", hash = "sha256:de88cf0db8876525f944a6d5f752ca29c76a09201ba0d892b6277b14043fec07"},
 ]
@@ -1034,13 +1037,13 @@ files = [
 
 [[package]]
 name = "verysimpletree"
-version = "1.2"
+version = "1.1"
 description = "lightweight tree data structure for musicxml and musicscore"
 optional = false
 python-versions = "<3.13,>=3.9"
 files = [
-    {file = "verysimpletree-1.2-py3-none-any.whl", hash = "sha256:3743072ba08129c6d098f990faf2a42a481943ddb281cc5d416d0ae476c5f38d"},
-    {file = "verysimpletree-1.2.tar.gz", hash = "sha256:4e8a1f970c6ea9f70f66e52dbc4cf6bd0779fca5f488d71a635efa2aca27ace2"},
+    {file = "verysimpletree-1.1-py3-none-any.whl", hash = "sha256:623b4e22095d278400ef709248aced3139bf18d6e81be70998b4fd90ad49f921"},
+    {file = "verysimpletree-1.1.tar.gz", hash = "sha256:e5c7bff349944417fb0ccbb8268193b4b83a55f211f8348c0c6294e416b913f0"},
 ]
 
 [[package]]
@@ -1076,4 +1079,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "6783e08033e679cfb4e64d0714109798b9c615d9bb21e27ab806b0907f93be7f"
+content-hash = "8aa94fcf8c64190847aae5fa804b5411a002cdac49836d516934613b7b7cede4"

@@ -5,6 +5,7 @@ from pathlib import Path
 
 from diff_pdf_visually import pdf_similar  # type: ignore
 
+from musurgia.trees.chordtree import ChordTree
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.pdf import TextLabel, DrawObjectColumn, StraightLine
 from musurgia.pdf.drawobject import MasterDrawObject
@@ -35,10 +36,8 @@ class FilePath:
 
     @unittest.setter
     def unittest(self, val):
-        if not isinstance(val, PdfTestCase):
-            raise TypeError(
-                f"unittest.value must be of type {type(PdfTestCase)} not{type(val)}"
-            )
+        # if not isinstance(val, PdfTestCase):
+        #     raise TypeError(f"unittest.value must be of type {type(PdfTestCase)} not{type(val)}")
         self._unittest = val
 
     @property
@@ -100,7 +99,34 @@ class PdfTestCase(unittest.TestCase):
     def file_path(self, parent_path, name, extension):
         tfp = FilePath(self, parent_path, name, extension)
         return tfp
+    
+class XMLTestCase(unittest.TestCase):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def _compare_contents(self, actual_file_path, expected_file_path):
+        with open(actual_file_path, 'r') as myfile:
+            result = myfile.read()
+
+        with open(expected_file_path, 'r') as myfile:
+            expected = myfile.read()
+
+        self.assertEqual(expected, result)
+
+    def assertCompareFiles(self, actual_file_path, expected_file_path=None):
+        file_name, extension = os.path.splitext(actual_file_path)
+        if not expected_file_path:
+            if not extension:
+                expected_file_path += '.xml'
+            expected_file_path = file_name + '_expected' + '.xml'
+
+        self._compare_contents(actual_file_path, expected_file_path)
+
+
+    def file_path(self, parent_path, name):
+        tfp = FilePath(self, parent_path, name, 'xml')
+        return tfp
 
 def fractal_node_info(node):
     return f"{node.get_fractal_order()}: {node.get_permutation_index()}: {round(float(node.get_value()), 2)}"
@@ -316,47 +342,49 @@ def create_test_valued_tree() -> DemoValuedTree:
     # print(vt.get_tree_representation(key=lambda node: node.get_value()))
 
     """└── 10
-├── 3
-│   ├── 3/5
-│   ├── 6/5
-│   │   ├── 6/25
-│   │   ├── 12/25
-│   │   ├── 3/25
-│   │   └── 9/25
-│   ├── 3/10
-│   └── 9/10
-│       ├── 27/100
-│       ├── 9/100
-│       ├── 9/25
-│       └── 9/50
-├── 1
-├── 4
-│   ├── 2/5
-│   ├── 4/5
-│   ├── 6/5
-│   │   ├── 6/25
-│   │   ├── 12/25
-│   │   ├── 3/25
-│   │   └── 9/25
-│   └── 8/5
-│       ├── 4/25
-│       ├── 8/25
-│       ├── 12/25
-│       └── 16/25
-└── 2
-    ├── 4/5
-    │   ├── 4/25
-    │   ├── 8/25
-    │   ├── 2/25
-    │   └── 6/25
-    ├── 3/5
-    │   ├── 9/50
-    │   ├── 3/50
-    │   ├── 6/25
-    │   └── 3/25
-    ├── 2/5
-    └── 1/5
-"""
+    ├── 3
+    │   ├── 3/5
+    │   ├── 6/5
+    │   │   ├── 6/25
+    │   │   ├── 12/25
+    │   │   ├── 3/25
+    │   │   └── 9/25
+    │   ├── 3/10
+    │   └── 9/10
+    │       ├── 27/100
+    │       ├── 9/100
+    │       ├── 9/25
+    │       └── 9/50
+    ├── 1
+    ├── 4
+    │   ├── 2/5
+    │   ├── 4/5
+    │   ├── 6/5
+    │   │   ├── 6/25
+    │   │   ├── 12/25
+    │   │   ├── 3/25
+    │   │   └── 9/25
+    │   └── 8/5
+    │       ├── 4/25
+    │       ├── 8/25
+    │       ├── 12/25
+    │       └── 16/25
+    └── 2
+        ├── 4/5
+        │   ├── 4/25
+        │   ├── 8/25
+        │   ├── 2/25
+        │   └── 6/25
+        ├── 3/5
+        │   ├── 9/50
+        │   ├── 3/50
+        │   ├── 6/25
+        │   └── 3/25
+        ├── 2/5
+        └── 1/5
+    """
+    ft =  create_test_fractal_timline_tree()
+    vt = copy_fractal_tree_to_valued_tree(create_test_fractal_timline_tree())
     return vt
 
 
@@ -384,3 +412,6 @@ def add_node_infos_to_graphic(vt, gt):
                 if gn.up.get_children().index(gn) % 2 == 1:
                     position_in_tree_label.top_margin = 3
                     value_label.bottom_margin = 4
+
+def create_test_chord_tree() -> ChordTree:
+    return ChordTree.create_tree_from_list(create_test_fractal_timline_tree().get_list_representation(key=lambda node: node.get_duration()), "duration")
