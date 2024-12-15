@@ -240,10 +240,13 @@ class ClockWrongHoursTypeError(ClockException, TypeError):
 
 # valuedtree 
 
-class ValuedTree(Exception):
+class ValuedTreeException(Exception):
     pass
 
 
-class WrongTreeValueError(ValuedTree, ValueError):
+class WrongTreeValueError(ValuedTreeException, ValueError):
+    pass
+
+class WrongTreeValueWarning(Warning):
     pass
 

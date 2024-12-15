@@ -1,6 +1,8 @@
 from unittest import TestCase
 
 from fractions import Fraction
+import warnings
+from musurgia.musurgia_exceptions import WrongTreeValueWarning
 from musurgia.tests.utils_for_tests import DemoValuedTree
 from musurgia.utils import flatten
 
@@ -51,10 +53,10 @@ class ValuedTreeChangeValueTestCase(TestCase):
 
         self._add_layer()
         first_child = self.vt.get_children()[0]
-        values = [5/6, 5/3, 5/2]
+        values = [Fraction(5, 6), Fraction(5, 3), Fraction(5, 2)]
         for v in values:
             first_child.add_child(DemoValuedTree(v))
-        list_of_values = [[5/18, 5/12, 5/36], [5/18, 5/9, 5/6], [5/4, 5/12, 5/6]]
+        list_of_values = [[Fraction(5, 18), Fraction(5, 12), Fraction(5, 36)], [Fraction(5, 18), Fraction(5, 9), Fraction(5, 6)], [5/4, 5/12, 5/6]]
         for child, values in zip(first_child.get_children(), list_of_values):
             for v in values:
                 child.add_child(DemoValuedTree(v))
@@ -77,7 +79,7 @@ class ValuedTreeChangeValueTestCase(TestCase):
     └── 3: 3.33
 """
         assert self.vt.get_tree_representation(node_info) == expected
-        first_child.remove(first_child.get_children()[1])
+        first_child.remove(first_child._get_children()[1])
         expected = """└── 0: 10.0
     ├── 1: 5.0
     │   ├── 1.1: 0.83
@@ -91,8 +93,9 @@ class ValuedTreeChangeValueTestCase(TestCase):
     ├── 2: 1.67
     └── 3: 3.33
 """
-        assert self.vt.get_tree_representation(node_info) == expected
-        first_child.get_children()[0].change_value(2.5)
+        with warnings.catch_warnings():
+            assert self.vt.get_tree_representation(node_info) == expected
+        first_child._get_children()[0].change_value(2.5)
         expected = """└── 0: 10.0
     ├── 1: 5.0
     │   ├── 1.1: 2.5
@@ -106,6 +109,22 @@ class ValuedTreeChangeValueTestCase(TestCase):
     ├── 2: 1.67
     └── 3: 3.33
 """
+        assert self.vt.get_tree_representation(node_info) == expected
 
 class WrongValueErrorTest(TestCase):
-    pass
+    def test_less_child_values(self):
+        vt = DemoValuedTree(10)
+        vt.add_child(DemoValuedTree(4))
+        vt.add_child(DemoValuedTree(4))
+        with warnings.catch_warnings(record=True) as w:
+            vt.get_children()
+            assert len(w) == 1
+
+    def test_greate_child_values(self):
+        vt = DemoValuedTree(10)
+        vt.add_child(DemoValuedTree(4))
+        vt.add_child(DemoValuedTree(4))
+        vt.add_child(DemoValuedTree(4))
+        with warnings.catch_warnings(record=True) as w:
+            vt.get_children()
+            assert len(w) == 1

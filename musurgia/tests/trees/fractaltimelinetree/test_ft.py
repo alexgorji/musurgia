@@ -1,10 +1,11 @@
 from unittest import TestCase
+import warnings
 
 from musurgia.timing.duration import Duration
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.musurgia_exceptions import FractalTimelineTreePermutationIndexError, FractalTimelineTreeSetMainPermutationOrderFirstError, \
     FractalTimelineTreeHasChildrenError, FractalTimelineTreeMergeWrongValuesError, \
-    FractalTimelineTreeHasNoChildrenError
+    FractalTimelineTreeHasNoChildrenError, WrongTreeValueWarning
 from musurgia.tests.utils_for_tests import create_test_fractal_timline_tree
 
 
@@ -85,3 +86,15 @@ class TestFt(TestCase):
         ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3))
         with self.assertRaises(FractalTimelineTreePermutationIndexError):
             ft.calculate_permutation_index()
+
+    def test_get_children_with_and_without_warning(self):
+        ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3))
+        ft.add_child(FractalTimelineTree(duration=Duration(5), proportions=(1, 2, 3)))
+
+        with warnings.catch_warnings(record=True) as w:
+            ft.get_children()
+            assert len(w) == 1
+            
+        with warnings.catch_warnings(record=True) as w:
+            ft._get_children()
+            assert len(w) == 0

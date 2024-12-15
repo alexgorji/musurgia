@@ -162,7 +162,7 @@ class FractalTimelineTree(TimelineTree):
 
     @main_permutation_order.setter
     def main_permutation_order(self, value: Optional[PermutationOrder]) -> None:
-        if self.get_children():
+        if self._get_children():
             raise FractalTimelineTreeHasChildrenError
         if value is not None:
             if not self.is_root:
@@ -241,7 +241,7 @@ class FractalTimelineTree(TimelineTree):
         pic = self._get_pic()
         parent = cast(T, self.up)
         pic.parent_index = parent.get_permutation_index()
-        self._permutation_index = pic.get_index(cast(list[T], parent.get_children()).index(self) + 1)
+        self._permutation_index = pic.get_index(cast(list[T], parent._get_children()).index(self) + 1)
     
     def generate_children(self, number_of_children: Union[int, tuple[int, ...], tuple[tuple[int, ...], ...]],
                           reduce_mode: FractalTreeReduceChildrenMode = 'backwards',
@@ -283,9 +283,9 @@ class FractalTimelineTree(TimelineTree):
         """
         # check_generate_children_mode(reduce_mode)
         # this error must be moved to add_layer()
-        if self.get_children():
+        if self._get_children():
             raise ValueError(
-                f'FractalTimelineTree.generate_children: node has already children: {[ch.get_value() for ch in self.get_children()]}')
+                f'FractalTimelineTree.generate_children: node has already children: {[ch.get_value() for ch in self._get_children()]}')
 
         if isinstance(number_of_children, int):
             if number_of_children > self.get_size():
@@ -303,7 +303,7 @@ class FractalTimelineTree(TimelineTree):
         elif isinstance(number_of_children, tuple):
             self.generate_children(len(number_of_children), reduce_mode=reduce_mode, merge_index=merge_index)
 
-            for index, child in enumerate(self.get_children()):
+            for index, child in enumerate(self._get_children()):
                 if reduce_mode == 'backwards':
                     number_of_grand_children = number_of_children[
                         child.get_fractal_order() - child.get_size() + len(number_of_children) - 1]
@@ -426,7 +426,7 @@ class FractalTimelineTree(TimelineTree):
             └── 2: (2, 4): 4.0
         <BLANKLINE>
         """
-        children = self.get_children()
+        children = self._get_children()
         if not children:
             raise FractalTimelineTreeHasNoChildrenError('FractalTimelineTree.merge_children: There are no children to be merged')
         if sum(lengths) != len(children):
@@ -447,18 +447,18 @@ class FractalTimelineTree(TimelineTree):
             _merge(chunk)
 
     def reduce_children_by_condition(self, condition: Callable[['FractalTimelineTree'], bool]) -> None:
-        if not self.get_children():
+        if not self._get_children():
             raise FractalTimelineTreeHasNoChildrenError(f'{self} has no children to be reduced')
-        for child in [child for child in self.get_children() if condition(child)]:
+        for child in [child for child in self._get_children() if condition(child)]:
             self.remove(child)
             del child
-        reduced_value = sum([child.get_value() for child in self.get_children()])
+        reduced_value = sum([child.get_value() for child in self._get_children()])
         factor = self.get_value() / reduced_value
-        for child in self.get_children():
+        for child in self._get_children():
             new_value = child.get_value() * factor
             child.change_value(new_value)
 
-        self._children_fractal_values = [child.get_value() for child in self.get_children()]
+        self._children_fractal_values = [child.get_value() for child in self._get_children()]
 
     def reduce_children_by_size(self, size: int, mode: FractalTreeReduceChildrenMode = 'backwards',
                                 merge_index: Optional[int] = None) -> None:
@@ -505,7 +505,7 @@ class FractalTimelineTree(TimelineTree):
 
     def split(self: 'T', *proportions: Any) -> list['T']:
 
-        if self.get_children():
+        if self._get_children():
             raise FractalTimelineTreeHasChildrenError
 
         if hasattr(proportions[0], '__iter__'):
@@ -520,4 +520,4 @@ class FractalTimelineTree(TimelineTree):
             self.add_child(new_node)
             new_node.calculate_permutation_index()
 
-        return self.get_children()
+        return self._get_children()

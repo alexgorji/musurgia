@@ -12,9 +12,9 @@ class TimeLineTreeTestCase(TestCase):
 
     def test_add_child_to_timeline(self):
         root_duration = Duration(2)
-        child_durations = [Duration(1.5, 0.5)]
+        child_durations = [Duration(1.5), Duration(0.5)]
         tlt = TimelineTree(root_duration)
-        [tlt.add_child(TimelineTree(d)) for d in child_durations ]
+        [tlt.add_child(TimelineTree(d)) for d in child_durations]
         self.assertListEqual([ch.get_duration() for ch in tlt.get_children()], child_durations)
 
     def test_check_timeline_durations(self):
@@ -45,3 +45,6 @@ class TimeLineTreeTestCase(TestCase):
         └── 2.0
 """
         self.assertEqual(tft.get_tree_representation(key=lambda node: float(node.get_value())), expected)
+
+    def test_timeline_update_duration(self):
+        self.fail()

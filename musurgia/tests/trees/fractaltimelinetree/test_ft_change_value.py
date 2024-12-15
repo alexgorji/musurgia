@@ -1,6 +1,8 @@
+
 from unittest import TestCase
 
 from fractions import Fraction
+import warnings
 
 from musurgia.timing.duration import Duration
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
@@ -66,7 +68,8 @@ class Test(TestCase):
 """
         first_child.remove(first_child.get_children()[1])
         # print(self.ft.get_tree_representation(node_info))
-        assert self.ft.get_tree_representation(fractal_node_info) == """└── None: (1, 1): 10.0
+        with warnings.catch_warnings():
+            assert self.ft.get_tree_representation(fractal_node_info) == """└── None: (1, 1): 10.0
     ├── 3: (2, 1): 5.0
     │   ├── 1: (3, 1): 0.83
     │   │   ├── 2: (1, 1): 0.28
