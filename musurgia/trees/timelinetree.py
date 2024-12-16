@@ -22,6 +22,12 @@ class TimelineTree(ValuedTree):
     ):
         super().__init__(*args, **kwargs)
         if not isinstance(duration, TimelineDuration):
+            try:
+                check_type(duration, "ConvertibleToFraction")
+            except MusurgiaTypeError:
+                raise AttributeError(
+                    "TimelineTree.update_duration: duration must be of of types TimelineDuration or ConvertibleToFraction"
+                )
             duration = TimelineDuration(duration)
         self._duration: TimelineDuration = duration
 
@@ -57,5 +63,11 @@ class TimelineTree(ValuedTree):
         elif isinstance(duration, Fraction):
             new_value = duration
         else:
+            try:
+                check_type(duration, "ConvertibleToFraction")
+            except MusurgiaTypeError:
+                raise AttributeError(
+                    "TimelineTree.update_duration: duration must be of of types TimelineDuration or ConvertibleToFraction"
+                )
             new_value = Fraction(duration)
         self.update_value(new_value)
