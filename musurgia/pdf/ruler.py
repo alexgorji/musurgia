@@ -118,7 +118,7 @@ class AbstractRuler(AbstractSegmentedLine, ABC):
         self, condition: Optional[Callable[[TextLabel], bool]] = None, **kwargs: Any
     ) -> None:
         if condition is None:
-            condition = lambda label: True # noqa
+            condition = lambda label: True  # noqa
         labels = [l for l in self.get_markline_text_labels() if condition(l)]
         for label in labels:
             for key, value in kwargs.items():

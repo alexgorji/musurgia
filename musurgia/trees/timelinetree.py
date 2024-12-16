@@ -3,7 +3,7 @@ from typing import Any, Union
 
 from musurgia.timing.duration import ReadonlyDuration
 from musurgia.trees.valuedtree import ValuedTree
-from musurgia.musurgia_types import ConvertibleToFraction
+from musurgia.musurgia_types import ConvertibleToFraction, MusurgiaTypeError, check_type
 
 __all__ = ["TimelineDuration", "TimelineTree"]
 

@@ -1,4 +1,4 @@
-from pprint import pprint # noqa
+from pprint import pprint  # noqa
 from typing import Any
 
 from musurgia.musurgia_exceptions import (

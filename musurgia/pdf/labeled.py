@@ -158,9 +158,7 @@ class Labeled(Master, HasPositionsProtocol, HasGetHeightProtocol):
                 )
             )
         if not slave.master == self:
-            raise AttributeError(
-                create_error_message(message="slave hat wrong master")
-            )
+            raise AttributeError(create_error_message(message="slave hat wrong master"))
         if position == "x":
             return 0
         elif position == "y":
