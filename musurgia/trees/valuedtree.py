@@ -6,7 +6,7 @@ from typing import Any, TypeVar, Union
 from musurgia.musurgia_exceptions import WrongTreeValueError, WrongTreeValueWarning
 from musurgia.musurgia_types import ConvertibleToFraction
 
-T = TypeVar('T')
+T = TypeVar('T', bound='ValuedTree')
 
 class ValuedTree(Tree[Any]):
     @abstractmethod
@@ -18,8 +18,10 @@ class ValuedTree(Tree[Any]):
             child._set_value(child.get_value() * factor)
             child._change_children_value(factor)
     
-    def change_value(self, new_value: ConvertibleToFraction) -> None:
-        factor = Fraction(Fraction(new_value), self.get_value())
+    def update_value(self, new_value: ConvertibleToFraction) -> None:
+        if not isinstance(new_value, Fraction):
+            new_value = Fraction(new_value)
+        factor = Fraction(new_value, self.get_value())
         self._set_value(new_value)
         for node in self.get_reversed_path_to_root()[1:]:
             node._set_value(sum([child.get_value() for child in node._get_children()]))
@@ -32,7 +34,7 @@ class ValuedTree(Tree[Any]):
 
     def _check_tree_children_values(self, children_values):
         if sum(children_values) != self.get_value():
-            raise WrongTreeValueError(f"Children of ValuedTree node of position {self.get_position_in_tree()} with value {self.get_value()} have wrong values {children_values} (sume={sum(children_values)})")
+            raise WrongTreeValueError(f"Children of ValuedTree node of position {self.get_position_in_tree()} with value {self.get_value()} have wrong values {children_values} (sum={sum(children_values)})")
 
     def _check_tree_children(self):
         _children = super().get_children()
@@ -55,3 +57,7 @@ class ValuedTree(Tree[Any]):
             except WrongTreeValueError as err:
                 warnings.warn(str(err), WrongTreeValueWarning)
         return children
+
+    @property
+    def value(self):
+        raise AttributeError("Use get_value() instead.")

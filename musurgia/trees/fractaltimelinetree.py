@@ -438,7 +438,7 @@ class FractalTimelineTree(TimelineTree):
             new_value = sum(node_values)
             for node in nodes[1:]:
                 self.remove(node)
-            nodes[0].change_value(new_value)
+            nodes[0].update_value(new_value)
 
         iter_children = iter(children)
         chunks = [list(itertools.islice(iter_children, l)) for l in lengths]      
@@ -456,7 +456,7 @@ class FractalTimelineTree(TimelineTree):
         factor = self.get_value() / reduced_value
         for child in self._get_children():
             new_value = child.get_value() * factor
-            child.change_value(new_value)
+            child.update_value(new_value)
 
         self._children_fractal_values = [child.get_value() for child in self._get_children()]
 

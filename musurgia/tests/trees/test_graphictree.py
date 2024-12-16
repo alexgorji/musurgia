@@ -138,9 +138,9 @@ class TestGraphicTreeDraw(PdfTestCase):
             self.gt.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
 
-    def test_children_graphic(self):
+    def test_draw_last_child_graphic(self):
         child = self.vt.get_children()[-1]
-        child.change_value(15)
+        child.update_value(15)
         graphic = GraphicTree(child, unit=10, distance=20)
 
         for index, (gn, fn) in enumerate(zip(graphic.traverse(), child.traverse())):
@@ -162,7 +162,7 @@ class TestGraphicTreeDraw(PdfTestCase):
 
     def test_draw_clipped(self):
         unit = 15
-        self.vt.change_value(50)
+        self.vt.update_value(50)
         gt = GraphicTree(self.vt, unit=unit, distance=5)
         add_node_infos_to_graphic(self.vt, gt)
         gt.set_all_distances(10)

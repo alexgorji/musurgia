@@ -8,7 +8,7 @@ from diff_pdf_visually import pdf_similar  # type: ignore
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.pdf import Text, TextLabel, DrawObjectColumn, StraightLine
 from musurgia.pdf.drawobject import MasterDrawObject
-from musurgia.trees.timelinetree import TimelineTree
+from musurgia.trees.timelinetree import TimelineDuration, TimelineTree
 from musurgia.timing.duration import Duration
 from musurgia.trees.valuedtree import ValuedTree
 
@@ -193,12 +193,12 @@ def create_test_fractal_timline_tree():
 
 
 def create_test_timeline_tree():
-    tlt = TimelineTree(duration=Duration(60))
+    tlt = TimelineTree(duration=TimelineDuration(60))
     for d in [20, 10, 30]:
-        tlt.add_child(TimelineTree(Duration(d)))
+        tlt.add_child(TimelineTree(TimelineDuration(d)))
     for list_of_d, child in zip([[10, 2, 3, 5], [], [5, 20, 3, 2]], tlt.get_children()):
         for d in list_of_d:
-            child.add_child(TimelineTree(Duration(d)))
+            child.add_child(TimelineTree(TimelineDuration(d)))
     return tlt
 
 
@@ -214,7 +214,7 @@ class DemoValuedTree(ValuedTree):
             return True
         
     def _set_value(self, value):
-        self._value = value
+        self._value = Fraction(value)
 
     def get_value(self):
         return Fraction(self._value)
@@ -226,52 +226,53 @@ class DemoValuedTree(ValuedTree):
 #         vt_node.add_child(vt_child)
 #     return vt_node
 
-def create_test_valued_tree():
+def create_test_valued_tree() -> DemoValuedTree:
     fractal_structure = [Fraction(10, 1), [Fraction(3, 1), [Fraction(3, 5)], [Fraction(6, 5), [Fraction(6, 25)], [Fraction(12, 25)], [Fraction(3, 25)], [Fraction(9, 25)]], [Fraction(3, 10)], [Fraction(9, 10), [Fraction(27, 100)], [Fraction(9, 100)], [Fraction(9, 25)], [Fraction(9, 50)]]], [Fraction(1, 1)], [Fraction(4, 1), [Fraction(2, 5)], [Fraction(4, 5)], [Fraction(6, 5), [Fraction(6, 25)], [Fraction(12, 25)], [Fraction(3, 25)], [Fraction(9, 25)]], [Fraction(8, 5), [Fraction(4, 25)], [Fraction(8, 25)], [Fraction(12, 25)], [Fraction(16, 25)]]], [Fraction(2, 1), [Fraction(4, 5), [Fraction(4, 25)], [Fraction(8, 25)], [Fraction(2, 25)], [Fraction(6, 25)]], [Fraction(3, 5), [Fraction(9, 50)], [Fraction(3, 50)], [Fraction(6, 25)], [Fraction(3, 25)]], [Fraction(2, 5)], [Fraction(1, 5)]]]
     vt = DemoValuedTree.create_tree_from_list(fractal_structure, "value")
-    # fractal values: 
+    # print(vt.get_tree_representation(key=lambda node: node.get_value()))
+   
     """└── 10
-    ├── 3
-    │   ├── 3/5
-    │   ├── 6/5
-    │   │   ├── 6/25
-    │   │   ├── 12/25
-    │   │   ├── 3/25
-    │   │   └── 9/25
-    │   ├── 3/10
-    │   └── 9/10
-    │       ├── 27/100
-    │       ├── 9/100
-    │       ├── 9/25
-    │       └── 9/50
-    ├── 1
-    ├── 4
-    │   ├── 2/5
-    │   ├── 4/5
-    │   ├── 6/5
-    │   │   ├── 6/25
-    │   │   ├── 12/25
-    │   │   ├── 3/25
-    │   │   └── 9/25
-    │   └── 8/5
-    │       ├── 4/25
-    │       ├── 8/25
-    │       ├── 12/25
-    │       └── 16/25
-    └── 2
-        ├── 4/5
-        │   ├── 4/25
-        │   ├── 8/25
-        │   ├── 2/25
-        │   └── 6/25
-        ├── 3/5
-        │   ├── 9/50
-        │   ├── 3/50
-        │   ├── 6/25
-        │   └── 3/25
-        ├── 2/5
-        └── 1/5
-    """
+├── 3
+│   ├── 3/5
+│   ├── 6/5
+│   │   ├── 6/25
+│   │   ├── 12/25
+│   │   ├── 3/25
+│   │   └── 9/25
+│   ├── 3/10
+│   └── 9/10
+│       ├── 27/100
+│       ├── 9/100
+│       ├── 9/25
+│       └── 9/50
+├── 1
+├── 4
+│   ├── 2/5
+│   ├── 4/5
+│   ├── 6/5
+│   │   ├── 6/25
+│   │   ├── 12/25
+│   │   ├── 3/25
+│   │   └── 9/25
+│   └── 8/5
+│       ├── 4/25
+│       ├── 8/25
+│       ├── 12/25
+│       └── 16/25
+└── 2
+    ├── 4/5
+    │   ├── 4/25
+    │   ├── 8/25
+    │   ├── 2/25
+    │   └── 6/25
+    ├── 3/5
+    │   ├── 9/50
+    │   ├── 3/50
+    │   ├── 6/25
+    │   └── 3/25
+    ├── 2/5
+    └── 1/5
+"""
     return vt
 
 

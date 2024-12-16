@@ -1,17 +1,23 @@
 from fractions import Fraction
-from typing import Any
+from typing import Any, Union
 
 from musurgia.timing.duration import ReadonlyDuration
 from musurgia.trees.valuedtree import ValuedTree
 from musurgia.musurgia_types import ConvertibleToFraction
 
-__all__ = ["TimelineTree"]
+__all__ = ["TimelineDuration", "TimelineTree"]
+
+class TimelineDuration(ReadonlyDuration):
+    def _set_seconds(self, seconds):
+        self._set_clock(hours=0, minutes=0, seconds=seconds)
 
 
 class TimelineTree(ValuedTree):
-    def __init__(self, duration: ReadonlyDuration, *args: Any, **kwargs: Any):
+    def __init__(self, duration: Union[TimelineDuration, ConvertibleToFraction], *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self._duration: ReadonlyDuration = duration
+        if not isinstance(duration, TimelineDuration):
+            duration = TimelineDuration(duration)
+        self._duration: TimelineDuration = duration
 
     # private methods
     def _check_child_to_be_added(self, child: 'TimelineTree') -> bool:
@@ -20,13 +26,30 @@ class TimelineTree(ValuedTree):
         return True
 
     def _set_value(self, value: ConvertibleToFraction) -> None:
-        self._duration.seconds = Fraction(value)
+        if not isinstance(value, Fraction):
+            value = Fraction(value)
+        self._duration._set_seconds(value)
 
-    def get_duration(self) -> ReadonlyDuration:
+    @property
+    def duration(self):
+        raise AttributeError("Use get_duration() instead.")
+    
+    def get_duration(self) -> TimelineDuration:
         return self._duration
     
     def get_value(self) -> Fraction:
         return self.get_duration().calculate_in_seconds()
+    
+    def update_duration(self, duration: Union[TimelineDuration, ConvertibleToFraction]):
+        if isinstance(duration, TimelineDuration):
+            self._duration = duration
+            new_value = self.get_value()
+        elif isinstance(duration, Fraction):
+            new_value = duration
+        else:
+            new_value = Fraction(duration)
+        self.update_value(new_value)
+
     
 
     

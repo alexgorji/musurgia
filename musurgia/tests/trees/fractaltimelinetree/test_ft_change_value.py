@@ -16,12 +16,12 @@ class Test(TestCase):
                               permutation_index=(1, 1))
 
     def test_change_root_value_without_children(self):
-        self.ft.change_value(15)
+        self.ft.update_value(15)
         self.assertEqual(15, self.ft.get_value())
 
     def test_change_root_value_with_children(self):
         self.ft.add_layer()
-        self.ft.change_value(15)
+        self.ft.update_value(15)
         self.assertEqual(15, self.ft.get_value())
         self.assertEqual(15, sum([child.get_value() for child in self.ft.get_children()]))
         self.assertEqual([Fraction(15, 2), Fraction(5, 2), Fraction(5, 1)],
@@ -29,7 +29,7 @@ class Test(TestCase):
 
     def test_change_leaf_value(self):
         self.ft.add_layer()
-        self.ft.get_children()[0].change_value(10)
+        self.ft.get_children()[0].update_value(10)
         self.assertEqual(15, self.ft.get_value())
         self.assertEqual(15, sum([child.get_value() for child in self.ft.get_layer(1)]))
         self.assertEqual([Fraction(10, 1), Fraction(5, 3), Fraction(10, 3)],
@@ -38,7 +38,7 @@ class Test(TestCase):
     def test_two_layers_change_child_value(self):
         self.ft.add_layer()
         self.ft.add_layer()
-        self.ft.get_children()[0].change_value(10)
+        self.ft.get_children()[0].update_value(10)
         assert self.ft.get_value() == 15
         assert sum(flatten(self.ft.get_layer(1, key=lambda node: node.get_value()))) == 15
         assert sum(flatten(self.ft.get_layer(2, key=lambda node: node.get_value()))) == 15
@@ -82,7 +82,7 @@ class Test(TestCase):
     ├── 1: (2, 2): 1.67
     └── 2: (2, 3): 3.33
 """
-        first_child.get_children()[0].change_value(2.5)
+        first_child.get_children()[0].update_value(2.5)
         # print(self.ft.get_tree_representation(node_info))
         assert self.ft.get_tree_representation(fractal_node_info) == """└── None: (1, 1): 10.0
     ├── 3: (2, 1): 5.0
