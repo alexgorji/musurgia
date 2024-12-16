@@ -79,7 +79,7 @@ class FractalTimelineTree(TimelineTree):
         self._permutation_index: Optional[MatrixIndex] = None
         self._fertile: bool
 
-        self._fractal_order: Optional[int] = None
+        self._fractal_order: int = 0
         self._children_fractal_values: list[Fraction]
         self._children_permutation_order_matrices = None
         self._permutation_order: tuple[int, int]
@@ -241,7 +241,7 @@ class FractalTimelineTree(TimelineTree):
         pic = self._get_pic()
         parent = cast(T, self.up)
         pic.parent_index = parent.get_permutation_index()
-        self._permutation_index = pic.get_index(cast(list[T], parent._get_children()).index(self) + 1)
+        self._permutation_index = pic.get_index(parent._get_children().index(self) + 1)
     
     def generate_children(self, number_of_children: Union[int, tuple[int, ...], tuple[tuple[int, ...], ...]],
                           reduce_mode: FractalTreeReduceChildrenMode = 'backwards',
@@ -254,7 +254,7 @@ class FractalTimelineTree(TimelineTree):
         >>> ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         >>> ft.generate_children(number_of_children=((1, 3), 2, (1, (1, 3), 3)))
         >>> print(ft.get_tree_representation(key=lambda node: str(node.get_fractal_order())))
-        └── None
+        └── 0
             ├── 3
             │   ├── 1
             │   │   └── 3
@@ -324,14 +324,14 @@ class FractalTimelineTree(TimelineTree):
                 return permute(list(range(1, self.get_size() + 1)), self.main_permutation_order)
         return permute(list(range(1, self.get_size() + 1)), self.get_permutation_order())
 
-    def get_fractal_order(self) -> Optional[int]:
+    def get_fractal_order(self) -> int:
         """
         :return:
 
         >>> ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         >>> ft.add_layer()
         >>> [node.get_fractal_order() for node in ft.traverse()]
-        [None, 3, 1, 2]
+        [0, 3, 1, 2]
         """
         return self._fractal_order
     
@@ -411,7 +411,7 @@ class FractalTimelineTree(TimelineTree):
         >>> ft = FractalTimelineTree(proportions=(1, 2, 3, 4, 5), main_permutation_order=(3, 5, 1, 2, 4), duration=TimelineDuration(10), permutation_index=(1, 1))
         >>> ft.add_layer()
         >>> print(ft.get_tree_representation(node_info))
-        └── None: (1, 1): 10.0
+        └── 0: (1, 1): 10.0
             ├── 3: (2, 1): 2.0
             ├── 5: (2, 2): 3.33
             ├── 1: (2, 3): 0.67
@@ -420,7 +420,7 @@ class FractalTimelineTree(TimelineTree):
         <BLANKLINE>
         >>> ft.merge_children(1, 2, 2)
         >>> print(ft.get_tree_representation(node_info))
-        └── None: (1, 1): 10.0
+        └── 0: (1, 1): 10.0
             ├── 3: (2, 1): 2.0
             ├── 5: (2, 2): 4.0
             └── 2: (2, 4): 4.0
@@ -473,10 +473,10 @@ class FractalTimelineTree(TimelineTree):
         else:
             if mode == 'backwards':
                 self.reduce_children_by_condition(
-                    lambda child: cast(int, child.get_fractal_order()) < self.get_size() - size + 1)
+                    lambda child: child.get_fractal_order() < self.get_size() - size + 1)
             elif mode == 'forwards':
                 self.reduce_children_by_condition(
-                    lambda child: cast(int, child.get_fractal_order()) > size)
+                    lambda child: child.get_fractal_order() > size)
             elif mode == 'sieve':
                 if size == 1:
                     self.reduce_children_by_condition(condition=lambda child: child.get_fractal_order() not in [1])

@@ -1,6 +1,7 @@
 from unittest import TestCase
 import warnings
 
+
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.musurgia_exceptions import FractalTimelineTreePermutationIndexError, FractalTimelineTreeSetMainPermutationOrderFirstError, \
     FractalTimelineTreeHasChildrenError, FractalTimelineTreeMergeWrongValuesError, \
@@ -12,6 +13,51 @@ from musurgia.trees.timelinetree import TimelineDuration
 class TestFt(TestCase):
     def setUp(self) -> None:
         self.ft = create_test_fractal_timline_tree()
+
+    def test_get_fractal_order(self):
+        expected = """└── 0
+    ├── 3
+    │   ├── 2
+    │   ├── 4
+    │   │   ├── 2
+    │   │   ├── 4
+    │   │   ├── 1
+    │   │   └── 3
+    │   ├── 1
+    │   └── 3
+    │       ├── 3
+    │       ├── 1
+    │       ├── 4
+    │       └── 2
+    ├── 1
+    ├── 4
+    │   ├── 1
+    │   ├── 2
+    │   ├── 3
+    │   │   ├── 2
+    │   │   ├── 4
+    │   │   ├── 1
+    │   │   └── 3
+    │   └── 4
+    │       ├── 1
+    │       ├── 2
+    │       ├── 3
+    │       └── 4
+    └── 2
+        ├── 4
+        │   ├── 2
+        │   ├── 4
+        │   ├── 1
+        │   └── 3
+        ├── 3
+        │   ├── 3
+        │   ├── 1
+        │   ├── 4
+        │   └── 2
+        ├── 2
+        └── 1
+"""
+        self.assertEqual(self.ft.get_tree_representation(key=lambda node: node.get_fractal_order()), expected)
 
     def test_add_wrong_child(self):
         ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))

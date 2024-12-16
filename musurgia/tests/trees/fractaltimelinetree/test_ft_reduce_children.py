@@ -32,7 +32,7 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
 
         # print(self.ft.get_tree_representation(node_info))
         """
-        └── None:(1, 1): 20.0
+        └── 0:(1, 1): 20.0
             ├── 3:(2, 1): 6.0
             │   ├── 2:(3, 1): 1.2
             │   ├── 4:(3, 2): 2.4
@@ -60,7 +60,7 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
         for child in self.ft.get_children():
             child.reduce_children_by_size(size=3)
         # print(self.ft.get_tree_representation(node_info))
-        assert self.ft.get_tree_representation(fractal_node_info) == """└── None: (1, 1): 20.0
+        assert self.ft.get_tree_representation(fractal_node_info) == """└── 0: (1, 1): 20.0
     ├── 3: (2, 1): 6.67
     │   ├── 2: (3, 1): 1.48
     │   ├── 4: (3, 2): 2.96
@@ -80,7 +80,7 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
         for child in self.ft.get_children():
             child.reduce_children_by_size(size=3, mode='forwards')
         # print(self.ft.get_tree_representation(node_info))
-        assert self.ft.get_tree_representation(fractal_node_info) == """└── None: (1, 1): 20.0
+        assert self.ft.get_tree_representation(fractal_node_info) == """└── 0: (1, 1): 20.0
     ├── 3: (2, 1): 10.0
     │   ├── 2: (3, 1): 3.33
     │   ├── 1: (3, 3): 1.67
@@ -101,7 +101,7 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
             child.reduce_children_by_size(size=3, mode='sieve')
 
         # print(self.ft.get_tree_representation(node_info))
-        assert self.ft.get_tree_representation(fractal_node_info) == """└── None: (1, 1): 20.0
+        assert self.ft.get_tree_representation(fractal_node_info) == """└── 0: (1, 1): 20.0
     ├── 1: (2, 2): 2.86
     │   ├── 1: (4, 2): 0.41
     │   ├── 4: (4, 3): 1.63
@@ -129,7 +129,7 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
             ft_3.add_layer()
         # print(self.ft.get_tree_representation(node_info))
         """
-        └── None: (1, 1): 20.0
+        └── 0: (1, 1): 20.0
             ├── 3: (2, 1): 6.0
             │   ├── 2: (3, 1): 1.2
             │   ├── 4: (3, 2): 2.4
@@ -160,7 +160,7 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
             for child in ft.get_children():
                 child.reduce_children_by_size(size=3, mode='merge', merge_index=index)
         # print(ft_1.get_tree_representation(node_info))
-        assert ft_1.get_tree_representation(fractal_node_info) == """└── None: (1, 1): 20.0
+        assert ft_1.get_tree_representation(fractal_node_info) == """└── 0: (1, 1): 20.0
     ├── 3: (2, 1): 16.0
     │   ├── 2: (3, 1): 9.6
     │   ├── 1: (3, 3): 1.6
@@ -171,7 +171,7 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
         └── 1: (2, 4): 0.4
 """
         # print(ft_2.get_tree_representation(node_info))
-        assert ft_2.get_tree_representation(fractal_node_info) == """└── None: (1, 1): 20.0
+        assert ft_2.get_tree_representation(fractal_node_info) == """└── 0: (1, 1): 20.0
     ├── 3: (2, 1): 8.0
     │   ├── 2: (3, 1): 1.6
     │   ├── 4: (3, 2): 3.2
@@ -182,7 +182,7 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
         └── 3: (1, 3): 8.4
 """
         # print(ft_3.get_tree_representation(node_info))
-        assert ft_3.get_tree_representation(fractal_node_info) == """└── None: (1, 1): 20.0
+        assert ft_3.get_tree_representation(fractal_node_info) == """└── 0: (1, 1): 20.0
     ├── 3: (2, 1): 16.0
     │   ├── 2: (3, 1): 9.6
     │   ├── 1: (3, 3): 1.6
