@@ -4,7 +4,6 @@ from unittest import TestCase
 from musurgia.musurgia_exceptions import RelativePositionNotSettableError
 from musurgia.pdf.line import SlaveStraightLine, StraightLine
 from musurgia.pdf.pdf import Pdf
-from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.tests.utils_for_tests import PdfTestCase, DummyMaster
 
 path = Path(__file__)
@@ -12,8 +11,8 @@ path = Path(__file__)
 
 class TestStraightLine(TestCase):
     def setUp(self):
-        self.sl_h = StraightLine(length=10, mode='h', relative_x=10, relative_y=20)
-        self.sl_v = StraightLine(length=10, mode='v', relative_x=30, relative_y=40)
+        self.sl_h = StraightLine(length=10, mode="h", relative_x=10, relative_y=20)
+        self.sl_v = StraightLine(length=10, mode="v", relative_x=30, relative_y=40)
 
     def test_infos(self):
         assert self.sl_h.relative_x == 10
@@ -32,19 +31,20 @@ class TestStraightLine(TestCase):
         assert self.sl_v.get_width() == 0
 
     def test_width_and_height(self):
-        sl = StraightLine('h', 30)
+        sl = StraightLine("h", 30)
         sl.margins = (10, 10, 10, 10)
         assert sl.get_width() == 50
         assert sl.get_height() == 20
+
 
 class TestStraightLineDraw(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf()
 
     def test_draw(self):
-        h_lines = [StraightLine(length=10, mode='h') for _ in range(3)]
-        v_lines = [StraightLine(length=10, mode='v') for _ in range(3)]
-        with self.file_path(path, 'draw', 'pdf') as pdf_path:
+        h_lines = [StraightLine(length=10, mode="h") for _ in range(3)]
+        v_lines = [StraightLine(length=10, mode="v") for _ in range(3)]
+        with self.file_path(path, "draw", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
             for l in h_lines:
                 l.draw(self.pdf)
@@ -61,17 +61,25 @@ class TestStraightLineDraw(PdfTestCase):
 class TestSlaveStraightLine(TestCase):
     def setUp(self) -> None:
         self.master = DummyMaster()
-        self.sl = SlaveStraightLine(mode='h', length=20, name='straight_test', master=self.master)
+        self.sl = SlaveStraightLine(
+            mode="h", length=20, name="straight_test", master=self.master
+        )
 
     def test_position_not_settable(self):
         with self.assertRaises(RelativePositionNotSettableError):
-            SlaveStraightLine(relative_x=0, mode='h', length=20, name='straight_test', master=self.master)
+            SlaveStraightLine(
+                relative_x=0,
+                mode="h",
+                length=20,
+                name="straight_test",
+                master=self.master,
+            )
         with self.assertRaises(RelativePositionNotSettableError):
             self.sl.relative_x = 10
 
     def test_relative_x(self):
         actual = self.sl.relative_x
-        expected = self.master.get_slave_position(self.sl, 'x')
+        expected = self.master.get_slave_position(self.sl, "x")
         self.assertEqual(expected, actual)
 
     def test_get_relative_x(self):
@@ -96,11 +104,12 @@ class TestSlaveStraightLineDraw(PdfTestCase):
     def setUp(self) -> None:
         self.pdf = Pdf()
         self.master = DummyMaster()
-        self.sl = SlaveStraightLine(mode='h', length=20, name='straight_test', master=self.master)
-
+        self.sl = SlaveStraightLine(
+            mode="h", length=20, name="straight_test", master=self.master
+        )
 
     def test_draw(self):
-        with self.file_path(path, 'draw_slave', 'pdf') as pdf_path:
+        with self.file_path(path, "draw_slave", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
             self.sl.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)

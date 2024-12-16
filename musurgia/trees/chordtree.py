@@ -13,7 +13,7 @@
 #         if not getattr(instance, "_chord_initialized", False):
 #             raise RuntimeError(f"The method 'initialize_chord' was not called in {cls.__name__}!")
 #         return instance
-    
+
 # class AbstractChordFactory(ABC, metaclass=EnsureInitializationMetaclass):
 #     # Create a Chord object with proper quarter_duration depending on Duration and Metronome objects
 #     def __init__(self, *args: Any, **kwargs: Any):
@@ -22,7 +22,7 @@
 #         self._chord_initialized = False
 #         # Call initialize_chord in inherited classes
 
-    
+
 #     def initiliaze_chord(self) -> None:
 #         quarter_duration = QuarterDuration(convert_duration_to_quarter_duration_value(self.get_metronome(), self.get_duration()))
 #         self._chord = Chord(60, quarter_duration=quarter_duration)
@@ -45,12 +45,12 @@
 
 # class TreeChordFactory:
 #     __CHORD_UPDATE_METHODS = {'_update_chord_quarter_duration'}
-    
+
 #     def __init__(self, chord_tree: "ChordTree", *args: Any, **kwargs: Any):
 #         super().__init__(*args, **kwargs)
 #         self._chord: Chord = Chord(60, 1)
 #         self._chord_tree = chord_tree
-    
+
 
 #     def _update_chord_quarter_duration(self):
 #         self._chord.quarter_duration.value = convert_duration_to_quarter_duration_value(self.get_metronome(), self.get_duration())
@@ -61,14 +61,14 @@
 
 #     def get_duration(self) -> "Duration":
 #         return self._chord_tree.get_duration()
-    
+
 #     def get_metronome(self) -> "Metronome":
 #         return self._chord_tree.get_metronome()
-    
+
 #     def get_chord(self) -> "Chord":
 #         self._update_chord()
 #         return self._chord
-    
+
 
 # class ChordTree(TimelineTree):
 #     def __init__(self, *args: Any, **kwargs: Any):
@@ -79,7 +79,7 @@
 #     @property
 #     def chord(self):
 #         raise AttributeError('Use get_chord() instead.')
-    
+
 #     @property
 #     def chord(self, value):
 #         raise AttributeError('Update self.chord_factory instead.')
@@ -91,14 +91,13 @@
 #     @property
 #     def metronome(self) -> "Metronome":
 #         return self._metronome
-    
+
 #     @metronome.setter
 #     def metronome(self, value: "Metronome") -> None:
 #         self._metronome = value
 
 #     def get_chord(self) -> "Chord":
 #         return self.chord_factory.get_chord()
-    
+
 #     def get_metronome(self)-> "Metronome":
 #         return self.metronome
-    

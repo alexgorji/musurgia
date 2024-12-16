@@ -1,29 +1,64 @@
 from abc import ABC
 from typing import Any, cast, Optional, Callable
 
-from musurgia.musurgia_exceptions import RulerCannotSetLengthsError, RulerLengthNotPositiveError, \
-    TimeRulerCannotSetLength
+from musurgia.musurgia_exceptions import (
+    RulerCannotSetLengthsError,
+    RulerLengthNotPositiveError,
+    TimeRulerCannotSetLength,
+)
 from musurgia.musurgia_types import ConvertibleToFloat, check_type, ClockMode
 from musurgia.pdf import TextLabel
-from musurgia.pdf.line import AbstractSegmentedLine, MarkLine, VerticalSegmentedLine, HorizontalSegmentedLine
+from musurgia.pdf.line import (
+    AbstractSegmentedLine,
+    MarkLine,
+    VerticalSegmentedLine,
+    HorizontalSegmentedLine,
+)
 from musurgia.timing.duration import Duration
 
-__all__ = ['HorizontalRuler', 'VerticalRuler', 'TimeRuler']
+__all__ = ["HorizontalRuler", "VerticalRuler", "TimeRuler"]
 
 
 class AbstractRuler(AbstractSegmentedLine, ABC):
-    def __init__(self, length: ConvertibleToFloat, unit: ConvertibleToFloat = 10.0, first_label: int = 0,
-                 label_show_interval: int = 1, show_first_label: bool = True, *args: Any, **kwargs: Any):
-        if 'lengths' in kwargs:
+    def __init__(
+        self,
+        length: ConvertibleToFloat,
+        unit: ConvertibleToFloat = 10.0,
+        first_label: int = 0,
+        label_show_interval: int = 1,
+        show_first_label: bool = True,
+        *args: Any,
+        **kwargs: Any,
+    ):
+        if "lengths" in kwargs:
             raise RulerCannotSetLengthsError
-        check_type(length, 'ConvertibleToFloat', class_name='AbstractRuler', property_name='length')
+        check_type(
+            length,
+            "ConvertibleToFloat",
+            class_name="AbstractRuler",
+            property_name="length",
+        )
         length = float(length)
         if length < 0:
             raise RulerLengthNotPositiveError
-        check_type(unit, 'ConvertibleToFloat', class_name='AbstractRuler', property_name='unit')
-        check_type(first_label, int, class_name='AbstractRuler', property_name='first_label')
-        check_type(label_show_interval, int, class_name='AbstractRuler', property_name='label_show_interval')
-        check_type(show_first_label, bool, class_name='AbstractRuler', property_name='show_first_label')
+        check_type(
+            unit, "ConvertibleToFloat", class_name="AbstractRuler", property_name="unit"
+        )
+        check_type(
+            first_label, int, class_name="AbstractRuler", property_name="first_label"
+        )
+        check_type(
+            label_show_interval,
+            int,
+            class_name="AbstractRuler",
+            property_name="label_show_interval",
+        )
+        check_type(
+            show_first_label,
+            bool,
+            class_name="AbstractRuler",
+            property_name="show_first_label",
+        )
 
         unit = float(unit)
         number_of_units = float(length) / unit
@@ -45,7 +80,7 @@ class AbstractRuler(AbstractSegmentedLine, ABC):
         def _add_label(mark_line: MarkLine, txt: str) -> None:
             tl = TextLabel(txt, master=mark_line)
             if isinstance(self, VerticalSegmentedLine):
-                tl.placement = 'left'
+                tl.placement = "left"
                 tl.right_margin = 1
                 tl.top_margin = 0
             else:
@@ -62,16 +97,28 @@ class AbstractRuler(AbstractSegmentedLine, ABC):
 
         if self.segments:
             last_segment_end_mark_line = self.segments[-1].end_mark_line
-            if last_segment_end_mark_line.show and (len(self.segments)) % self.get_label_show_interval() == 0:
-                _add_label(last_segment_end_mark_line, str(len(self.segments) + self.get_first_label()))
+            if (
+                last_segment_end_mark_line.show
+                and (len(self.segments)) % self.get_label_show_interval() == 0
+            ):
+                _add_label(
+                    last_segment_end_mark_line,
+                    str(len(self.segments) + self.get_first_label()),
+                )
 
     def get_markline_text_labels(self) -> list[TextLabel]:
-        return [label for seg in self.segments for label in
-                seg.start_mark_line.get_text_labels() + seg.end_mark_line.get_text_labels()]
+        return [
+            label
+            for seg in self.segments
+            for label in seg.start_mark_line.get_text_labels()
+            + seg.end_mark_line.get_text_labels()
+        ]
 
-    def change_labels(self, condition: Optional[Callable[[TextLabel], bool]] = None, **kwargs: Any) -> None:
+    def change_labels(
+        self, condition: Optional[Callable[[TextLabel], bool]] = None, **kwargs: Any
+    ) -> None:
         if condition is None:
-            condition = lambda label: True
+            condition = lambda label: True # noqa
         labels = [l for l in self.get_markline_text_labels() if condition(l)]
         for label in labels:
             for key, value in kwargs.items():
@@ -79,43 +126,45 @@ class AbstractRuler(AbstractSegmentedLine, ABC):
 
     @property
     def length(self) -> None:
-        raise AttributeError('use get_length() instead')
+        raise AttributeError("use get_length() instead")
 
     @length.setter
     def length(self, val: Any) -> None:
-        raise AttributeError('length is not settable after initialization.')
+        raise AttributeError("length is not settable after initialization.")
 
     @property
     def unit(self) -> None:
-        raise AttributeError('use get_unit() instead')
+        raise AttributeError("use get_unit() instead")
 
     @unit.setter
     def unit(self, val: Any) -> None:
-        raise AttributeError('unit is not settable after initialization.')
+        raise AttributeError("unit is not settable after initialization.")
 
     @property
     def first_label(self) -> None:
-        raise AttributeError('use get_first_label() instead')
+        raise AttributeError("use get_first_label() instead")
 
     @first_label.setter
     def first_label(self, val: Any) -> None:
-        raise AttributeError('first_label is not settable after initialization.')
+        raise AttributeError("first_label is not settable after initialization.")
 
     @property
     def label_show_interval(self) -> None:
-        raise AttributeError('use get_label_show_interval() instead')
+        raise AttributeError("use get_label_show_interval() instead")
 
     @label_show_interval.setter
     def label_show_interval(self, val: Any) -> None:
-        raise AttributeError('label_show_interval is not settable after initialization.')
+        raise AttributeError(
+            "label_show_interval is not settable after initialization."
+        )
 
     @property
     def show_first_label(self) -> None:
-        raise AttributeError('use get_show_first_label() instead')
+        raise AttributeError("use get_show_first_label() instead")
 
     @show_first_label.setter
     def show_first_label(self, val: Any) -> None:
-        raise AttributeError('show_first_label is not settable after initialization.')
+        raise AttributeError("show_first_label is not settable after initialization.")
 
     def get_unit(self) -> float:
         return float(self._unit)
@@ -142,16 +191,32 @@ class VerticalRuler(AbstractRuler, VerticalSegmentedLine):
 
 
 class TimeRuler(HorizontalRuler):
-    def __init__(self, duration: int, unit: ConvertibleToFloat = 2, label_show_interval: int = 10,
-                 shrink_factor: ConvertibleToFloat = 0.6, mark_line_size: ConvertibleToFloat = 4,
-                 clock_mode: ClockMode = 'hms',
-                 *args: Any,
-                 **kwargs: Any):
-        if 'length' in kwargs:
+    def __init__(
+        self,
+        duration: int,
+        unit: ConvertibleToFloat = 2,
+        label_show_interval: int = 10,
+        shrink_factor: ConvertibleToFloat = 0.6,
+        mark_line_size: ConvertibleToFloat = 4,
+        clock_mode: ClockMode = "hms",
+        *args: Any,
+        **kwargs: Any,
+    ):
+        if "length" in kwargs:
             raise TimeRulerCannotSetLength
-        check_type(duration, 'PositiveInteger', class_name='TimeRuler', property_name='duration')
-        super().__init__(length=duration * unit, unit=unit, label_show_interval=label_show_interval, *args,
-                         **kwargs)  # type: ignore
+        check_type(
+            duration,
+            "PositiveInteger",
+            class_name="TimeRuler",
+            property_name="duration",
+        )
+        super().__init__(
+            length=duration * unit,
+            unit=unit,
+            label_show_interval=label_show_interval,
+            *args,
+            **kwargs,
+        )  # type: ignore
         self._clock_mode: ClockMode = clock_mode
         self._change_label_texts()
         self._shrink_factor: ConvertibleToFloat
@@ -163,7 +228,7 @@ class TimeRuler(HorizontalRuler):
         for label in self.get_markline_text_labels():
             duration = Duration(float(label.value))
             label.value = duration.get_clock_as_string(mode=self._clock_mode, round_=1)
-            if label.value[-2:] == '.0':
+            if label.value[-2:] == ".0":
                 label.value = label.value[:-2]
 
     def _change_mark_line_lengths(self) -> None:

@@ -7,26 +7,52 @@ from musurgia.utils import flatten
 
 class TestFractalTreeReduceChildrenByCondition(TestCase):
     def test_reduce_first_layer(self):
-        ft = FractalTimelineTree(proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), duration=TimelineDuration(20), permutation_index=(1, 1))
+        ft = FractalTimelineTree(
+            proportions=(1, 2, 3),
+            main_permutation_order=(3, 1, 2),
+            duration=TimelineDuration(20),
+            permutation_index=(1, 1),
+        )
         ft.add_layer()
         ft.add_layer()
         for node in ft.get_layer(1):
-            node.reduce_children_by_condition(condition=lambda node: node.get_fractal_order() == 1)
-        assert [node.get_fractal_order() for node in ft.iterate_leaves()] == [2, 3, 3, 2, 2, 3]
+            node.reduce_children_by_condition(
+                condition=lambda node: node.get_fractal_order() == 1
+            )
+        assert [node.get_fractal_order() for node in ft.iterate_leaves()] == [
+            2,
+            3,
+            3,
+            2,
+            2,
+            3,
+        ]
 
     def test_value(self):
-        ft = FractalTimelineTree(proportions=[1, 2, 3, 4, 5, 6], main_permutation_order=(4, 1, 5, 3, 6, 2), duration=TimelineDuration(20),
-                         permutation_index=(1, 1))
+        ft = FractalTimelineTree(
+            proportions=[1, 2, 3, 4, 5, 6],
+            main_permutation_order=(4, 1, 5, 3, 6, 2),
+            duration=TimelineDuration(20),
+            permutation_index=(1, 1),
+        )
         ft.add_layer()
-        ft.reduce_children_by_condition(lambda child: child.get_fractal_order() not in [2, 3])
-        self.assertEqual([3, 2], [node.get_fractal_order() for node in ft.iterate_leaves()])
+        ft.reduce_children_by_condition(
+            lambda child: child.get_fractal_order() not in [2, 3]
+        )
+        self.assertEqual(
+            [3, 2], [node.get_fractal_order() for node in ft.iterate_leaves()]
+        )
         self.assertEqual([12, 8], [node.get_value() for node in ft.get_children()])
 
 
 class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
     def setUp(self):
-        self.ft = FractalTimelineTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), duration=TimelineDuration(20),
-                              permutation_index=(1, 1))
+        self.ft = FractalTimelineTree(
+            proportions=(1, 2, 3, 4),
+            main_permutation_order=(3, 1, 4, 2),
+            duration=TimelineDuration(20),
+            permutation_index=(1, 1),
+        )
         self.ft.add_layer()
         self.ft.add_layer()
 
@@ -60,7 +86,9 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
         for child in self.ft.get_children():
             child.reduce_children_by_size(size=3)
         # print(self.ft.get_tree_representation(node_info))
-        assert self.ft.get_tree_representation(fractal_node_info) == """└── 0: (1, 1): 20.0
+        assert (
+            self.ft.get_tree_representation(fractal_node_info)
+            == """└── 0: (1, 1): 20.0
     ├── 3: (2, 1): 6.67
     │   ├── 2: (3, 1): 1.48
     │   ├── 4: (3, 2): 2.96
@@ -74,13 +102,16 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
         ├── 3: (2, 2): 1.48
         └── 2: (2, 3): 0.99
 """
+        )
 
     def test_reduce_forwards(self):
-        self.ft.reduce_children_by_size(size=3, mode='forwards')
+        self.ft.reduce_children_by_size(size=3, mode="forwards")
         for child in self.ft.get_children():
-            child.reduce_children_by_size(size=3, mode='forwards')
+            child.reduce_children_by_size(size=3, mode="forwards")
         # print(self.ft.get_tree_representation(node_info))
-        assert self.ft.get_tree_representation(fractal_node_info) == """└── 0: (1, 1): 20.0
+        assert (
+            self.ft.get_tree_representation(fractal_node_info)
+            == """└── 0: (1, 1): 20.0
     ├── 3: (2, 1): 10.0
     │   ├── 2: (3, 1): 3.33
     │   ├── 1: (3, 3): 1.67
@@ -94,14 +125,17 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
         ├── 2: (2, 3): 2.22
         └── 1: (2, 4): 1.11
 """
+        )
 
     def test_reduce_sieve(self):
-        self.ft.reduce_children_by_size(size=3, mode='sieve')
+        self.ft.reduce_children_by_size(size=3, mode="sieve")
         for child in self.ft.get_children():
-            child.reduce_children_by_size(size=3, mode='sieve')
+            child.reduce_children_by_size(size=3, mode="sieve")
 
         # print(self.ft.get_tree_representation(node_info))
-        assert self.ft.get_tree_representation(fractal_node_info) == """└── 0: (1, 1): 20.0
+        assert (
+            self.ft.get_tree_representation(fractal_node_info)
+            == """└── 0: (1, 1): 20.0
     ├── 1: (2, 2): 2.86
     │   ├── 1: (4, 2): 0.41
     │   ├── 4: (4, 3): 1.63
@@ -115,14 +149,27 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
         ├── 2: (2, 3): 1.63
         └── 1: (2, 4): 0.82
 """
+        )
 
     def test_merge(self):
-        ft_1 = FractalTimelineTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), duration=TimelineDuration(20),
-                           permutation_index=(1, 1))
-        ft_2 = FractalTimelineTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), duration=TimelineDuration(20),
-                           permutation_index=(1, 1))
-        ft_3 = FractalTimelineTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), duration=TimelineDuration(20),
-                           permutation_index=(1, 1))
+        ft_1 = FractalTimelineTree(
+            proportions=(1, 2, 3, 4),
+            main_permutation_order=(3, 1, 4, 2),
+            duration=TimelineDuration(20),
+            permutation_index=(1, 1),
+        )
+        ft_2 = FractalTimelineTree(
+            proportions=(1, 2, 3, 4),
+            main_permutation_order=(3, 1, 4, 2),
+            duration=TimelineDuration(20),
+            permutation_index=(1, 1),
+        )
+        ft_3 = FractalTimelineTree(
+            proportions=(1, 2, 3, 4),
+            main_permutation_order=(3, 1, 4, 2),
+            duration=TimelineDuration(20),
+            permutation_index=(1, 1),
+        )
         for i in range(2):
             ft_1.add_layer()
             ft_2.add_layer()
@@ -156,11 +203,13 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
         assert ft_3._get_merge_lengths(size=2, merge_index=3) == [3, 1]
 
         for index, ft in zip([0, 2, 3], [ft_1, ft_2, ft_3]):
-            ft.reduce_children_by_size(size=2, mode='merge', merge_index=index)
+            ft.reduce_children_by_size(size=2, mode="merge", merge_index=index)
             for child in ft.get_children():
-                child.reduce_children_by_size(size=3, mode='merge', merge_index=index)
+                child.reduce_children_by_size(size=3, mode="merge", merge_index=index)
         # print(ft_1.get_tree_representation(node_info))
-        assert ft_1.get_tree_representation(fractal_node_info) == """└── 0: (1, 1): 20.0
+        assert (
+            ft_1.get_tree_representation(fractal_node_info)
+            == """└── 0: (1, 1): 20.0
     ├── 3: (2, 1): 16.0
     │   ├── 2: (3, 1): 9.6
     │   ├── 1: (3, 3): 1.6
@@ -170,8 +219,11 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
         ├── 2: (2, 3): 0.8
         └── 1: (2, 4): 0.4
 """
+        )
         # print(ft_2.get_tree_representation(node_info))
-        assert ft_2.get_tree_representation(fractal_node_info) == """└── 0: (1, 1): 20.0
+        assert (
+            ft_2.get_tree_representation(fractal_node_info)
+            == """└── 0: (1, 1): 20.0
     ├── 3: (2, 1): 8.0
     │   ├── 2: (3, 1): 1.6
     │   ├── 4: (3, 2): 3.2
@@ -181,8 +233,11 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
         ├── 2: (1, 2): 2.4
         └── 3: (1, 3): 8.4
 """
+        )
         # print(ft_3.get_tree_representation(node_info))
-        assert ft_3.get_tree_representation(fractal_node_info) == """└── 0: (1, 1): 20.0
+        assert (
+            ft_3.get_tree_representation(fractal_node_info)
+            == """└── 0: (1, 1): 20.0
     ├── 3: (2, 1): 16.0
     │   ├── 2: (3, 1): 9.6
     │   ├── 1: (3, 3): 1.6
@@ -192,7 +247,11 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
         ├── 2: (2, 3): 0.8
         └── 1: (2, 4): 0.4
 """
+        )
 
         for ft in [ft_1, ft_2, ft_3]:
-            assert ft.get_value() == sum(flatten(ft.get_layer(1, key=lambda node: node.get_value()))) == sum(
-                flatten(ft.get_layer(2, key=lambda node: node.get_value())))
+            assert (
+                ft.get_value()
+                == sum(flatten(ft.get_layer(1, key=lambda node: node.get_value())))
+                == sum(flatten(ft.get_layer(2, key=lambda node: node.get_value())))
+            )

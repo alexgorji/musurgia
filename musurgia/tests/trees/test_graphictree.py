@@ -1,13 +1,20 @@
 import copy
 from pathlib import Path
-from unittest import TestCase, skip
+from unittest import TestCase
 
-from musurgia.trees.graphictree import GraphicTree, ValuedTreeNodeSegment, GraphicChildrenSegmentedLine
+from musurgia.trees.graphictree import (
+    GraphicTree,
+    ValuedTreeNodeSegment,
+    GraphicChildrenSegmentedLine,
+)
 from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
 from musurgia.pdf import DrawObjectColumn, DrawObjectRow, Pdf, draw_ruler, TextLabel
 from musurgia.pdf.ruler import HorizontalRuler
-from musurgia.tests.utils_for_tests import PdfTestCase, create_test_valued_tree, add_node_infos_to_graphic
-from musurgia.trees.graphictree import GraphicTree, ValuedTreeNodeSegment
+from musurgia.tests.utils_for_tests import (
+    PdfTestCase,
+    create_test_valued_tree,
+    add_node_infos_to_graphic,
+)
 
 path = Path(__file__)
 
@@ -54,7 +61,7 @@ class GraphicTreeTest(TestCase):
         assert not segment.end_mark_line.show
         segment.end_mark_line.show = True
 
-        segment.start_mark_line.add_text_label('something')
+        segment.start_mark_line.add_text_label("something")
         copied_segment = copy.deepcopy(segment)
         assert isinstance(copied_segment, ValuedTreeNodeSegment)
         assert copied_segment.unit == segment.unit
@@ -66,7 +73,7 @@ class GraphicTreeTest(TestCase):
         copied_segment.end_mark_line.show = False
         assert segment.end_mark_line.show
         assert not copied_segment.end_mark_line.show
-        assert copied_segment.start_mark_line.get_text_labels()[0].value == 'something'
+        assert copied_segment.start_mark_line.get_text_labels()[0].value == "something"
 
     def test_change_unit(self):
         self.gt.unit = 10
@@ -83,8 +90,13 @@ class GraphicTreeTest(TestCase):
             assert len(node.get_graphic().get_draw_objects()) == number_draw_objects
             assert node.get_graphic().get_draw_objects()[0] == node.get_segment()
             if not node.is_leaf:
-                assert isinstance(node.get_graphic().get_draw_objects()[1], DrawObjectRow)
-                for ch, do in zip(node.get_children(), node.get_graphic().get_draw_objects()[1].get_draw_objects()):
+                assert isinstance(
+                    node.get_graphic().get_draw_objects()[1], DrawObjectRow
+                )
+                for ch, do in zip(
+                    node.get_children(),
+                    node.get_graphic().get_draw_objects()[1].get_draw_objects(),
+                ):
                     assert isinstance(do, DrawObjectColumn)
                     assert do.get_draw_objects()[0] == ch.get_segment()
 
@@ -101,10 +113,14 @@ class GraphicTreeTest(TestCase):
             node._update_mark_line_length()
         for node in self.gt.traverse():
             if node.is_first_child:
-                assert node.get_segment().start_mark_line.length == node.mark_line_length
+                assert (
+                    node.get_segment().start_mark_line.length == node.mark_line_length
+                )
             else:
-                self.assertAlmostEqual(node.mark_line_length * node.shrink_factor,
-                                       node.get_segment().start_mark_line.length)
+                self.assertAlmostEqual(
+                    node.mark_line_length * node.shrink_factor,
+                    node.get_segment().start_mark_line.length,
+                )
             if node.is_last_child:
                 assert node.get_segment().end_mark_line.length == node.mark_line_length
 
@@ -115,14 +131,14 @@ class GraphicTreeTest(TestCase):
 
     def test_wrong_child_type(self):
         with self.assertRaises(TypeError):
-            self.gt.add_child('string')
+            self.gt.add_child("string")
 
 
 class TestGraphicTreeDraw(PdfTestCase):
     def setUp(self):
         self.vt = create_test_valued_tree()
         self.gt = GraphicTree(self.vt)
-        self.pdf = Pdf(orientation='l')
+        self.pdf = Pdf(orientation="l")
         add_node_infos_to_graphic(self.vt, self.gt)
 
     def test_draw_graphic(self):
@@ -130,10 +146,10 @@ class TestGraphicTreeDraw(PdfTestCase):
         self.gt.unit = unit
         self.gt.set_all_distances(20)
 
-        with self.file_path(path, 'draw', 'pdf') as pdf_path:
+        with self.file_path(path, "draw", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, 'h', unit=10, first_label=-1)
-            draw_ruler(self.pdf, 'v', unit=10)
+            draw_ruler(self.pdf, "h", unit=10, first_label=-1)
+            draw_ruler(self.pdf, "v", unit=10)
             self.pdf.translate(10, 10)
             self.gt.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -144,18 +160,18 @@ class TestGraphicTreeDraw(PdfTestCase):
         graphic = GraphicTree(child, unit=10, distance=20)
 
         for index, (gn, fn) in enumerate(zip(graphic.traverse(), child.traverse())):
-            text_label = TextLabel(f'{fn.get_position_in_tree()}', font_size=8)
+            text_label = TextLabel(f"{fn.get_position_in_tree()}", font_size=8)
             if gn.get_distance() > 1 and index % 2 == 1:
-                text_label.placement = 'below'
+                text_label.placement = "below"
                 text_label.top_margin = 1
             else:
                 text_label.bottom_margin = 2
             gn.get_segment().start_mark_line.add_text_label(text_label)
 
-        with self.file_path(path, f'draw_last_child', 'pdf') as pdf_path:
+        with self.file_path(path, "draw_last_child", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, 'h', first_label=-1)
-            draw_ruler(self.pdf, 'v')
+            draw_ruler(self.pdf, "h", first_label=-1)
+            draw_ruler(self.pdf, "v")
             self.pdf.translate(10, 10)
             graphic.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -175,8 +191,8 @@ class TestGraphicTreeDraw(PdfTestCase):
         c.add_draw_object(ruler)
         c.add_draw_object(graphic)
 
-        with self.file_path(path, 'draw_clipped', 'pdf') as pdf_path:
-            self.pdf.r_margin = self.pdf.l_margin = ((self.pdf.w - 18 * unit) / 2)
+        with self.file_path(path, "draw_clipped", "pdf") as pdf_path:
+            self.pdf.r_margin = self.pdf.l_margin = (self.pdf.w - 18 * unit) / 2
             self.pdf.translate_page_margins()
             c.clipped_draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -201,12 +217,10 @@ class TestGraphicChildrenSegmentedLine(TestCase):
         assert gcsl.relative_y == -2.1
 
 
-
 class TestCreatLayerGraphic(PdfTestCase):
     def setUp(self):
         self.vt = create_test_valued_tree()
-        self.pdf = Pdf(orientation='l')
-
+        self.pdf = Pdf(orientation="l")
 
     def test_create_layer_graphic(self):
         unit = 24
@@ -218,12 +232,14 @@ class TestCreatLayerGraphic(PdfTestCase):
 
         graphic_layer_2 = gt.create_layer_graphic(layer_number=2)
         graphic_layer_2.add_text_label(
-            TextLabel(value='layer 2', placement='left', font_size=8, right_margin=2))
+            TextLabel(value="layer 2", placement="left", font_size=8, right_margin=2)
+        )
         graphic_layer_2.bottom_margin = 20
 
         graphic_layer_3 = gt.create_layer_graphic(layer_number=3)
         graphic_layer_3.add_text_label(
-            TextLabel(value='layer 3', placement='left', font_size=8, right_margin=2))
+            TextLabel(value="layer 3", placement="left", font_size=8, right_margin=2)
+        )
 
         c = DrawObjectColumn()
 
@@ -231,10 +247,10 @@ class TestCreatLayerGraphic(PdfTestCase):
         c.add_draw_object(graphic_layer_2)
         c.add_draw_object(graphic_layer_3)
 
-        with self.file_path(path, 'draw_layers', 'pdf') as pdf_path:
+        with self.file_path(path, "draw_layers", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, 'h', unit=unit, first_label=-1)
-            draw_ruler(self.pdf, 'v', unit=unit)
+            draw_ruler(self.pdf, "h", unit=unit, first_label=-1)
+            draw_ruler(self.pdf, "v", unit=unit)
             self.pdf.translate(unit, 10)
             c.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)

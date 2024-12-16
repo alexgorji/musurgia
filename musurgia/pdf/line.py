@@ -1,23 +1,47 @@
 from abc import abstractmethod, ABC
 from typing import Any, cast, Union
 
-from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError, SegmentedLineLengthsCannotBeSetError
-from musurgia.musurgia_types import HorizontalVertical, check_type, ConvertibleToFloat, MarkLinePlacement, PositionType, \
-    MarginType
-from musurgia.pdf.drawobject import SlaveDrawObject, MasterDrawObject, DrawObject, HasShowProtocol
+from musurgia.musurgia_exceptions import (
+    SegmentedLineSegmentHasMarginsError,
+    SegmentedLineLengthsCannotBeSetError,
+)
+from musurgia.musurgia_types import (
+    HorizontalVertical,
+    check_type,
+    ConvertibleToFloat,
+    MarkLinePlacement,
+    PositionType,
+    MarginType,
+)
+from musurgia.pdf.drawobject import (
+    SlaveDrawObject,
+    MasterDrawObject,
+    DrawObject,
+    HasShowProtocol,
+)
 from musurgia.pdf.labeled import Labeled
 from musurgia.pdf.margined import Margined
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.positioned import Positioned, HasPositionsProtocol
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn, DrawObjectContainer
 
-__all__ = ['HorizontalLineSegment', 'VerticalLineSegment', 'StraightLine', 'HorizontalSegmentedLine',
-           'VerticalSegmentedLine']
+__all__ = [
+    "HorizontalLineSegment",
+    "VerticalLineSegment",
+    "StraightLine",
+    "HorizontalSegmentedLine",
+    "VerticalSegmentedLine",
+]
 
 
 class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol, HasShowProtocol):
-    def __init__(self, mode: HorizontalVertical, length: ConvertibleToFloat, *args: Any,
-                 **kwargs: Any):
+    def __init__(
+        self,
+        mode: HorizontalVertical,
+        length: ConvertibleToFloat,
+        *args: Any,
+        **kwargs: Any,
+    ):
         super().__init__(*args, **kwargs)
         self._mode: HorizontalVertical
         self._length: float
@@ -31,7 +55,12 @@ class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol, HasShowProtocol):
 
     @mode.setter
     def mode(self, val: HorizontalVertical) -> None:
-        check_type(val, 'HorizontalVertical', class_name=self.__class__.__name__, property_name='mode')
+        check_type(
+            val,
+            "HorizontalVertical",
+            class_name=self.__class__.__name__,
+            property_name="mode",
+        )
         self._mode = val
 
     @property
@@ -40,33 +69,38 @@ class AbstractStraightLine(Labeled, ABC, HasPositionsProtocol, HasShowProtocol):
 
     @length.setter
     def length(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='length')
+        check_type(
+            val,
+            "ConvertibleToFloat",
+            class_name=self.__class__.__name__,
+            property_name="length",
+        )
         self._length = float(val)
 
     @property
     def is_vertical(self) -> bool:
-        if self.mode in ['v', 'vertical']:
+        if self.mode in ["v", "vertical"]:
             return True
         else:
             return False
 
     @property
     def is_horizontal(self) -> bool:
-        if self.mode in ['h', 'horizontal']:
+        if self.mode in ["h", "horizontal"]:
             return True
         else:
             return False
 
     @staticmethod
     def get_opposite_mode(mode: HorizontalVertical) -> HorizontalVertical:
-        if mode == 'h':
-            return 'v'
-        elif mode == 'v':
-            return 'h'
-        elif mode == 'horizontal':
-            return 'vertical'
-        elif mode == 'vertical':
-            return 'horizontal'
+        if mode == "h":
+            return "v"
+        elif mode == "v":
+            return "h"
+        elif mode == "horizontal":
+            return "vertical"
+        elif mode == "vertical":
+            return "horizontal"
         else:
             raise NotImplementedError  # pragma: no cover
 
@@ -102,8 +136,14 @@ class SlaveStraightLine(AbstractStraightLine, SlaveDrawObject):
 
 
 class MarkLine(SlaveStraightLine):
-    def __init__(self, placement: MarkLinePlacement, mode: HorizontalVertical, length: ConvertibleToFloat = 3,
-                 *args: Any, **kwargs: Any):
+    def __init__(
+        self,
+        placement: MarkLinePlacement,
+        mode: HorizontalVertical,
+        length: ConvertibleToFloat = 3,
+        *args: Any,
+        **kwargs: Any,
+    ):
         super().__init__(length=length, mode=mode, *args, **kwargs)  # type: ignore
         self._placement: MarkLinePlacement
         self.placement = placement
@@ -114,30 +154,51 @@ class MarkLine(SlaveStraightLine):
 
     @placement.setter
     def placement(self, val: MarkLinePlacement) -> None:
-        check_type(val, 'MarkLinePlacement', class_name=self.__class__.__name__, property_name='placement')
+        check_type(
+            val,
+            "MarkLinePlacement",
+            class_name=self.__class__.__name__,
+            property_name="placement",
+        )
         self._placement = val
 
 
 class LineSegment(MasterDrawObject, ABC):
-
-    def __init__(self, mode: HorizontalVertical, length: ConvertibleToFloat, *args: Any, **kwargs: Any):
+    def __init__(
+        self,
+        mode: HorizontalVertical,
+        length: ConvertibleToFloat,
+        *args: Any,
+        **kwargs: Any,
+    ):
         super().__init__(*args, **kwargs)
-        self._straight_line = SlaveStraightLine(simple_name='straight_line', mode=mode, length=length, master=self)
+        self._straight_line = SlaveStraightLine(
+            simple_name="straight_line", mode=mode, length=length, master=self
+        )
         marker_mode = SlaveStraightLine.get_opposite_mode(self.mode)
-        self._start_mark_line = MarkLine(simple_name='start_mark_line', mode=marker_mode, master=self,
-                                         placement='start')
-        self._end_mark_line = MarkLine(simple_name='end_mark_line', mode=marker_mode, master=self, placement='end',
-                                       show=False)
+        self._start_mark_line = MarkLine(
+            simple_name="start_mark_line",
+            mode=marker_mode,
+            master=self,
+            placement="start",
+        )
+        self._end_mark_line = MarkLine(
+            simple_name="end_mark_line",
+            mode=marker_mode,
+            master=self,
+            placement="end",
+            show=False,
+        )
 
     @property
     def is_vertical(self) -> bool:
-        if self.mode in ['v', 'vertical']:
+        if self.mode in ["v", "vertical"]:
             return True
         return False
 
     @property
     def is_horizontal(self) -> bool:
-        if self.mode in ['h', 'horizontal']:
+        if self.mode in ["h", "horizontal"]:
             return True
         return False
 
@@ -166,8 +227,13 @@ class LineSegment(MasterDrawObject, ABC):
         self.straight_line.length = value  # type: ignore
 
     def get_slave_margin(self, slave: SlaveStraightLine, margin: MarginType) -> float:
-        check_type(margin, 'MarginType', class_name='self.__class__.__name__', method_name='get_slave_margin',
-                   argument_name='margin')
+        check_type(
+            margin,
+            "MarginType",
+            class_name="self.__class__.__name__",
+            method_name="get_slave_margin",
+            argument_name="margin",
+        )
         return 0
 
     def _get_max_markline_length(self) -> float:
@@ -202,10 +268,17 @@ class LineSegment(MasterDrawObject, ABC):
             else:
                 return self.relative_y + (max_markline_length - slave.length) / 2
 
-    def get_slave_position(self, slave: SlaveStraightLine, position: PositionType) -> float:
-        check_type(position, 'PositionType', class_name='self.__class__.__name__', method_name='get_slave_position',
-                   argument_name='position')
-        if position == 'x':
+    def get_slave_position(
+        self, slave: SlaveStraightLine, position: PositionType
+    ) -> float:
+        check_type(
+            position,
+            "PositionType",
+            class_name="self.__class__.__name__",
+            method_name="get_slave_position",
+            argument_name="position",
+        )
+        if position == "x":
             return self._get_slave_x(slave)
         else:
             return self._get_slave_y(slave)
@@ -223,7 +296,7 @@ class LineSegment(MasterDrawObject, ABC):
 
 class HorizontalLineSegment(LineSegment):
     def __init__(self, length: ConvertibleToFloat, *args: Any, **kwargs: Any):
-        super().__init__(mode='horizontal', length=length, *args, **kwargs)  # type: ignore
+        super().__init__(mode="horizontal", length=length, *args, **kwargs)  # type: ignore
 
     def get_relative_x2(self) -> float:
         return self.relative_x + self.length
@@ -239,10 +312,12 @@ class HorizontalLineSegment(LineSegment):
 
 class VerticalLineSegment(LineSegment):
     def __init__(self, length: ConvertibleToFloat, *args: Any, **kwargs: Any):
-        super().__init__(mode='vertical', length=length, *args, **kwargs)  # type: ignore
+        super().__init__(mode="vertical", length=length, *args, **kwargs)  # type: ignore
 
     def get_relative_x2(self) -> float:
-        return self.relative_x + max([ml.get_width() for ml in [self.start_mark_line, self.end_mark_line]])
+        return self.relative_x + max(
+            [ml.get_width() for ml in [self.start_mark_line, self.end_mark_line]]
+        )
 
     def get_relative_y2(self) -> float:
         return self.relative_y + self.length
@@ -260,11 +335,13 @@ class AbstractSegmentedLine(DrawObjectContainer):
 
     @property
     def lengths(self) -> None:
-        raise AttributeError('use get_lengths instead')
+        raise AttributeError("use get_lengths instead")
 
     @lengths.setter
     def lengths(self, lengths: Any) -> None:
-        raise SegmentedLineLengthsCannotBeSetError('lengths are not settable after initialization.')
+        raise SegmentedLineLengthsCannotBeSetError(
+            "lengths are not settable after initialization."
+        )
 
     def _check_segment_margins(self) -> None:
         for seg in self.segments:
@@ -306,7 +383,6 @@ class AbstractSegmentedLine(DrawObjectContainer):
 
 
 class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):
-
     def _make_segments(self, lengths: list[ConvertibleToFloat]) -> None:
         if lengths:
             for length in lengths:
@@ -317,7 +393,9 @@ class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):
         reference_segment = max(self.segments, key=lambda seg: seg.get_height())
         for segment in self.segments:
             if segment != reference_segment:
-                segment.set_straight_line_relative_y(reference_segment.straight_line.relative_y)
+                segment.set_straight_line_relative_y(
+                    reference_segment.straight_line.relative_y
+                )
 
     def draw(self, pdf: Pdf) -> None:
         self._check_segment_margins()
@@ -326,7 +404,6 @@ class HorizontalSegmentedLine(AbstractSegmentedLine, DrawObjectRow):
 
 
 class VerticalSegmentedLine(AbstractSegmentedLine, DrawObjectColumn):
-
     def _make_segments(self, lengths: list[ConvertibleToFloat]) -> None:
         if lengths:
             for length in lengths:
@@ -337,7 +414,9 @@ class VerticalSegmentedLine(AbstractSegmentedLine, DrawObjectColumn):
         reference_segment = max(self.segments, key=lambda seg: seg.get_width())
         for segment in self.segments:
             if segment != reference_segment:
-                segment.set_straight_line_relative_x(reference_segment.straight_line.relative_x)
+                segment.set_straight_line_relative_x(
+                    reference_segment.straight_line.relative_x
+                )
 
     def draw(self, pdf: Pdf) -> None:
         self._check_segment_margins()

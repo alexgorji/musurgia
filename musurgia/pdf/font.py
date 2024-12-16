@@ -5,10 +5,10 @@ import matplotlib as mpl
 from matplotlib._afm import AFM
 from musurgia.musurgia_types import FontFamily, FontWeight, FontStyle, check_type
 
-__all__ = ['Font']
+__all__ = ["Font"]
 
 
-def _make_afm_path_dictionary() -> 'dict[tuple[Any, Any, str], AFM]':
+def _make_afm_path_dictionary() -> "dict[tuple[Any, Any, str], AFM]":
     def check_entry() -> bool:
         old_afm = output.get((family, weight, style))
         if old_afm is not None:
@@ -31,17 +31,17 @@ def _make_afm_path_dictionary() -> 'dict[tuple[Any, Any, str], AFM]':
             return True
 
     output = {}
-    directory = Path(mpl.get_data_path(), 'fonts', 'afm')
+    directory = Path(mpl.get_data_path(), "fonts", "afm")
     for file in directory.iterdir():
         afm_path = file
-        with afm_path.open('rb') as fh:
+        with afm_path.open("rb") as fh:
             afm = AFM(fh)  # type: ignore
         family = afm.get_familyname()  # type: ignore
         weight = afm.get_weight().lower()  # type: ignore
         if afm.get_angle() < 0:  # type: ignore
-            style = 'italic'
+            style = "italic"
         else:
-            style = 'regular'
+            style = "regular"
         if check_entry():
             output[family, weight, style] = afm
 
@@ -68,8 +68,15 @@ class Font:
     # _WEIGHT = ['bold', 'medium']
     # _STYLE = ['italic', 'regular']
 
-    def __init__(self, family: FontFamily = 'Courier', weight: FontWeight = 'medium', style: FontStyle = 'regular',
-                 size: int = 10, *args: Any, **kwargs: Any):
+    def __init__(
+        self,
+        family: FontFamily = "Courier",
+        weight: FontWeight = "medium",
+        style: FontStyle = "regular",
+        size: int = 10,
+        *args: Any,
+        **kwargs: Any,
+    ):
         super().__init__(*args, **kwargs)
         self._family: FontFamily
         self._weight: FontWeight
@@ -94,7 +101,12 @@ class Font:
 
     @family.setter
     def family(self, val: FontFamily) -> None:
-        check_type(val, 'FontFamily', class_name=self.__class__.__name__, property_name='family')
+        check_type(
+            val,
+            "FontFamily",
+            class_name=self.__class__.__name__,
+            property_name="family",
+        )
         self._family = val
         try:
             self._set_afm()
@@ -110,7 +122,7 @@ class Font:
 
     @size.setter
     def size(self, val: int) -> None:
-        check_type(val, int, class_name=self.__class__.__name__, property_name='size')
+        check_type(val, int, class_name=self.__class__.__name__, property_name="size")
         self._size = val
 
     @property
@@ -122,7 +134,9 @@ class Font:
 
     @style.setter
     def style(self, val: FontStyle) -> None:
-        check_type(val, 'FontStyle', class_name=self.__class__.__name__, property_name='style')
+        check_type(
+            val, "FontStyle", class_name=self.__class__.__name__, property_name="style"
+        )
         self._style = val
         try:
             self._set_afm()
@@ -138,7 +152,12 @@ class Font:
 
     @weight.setter
     def weight(self, val: FontWeight) -> None:
-        check_type(val, 'FontWeight', class_name=self.__class__.__name__, property_name='weight')
+        check_type(
+            val,
+            "FontWeight",
+            class_name=self.__class__.__name__,
+            property_name="weight",
+        )
         self._weight = val
         try:
             self._set_afm()

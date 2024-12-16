@@ -7,7 +7,7 @@
 # class ChordFactoryTestCase(TestCase):
 #     def setUp(self):
 #         self.chf = ChordFactory()
-        
+
 #     def test_default_chord(self):
 #         self.assertEqual(self.chf.duration, 1)
 #         self.assertEqual(self.chf.metronome.per_minute, 60)

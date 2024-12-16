@@ -23,8 +23,13 @@ class AbstractPositioned(ABC):
     An interface for setting and getting DrawObject's position attributes.
     """
 
-    def __init__(self, relative_x: Optional[ConvertibleToFloat] = None, relative_y: Optional[ConvertibleToFloat] = None,
-                 *args: Any, **kwargs: Any):
+    def __init__(
+        self,
+        relative_x: Optional[ConvertibleToFloat] = None,
+        relative_y: Optional[ConvertibleToFloat] = None,
+        *args: Any,
+        **kwargs: Any,
+    ):
         super().__init__(*args, **kwargs)
         self._relative_x: float = 0
         self._relative_y: float = 0
@@ -52,7 +57,7 @@ class AbstractPositioned(ABC):
         """relative_y setter must be provided"""
 
     def get_positions(self) -> dict[str, float]:
-        return {'x': self.relative_x, 'y': self.relative_y}
+        return {"x": self.relative_x, "y": self.relative_y}
 
     @property
     def positions(self) -> tuple[float, float]:
@@ -64,8 +69,13 @@ class AbstractPositioned(ABC):
 
 
 class Positioned(AbstractPositioned):
-    def __init__(self, relative_x: ConvertibleToFloat = 0, relative_y: ConvertibleToFloat = 0, *args: Any,
-                 **kwargs: Any):
+    def __init__(
+        self,
+        relative_x: ConvertibleToFloat = 0,
+        relative_y: ConvertibleToFloat = 0,
+        *args: Any,
+        **kwargs: Any,
+    ):
         super().__init__(relative_x=relative_x, relative_y=relative_y, *args, **kwargs)  # type: ignore
 
     @property
@@ -74,7 +84,12 @@ class Positioned(AbstractPositioned):
 
     @relative_x.setter
     def relative_x(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='relative_x')
+        check_type(
+            val,
+            "ConvertibleToFloat",
+            class_name=self.__class__.__name__,
+            property_name="relative_x",
+        )
         self._relative_x = float(val)
 
     @property
@@ -83,5 +98,10 @@ class Positioned(AbstractPositioned):
 
     @relative_y.setter
     def relative_y(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='relative_y')
+        check_type(
+            val,
+            "ConvertibleToFloat",
+            class_name=self.__class__.__name__,
+            property_name="relative_y",
+        )
         self._relative_y = float(val)

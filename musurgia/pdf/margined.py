@@ -25,9 +25,15 @@ class AbstractMargined(ABC):
     An interface for setting and getting DrawObject's margin attributes.
     """
 
-    def __init__(self, top_margin: Optional[ConvertibleToFloat] = None,
-                 bottom_margin: Optional[ConvertibleToFloat] = None, left_margin: Optional[ConvertibleToFloat] = None,
-                 right_margin: Optional[ConvertibleToFloat] = None, *args: Any, **kwargs: Any):
+    def __init__(
+        self,
+        top_margin: Optional[ConvertibleToFloat] = None,
+        bottom_margin: Optional[ConvertibleToFloat] = None,
+        left_margin: Optional[ConvertibleToFloat] = None,
+        right_margin: Optional[ConvertibleToFloat] = None,
+        *args: Any,
+        **kwargs: Any,
+    ):
         super().__init__(*args, **kwargs)
         self._top_margin: float = 0
         self._left_margin: float = 0
@@ -80,8 +86,12 @@ class AbstractMargined(ABC):
         """right_margin setter must be provided"""
 
     def get_margins(self) -> dict[MarginType, float]:
-        return {'top': self.top_margin, 'right': self.right_margin, 'bottom': self.bottom_margin,
-                'left': self.left_margin}
+        return {
+            "top": self.top_margin,
+            "right": self.right_margin,
+            "bottom": self.bottom_margin,
+            "left": self.left_margin,
+        }
 
     @property
     def margins(self) -> tuple[float, float, float, float]:
@@ -94,14 +104,26 @@ class AbstractMargined(ABC):
 
 class Margined(AbstractMargined):
     """
-        An interface for setting and getting DrawObject's margin attributes.
-        """
+    An interface for setting and getting DrawObject's margin attributes.
+    """
 
-    def __init__(self, top_margin: ConvertibleToFloat = 0,
-                 bottom_margin: ConvertibleToFloat = 0, left_margin: ConvertibleToFloat = 0,
-                 right_margin: ConvertibleToFloat = 0, *args: Any, **kwargs: Any):
-        super().__init__(top_margin=top_margin, bottom_margin=bottom_margin, left_margin=left_margin,
-                         right_margin=right_margin, *args, **kwargs)  # type: ignore
+    def __init__(
+        self,
+        top_margin: ConvertibleToFloat = 0,
+        bottom_margin: ConvertibleToFloat = 0,
+        left_margin: ConvertibleToFloat = 0,
+        right_margin: ConvertibleToFloat = 0,
+        *args: Any,
+        **kwargs: Any,
+    ):
+        super().__init__(
+            top_margin=top_margin,
+            bottom_margin=bottom_margin,
+            left_margin=left_margin,
+            right_margin=right_margin,
+            *args,
+            **kwargs,
+        )  # type: ignore
 
     @property
     def bottom_margin(self) -> float:
@@ -109,7 +131,12 @@ class Margined(AbstractMargined):
 
     @bottom_margin.setter
     def bottom_margin(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='bottom_margin')
+        check_type(
+            val,
+            "ConvertibleToFloat",
+            class_name=self.__class__.__name__,
+            property_name="bottom_margin",
+        )
         self._bottom_margin = float(val)
 
     @property
@@ -118,7 +145,12 @@ class Margined(AbstractMargined):
 
     @left_margin.setter
     def left_margin(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='left_margin')
+        check_type(
+            val,
+            "ConvertibleToFloat",
+            class_name=self.__class__.__name__,
+            property_name="left_margin",
+        )
         self._left_margin = float(val)
 
     @property
@@ -127,7 +159,12 @@ class Margined(AbstractMargined):
 
     @top_margin.setter
     def top_margin(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='top_margin')
+        check_type(
+            val,
+            "ConvertibleToFloat",
+            class_name=self.__class__.__name__,
+            property_name="top_margin",
+        )
         self._top_margin = float(val)
 
     @property
@@ -136,5 +173,10 @@ class Margined(AbstractMargined):
 
     @right_margin.setter
     def right_margin(self, val: ConvertibleToFloat) -> None:
-        check_type(val, 'ConvertibleToFloat', class_name=self.__class__.__name__, property_name='right_margin')
+        check_type(
+            val,
+            "ConvertibleToFloat",
+            class_name=self.__class__.__name__,
+            property_name="right_margin",
+        )
         self._right_margin = float(val)

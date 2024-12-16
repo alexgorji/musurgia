@@ -27,7 +27,9 @@ class TestTimeRuler(TestCase):
     def test_shrink(self):
         assert self.tr.shrink_factor == 0.6
         assert self.tr.mark_line_size == 5
-        for i, start_mark_line in enumerate([seg.start_mark_line for seg in self.tr.segments]):
+        for i, start_mark_line in enumerate(
+            [seg.start_mark_line for seg in self.tr.segments]
+        ):
             if i % 10 == 0:
                 assert start_mark_line.length == 5
             else:
@@ -35,15 +37,25 @@ class TestTimeRuler(TestCase):
 
         self.tr.mark_line_size = 10
         self.tr.shrink_factor = 0.5
-        for i, start_mark_line in enumerate([seg.start_mark_line for seg in self.tr.segments]):
+        for i, start_mark_line in enumerate(
+            [seg.start_mark_line for seg in self.tr.segments]
+        ):
             if i % 10 == 0:
                 assert start_mark_line.length == 10
             else:
                 assert start_mark_line.length == 5
         assert self.tr.segments[-1].end_mark_line.length == 10
 
-        tr = TimeRuler(duration=200, unit=2, label_show_interval=3, shrink_factor=0.5, mark_line_size=10)
-        for i, start_mark_line in enumerate([seg.start_mark_line for seg in tr.segments]):
+        tr = TimeRuler(
+            duration=200,
+            unit=2,
+            label_show_interval=3,
+            shrink_factor=0.5,
+            mark_line_size=10,
+        )
+        for i, start_mark_line in enumerate(
+            [seg.start_mark_line for seg in tr.segments]
+        ):
             if i % 3 == 0:
                 assert start_mark_line.length == 10
             else:
@@ -61,10 +73,10 @@ class TestTimeRulerPdf(PdfTestCase):
         self.pdf = Pdf()
 
     def test_time_ruler(self):
-        r = TimeRuler(duration=200, unit=2, label_show_interval=10, clock_mode='ms')
-        r.change_labels(font_size=6, font_weight='bold')
+        r = TimeRuler(duration=200, unit=2, label_show_interval=10, clock_mode="ms")
+        r.change_labels(font_size=6, font_weight="bold")
         r.bottom_margin = 15
-        with self.file_path(path, 'draw', 'pdf') as pdf_path:
+        with self.file_path(path, "draw", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
             r.clipped_draw(self.pdf)
             self.pdf.write_to_path(pdf_path)

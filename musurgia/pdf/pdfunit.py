@@ -7,18 +7,23 @@ __all__ = []  # type: ignore
 
 class PdfUnitTypeCheckMeta(type):
     def __setattr__(cls, key: str, value: Any) -> None:
-        if key == 'GLOBAL_UNIT':
-            check_type(value, 'PdfUnitType', class_name='PdfUnit', class_attribute_name='GLOBAL_UNIT')
+        if key == "GLOBAL_UNIT":
+            check_type(
+                value,
+                "PdfUnitType",
+                class_name="PdfUnit",
+                class_attribute_name="GLOBAL_UNIT",
+            )
         super().__setattr__(key, value)
 
 
 class PdfUnit(metaclass=PdfUnitTypeCheckMeta):
-    _DEFAULT_UNIT = 'mm'
+    _DEFAULT_UNIT = "mm"
     GLOBAL_UNIT = _DEFAULT_UNIT
 
     @staticmethod
     def get_k() -> float:
-        k_dict = {'pt': 1., 'mm': 72 / 25.4, 'cm': 72 / 2.54, 'in': 72.}
+        k_dict = {"pt": 1.0, "mm": 72 / 25.4, "cm": 72 / 2.54, "in": 72.0}
         k = k_dict[PdfUnit.GLOBAL_UNIT]
         return k
 

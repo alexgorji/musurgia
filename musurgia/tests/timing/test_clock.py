@@ -1,7 +1,12 @@
 from unittest import TestCase
 
-from musurgia.musurgia_exceptions import ClockWrongSecondsValueError, ClockWrongMinutesValueError, \
-    ClockWrongSecondsTypeError, ClockWrongMinutesTypeError, ClockWrongHoursTypeError
+from musurgia.musurgia_exceptions import (
+    ClockWrongSecondsValueError,
+    ClockWrongMinutesValueError,
+    ClockWrongSecondsTypeError,
+    ClockWrongMinutesTypeError,
+    ClockWrongHoursTypeError,
+)
 from musurgia.timing.clock import Clock
 
 
@@ -20,31 +25,31 @@ class TestClock(TestCase):
 
     def test_clock_mode(self):
         c = Clock(4, 2, 0.5)
-        assert c.get_as_string(mode='hms') == '4:02:00.5'
-        assert c.get_as_string(mode='ms') == '02:00.5'
-        assert c.get_as_string(mode='msreduced') == '2:0.5'
-        assert c.get_as_string(mode='msreduced') == '2:0.5'
+        assert c.get_as_string(mode="hms") == "4:02:00.5"
+        assert c.get_as_string(mode="ms") == "02:00.5"
+        assert c.get_as_string(mode="msreduced") == "2:0.5"
+        assert c.get_as_string(mode="msreduced") == "2:0.5"
 
         c.set_values(0, 0, 1.5)
-        assert c.get_as_string(mode='msreduced') == '1.5'
+        assert c.get_as_string(mode="msreduced") == "1.5"
 
         c.set_values(4, 2, 1)
-        assert c.get_as_string(mode='hms') == '4:02:01.0'
-        assert c.get_as_string(mode='ms') == '02:01.0'
-        assert c.get_as_string(mode='msreduced') == '2:1.0'
-        assert c.get_as_string(mode='msreduced') == '2:1.0'
+        assert c.get_as_string(mode="hms") == "4:02:01.0"
+        assert c.get_as_string(mode="ms") == "02:01.0"
+        assert c.get_as_string(mode="msreduced") == "2:1.0"
+        assert c.get_as_string(mode="msreduced") == "2:1.0"
 
     def test_get_as_string_round(self):
         c = Clock(4, 2, 1.2568)
-        assert c.get_as_string(mode='hms', round_=2) == '4:02:01.26'
+        assert c.get_as_string(mode="hms", round_=2) == "4:02:01.26"
 
     def test_get_and_set_values(self):
         c = Clock(4, 2, 0.5)
         assert c.get_values() == (4, 2, 0.5)
         c.set_values(3, 1, 10.5)
-        assert c.get_as_string() == '3:01:10.5'
+        assert c.get_as_string() == "3:01:10.5"
         c.minutes = 5
-        assert c.get_as_string() == '3:05:10.5'
+        assert c.get_as_string() == "3:05:10.5"
 
     def test_add_clocks(self):
         c1 = Clock(1, 2, 0.5)

@@ -1,4 +1,4 @@
-from typing import Type, Any
+from typing import Any
 
 
 def flatten(input: list[Any]) -> list[Any]:

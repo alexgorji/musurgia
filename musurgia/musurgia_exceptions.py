@@ -8,11 +8,12 @@ class ArithmeticProgressionException(Exception):
 
 class DAndSError(ArithmeticProgressionException):
     def __init__(self, *args: Any):
-        msg = 'you cannot set both d an s!'
+        msg = "you cannot set both d an s!"
         super().__init__(msg, *args)
 
 
 # matrix
+
 
 class MatrixIndexException(Exception):
     pass
@@ -36,7 +37,10 @@ class MatrixIndexEndOfMatrixError(MatrixIndexEndOfRowError, StopIteration):
 
 class MatrixIndexControllerReadingDirectionError(MatrixIndexControllerException):
     def __init__(self, *args: Any):
-        super().__init__('MatrixIndexController.get_next_in_row() works only for reading_direction horizontal.', *args)
+        super().__init__(
+            "MatrixIndexController.get_next_in_row() works only for reading_direction horizontal.",
+            *args,
+        )
 
 
 class MatrixException(Exception):
@@ -45,7 +49,7 @@ class MatrixException(Exception):
 
 class MatrixIsEmptyError(MatrixException):
     def __init__(self) -> None:
-        msg = 'Matrix is empty!'
+        msg = "Matrix is empty!"
         super().__init__(msg)
 
 
@@ -59,6 +63,7 @@ class SquareMatrixDataError(SquareMatrixException):
 
 # permutation order matrix
 
+
 class PermutationOrderMatrixException(MatrixException):
     pass
 
@@ -68,6 +73,7 @@ class PermutationOrderMatrixDataError(PermutationOrderMatrixException):
 
 
 # permutation order
+
 
 class PermutationOrderException(Exception):
     pass
@@ -87,15 +93,19 @@ class PermutationOrderValueError(PermutationOrderError, ValueError):
 
 # permutation index
 
+
 class PermutationIndexCalculatorException(Exception):
     pass
 
 
-class PermutationIndexCalculaterNoParentIndexError(PermutationIndexCalculatorException, ValueError):
+class PermutationIndexCalculaterNoParentIndexError(
+    PermutationIndexCalculatorException, ValueError
+):
     pass
 
 
 # fractal timline tree
+
 
 class FractalTimelineTreeException(Exception):
     pass
@@ -105,11 +115,15 @@ class FractalTimelineTreePermutationOrderError(FractalTimelineTreeException):
     pass
 
 
-class FractalTimelineTreePermutationIndexError(FractalTimelineTreeException, ValueError):
+class FractalTimelineTreePermutationIndexError(
+    FractalTimelineTreeException, ValueError
+):
     pass
 
 
-class FractalTimelineTreeSetMainPermutationOrderFirstError(FractalTimelineTreeException, ValueError):
+class FractalTimelineTreeSetMainPermutationOrderFirstError(
+    FractalTimelineTreeException, ValueError
+):
     msg = "set root's main_permutation_order first"
 
     def __init__(self, msg: Optional[str] = None):
@@ -118,7 +132,9 @@ class FractalTimelineTreeSetMainPermutationOrderFirstError(FractalTimelineTreeEx
         super().__init__(msg)
 
 
-class FractalTimelineTreeMergeWrongValuesError(FractalTimelineTreeException, ValueError):
+class FractalTimelineTreeMergeWrongValuesError(
+    FractalTimelineTreeException, ValueError
+):
     pass
 
 
@@ -130,11 +146,14 @@ class FractalTimelineTreeHasChildrenError(FractalTimelineTreeException):
     pass
 
 
-class FractalTimelineTreeNoneRootCannotSetMainPermutationOrderError(FractalTimelineTreeException):
+class FractalTimelineTreeNoneRootCannotSetMainPermutationOrderError(
+    FractalTimelineTreeException
+):
     pass
 
 
 # pdf
+
 
 class PdfException(Exception):
     pass
@@ -146,6 +165,7 @@ class PdfAttributeError(PdfException, AttributeError):
 
 # pdf draw object margins
 
+
 class MarginedObjectException(Exception):
     pass
 
@@ -155,6 +175,7 @@ class MarginNotSettableError(MarginedObjectException):
 
 
 # pdf draw object positions
+
 
 class PositionedObjectException(AttributeError):
     pass
@@ -191,6 +212,7 @@ class SegmentedLineLengthsCannotBeSetError(SegmentedLineException):
 
 # pdf ruler
 
+
 class RulerException(SegmentedLineException):
     pass
 
@@ -205,13 +227,13 @@ class RulerLengthNotPositiveError(RulerException, AttributeError):
 
 # time ruler
 
+
 class TimeRulerException(RulerException):
     pass
 
 
 class TimeRulerCannotSetLength(TimeRulerException, AttributeError):
     pass
-
 
 
 # clock
@@ -238,7 +260,9 @@ class ClockWrongMinutesTypeError(ClockException, TypeError):
 class ClockWrongHoursTypeError(ClockException, TypeError):
     pass
 
-# valuedtree 
+
+# valuedtree
+
 
 class ValuedTreeException(Exception):
     pass
@@ -247,6 +271,6 @@ class ValuedTreeException(Exception):
 class WrongTreeValueError(ValuedTreeException, ValueError):
     pass
 
+
 class WrongTreeValueWarning(Warning):
     pass
-

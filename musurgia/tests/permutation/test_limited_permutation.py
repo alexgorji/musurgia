@@ -17,12 +17,16 @@ class TestLimitedPermutationOrders(PdfTestCase):
 
     def test_get_permutation_orders(self):
         lt = LimitedPermutationOrders(main_permutation_order=(3, 1, 4, 2))
-        assert lt.get_permutation_orders() == [[(3, 1, 4, 2), (4, 3, 2, 1), (2, 4, 1, 3), (1, 2, 3, 4)],
-                                               [(2, 4, 1, 3), (3, 1, 4, 2), (1, 2, 3, 4), (4, 3, 2, 1)],
-                                               [(1, 2, 3, 4), (2, 4, 1, 3), (4, 3, 2, 1), (3, 1, 4, 2)],
-                                               [(4, 3, 2, 1), (1, 2, 3, 4), (3, 1, 4, 2), (2, 4, 1, 3)]]
+        assert lt.get_permutation_orders() == [
+            [(3, 1, 4, 2), (4, 3, 2, 1), (2, 4, 1, 3), (1, 2, 3, 4)],
+            [(2, 4, 1, 3), (3, 1, 4, 2), (1, 2, 3, 4), (4, 3, 2, 1)],
+            [(1, 2, 3, 4), (2, 4, 1, 3), (4, 3, 2, 1), (3, 1, 4, 2)],
+            [(4, 3, 2, 1), (1, 2, 3, 4), (3, 1, 4, 2), (2, 4, 1, 3)],
+        ]
         assert check_matrix_data_type(lt.get_permutation_orders())
         lt.main_permutation_order = (3, 1, 2)
-        assert lt.get_permutation_orders() == [[(3, 1, 2), (2, 3, 1), (1, 2, 3)],
-                                               [(1, 2, 3), (3, 1, 2), (2, 3, 1)],
-                                               [(2, 3, 1), (1, 2, 3), (3, 1, 2)]]
+        assert lt.get_permutation_orders() == [
+            [(3, 1, 2), (2, 3, 1), (1, 2, 3)],
+            [(1, 2, 3), (3, 1, 2), (2, 3, 1)],
+            [(2, 3, 1), (1, 2, 3), (3, 1, 2)],
+        ]

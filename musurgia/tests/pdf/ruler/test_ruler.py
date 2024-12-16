@@ -1,8 +1,11 @@
 from pathlib import Path
 from unittest import TestCase
 
-from musurgia.musurgia_exceptions import RulerCannotSetLengthsError, SegmentedLineLengthsCannotBeSetError, \
-    RulerLengthNotPositiveError
+from musurgia.musurgia_exceptions import (
+    RulerCannotSetLengthsError,
+    SegmentedLineLengthsCannotBeSetError,
+    RulerLengthNotPositiveError,
+)
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.ruler import HorizontalRuler
@@ -31,18 +34,30 @@ class TestRuler(TestCase):
             HorizontalRuler(length=-100)
 
     def test_get_labels(self):
-        assert [l.value for l in self.r.get_markline_text_labels()] == ['0', '5', '10']
+        assert [l.value for l in self.r.get_markline_text_labels()] == ["0", "5", "10"]
         assert [l.font_size for l in self.r.get_markline_text_labels()] == [10, 10, 10]
-        assert [l.font_weight for l in self.r.get_markline_text_labels()] == ['medium', 'medium', 'medium']
+        assert [l.font_weight for l in self.r.get_markline_text_labels()] == [
+            "medium",
+            "medium",
+            "medium",
+        ]
 
     def test_change_labels(self):
-        self.r.change_labels(font_size=6, font_weight='bold')
-        assert [l.value for l in self.r.get_markline_text_labels()] == ['0', '5', '10']
+        self.r.change_labels(font_size=6, font_weight="bold")
+        assert [l.value for l in self.r.get_markline_text_labels()] == ["0", "5", "10"]
         assert [l.font_size for l in self.r.get_markline_text_labels()] == [6, 6, 6]
-        assert [l.font_weight for l in self.r.get_markline_text_labels()] == ['bold', 'bold', 'bold']
+        assert [l.font_weight for l in self.r.get_markline_text_labels()] == [
+            "bold",
+            "bold",
+            "bold",
+        ]
 
-        self.r.change_labels(condition=lambda label: True if self.r.segments.index(label.master.master) == 5 else False,
-                             font_size=8)
+        self.r.change_labels(
+            condition=lambda label: True
+            if self.r.segments.index(label.master.master) == 5
+            else False,
+            font_size=8,
+        )
         assert [l.font_size for l in self.r.get_markline_text_labels()] == [6, 8, 6]
 
     def test_getter_setters_errors(self):
@@ -78,27 +93,27 @@ class TestRulerPdf(PdfTestCase):
 
     def test_h_ruler(self):
         r = HorizontalRuler(length=50)
-        with self.file_path(path, 'h_ruler', 'pdf') as pdf_path:
+        with self.file_path(path, "h_ruler", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
             r.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
 
     def test_h_ruler_A4(self):
-        with self.file_path(path, 'h_ruler_A4', 'pdf') as pdf_path:
+        with self.file_path(path, "h_ruler_A4", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, mode='h')
+            draw_ruler(self.pdf, mode="h")
             self.pdf.write_to_path(pdf_path)
 
     def test_both_rulers_A4(self):
-        with self.file_path(path, 'both_rulers_A4', 'pdf') as pdf_path:
+        with self.file_path(path, "both_rulers_A4", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, mode='h')
-            draw_ruler(self.pdf, mode='v')
+            draw_ruler(self.pdf, mode="h")
+            draw_ruler(self.pdf, mode="v")
             self.pdf.write_to_path(pdf_path)
 
     def test_rulers_borders_and_margins(self):
-        with self.file_path(path, 'both_rulers_borders_and_margins', 'pdf') as pdf_path:
+        with self.file_path(path, "both_rulers_borders_and_margins", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, mode='h', show_borders=True, show_margins=True)
-            draw_ruler(self.pdf, mode='v', show_borders=True, show_margins=True)
+            draw_ruler(self.pdf, mode="h", show_borders=True, show_margins=True)
+            draw_ruler(self.pdf, mode="v", show_borders=True, show_margins=True)
             self.pdf.write_to_path(pdf_path)

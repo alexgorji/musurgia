@@ -14,7 +14,9 @@ class TimeLineTreeTestCase(TestCase):
         child_durations = [TimelineDuration(1.5), TimelineDuration(0.5)]
         tlt = TimelineTree(root_duration)
         [tlt.add_child(TimelineTree(d)) for d in child_durations]
-        self.assertListEqual([ch.get_duration() for ch in tlt.get_children()], child_durations)
+        self.assertListEqual(
+            [ch.get_duration() for ch in tlt.get_children()], child_durations
+        )
 
     def test_check_timeline_durations(self):
         tlt = TimelineTree(TimelineDuration(2))
@@ -43,7 +45,10 @@ class TimeLineTreeTestCase(TestCase):
         ├── 3.0
         └── 2.0
 """
-        self.assertEqual(tft.get_tree_representation(key=lambda node: float(node.get_value())), expected)
+        self.assertEqual(
+            tft.get_tree_representation(key=lambda node: float(node.get_value())),
+            expected,
+        )
 
     def test_timeline_update_duration(self):
         tft = create_test_timeline_tree()
@@ -80,9 +85,11 @@ class TimeLineTreeTestCase(TestCase):
         ├── 3.0
         └── 2.0
 """
-        self.assertEqual(tft.get_tree_representation(key=lambda node: float(node.get_value())), expected)
+        self.assertEqual(
+            tft.get_tree_representation(key=lambda node: float(node.get_value())),
+            expected,
+        )
         tft.check_tree_values()
-
 
         one_child.update_duration(TimelineDuration(5))
         self.assertEqual(one_child.get_value(), 5)
@@ -100,8 +107,9 @@ class TimeLineTreeTestCase(TestCase):
         ├── 3.0
         └── 2.0
 """
-        self.assertEqual(tft.get_tree_representation(key=lambda node: float(node.get_value())), expected)
+        self.assertEqual(
+            tft.get_tree_representation(key=lambda node: float(node.get_value())),
+            expected,
+        )
 
         tft.check_tree_values()
-
-

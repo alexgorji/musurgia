@@ -4,7 +4,6 @@ from unittest import TestCase
 
 from musurgia.pdf.line import HorizontalLineSegment, StraightLine
 from musurgia.pdf.pdf import Pdf
-from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.tests.utils_for_tests import PdfTestCase
 
 path = Path(__file__)
@@ -60,7 +59,12 @@ class TestHorizontalLineSegment(TestCase):
         self.hls.relative_x = 10
         self.hls.right_margin = 5
 
-        assert self.hls.straight_line.relative_x == self.hls.start_mark_line.relative_x == self.hls.relative_x == 10
+        assert (
+            self.hls.straight_line.relative_x
+            == self.hls.start_mark_line.relative_x
+            == self.hls.relative_x
+            == 10
+        )
         assert self.hls.end_mark_line.relative_x == 10 + self.hls.length
 
         assert self.hls.get_relative_x2() == 20
@@ -87,7 +91,7 @@ class TestHorizontalLineSegment(TestCase):
         hls.end_mark_line.length = 10
         hls.relative_x = 5
         hls.relative_y = 5
-        assert hls.get_positions() == {'x': 5.0, 'y': 5.0}
+        assert hls.get_positions() == {"x": 5.0, "y": 5.0}
         assert (hls.get_relative_x2(), hls.get_relative_y2()) == (105.0, 15.0)
         assert hls.get_height() == 10
         assert hls.get_width() == 100
@@ -115,7 +119,7 @@ class TestTestHorizontalLineSegment(PdfTestCase):
         self.hls = HorizontalLineSegment(length=10)
 
     def test_draw(self):
-        with self.file_path(parent_path=path, name='draw', extension='pdf') as pdf_path:
+        with self.file_path(parent_path=path, name="draw", extension="pdf") as pdf_path:
             self.pdf.translate_page_margins()
             self.hls.end_mark_line.show = True
             self.hls.draw(self.pdf)
@@ -124,7 +128,9 @@ class TestTestHorizontalLineSegment(PdfTestCase):
     def test_draw_list(self):
         segments = [HorizontalLineSegment(length) for length in range(10, 30, 5)]
         segments[-1].end_mark_line.show = True
-        with self.file_path(parent_path=path, name='draw_list', extension='pdf') as pdf_path:
+        with self.file_path(
+            parent_path=path, name="draw_list", extension="pdf"
+        ) as pdf_path:
             self.pdf.translate_page_margins()
             for segment in segments:
                 segment.draw(self.pdf)
@@ -137,21 +143,23 @@ class TestTestHorizontalLineSegment(PdfTestCase):
         self.hls.length = 30
         self.hls.start_mark_line.length = 10
         self.hls.end_mark_line.length = 10
-        self.hls.end_mark_line.add_label('end top')
-        self.hls.end_mark_line.add_label('end top')
-        self.hls.start_mark_line.add_label('start top')
-        self.hls.start_mark_line.add_label('start top')
-        self.hls.end_mark_line.add_label('end below', placement='below')
-        self.hls.end_mark_line.add_label('end below', placement='below')
-        self.hls.start_mark_line.add_label('start below', placement='below')
-        self.hls.start_mark_line.add_label('start below', placement='below')
-        self.hls.straight_line.add_label('straight above', placement='above')
-        self.hls.straight_line.add_label('straight below', placement='below')
-        self.hls.straight_line.add_label('straight left', placement='left')
-        self.hls.straight_line.add_label('straight left', placement='left')
-        self.hls.straight_line.add_label('straight left', placement='left')
+        self.hls.end_mark_line.add_label("end top")
+        self.hls.end_mark_line.add_label("end top")
+        self.hls.start_mark_line.add_label("start top")
+        self.hls.start_mark_line.add_label("start top")
+        self.hls.end_mark_line.add_label("end below", placement="below")
+        self.hls.end_mark_line.add_label("end below", placement="below")
+        self.hls.start_mark_line.add_label("start below", placement="below")
+        self.hls.start_mark_line.add_label("start below", placement="below")
+        self.hls.straight_line.add_label("straight above", placement="above")
+        self.hls.straight_line.add_label("straight below", placement="below")
+        self.hls.straight_line.add_label("straight left", placement="left")
+        self.hls.straight_line.add_label("straight left", placement="left")
+        self.hls.straight_line.add_label("straight left", placement="left")
 
-        with self.file_path(parent_path=path, name='labels', extension='pdf') as pdf_path:
+        with self.file_path(
+            parent_path=path, name="labels", extension="pdf"
+        ) as pdf_path:
             self.pdf.translate_page_margins()
             self.hls.end_mark_line.show = True
             self.hls.draw(self.pdf)
@@ -160,23 +168,36 @@ class TestTestHorizontalLineSegment(PdfTestCase):
     def test_draw_with_relative_y(self):
         copied_1 = copy.deepcopy(self.hls)
         copied_1.relative_y = 5
-        control = StraightLine(mode='h', length=10, relative_y=5)
-        control.add_text_label('control', font_size=8, bottom_margin=2)
+        control = StraightLine(mode="h", length=10, relative_y=5)
+        control.add_text_label("control", font_size=8, bottom_margin=2)
 
-        with self.file_path(parent_path=path, name='draw_with_relative_y', extension='pdf') as pdf_path:
+        with self.file_path(
+            parent_path=path, name="draw_with_relative_y", extension="pdf"
+        ) as pdf_path:
             self.pdf.translate_page_margins()
             # self.hls.start_mark_line.add_text_label(str(self.pdf.absolute_positions), placement='above', font_size=8)
             self.hls.draw(self.pdf)
             self.pdf.translate(20, 0)
             control.draw(self.pdf)
             # copied_1.start_mark_line.add_text_label(str(self.pdf.absolute_positions), placement='above', font_size=8)
-            copied_1.start_mark_line.add_text_label(f'hls: {copied_1.positions}', placement='below', font_size=8)
-            copied_1.start_mark_line.add_text_label(f'straight: {copied_1.straight_line.positions}', placement='below',
-                                                    font_size=8)
-            copied_1.start_mark_line.add_text_label(f'start: {copied_1.start_mark_line.positions}', placement='below',
-                                                    font_size=8)
-            copied_1.start_mark_line.add_text_label(f'end: {copied_1.end_mark_line.positions}', placement='below',
-                                                    font_size=8)
+            copied_1.start_mark_line.add_text_label(
+                f"hls: {copied_1.positions}", placement="below", font_size=8
+            )
+            copied_1.start_mark_line.add_text_label(
+                f"straight: {copied_1.straight_line.positions}",
+                placement="below",
+                font_size=8,
+            )
+            copied_1.start_mark_line.add_text_label(
+                f"start: {copied_1.start_mark_line.positions}",
+                placement="below",
+                font_size=8,
+            )
+            copied_1.start_mark_line.add_text_label(
+                f"end: {copied_1.end_mark_line.positions}",
+                placement="below",
+                font_size=8,
+            )
 
             copied_1.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)

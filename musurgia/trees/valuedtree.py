@@ -6,7 +6,8 @@ from typing import Any, TypeVar, Union
 from musurgia.musurgia_exceptions import WrongTreeValueError, WrongTreeValueWarning
 from musurgia.musurgia_types import ConvertibleToFraction
 
-T = TypeVar('T', bound='ValuedTree')
+T = TypeVar("T", bound="ValuedTree")
+
 
 class ValuedTree(Tree[Any]):
     def _change_children_value(self, factor: Union[int, float, Fraction]) -> None:
@@ -18,13 +19,17 @@ class ValuedTree(Tree[Any]):
         _children = super().get_children()
         self._check_tree_children_values([ch.get_value() for ch in _children])
 
-    def _check_tree_children_values(self, children_values: list[ConvertibleToFraction]) -> None:
+    def _check_tree_children_values(
+        self, children_values: list[ConvertibleToFraction]
+    ) -> None:
         if sum(children_values) != self.get_value():
-            raise WrongTreeValueError(f"Children of ValuedTree node of position {self.get_position_in_tree()} with value {self.get_value()} have wrong values {children_values} (sum={sum(children_values)})")
-        
+            raise WrongTreeValueError(
+                f"Children of ValuedTree node of position {self.get_position_in_tree()} with value {self.get_value()} have wrong values {children_values} (sum={sum(children_values)})"
+            )
+
     def _get_children(self: T) -> list[T]:
         return super().get_children()
-    
+
     @abstractmethod
     def _set_value(self, val: ConvertibleToFraction) -> None:
         """_set_value must be defined."""
@@ -32,17 +37,17 @@ class ValuedTree(Tree[Any]):
     @property
     def value(self) -> None:
         raise AttributeError("Use get_value() instead.")
-    
+
     def check_tree_values(self) -> bool:
         for node in self.traverse():
             if not node.is_leaf:
                 node._check_tree_children()
         return True
-    
+
     @abstractmethod
     def get_value(self) -> Fraction:
         """get_value must be defined."""
-    
+
     def update_value(self, new_value: ConvertibleToFraction) -> None:
         if not isinstance(new_value, Fraction):
             new_value = Fraction(new_value)
@@ -52,7 +57,6 @@ class ValuedTree(Tree[Any]):
             node._set_value(sum([child.get_value() for child in node._get_children()]))
 
         self._change_children_value(factor)
-
 
     def get_children(self: T) -> list[T]:
         children = self._get_children()

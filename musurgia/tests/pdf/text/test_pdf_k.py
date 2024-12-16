@@ -9,21 +9,18 @@ class TestPdfK(PdfTestCase):
         self.assertEqual(expected, actual)
 
     def test_new_unit(self):
-
-        PdfUnit.GLOBAL_UNIT = 'cm'
+        PdfUnit.GLOBAL_UNIT = "cm"
         actual = PdfUnit.get_k()
         expected = 28.346456692913385
         self.assertEqual(expected, actual)
         PdfUnit.reset()
 
     def test_change_unit(self):
-        PdfUnit.change('mm')
+        PdfUnit.change("mm")
         old_k = PdfUnit.get_k()
-        PdfUnit.change('cm')
+        PdfUnit.change("cm")
         new_k = PdfUnit.get_k()
         actual = new_k / old_k
         expected = 10
         self.assertAlmostEqual(expected, actual)
         PdfUnit.reset()
-
-

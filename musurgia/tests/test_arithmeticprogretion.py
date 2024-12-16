@@ -26,18 +26,33 @@ class TestArithmeticProgression(TestCase):
 
     def test_correct_s(self):
         arith = ArithmeticProgression(a1=3, an=6, s=21)
-        assert arith.get_parameters_dict() == {'a1': Fraction(3, 1), 'an': Fraction(6, 1), 'n': 4, 'd': Fraction(1, 1),
-                                               's': Fraction(21, 1)}
+        assert arith.get_parameters_dict() == {
+            "a1": Fraction(3, 1),
+            "an": Fraction(6, 1),
+            "n": 4,
+            "d": Fraction(1, 1),
+            "s": Fraction(21, 1),
+        }
         assert arith.get_actual_s() == Fraction(18, 1)
         result = list(arith)
-        assert result == [Fraction(3, 1), Fraction(4, 1), Fraction(5, 1), Fraction(6, 1)]
+        assert result == [
+            Fraction(3, 1),
+            Fraction(4, 1),
+            Fraction(5, 1),
+            Fraction(6, 1),
+        ]
         assert sum(result) == Fraction(18, 1)
 
         arith.correct_s = True
         arith.reset_iterator()
         assert arith.get_correction_factor() == Fraction(7, 6)
         result = list(arith)
-        assert result == [Fraction(7, 2), Fraction(14, 3), Fraction(35, 6), Fraction(7, 1)]
+        assert result == [
+            Fraction(7, 2),
+            Fraction(14, 3),
+            Fraction(35, 6),
+            Fraction(7, 1),
+        ]
         assert sum(result) == Fraction(21, 1)
 
     def test_d(self):
@@ -112,10 +127,13 @@ class TestArithmeticProgression(TestCase):
         assert arith.get_current_index() == 2
 
     def test_get_dict(self):
-        assert ArithmeticProgression(n=15, a1=1, d=2).get_parameters_dict() == {'a1': Fraction(1, 1),
-                                                                                'an': Fraction(29, 1), 'n': 15,
-                                                                                'd': Fraction(2, 1),
-                                                                                's': Fraction(225, 1)}
+        assert ArithmeticProgression(n=15, a1=1, d=2).get_parameters_dict() == {
+            "a1": Fraction(1, 1),
+            "an": Fraction(29, 1),
+            "n": 15,
+            "d": Fraction(2, 1),
+            "s": Fraction(225, 1),
+        }
 
     def test_check_args_error(self):
         with self.assertRaises(AttributeError):
@@ -123,5 +141,3 @@ class TestArithmeticProgression(TestCase):
 
         with self.assertRaises(AttributeError):
             ArithmeticProgression(n=15, a1=1, an=20, d=10).__next__()
-
-

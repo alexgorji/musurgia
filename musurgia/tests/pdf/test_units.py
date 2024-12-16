@@ -34,25 +34,25 @@ class TestClippingArea(TestCase):
 
 class TestPdfUnit(TestCase):
     def test_setting_global_unit(self):
-        assert PdfUnit._DEFAULT_UNIT == 'mm'
-        assert PdfUnit.GLOBAL_UNIT == 'mm'
-        PdfUnit.GLOBAL_UNIT = 'pt'
-        assert PdfUnit.GLOBAL_UNIT == 'pt'
+        assert PdfUnit._DEFAULT_UNIT == "mm"
+        assert PdfUnit.GLOBAL_UNIT == "mm"
+        PdfUnit.GLOBAL_UNIT = "pt"
+        assert PdfUnit.GLOBAL_UNIT == "pt"
         PdfUnit.reset()
-        assert PdfUnit.GLOBAL_UNIT == 'mm'
+        assert PdfUnit.GLOBAL_UNIT == "mm"
         with self.assertRaises(MusurgiaTypeError):
-            PdfUnit.GLOBAL_UNIT = 'bla'
+            PdfUnit.GLOBAL_UNIT = "bla"
 
 
 class TestLabeled(TestCase):
     def test_no_master_error(self):
-        t = TextLabel('bla')
-        t.placement = 'above'
+        t = TextLabel("bla")
+        t.placement = "above"
         with self.assertRaises(AttributeError):
-            assert t.placement == 'above'
+            assert t.placement == "above"
 
     def test_false_master_errr(self):
-        t = TextLabel('bla', master=DummyMaster())
+        t = TextLabel("bla", master=DummyMaster())
         l = Labeled()
         with self.assertRaises(AttributeError):
             l.add_text_label(t)
@@ -61,19 +61,19 @@ class TestLabeled(TestCase):
         assert t.master == l
 
     def test_get_slave_position_wrong_type_or_slave_with_wrong_master(self):
-        t = TextLabel('bla', master=DummyMaster())
+        t = TextLabel("bla", master=DummyMaster())
         l = Labeled()
         with self.assertRaises(AttributeError):
-            l.get_slave_position(t, 'x')
+            l.get_slave_position(t, "x")
         with self.assertRaises(TypeError):
-            l.get_slave_position('slave', 'y')
+            l.get_slave_position("slave", "y")
         t.master = l
-        assert l.get_slave_position(t, 'x') == 0
+        assert l.get_slave_position(t, "x") == 0
 
 
 class TestSlaveErrors(TestCase):
     def test_no_master_error(self):
-        ml = MarkLine(placement='start', mode='horizontal')
+        ml = MarkLine(placement="start", mode="horizontal")
         with self.assertRaises(AttributeError):
             ml.relative_x
 
@@ -93,27 +93,27 @@ class TestSlaveErrors(TestCase):
             ml.right_margin
 
     def test_wrong_master(self):
-        ml = MarkLine(placement='start', mode='horizontal')
+        ml = MarkLine(placement="start", mode="horizontal")
         with self.assertRaises(TypeError):
-            ml.master = TextLabel('something')
+            ml.master = TextLabel("something")
 
 
 class TestNoPdfError(TestCase):
     def test_draw_with_no_pdf_error(self):
-        t = Text('bla')
+        t = Text("bla")
         with self.assertRaises(TypeError):
             t.draw(pdf=None)
 
 
 class TestMarginsPositions(TestCase):
     def test_set_get_margins(self):
-        l = StraightLine(mode='h', length=10)
+        l = StraightLine(mode="h", length=10)
         l.margins = (1, 2, 3, 4)
-        assert l.get_margins() == {'bottom': 3.0, 'left': 4.0, 'right': 2.0, 'top': 1.0}
+        assert l.get_margins() == {"bottom": 3.0, "left": 4.0, "right": 2.0, "top": 1.0}
         assert l.margins == (1, 2, 3, 4)
 
     def test_set_get_positions(self):
-        l = StraightLine(mode='h', length=10)
+        l = StraightLine(mode="h", length=10)
         l.positions = (10, 20)
-        assert l.get_positions() == {'x': 10.0, 'y': 20.0}
+        assert l.get_positions() == {"x": 10.0, "y": 20.0}
         assert l.positions == (10, 20)

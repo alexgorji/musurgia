@@ -11,7 +11,7 @@
 # class ChordFactoryTestCase(TestCase):
 #     def setUp(self):
 #         self.chf = ChordFactory()
-        
+
 #     def test_update_duration(self):
 #         self.chf.duration.seconds = 2
 #         self.assertEqual(self.chf.duration, 2)
@@ -27,7 +27,7 @@
 # class ChordTreeTestCase(TestCase):
 #     def setUp(self):
 #         self.mt = ChordTree(duration=Duration(4))
-    
+
 #     def test_init(self):
 #         self.assertEqual(self.mt.get_value(), 4)
 #         self.assertTrue(isinstance(self.mt, TimelineTree))
@@ -57,7 +57,6 @@
 #         self.assertEqual(self.chf.get_chord().quarter_duration, 4)
 
 
-
 # # class ChordTreeToScoreTestCase(TestCase):
 # #     def setUp(self):
 # #         self.mt = create_test_music_tree()
@@ -68,4 +67,3 @@
 # #     def test_updated_musictree_to_score(self):
 # #         self.fail()
 
-    

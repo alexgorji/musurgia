@@ -1,9 +1,16 @@
-from pprint import pprint
+from pprint import pprint # noqa
 from typing import Any
 
-from musurgia.musurgia_exceptions import PermutationOrderTypeError, PermutationOrderValueError
-from musurgia.musurgia_types import check_type, PermutationOrder, check_permutation_order_values, \
-    MatrixData
+from musurgia.musurgia_exceptions import (
+    PermutationOrderTypeError,
+    PermutationOrderValueError,
+)
+from musurgia.musurgia_types import (
+    check_type,
+    PermutationOrder,
+    check_permutation_order_values,
+    MatrixData,
+)
 
 
 def permute(input_list: list[Any], permutation_order: PermutationOrder) -> list[Any]:
@@ -16,9 +23,14 @@ def permute(input_list: list[Any], permutation_order: PermutationOrder) -> list[
     >>> permute([10, 20, 30, 40], (3, 2, 4, 1))
     [30, 20, 40, 10]
     """
-    check_type(input_list, list, function_name='permute', argument_name='input_list')
+    check_type(input_list, list, function_name="permute", argument_name="input_list")
     try:
-        check_type(permutation_order, 'PermutationOrder', function_name='permute', argument_name='permutation_order')
+        check_type(
+            permutation_order,
+            "PermutationOrder",
+            function_name="permute",
+            argument_name="permutation_order",
+        )
     except TypeError as err:
         raise PermutationOrderTypeError(err)
 
@@ -30,7 +42,9 @@ def permute(input_list: list[Any], permutation_order: PermutationOrder) -> list[
     return [input_list[m - 1] for m in permutation_order]
 
 
-def get_self_permutation_2d(permutation_order: tuple[int, ...]) -> list[tuple[int, ...]]:
+def get_self_permutation_2d(
+    permutation_order: tuple[int, ...],
+) -> list[tuple[int, ...]]:
     """
     This is a function for applying the `permutation_order` to itself.
 
@@ -69,10 +83,10 @@ def get_self_permutation_3d(permutation_order: tuple[int, ...]) -> MatrixData:
     """
     This is a function for applying the `permutation_order` to itself in a higher order compared to :obj:`get_self_permutation_2d`.
     If :obj:`get_self_permutation_2d` is a two dimensional reflexive operation, :obj:`get_self_permutation_3d` is a three
-    dimensional one. 
-    
+    dimensional one.
+
     :param permutation_order: A list consisting of all integers between 1 and a higher integer
-    
+
     :return:
 
     >>> pprint(get_self_permutation_3d((3, 1, 2)))

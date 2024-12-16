@@ -23,7 +23,9 @@ class TestVerticalLineSegment(TestCase):
         assert self.vls.relative_y == self.vls.start_mark_line.relative_y
 
     def test_end_mark_line_relative_y(self):
-        assert self.vls.end_mark_line.relative_y == self.vls.relative_y + self.vls.length
+        assert (
+            self.vls.end_mark_line.relative_y == self.vls.relative_y + self.vls.length
+        )
 
     def test_end_mark_line_relative_x(self):
         assert self.vls.end_mark_line.relative_x == 0
@@ -48,10 +50,10 @@ class TestVerticalLineSegmentDraw(PdfTestCase):
 
     def test_draw(self):
         self.vls.set_straight_line_relative_x(0)
-        with self.file_path(parent_path=path, name='draw', extension='pdf') as pdf_path:
+        with self.file_path(parent_path=path, name="draw", extension="pdf") as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, mode='v')
-            draw_ruler(self.pdf, mode='h')
+            draw_ruler(self.pdf, mode="v")
+            draw_ruler(self.pdf, mode="h")
             self.pdf.translate(10, 10)
             self.vls.end_mark_line.show = True
             self.vls.draw(self.pdf)

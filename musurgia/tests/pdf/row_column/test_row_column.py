@@ -1,15 +1,24 @@
 import copy
 from pathlib import Path
-from unittest import skip, TestCase
+from unittest import TestCase
 
 from musurgia.musurgia_exceptions import DrawObjectInContainerHasNegativePositionError
-from musurgia.pdf.line import HorizontalLineSegment, VerticalSegmentedLine, VerticalLineSegment, StraightLine, \
-    HorizontalSegmentedLine
+from musurgia.pdf.line import (
+    HorizontalLineSegment,
+    VerticalSegmentedLine,
+    VerticalLineSegment,
+    StraightLine,
+    HorizontalSegmentedLine,
+)
 from musurgia.pdf.pdf import Pdf
 from musurgia.pdf.pdf_tools import draw_ruler
 from musurgia.pdf.rowcolumn import DrawObjectRow, DrawObjectColumn
 from musurgia.pdf.labeled import TextLabel
-from musurgia.tests.utils_for_tests import PdfTestCase, add_control_positions_to_draw_object, create_simple_column
+from musurgia.tests.utils_for_tests import (
+    PdfTestCase,
+    add_control_positions_to_draw_object,
+    create_simple_column,
+)
 
 path = Path(__file__)
 
@@ -28,7 +37,7 @@ def make_row():
     for segment in h_segments:
         r.add_draw_object(segment)
     r.add_draw_object(vsl)
-    r.add_text_label(TextLabel('row', placement='left'))
+    r.add_text_label(TextLabel("row", placement="left"))
     return r
 
 
@@ -112,10 +121,10 @@ class TestRowPositionAndMargins(TestCase):
 
     def test_two_simple_lines_column_draw(self):
         c = DrawObjectColumn()
-        s1 = StraightLine('h', 30)
+        s1 = StraightLine("h", 30)
         s1.relative_y = 5
         s1.margins = (10, 10, 10, 10)
-        s2 = StraightLine('h', 30)
+        s2 = StraightLine("h", 30)
         s2.margins = (10, 10, 10, 10)
         s2.relative_y = 5
         c.add_draw_object(s1)
@@ -131,9 +140,9 @@ class TestRowPositionAndMargins(TestCase):
 
 class TestRowColumnSimpleLines(PdfTestCase):
     def setUp(self) -> None:
-        self.pdf = Pdf(orientation='l')
-        self.h_lines = [StraightLine(length=l, mode='h') for l in range(5, 20, 5)]
-        self.v_lines = [StraightLine(length=l, mode='v') for l in range(5, 20, 5)]
+        self.pdf = Pdf(orientation="l")
+        self.h_lines = [StraightLine(length=l, mode="h") for l in range(5, 20, 5)]
+        self.v_lines = [StraightLine(length=l, mode="v") for l in range(5, 20, 5)]
         self.v_lines[-1].right_margin = 10
 
     def test_simple_line_row_positions(self):
@@ -147,10 +156,10 @@ class TestRowColumnSimpleLines(PdfTestCase):
         assert self.v_lines[2].get_height() == 25
         add_control_positions_to_draw_object(row)
         assert row.get_end_positions() == (100, 25)
-        with self.file_path(path, 'simple_lines_row_positions', 'pdf') as pdf_path:
+        with self.file_path(path, "simple_lines_row_positions", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(mode='v', pdf=self.pdf)
-            draw_ruler(mode='h', pdf=self.pdf)
+            draw_ruler(mode="v", pdf=self.pdf)
+            draw_ruler(mode="h", pdf=self.pdf)
             self.pdf.translate(10, 10)
             row.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -158,8 +167,8 @@ class TestRowColumnSimpleLines(PdfTestCase):
     def test_simple_lines_row(self):
         row = DrawObjectRow(show_margins=True, show_borders=True)
         row.margins = (10, 10, 10, 10)
-        end_line = StraightLine(mode='h', length=70)
-        end_line.add_text_label('control end_line', bottom_margin=2)
+        end_line = StraightLine(mode="h", length=70)
+        end_line.add_text_label("control end_line", bottom_margin=2)
         for l in self.h_lines + self.v_lines:
             row.add_draw_object(l)
 
@@ -170,11 +179,11 @@ class TestRowColumnSimpleLines(PdfTestCase):
             row.add_draw_object(copied)
 
         add_control_positions_to_draw_object(row)
-        row.add_text_label(f'{row.get_height()}', placement='left')
-        with self.file_path(path, 'simple_lines_row', 'pdf') as pdf_path:
+        row.add_text_label(f"{row.get_height()}", placement="left")
+        with self.file_path(path, "simple_lines_row", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(mode='v', pdf=self.pdf)
-            draw_ruler(mode='h', pdf=self.pdf)
+            draw_ruler(mode="v", pdf=self.pdf)
+            draw_ruler(mode="h", pdf=self.pdf)
             self.pdf.translate(20, 20)
             row.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -182,30 +191,32 @@ class TestRowColumnSimpleLines(PdfTestCase):
 
 class TestRowColumn(PdfTestCase):
     def setUp(self) -> None:
-        self.pdf = Pdf(orientation='l')
+        self.pdf = Pdf(orientation="l")
         self.row = make_row()
         self.column = make_column()
 
     def test_draw_row(self):
         self.pdf.translate_page_margins()
-        draw_ruler(self.pdf, 'h')
-        draw_ruler(self.pdf, 'v')
+        draw_ruler(self.pdf, "h")
+        draw_ruler(self.pdf, "v")
         self.pdf.translate(10, 10)
         r = self.row
-        r.add_text_label(label=TextLabel('below label', placement='below'))
+        r.add_text_label(label=TextLabel("below label", placement="below"))
 
         r.draw(self.pdf)
 
-        with self.file_path(path, 'row', 'pdf') as pdf_path:
+        with self.file_path(path, "row", "pdf") as pdf_path:
             self.pdf.write_to_path(pdf_path)
 
     def test_wrong_add_draw_object(self):
         r = DrawObjectRow()
         with self.assertRaises(TypeError):
-            r.add_draw_object('something')
+            r.add_draw_object("something")
 
     def test_draw_row_of_segments(self):
-        draw_object_rows = [DrawObjectRow(show_segments=True, show_margins=True) for _ in range(4)]
+        draw_object_rows = [
+            DrawObjectRow(show_segments=True, show_margins=True) for _ in range(4)
+        ]
         line_segments = [HorizontalLineSegment(l) for l in [30, 10, 20]]
         line_segments[-1].end_mark_line.show = True
         line_segments[-1].right_margin = 10
@@ -214,7 +225,7 @@ class TestRowColumn(PdfTestCase):
 
         for i, l in enumerate(line_segments):
             copied = copy.deepcopy(l)
-            copied.start_mark_line.length *= (i + 1)
+            copied.start_mark_line.length *= i + 1
             draw_object_rows[1].add_draw_object(copied)
             if i == len(line_segments) - 1:
                 copied.end_mark_line.length += copied.start_mark_line.length
@@ -222,19 +233,19 @@ class TestRowColumn(PdfTestCase):
 
         for i, l in enumerate(line_segments):
             copied = copy.deepcopy(l)
-            copied.start_mark_line.length *= (i + 1)
+            copied.start_mark_line.length *= i + 1
             draw_object_rows[2].add_draw_object(copied)
             if i == len(line_segments) - 1:
                 copied.end_mark_line.length += copied.start_mark_line.length
 
         for i, l in enumerate(line_segments):
             copied = copy.deepcopy(l)
-            copied.start_mark_line.length *= (i + 1)
+            copied.start_mark_line.length *= i + 1
             draw_object_rows[3].add_draw_object(copied)
             if i == len(line_segments) - 1:
                 copied.end_mark_line.length += copied.start_mark_line.length
 
-        with self.file_path(path, 'row_of_segments', 'pdf') as pdf_path:
+        with self.file_path(path, "row_of_segments", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
             for l in line_segments:
                 copied = copy.deepcopy(l)
@@ -246,7 +257,7 @@ class TestRowColumn(PdfTestCase):
             self.pdf.translate(0, 30)
             for i, l in enumerate(line_segments):
                 copied = copy.deepcopy(l)
-                copied.start_mark_line.length *= (i + 1)
+                copied.start_mark_line.length *= i + 1
                 copied.draw(self.pdf)
                 self.pdf.translate(50, 0)
 
@@ -255,12 +266,20 @@ class TestRowColumn(PdfTestCase):
             self.pdf.translate(0, 60)
             for i, l in enumerate(line_segments):
                 copied = copy.deepcopy(l)
-                copied.start_mark_line.length *= (i + 1)
-                copied.relative_y -= (i * 3)
-                copied.start_mark_line.add_text_label(str(copied.relative_y), font_size=8)
-                copied.start_mark_line.add_text_label(str(copied.start_mark_line.length), font_size=8, placement='left')
-                copied.straight_line.add_text_label(str(copied.straight_line.length), font_size=8, placement='below',
-                                                    top_margin=2)
+                copied.start_mark_line.length *= i + 1
+                copied.relative_y -= i * 3
+                copied.start_mark_line.add_text_label(
+                    str(copied.relative_y), font_size=8
+                )
+                copied.start_mark_line.add_text_label(
+                    str(copied.start_mark_line.length), font_size=8, placement="left"
+                )
+                copied.straight_line.add_text_label(
+                    str(copied.straight_line.length),
+                    font_size=8,
+                    placement="below",
+                    top_margin=2,
+                )
                 copied.draw(self.pdf)
                 self.pdf.translate(50, 0)
 
@@ -282,10 +301,10 @@ class TestRowColumn(PdfTestCase):
         c.add_draw_object(HorizontalLineSegment(60))
         c.add_draw_object(r)
 
-        with self.file_path(path, 'column_of_row_of_segments', 'pdf') as pdf_path:
+        with self.file_path(path, "column_of_row_of_segments", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, 'h')
-            draw_ruler(self.pdf, 'v')
+            draw_ruler(self.pdf, "h")
+            draw_ruler(self.pdf, "v")
             self.pdf.translate(10, 10)
             c.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -298,23 +317,23 @@ class TestRowColumn(PdfTestCase):
         r = DrawObjectRow()
         r.add_draw_object(c)
 
-        with self.file_path(path, 'row_of_column_of_segments', 'pdf') as pdf_path:
+        with self.file_path(path, "row_of_column_of_segments", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, 'h')
-            draw_ruler(self.pdf, 'v')
+            draw_ruler(self.pdf, "h")
+            draw_ruler(self.pdf, "v")
             self.pdf.translate(10, 10)
             c.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
 
     def test_draw_column(self):
         self.pdf.translate_page_margins()
-        draw_ruler(self.pdf, 'h')
-        draw_ruler(self.pdf, 'v')
+        draw_ruler(self.pdf, "h")
+        draw_ruler(self.pdf, "v")
         self.pdf.translate(10, 10)
         c = self.column
-        c.add_text_label(TextLabel('below label', placement='below', top_margin=3))
+        c.add_text_label(TextLabel("below label", placement="below", top_margin=3))
         c.draw(self.pdf)
-        with self.file_path(path, 'column', 'pdf') as pdf_path:
+        with self.file_path(path, "column", "pdf") as pdf_path:
             self.pdf.write_to_path(pdf_path)
 
     def test_travers_column(self):
@@ -345,15 +364,27 @@ class TestRowColumn(PdfTestCase):
         def add_text_labels(do):
             if isinstance(do, HorizontalLineSegment):
                 do = do.start_mark_line
-            do.add_text_label(label=TextLabel('below label', placement='below'))
-            do.add_text_label(label=TextLabel(f'rel_x: {round(do.relative_x)}', placement='below'))
-            do.add_text_label(label=TextLabel(f'rel_x2: {round(do.get_relative_x2())}', placement='below'))
-            do.add_text_label(label=TextLabel('above label', placement='above'))
-            do.add_text_label(label=TextLabel(f'rel_y: {round(do.relative_y)}', placement='above'))
-            do.add_text_label(label=TextLabel(f'rel_y2: {round(do.get_relative_y2())}', placement='above'))
-            do.add_text_label(label=TextLabel(f'left label', placement='left'))
-            do.add_text_label(label=TextLabel(f'left label', placement='left'))
-            do.add_text_label(label=TextLabel(f'left label', placement='left'))
+            do.add_text_label(label=TextLabel("below label", placement="below"))
+            do.add_text_label(
+                label=TextLabel(f"rel_x: {round(do.relative_x)}", placement="below")
+            )
+            do.add_text_label(
+                label=TextLabel(
+                    f"rel_x2: {round(do.get_relative_x2())}", placement="below"
+                )
+            )
+            do.add_text_label(label=TextLabel("above label", placement="above"))
+            do.add_text_label(
+                label=TextLabel(f"rel_y: {round(do.relative_y)}", placement="above")
+            )
+            do.add_text_label(
+                label=TextLabel(
+                    f"rel_y2: {round(do.get_relative_y2())}", placement="above"
+                )
+            )
+            do.add_text_label(label=TextLabel("left label", placement="left"))
+            do.add_text_label(label=TextLabel("left label", placement="left"))
+            do.add_text_label(label=TextLabel("left label", placement="left"))
             for tl in do.get_text_labels():
                 tl.font_size = 8
 
@@ -369,7 +400,7 @@ class TestRowColumn(PdfTestCase):
         control_hls.bottom_margin = 20
 
         add_text_labels(control_hls)
-        control_hls.straight_line.add_text_label('control_hsl')
+        control_hls.straight_line.add_text_label("control_hsl")
 
         r = DrawObjectRow(show_borders=True, show_margins=True)
         r.relative_y = 10
@@ -413,10 +444,10 @@ class TestRowColumn(PdfTestCase):
         main_column.add_draw_object(r)
         main_column.add_draw_object(c)
 
-        with self.file_path(path, 'borders_margins_and_labels', 'pdf') as pdf_path:
+        with self.file_path(path, "borders_margins_and_labels", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, mode='v')
-            draw_ruler(self.pdf, mode='h')
+            draw_ruler(self.pdf, mode="v")
+            draw_ruler(self.pdf, mode="h")
             self.pdf.translate(20, 20)
             main_column.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -469,12 +500,12 @@ class TestRowColumn(PdfTestCase):
     #         self.pdf.write_to_path(pdf_path)
 
     def test_two_simple_lines_column_draw(self):
-        c = create_simple_column([StraightLine('h', 30), StraightLine('h', 30)])
+        c = create_simple_column([StraightLine("h", 30), StraightLine("h", 30)])
 
-        with self.file_path(path, 'two_simple_lines_column', 'pdf') as pdf_path:
+        with self.file_path(path, "two_simple_lines_column", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, mode='v', first_label=-1)
-            draw_ruler(self.pdf, mode='h', first_label=-1)
+            draw_ruler(self.pdf, mode="v", first_label=-1)
+            draw_ruler(self.pdf, mode="h", first_label=-1)
             self.pdf.translate(10, 10)
             c.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -482,20 +513,24 @@ class TestRowColumn(PdfTestCase):
     def test_simple_and_segmented_lines_in_columns(self):
         control1 = HorizontalSegmentedLine([10, 20])
         control1.margins = (10, 10, 10, 10)
-        control2 = StraightLine('h', 30)
+        control2 = StraightLine("h", 30)
         control2.margins = (10, 10, 10, 10)
 
         r = DrawObjectRow()
-        c1 = create_simple_column([StraightLine('h', 30), StraightLine('h', 30)])
+        c1 = create_simple_column([StraightLine("h", 30), StraightLine("h", 30)])
         c1.right_margin = 10
-        c2 = create_simple_column([HorizontalSegmentedLine([10, 20]), HorizontalSegmentedLine([10, 20])])
+        c2 = create_simple_column(
+            [HorizontalSegmentedLine([10, 20]), HorizontalSegmentedLine([10, 20])]
+        )
         for c in [c1, c2]:
             r.add_draw_object(c)
 
-        with self.file_path(path, 'simple_and_segmented_lines_in_columns', 'pdf') as pdf_path:
+        with self.file_path(
+            path, "simple_and_segmented_lines_in_columns", "pdf"
+        ) as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, mode='v', first_label=-1)
-            draw_ruler(self.pdf, mode='h', first_label=-1)
+            draw_ruler(self.pdf, mode="v", first_label=-1)
+            draw_ruler(self.pdf, mode="h", first_label=-1)
             self.pdf.translate(10, 10)
             control1.draw(self.pdf)
             self.pdf.translate(50, 0)
@@ -505,12 +540,16 @@ class TestRowColumn(PdfTestCase):
             self.pdf.write_to_path(pdf_path)
 
     def test_two_horizontal_segmented_lines_column_draw(self):
-        c = create_simple_column([HorizontalSegmentedLine([10, 20]), HorizontalSegmentedLine([10, 20])])
+        c = create_simple_column(
+            [HorizontalSegmentedLine([10, 20]), HorizontalSegmentedLine([10, 20])]
+        )
 
-        with self.file_path(path, 'two_horizontal_segmented_lines_column', 'pdf') as pdf_path:
+        with self.file_path(
+            path, "two_horizontal_segmented_lines_column", "pdf"
+        ) as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, mode='v', first_label=-1)
-            draw_ruler(self.pdf, mode='h', first_label=-1)
+            draw_ruler(self.pdf, mode="v", first_label=-1)
+            draw_ruler(self.pdf, mode="h", first_label=-1)
             self.pdf.translate(10, 10)
             c.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)
@@ -522,12 +561,12 @@ class TestRowColumn(PdfTestCase):
         hsl.margins = (10, 0, 20, 0)
         c.add_draw_object(hsl)
 
-        line = StraightLine(length=60, mode='h')
+        line = StraightLine(length=60, mode="h")
         c.add_draw_object(line)
-        with self.file_path(path, 'relative_y_inside_column', 'pdf') as pdf_path:
+        with self.file_path(path, "relative_y_inside_column", "pdf") as pdf_path:
             self.pdf.translate_page_margins()
-            draw_ruler(self.pdf, mode='v', first_label=-1)
-            draw_ruler(self.pdf, mode='h', first_label=-1)
+            draw_ruler(self.pdf, mode="v", first_label=-1)
+            draw_ruler(self.pdf, mode="h", first_label=-1)
             self.pdf.translate(10, 10)
             c.draw(self.pdf)
             self.pdf.write_to_path(pdf_path)

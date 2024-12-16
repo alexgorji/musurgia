@@ -29,4 +29,3 @@ class TestAbsoluteY(PdfTestCase):
         actual = self.pdf.absolute_y
         expected = 40
         self.assertEqual(expected, actual)
-

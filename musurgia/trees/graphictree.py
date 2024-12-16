@@ -3,19 +3,19 @@ from typing import cast, Any, Union
 
 from verysimpletree.tree import Tree, T
 
-from musurgia.pdf.line import HorizontalLineSegment
-from musurgia.pdf.rowcolumn import DrawObjectColumn
 from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
-from musurgia.musurgia_types import ConvertibleToFloat
 from musurgia.pdf import DrawObjectRow, Pdf, DrawObjectColumn, HorizontalLineSegment
 from musurgia.pdf.line import LineSegment
 from musurgia.trees.valuedtree import ValuedTree
 
 
-__all__ = ['ValuedTreeNodeSegment', 'GraphicChildrenSegmentedLine', 'GraphicTree']
+__all__ = ["ValuedTreeNodeSegment", "GraphicChildrenSegmentedLine", "GraphicTree"]
+
 
 class ValuedTreeNodeSegment(HorizontalLineSegment):
-    def __init__(self, node_value: float, unit: int = 1, *args: Any, **kwargs: Any) -> None:
+    def __init__(
+        self, node_value: float, unit: int = 1, *args: Any, **kwargs: Any
+    ) -> None:
         super().__init__(length=node_value * unit, *args, **kwargs)  # type: ignore
         self._node_value = node_value
         self._unit: int
@@ -46,7 +46,9 @@ class ValuedTreeNodeSegment(HorizontalLineSegment):
 
 
 class GraphicChildrenSegmentedLine(DrawObjectRow):
-    def __init__(self, graphic_children: list['GraphicTree'], *args: Any, **kwargs: Any):
+    def __init__(
+        self, graphic_children: list["GraphicTree"], *args: Any, **kwargs: Any
+    ):
         super().__init__(*args, **kwargs)
         self._children = graphic_children
         self._create_segments()
@@ -73,7 +75,9 @@ class GraphicChildrenSegmentedLine(DrawObjectRow):
         reference_segment = max(self.segments, key=lambda seg: seg.get_height())
         for segment in self.segments:
             if segment != reference_segment:
-                segment.set_straight_line_relative_y(reference_segment.straight_line.relative_y)
+                segment.set_straight_line_relative_y(
+                    reference_segment.straight_line.relative_y
+                )
 
     def draw(self, pdf: Pdf) -> None:
         self._check_segment_margins()
@@ -83,9 +87,16 @@ class GraphicChildrenSegmentedLine(DrawObjectRow):
 
 
 class GraphicTree(Tree[Any]):
-    def __init__(self, valued_tree: ValuedTree, distance: Union[int, float] = 5, unit: int = 1,
-                 mark_line_length: Union[int, float] = 6, shrink_factor: Union[int, float] = 0.7, *args: Any,
-                 **kwargs: Any) -> None:
+    def __init__(
+        self,
+        valued_tree: ValuedTree,
+        distance: Union[int, float] = 5,
+        unit: int = 1,
+        mark_line_length: Union[int, float] = 6,
+        shrink_factor: Union[int, float] = 0.7,
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(*args, **kwargs)
         self._valued_tree: ValuedTree = valued_tree
         self._distance: Union[int, float]
@@ -119,12 +130,20 @@ class GraphicTree(Tree[Any]):
             self._graphic.add_draw_object(second_row)
 
     def _populate_tree(self) -> None:
-        self._segment = ValuedTreeNodeSegment(node_value=float(self.get_valued_tree().get_value()), unit=self.unit)
+        self._segment = ValuedTreeNodeSegment(
+            node_value=float(self.get_valued_tree().get_value()), unit=self.unit
+        )
         self._segment.start_mark_line.length = self.mark_line_length
         self._segment.end_mark_line.length = self.mark_line_length
         for ch in self.get_valued_tree().get_children():
-            self.add_child(GraphicTree(ch, distance=self.distance, unit=self.unit,
-                                       mark_line_length=self.mark_line_length * self.shrink_factor))
+            self.add_child(
+                GraphicTree(
+                    ch,
+                    distance=self.distance,
+                    unit=self.unit,
+                    mark_line_length=self.mark_line_length * self.shrink_factor,
+                )
+            )
 
     def _show_last_mark_lines(self) -> None:
         for node in self.traverse():
@@ -135,7 +154,9 @@ class GraphicTree(Tree[Any]):
         if self.is_first_child:
             self.get_segment().start_mark_line.length = self.mark_line_length
         else:
-            self.get_segment().start_mark_line.length = self.mark_line_length * self.shrink_factor
+            self.get_segment().start_mark_line.length = (
+                self.mark_line_length * self.shrink_factor
+            )
         if self.is_last_child:
             self.get_segment().end_mark_line.length = self.mark_line_length
 
@@ -143,15 +164,15 @@ class GraphicTree(Tree[Any]):
         for node in self.traverse():
             node._update_mark_line_length()
 
-#     # def _align_layer_segments(self):
-#     #     for layer_number in range(1, self.get_number_of_layers() + 1):
-#     #         current_layer = self.get_layer(layer_number)
-#     #         segments = [l.get_segment() for l in current_layer]
-#     #         current_layer_largeste_mark_line = get_largest_mark_line(segments)
-#     #         for seg in segments:
-#     #             max_mark_line_length = max([seg.start_mark_line.length, seg.end_mark_line.length])
-#     #             dy = (current_layer_largeste_mark_line.length - max_mark_line_length) / 2
-#     #             seg.relative_y += dy
+    #     # def _align_layer_segments(self):
+    #     #     for layer_number in range(1, self.get_number_of_layers() + 1):
+    #     #         current_layer = self.get_layer(layer_number)
+    #     #         segments = [l.get_segment() for l in current_layer]
+    #     #         current_layer_largeste_mark_line = get_largest_mark_line(segments)
+    #     #         for seg in segments:
+    #     #             max_mark_line_length = max([seg.start_mark_line.length, seg.end_mark_line.length])
+    #     #             dy = (current_layer_largeste_mark_line.length - max_mark_line_length) / 2
+    #     #             seg.relative_y += dy
     def _update_distance(self) -> None:
         for node in self.traverse():
             if not node.is_leaf:

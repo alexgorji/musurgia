@@ -2,12 +2,13 @@ from unittest import TestCase
 
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.matrix.matrix import PermutationOrderMatrix
-from musurgia.musurgia_exceptions import FractalTimelineTreeSetMainPermutationOrderFirstError
+from musurgia.musurgia_exceptions import (
+    FractalTimelineTreeSetMainPermutationOrderFirstError,
+)
 from musurgia.trees.timelinetree import TimelineDuration
 
 
 class TestFractalTreeInit(TestCase):
-
     def test_init(self):
         with self.assertRaises(TypeError):
             FractalTimelineTree()
@@ -20,14 +21,24 @@ class TestFractalTreeInit(TestCase):
             ft.get_permutation_order_matrix()
 
     def test_init_creates_matrix(self):
-        ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
+        ft = FractalTimelineTree(
+            duration=TimelineDuration(10),
+            proportions=(1, 2, 3),
+            main_permutation_order=(3, 1, 2),
+        )
         assert isinstance(ft.get_permutation_order_matrix(), PermutationOrderMatrix)
-        assert ft.get_permutation_order_matrix().matrix_data == [[(3, 1, 2), (2, 3, 1), (1, 2, 3)],
-                                                                 [(1, 2, 3), (3, 1, 2), (2, 3, 1)],
-                                                                 [(2, 3, 1), (1, 2, 3), (3, 1, 2)]]
+        assert ft.get_permutation_order_matrix().matrix_data == [
+            [(3, 1, 2), (2, 3, 1), (1, 2, 3)],
+            [(1, 2, 3), (3, 1, 2), (2, 3, 1)],
+            [(2, 3, 1), (1, 2, 3), (3, 1, 2)],
+        ]
         ft.main_permutation_order = (3, 1, 2)
         assert isinstance(ft.get_permutation_order_matrix(), PermutationOrderMatrix)
-        assert ft.get_permutation_order_matrix().matrix_data == [[(3, 1, 2), (2, 3, 1), (1, 2, 3)],
-                                                                 [(1, 2, 3), (3, 1, 2), (2, 3, 1)],
-                                                                 [(2, 3, 1), (1, 2, 3), (3, 1, 2)]]
-        ft.add_child(FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3)))
+        assert ft.get_permutation_order_matrix().matrix_data == [
+            [(3, 1, 2), (2, 3, 1), (1, 2, 3)],
+            [(1, 2, 3), (3, 1, 2), (2, 3, 1)],
+            [(2, 3, 1), (1, 2, 3), (3, 1, 2)],
+        ]
+        ft.add_child(
+            FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
+        )

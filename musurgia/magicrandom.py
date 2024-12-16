@@ -2,9 +2,9 @@ from typing import Optional, Any, Iterator, Union, TypeVar
 
 from musurgia.musurgia_types import NonNegativeInteger, check_type
 
-__all__ = ['Random']
+__all__ = ["Random"]
 
-T = TypeVar('T', bound='Random')
+T = TypeVar("T", bound="Random")
 
 
 class Random:
@@ -31,13 +31,20 @@ class Random:
     [1, 4, 5, 2, 1, 1, 5, 1, 1, 2, 2, 1, 2, 1, 1, 3, 3, 5, 5, 1]
 
     """
+
     import random
+
     current_random = random
 
-    def __init__(self, pool: list[Any], periodicity: Optional[NonNegativeInteger] = None,
-                 forbidden_list: Optional[list[Any]] = None, seed: Optional[Union[int, str, bytes, bytearray]] = None,
-                 *args: Any,
-                 **kwargs: Any):
+    def __init__(
+        self,
+        pool: list[Any],
+        periodicity: Optional[NonNegativeInteger] = None,
+        forbidden_list: Optional[list[Any]] = None,
+        seed: Optional[Union[int, str, bytes, bytearray]] = None,
+        *args: Any,
+        **kwargs: Any,
+    ):
         super().__init__(*args, **kwargs)
         self._pool: list[Any] = []
         self._periodicity: Optional[NonNegativeInteger] = None
@@ -113,7 +120,12 @@ class Random:
         if not values:
             self._forbidden_list = []
         else:
-            check_type(t=list, v=values, class_name=self.__class__.__name__, property_name='forbidden_list')
+            check_type(
+                t=list,
+                v=values,
+                class_name=self.__class__.__name__,
+                property_name="forbidden_list",
+            )
             self._forbidden_list = values
 
     @property
@@ -148,7 +160,12 @@ class Random:
         if value is None:
             self._periodicity = None
         else:
-            check_type(t='NonNegativeInteger', v=value, property_name='periodicity', class_name=self.__class__.__name__)
+            check_type(
+                t="NonNegativeInteger",
+                v=value,
+                property_name="periodicity",
+                class_name=self.__class__.__name__,
+            )
             self._periodicity = value
 
     @property
@@ -165,7 +182,9 @@ class Random:
 
     @pool.setter
     def pool(self, values: list[Any]) -> None:
-        check_type(v=values, t=list, property_name='pool', class_name=self.__class__.__name__)
+        check_type(
+            v=values, t=list, property_name="pool", class_name=self.__class__.__name__
+        )
         self._pool = list(dict.fromkeys(values))
 
     @property
@@ -209,6 +228,7 @@ class Random:
         :return: a random value out of :obj:`pool` considering :obj:`seed`, :obj:`periodicity` and :obj:`forbidden_list`
         """
         while True:
+
             def check(element: Any) -> bool:
                 def forbid_element(el: Any) -> None:
                     if len(self.forbidden_list) >= self.periodicity:
@@ -225,11 +245,13 @@ class Random:
                     return True
 
             if len(self.forbidden_list) > self.periodicity:
-                self.forbidden_list = self.forbidden_list[(-1 * self.periodicity):]
+                self.forbidden_list = self.forbidden_list[(-1 * self.periodicity) :]
 
             random_element = self.pool[self.current_random.randrange(len(self.pool))]
             while check(random_element) is False:
-                random_element = self.pool[self.current_random.randrange(len(self.pool))]
+                random_element = self.pool[
+                    self.current_random.randrange(len(self.pool))
+                ]
             self._counter += 1
             self._previous_elements.append(random_element)
             yield random_element
