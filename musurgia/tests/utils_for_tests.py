@@ -383,8 +383,6 @@ def create_test_valued_tree() -> DemoValuedTree:
         ├── 2/5
         └── 1/5
     """
-    ft =  create_test_fractal_timline_tree()
-    vt = copy_fractal_tree_to_valued_tree(create_test_fractal_timline_tree())
     return vt
 
 

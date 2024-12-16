@@ -1,39 +1,45 @@
 from pathlib import Path
 from unittest import TestCase
 
-from musicscore.part import Part
 from musicscore.score import Score
-from musicscore.simpleformat import SimpleFormat
-from musicscore.tests.util import create_test_xml_paths, diff_xml
 
 from musurgia.tests.utils_for_tests import XMLTestCase, create_test_chord_tree, create_test_valued_tree
-from musurgia.timing.duration import Duration
 from musurgia.trees.chordtree import ChordTree
-from musurgia.trees.timelinetree import TimelineTree
+from musurgia.trees.timelinetree import TimelineDuration, TimelineTree
 from musicscore.chord import Chord
 from musicscore.metronome import Metronome
-from musicscore.quarterduration import QuarterDuration
 
 
 class ChordTreeTestCase(TestCase):
     def setUp(self):
-        self.mt = ChordTree(duration=Duration(4))
-    
+        self.cht = ChordTree(duration=TimelineDuration(4))
+
     def test_init(self):
-        self.assertEqual(self.mt.get_value(), 4)
-        self.assertTrue(isinstance(self.mt, TimelineTree))
+        self.assertEqual(self.cht.get_value(), 4)
+        self.assertTrue(isinstance(self.cht, TimelineTree))
 
     def test_tree_chord(self):
-        ch = self.mt.get_chord()
+        ch = self.cht.get_chord()
         self.assertTrue(isinstance(ch, Chord))
         with self.assertRaises(AttributeError):
-            self.mt.chord = Chord(60, 2)
+            self.cht.chord = Chord(60, 2)
+        self.assertEqual(ch.metronome.per_minute, 60)
+        self.assertEqual(ch.quarter_duration, self.cht.get_value())
+        self.assertEqual(ch.midis[0].value, 60)
 
-    def test_tree_chord_quarter_duration(self):
-        self.mt.metronome = Metronome(120)
-        self.mt.duration = Duration(4)
-        ch = self.mt.get_chord()
+    def test_tree_chord_update_quarter_duration(self):
+        self.cht.metronome = Metronome(120)
+        self.cht.update_duration(TimelineDuration(4))
+        ch = self.cht.get_chord()
         self.assertEqual(ch.quarter_duration, 8)
+        self.assertEqual(self.cht.get_duration(), 4)
+
+        self.cht.update_duration(TimelineDuration(5))
+        self.assertEqual(self.cht.get_chord().quarter_duration, 10)
+
+        self.cht.metronome = Metronome(120, 2)
+        self.assertEqual(self.cht.get_chord().quarter_duration, 20)
+
 
 path = Path(__file__)
 
@@ -63,5 +69,3 @@ class ChordTreeToScoreTestCase(XMLTestCase):
         self.score.finalize()
         with self.file_path(path, 'layers_to_score') as xml_path:
             self.score.export_xml(xml_path)
-
-    
