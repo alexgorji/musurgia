@@ -1,13 +1,13 @@
 from unittest import TestCase
 
-from musurgia.timing.duration import Duration
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.tests.utils_for_tests import fractal_node_info_with_permutation_order
+from musurgia.trees.timelinetree import TimelineDuration
 
 
 class TestGenerateChildrenReduce(TestCase):
     def setUp(self) -> None:
-        self.ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
+        self.ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
                               permutation_index=(1, 1))
 
     def test_number_of_children_0(self):

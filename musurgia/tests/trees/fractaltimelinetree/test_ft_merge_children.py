@@ -1,13 +1,13 @@
 from pprint import pprint
 from unittest import TestCase
 
-from musurgia.timing.duration import Duration
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
+from musurgia.trees.timelinetree import TimelineDuration
 
 
 class TestFtMergeChildren(TestCase):
     def test_one_layer(self):
-        ft = FractalTimelineTree(proportions=(1, 2, 3, 4, 5), main_permutation_order=(3, 5, 1, 2, 4), duration=Duration(10),
+        ft = FractalTimelineTree(proportions=(1, 2, 3, 4, 5), main_permutation_order=(3, 5, 1, 2, 4), duration=TimelineDuration(10),
                          permutation_index=(1, 1))
         ft.add_layer()
         ft.merge_children(1, 2, 2)
@@ -15,7 +15,7 @@ class TestFtMergeChildren(TestCase):
         self.assertEqual([2.0, 4.0, 4.0], ft.get_leaves(key=lambda leaf: round(float(leaf.get_value()), 2)), )
 
     def test_two_layers(self):
-        ft = FractalTimelineTree(proportions=(1, 2, 3, 4, 5), main_permutation_order=(3, 5, 1, 2, 4), duration=Duration(20),
+        ft = FractalTimelineTree(proportions=(1, 2, 3, 4, 5), main_permutation_order=(3, 5, 1, 2, 4), duration=TimelineDuration(20),
                          permutation_index=(1, 1))
         ft.add_layer()
         ft.add_layer()

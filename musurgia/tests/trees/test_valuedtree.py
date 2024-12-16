@@ -61,7 +61,7 @@ class ValuedTreeChangeValueTestCase(TestCase):
         values = [Fraction(5, 6), Fraction(5, 3), Fraction(5, 2)]
         for v in values:
             first_child.add_child(DemoValuedTree(v))
-        list_of_values = [[Fraction(5, 18), Fraction(5, 12), Fraction(5, 36)], [Fraction(5, 18), Fraction(5, 9), Fraction(5, 6)], [Fraction(5, 4), Fraction(5, 12), Fraction(5,6]]
+        list_of_values = [[Fraction(5, 18), Fraction(5, 12), Fraction(5, 36)], [Fraction(5, 18), Fraction(5, 9), Fraction(5, 6)], [Fraction(5, 4), Fraction(5, 12), Fraction(5,6)]]
         for child, values in zip(first_child.get_children(), list_of_values):
             for v in values:
                 child.add_child(DemoValuedTree(v))

@@ -1,17 +1,15 @@
 import os
 from unittest import TestCase
 
-from fractions import Fraction
-
-from musurgia.timing.duration import Duration
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
+from musurgia.trees.timelinetree import TimelineDuration
 
 path = os.path.abspath(__file__).split('.')[0]
 
 
 class TestAddLayer(TestCase):
     def setUp(self):
-        self.ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
+        self.ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
                               permutation_index=(1, 1))
 
     def test_two_layers(self):

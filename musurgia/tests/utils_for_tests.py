@@ -183,7 +183,7 @@ def create_simple_column(list_of_draw_objects):
 
 
 def create_test_fractal_timline_tree():
-    ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2),
+    ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2),
                      permutation_index=(1, 1))
     ft.add_layer()
 

@@ -1,5 +1,5 @@
-from musurgia.timing.duration import Duration
-from musurgia.trees.timelinetree import TimelineTree
+
+from musurgia.trees.timelinetree import TimelineDuration, TimelineTree
 import itertools
 from fractions import Fraction
 from typing import Union, Optional, List, Callable, Any, cast, Sequence, TypeVar
@@ -96,7 +96,7 @@ class FractalTimelineTree(TimelineTree):
     
     def _get_children_fractal_values(self) -> list['Fraction']:
         """
-        >>> ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
+        >>> ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         >>> ft.add_layer()
         >>> ft._get_children_fractal_values()
         [Fraction(5, 1), Fraction(5, 3), Fraction(10, 3)]
@@ -189,7 +189,7 @@ class FractalTimelineTree(TimelineTree):
     # public methods
     def add_layer(self, *conditions: Optional[Callable[['FractalTimelineTree'], bool]]) -> None:
         """
-        >>> ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
+        >>> ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         >>> ft.add_layer()
         >>> ft.get_leaves(key=lambda leaf: leaf.get_fractal_order())
         [3, 1, 2]
@@ -204,7 +204,7 @@ class FractalTimelineTree(TimelineTree):
         [[0.83, 1.67, 2.5], [0.83, 0.28, 0.56], [1.11, 1.67, 0.56]]
 
 
-        >>> ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
+        >>> ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         >>> ft.add_layer()
         >>> ft.get_children()[0].add_layer()
         >>> ft.get_leaves(key=lambda leaf: leaf.get_fractal_order())
@@ -226,7 +226,7 @@ class FractalTimelineTree(TimelineTree):
             if leaf.fertile is True:
                 for i in range(leaf.get_size()):
                     value = leaf._get_children_fractal_values()[i]
-                    new_node = self.__class__(duration=Duration(value), proportions=self.get_root().proportions,
+                    new_node = self.__class__(duration=TimelineDuration(value), proportions=self.get_root().proportions,
                                               permutation_index=None)
                     leaf.add_child(new_node)
                     new_node.calculate_permutation_index()
@@ -251,7 +251,7 @@ class FractalTimelineTree(TimelineTree):
         :param mode:
         :param merge_index:
 
-        >>> ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
+        >>> ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         >>> ft.generate_children(number_of_children=((1, 3), 2, (1, (1, 3), 3)))
         >>> print(ft.get_tree_representation(key=lambda node: str(node.get_fractal_order())))
         └── None
@@ -328,7 +328,7 @@ class FractalTimelineTree(TimelineTree):
         """
         :return:
 
-        >>> ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
+        >>> ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         >>> ft.add_layer()
         >>> [node.get_fractal_order() for node in ft.traverse()]
         [None, 3, 1, 2]
@@ -396,7 +396,7 @@ class FractalTimelineTree(TimelineTree):
     
     def get_size(self) -> int:
         """
-        >>> ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
+        >>> ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2))
         >>> ft.get_size()
         3
         """
@@ -408,7 +408,7 @@ class FractalTimelineTree(TimelineTree):
         :param lengths:
         :return:
 
-        >>> ft = FractalTimelineTree(proportions=(1, 2, 3, 4, 5), main_permutation_order=(3, 5, 1, 2, 4), duration=Duration(10), permutation_index=(1, 1))
+        >>> ft = FractalTimelineTree(proportions=(1, 2, 3, 4, 5), main_permutation_order=(3, 5, 1, 2, 4), duration=TimelineDuration(10), permutation_index=(1, 1))
         >>> ft.add_layer()
         >>> print(ft.get_tree_representation(node_info))
         └── None: (1, 1): 10.0

@@ -1,14 +1,13 @@
 from unittest import TestCase
-
-from musurgia.timing.duration import Duration
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.tests.utils_for_tests import fractal_node_info
+from musurgia.trees.timelinetree import TimelineDuration
 from musurgia.utils import flatten
 
 
 class TestFractalTreeReduceChildrenByCondition(TestCase):
     def test_reduce_first_layer(self):
-        ft = FractalTimelineTree(proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), duration=Duration(20), permutation_index=(1, 1))
+        ft = FractalTimelineTree(proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), duration=TimelineDuration(20), permutation_index=(1, 1))
         ft.add_layer()
         ft.add_layer()
         for node in ft.get_layer(1):
@@ -16,7 +15,7 @@ class TestFractalTreeReduceChildrenByCondition(TestCase):
         assert [node.get_fractal_order() for node in ft.iterate_leaves()] == [2, 3, 3, 2, 2, 3]
 
     def test_value(self):
-        ft = FractalTimelineTree(proportions=[1, 2, 3, 4, 5, 6], main_permutation_order=(4, 1, 5, 3, 6, 2), duration=Duration(20),
+        ft = FractalTimelineTree(proportions=[1, 2, 3, 4, 5, 6], main_permutation_order=(4, 1, 5, 3, 6, 2), duration=TimelineDuration(20),
                          permutation_index=(1, 1))
         ft.add_layer()
         ft.reduce_children_by_condition(lambda child: child.get_fractal_order() not in [2, 3])
@@ -26,7 +25,7 @@ class TestFractalTreeReduceChildrenByCondition(TestCase):
 
 class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
     def setUp(self):
-        self.ft = FractalTimelineTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), duration=Duration(20),
+        self.ft = FractalTimelineTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), duration=TimelineDuration(20),
                               permutation_index=(1, 1))
         self.ft.add_layer()
         self.ft.add_layer()
@@ -118,11 +117,11 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
 """
 
     def test_merge(self):
-        ft_1 = FractalTimelineTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), duration=Duration(20),
+        ft_1 = FractalTimelineTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), duration=TimelineDuration(20),
                            permutation_index=(1, 1))
-        ft_2 = FractalTimelineTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), duration=Duration(20),
+        ft_2 = FractalTimelineTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), duration=TimelineDuration(20),
                            permutation_index=(1, 1))
-        ft_3 = FractalTimelineTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), duration=Duration(20),
+        ft_3 = FractalTimelineTree(proportions=(1, 2, 3, 4), main_permutation_order=(3, 1, 4, 2), duration=TimelineDuration(20),
                            permutation_index=(1, 1))
         for i in range(2):
             ft_1.add_layer()

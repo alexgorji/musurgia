@@ -1,12 +1,12 @@
 from unittest import TestCase
 import warnings
 
-from musurgia.timing.duration import Duration
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.musurgia_exceptions import FractalTimelineTreePermutationIndexError, FractalTimelineTreeSetMainPermutationOrderFirstError, \
     FractalTimelineTreeHasChildrenError, FractalTimelineTreeMergeWrongValuesError, \
-    FractalTimelineTreeHasNoChildrenError, WrongTreeValueWarning
+    FractalTimelineTreeHasNoChildrenError
 from musurgia.tests.utils_for_tests import create_test_fractal_timline_tree
+from musurgia.trees.timelinetree import TimelineDuration
 
 
 class TestFt(TestCase):
@@ -14,30 +14,30 @@ class TestFt(TestCase):
         self.ft = create_test_fractal_timline_tree()
 
     def test_add_wrong_child(self):
-        ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3))
+        ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
         with self.assertRaises(TypeError):
             ft.add_child('something')
 
     def test_non_root_main_permutation_order(self):
-        ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3))
+        ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
         assert ft.main_permutation_order is None
         assert self.ft.main_permutation_order == (3, 1, 4, 2)
         for node in self.ft.traverse():
             assert node.main_permutation_order == self.ft.main_permutation_order
 
     def test_calculate_permutation_index_error(self):
-        ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3))
+        ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
         with self.assertRaises(FractalTimelineTreePermutationIndexError):
             ft.calculate_permutation_index()
 
-        child = ft.add_child(FractalTimelineTree(duration=Duration(5), proportions=(1, 2, 3)))
+        child = ft.add_child(FractalTimelineTree(duration=TimelineDuration(5), proportions=(1, 2, 3)))
         with self.assertRaises(FractalTimelineTreeSetMainPermutationOrderFirstError):
             child.calculate_permutation_index()
         with self.assertRaises(FractalTimelineTreeHasChildrenError):
             ft.main_permutation_order = (3, 1, 2)
 
     def test_generate_children_wrong_size(self):
-        ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
+        ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         with self.assertRaises(ValueError):
             ft.generate_children(4)
         with self.assertRaises(ValueError):
@@ -46,12 +46,12 @@ class TestFt(TestCase):
             ft.generate_children('string')
 
     def test_get_children_fractal_orders_error(self):
-        ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3))
+        ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
         with self.assertRaises(FractalTimelineTreeSetMainPermutationOrderFirstError):
             ft.get_children_fractal_orders()
 
     def test_merge_reduce_error(self):
-        ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
+        ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         with self.assertRaises(FractalTimelineTreeHasNoChildrenError):
             ft.merge_children(1, 3)
         with self.assertRaises(FractalTimelineTreeHasNoChildrenError):
@@ -74,7 +74,7 @@ class TestFt(TestCase):
         assert len(ft.get_children()) == 2
 
     def test_split_iter(self):
-        ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
+        ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
         ft.split([1, 3, 1])
         assert len(ft.get_children()) == 3
 
@@ -83,13 +83,13 @@ class TestFt(TestCase):
             self.ft.split(1, 2, 3)
 
     def test_calculate_permutation_index(self):
-        ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3))
+        ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
         with self.assertRaises(FractalTimelineTreePermutationIndexError):
             ft.calculate_permutation_index()
 
     def test_get_children_with_and_without_warning(self):
-        ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3))
-        ft.add_child(FractalTimelineTree(duration=Duration(5), proportions=(1, 2, 3)))
+        ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
+        ft.add_child(FractalTimelineTree(duration=TimelineDuration(5), proportions=(1, 2, 3)))
 
         with warnings.catch_warnings(record=True) as w:
             ft.get_children()

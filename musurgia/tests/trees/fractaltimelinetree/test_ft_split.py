@@ -1,12 +1,12 @@
 from unittest import TestCase
 
-from musurgia.timing.duration import Duration
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
+from musurgia.trees.timelinetree import TimelineDuration
 
 
 class TestFtSplit(TestCase):
     def setUp(self):
-        self.ft = FractalTimelineTree(duration=Duration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
+        self.ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2),
                               permutation_index=(1, 1))
         self.ft.add_layer()
         self.first_child = self.ft.get_children()[0]

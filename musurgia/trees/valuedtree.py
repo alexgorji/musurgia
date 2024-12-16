@@ -55,7 +55,7 @@ class ValuedTree(Tree[Any]):
             try:
                 self._check_tree_children_values([ch.get_value() for ch in children])
             except WrongTreeValueError as err:
-                warnings.warn(str(err), WrongTreeValueWarning)
+                warnings.warn(str(err), WrongTreeValueWarning, stacklevel=2)
         return children
 
     @property
