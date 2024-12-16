@@ -8,7 +8,7 @@ from musurgia.musurgia_types import ConvertibleToFraction
 __all__ = ["TimelineDuration", "TimelineTree"]
 
 class TimelineDuration(ReadonlyDuration):
-    def _set_seconds(self, seconds):
+    def _set_seconds(self, seconds: ConvertibleToFraction) -> None:
         self._set_clock(hours=0, minutes=0, seconds=seconds)
 
 
@@ -31,7 +31,7 @@ class TimelineTree(ValuedTree):
         self._duration._set_seconds(value)
 
     @property
-    def duration(self):
+    def duration(self) -> None:
         raise AttributeError("Use get_duration() instead.")
     
     def get_duration(self) -> TimelineDuration:
@@ -40,7 +40,7 @@ class TimelineTree(ValuedTree):
     def get_value(self) -> Fraction:
         return self.get_duration().calculate_in_seconds()
     
-    def update_duration(self, duration: Union[TimelineDuration, ConvertibleToFraction]):
+    def update_duration(self, duration: Union[TimelineDuration, ConvertibleToFraction]) -> None:
         if isinstance(duration, TimelineDuration):
             self._duration = duration
             new_value = self.get_value()
