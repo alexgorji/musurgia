@@ -219,14 +219,16 @@ class DemoValuedTree(ValuedTree):
     def get_value(self):
         return Fraction(self._value)
     
-def copy_fractal_tree_to_valued_tree(ft_node):
-    vt_node = DemoValuedTree(value=ft_node.get_value())
-    for child in ft_node.get_children():
-        vt_child = copy_fractal_tree_to_valued_tree(child)
-        vt_node.add_child(vt_child)
-    return vt_node
+# def copy_fractal_tree_to_valued_tree(ft_node):
+#     vt_node = DemoValuedTree(value=ft_node.get_value())
+#     for child in ft_node.get_children():
+#         vt_child = copy_fractal_tree_to_valued_tree(child)
+#         vt_node.add_child(vt_child)
+#     return vt_node
 
 def create_test_valued_tree():
+    fractal_structure = [Fraction(10, 1), [Fraction(3, 1), [Fraction(3, 5)], [Fraction(6, 5), [Fraction(6, 25)], [Fraction(12, 25)], [Fraction(3, 25)], [Fraction(9, 25)]], [Fraction(3, 10)], [Fraction(9, 10), [Fraction(27, 100)], [Fraction(9, 100)], [Fraction(9, 25)], [Fraction(9, 50)]]], [Fraction(1, 1)], [Fraction(4, 1), [Fraction(2, 5)], [Fraction(4, 5)], [Fraction(6, 5), [Fraction(6, 25)], [Fraction(12, 25)], [Fraction(3, 25)], [Fraction(9, 25)]], [Fraction(8, 5), [Fraction(4, 25)], [Fraction(8, 25)], [Fraction(12, 25)], [Fraction(16, 25)]]], [Fraction(2, 1), [Fraction(4, 5), [Fraction(4, 25)], [Fraction(8, 25)], [Fraction(2, 25)], [Fraction(6, 25)]], [Fraction(3, 5), [Fraction(9, 50)], [Fraction(3, 50)], [Fraction(6, 25)], [Fraction(3, 25)]], [Fraction(2, 5)], [Fraction(1, 5)]]]
+    vt = DemoValuedTree.create_tree_from_list(fractal_structure, "value")
     # fractal values: 
     """└── 10
     ├── 3
@@ -270,8 +272,6 @@ def create_test_valued_tree():
         ├── 2/5
         └── 1/5
     """
-    ft =  create_test_fractal_timline_tree()
-    vt = copy_fractal_tree_to_valued_tree(create_test_fractal_timline_tree())
     return vt
 
 
