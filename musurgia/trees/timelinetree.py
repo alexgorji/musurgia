@@ -1,8 +1,8 @@
 from fractions import Fraction
 from typing import Any, Union
 
-from musicscore.metronome import Metronome
-from musicscore.quarterduration import QuarterDuration
+from musicscore.metronome import Metronome  # type: ignore
+from musicscore.quarterduration import QuarterDuration  # type: ignore
 
 from musurgia.chordfactory import AbstractChordFactory
 from musurgia.timing.duration import (
@@ -16,7 +16,7 @@ __all__ = ["TimelineDuration", "TimelineTree"]
 
 
 class TimelineDuration(ReadonlyDuration):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._metronome: "Metronome" = Metronome(60)
         self._quarter_duration: "QuarterDuration" = QuarterDuration(1)
@@ -117,13 +117,13 @@ class SimpleTimelineChordFactory(AbstractChordFactory):
         super().__init__(*args, **kwargs)
         self._timeline_node: TimelineTree = timline_node
 
-    def update_chord_midis(self):
+    def update_chord_midis(self) -> None:
         self._chord.midis = 72
 
-    def update_chord_quarter_duration(self):
+    def update_chord_quarter_duration(self) -> None:
         self._chord.quarter_duration = (
             self._timeline_node.get_duration().get_quarter_duration()
         )
 
-    def update_chord_metronome(self):
+    def update_chord_metronome(self) -> None:
         self._chord.metronome = self._timeline_node.get_duration().get_metronome()

@@ -1,15 +1,15 @@
 from abc import ABC, ABCMeta, abstractmethod
 from typing import Any
 
-from musicscore.chord import Chord
+from musicscore.chord import Chord  # type: ignore
 
 
 class ChordFactoryType(ABCMeta):
-    def __new__(cls, name, bases, attrs):
-        attrs["_CHORD_UPDATE_METHODS"] = {
-            k for k in attrs.keys() if k.startswith("update_chord_")
+    def __new__(mcls, name, bases, namespace, /, **kwargs):  # type: ignore
+        namespace["_CHORD_UPDATE_METHODS"] = {
+            k for k in namespace.keys() if k.startswith("update_chord_")
         }
-        return super().__new__(cls, name, bases, attrs)
+        return super().__new__(mcls, name, bases, namespace, **kwargs)
 
 
 class AbstractChordFactory(ABC, metaclass=ChordFactoryType):
@@ -18,7 +18,7 @@ class AbstractChordFactory(ABC, metaclass=ChordFactoryType):
         self._chord: Chord = Chord(60, 1)
 
     def _update_chord(self) -> None:
-        for method_name in self.__class__._CHORD_UPDATE_METHODS:
+        for method_name in self.__class__._CHORD_UPDATE_METHODS:  # type: ignore
             getattr(self, method_name)()
 
     @property
