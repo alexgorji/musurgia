@@ -17,7 +17,7 @@ classifiers = [
 python = ">=3.9,<3.13"
 matplotlib = "^3.9.0"
 fpdf2 = "^2.7.9"
-musicscore = "^2.3.1"
+musicscore = "2.3.3"
 verysimpletree = "^1.2"
 
 [tool.poetry.group.test.dependencies]
