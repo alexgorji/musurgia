@@ -7,7 +7,7 @@ from musicscore.chord import Chord
 class ChordFactoryType(ABCMeta):
     def __new__(cls, name, bases, attrs):
         attrs["_CHORD_UPDATE_METHODS"] = {
-            k: v for k, v in attrs.items() if k.startswith("update_chord_")
+            k for k in attrs.keys() if k.startswith("update_chord_")
         }
         return super().__new__(cls, name, bases, attrs)
 
