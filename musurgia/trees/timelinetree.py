@@ -4,6 +4,7 @@ from typing import Any, Union
 from musicscore.metronome import Metronome
 from musicscore.quarterduration import QuarterDuration
 
+from musurgia.chordfactory import AbstractChordFactory
 from musurgia.timing.duration import (
     ReadonlyDuration,
     convert_duration_to_quarter_duration_value,
@@ -46,6 +47,9 @@ class TimelineDuration(ReadonlyDuration):
             self.metronome, self.calculate_in_seconds()
         )
         return self._quarter_duration
+
+    def get_metronome(self) -> Metronome:
+        return self._metronome
 
 
 class TimelineTree(ValuedTree):
@@ -106,3 +110,20 @@ class TimelineTree(ValuedTree):
                 )
             new_value = Fraction(duration)
         self.update_value(new_value)
+
+
+class SimpleTimelineChordFactory(AbstractChordFactory):
+    def __init__(self, timline_node: TimelineTree, *args: Any, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self._timeline_node: TimelineTree = timline_node
+
+    def update_chord_midis(self):
+        self._chord.midis = 72
+
+    def update_chord_quarter_duration(self):
+        self._chord.quarter_duration = (
+            self._timeline_node.get_duration().get_quarter_duration()
+        )
+
+    def update_chord_metronome(self):
+        self._chord.metronome = self._timeline_node.get_duration().get_metronome()
