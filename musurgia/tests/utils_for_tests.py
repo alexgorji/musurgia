@@ -5,7 +5,6 @@ from pathlib import Path
 
 from diff_pdf_visually import pdf_similar  # type: ignore
 
-from musurgia.trees.chordtree import ChordTree
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.pdf import TextLabel, DrawObjectColumn, StraightLine
 from musurgia.pdf.drawobject import MasterDrawObject
@@ -99,17 +98,17 @@ class PdfTestCase(unittest.TestCase):
     def file_path(self, parent_path, name, extension):
         tfp = FilePath(self, parent_path, name, extension)
         return tfp
-    
-class XMLTestCase(unittest.TestCase):
 
+
+class XMLTestCase(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def _compare_contents(self, actual_file_path, expected_file_path):
-        with open(actual_file_path, 'r') as myfile:
+        with open(actual_file_path, "r") as myfile:
             result = myfile.read()
 
-        with open(expected_file_path, 'r') as myfile:
+        with open(expected_file_path, "r") as myfile:
             expected = myfile.read()
 
         self.assertEqual(expected, result)
@@ -118,15 +117,15 @@ class XMLTestCase(unittest.TestCase):
         file_name, extension = os.path.splitext(actual_file_path)
         if not expected_file_path:
             if not extension:
-                expected_file_path += '.xml'
-            expected_file_path = file_name + '_expected' + '.xml'
+                expected_file_path += ".xml"
+            expected_file_path = file_name + "_expected" + ".xml"
 
         self._compare_contents(actual_file_path, expected_file_path)
 
-
     def file_path(self, parent_path, name):
-        tfp = FilePath(self, parent_path, name, 'xml')
+        tfp = FilePath(self, parent_path, name, "xml")
         return tfp
+
 
 def fractal_node_info(node):
     return f"{node.get_fractal_order()}: {node.get_permutation_index()}: {round(float(node.get_value()), 2)}"
@@ -268,14 +267,6 @@ class DemoValuedTree(ValuedTree):
         return Fraction(self._value)
 
 
-# def copy_fractal_tree_to_valued_tree(ft_node):
-#     vt_node = DemoValuedTree(value=ft_node.get_value())
-#     for child in ft_node.get_children():
-#         vt_child = copy_fractal_tree_to_valued_tree(child)
-#         vt_node.add_child(vt_child)
-#     return vt_node
-
-
 def create_test_valued_tree() -> DemoValuedTree:
     fractal_structure = [
         Fraction(10, 1),
@@ -410,6 +401,3 @@ def add_node_infos_to_graphic(vt, gt):
                 if gn.up.get_children().index(gn) % 2 == 1:
                     position_in_tree_label.top_margin = 3
                     value_label.bottom_margin = 4
-
-def create_test_chord_tree() -> ChordTree:
-    return ChordTree.create_tree_from_list(create_test_fractal_timline_tree().get_list_representation(key=lambda node: node.get_duration()), "duration")
