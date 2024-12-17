@@ -1,7 +1,13 @@
 from fractions import Fraction
 from typing import Any, Union
 
-from musurgia.timing.duration import ReadonlyDuration
+from musicscore.metronome import Metronome
+from musicscore.quarterduration import QuarterDuration
+
+from musurgia.timing.duration import (
+    ReadonlyDuration,
+    convert_duration_to_quarter_duration_value,
+)
 from musurgia.trees.valuedtree import ValuedTree
 from musurgia.musurgia_types import ConvertibleToFraction, MusurgiaTypeError, check_type
 
@@ -9,8 +15,37 @@ __all__ = ["TimelineDuration", "TimelineTree"]
 
 
 class TimelineDuration(ReadonlyDuration):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._metronome: "Metronome" = Metronome(60)
+        self._quarter_duration: "QuarterDuration" = QuarterDuration(1)
+
     def _set_seconds(self, seconds: ConvertibleToFraction) -> None:
         self._set_clock(hours=0, minutes=0, seconds=seconds)
+
+    @property
+    def metronome(self) -> "Metronome":
+        return self._metronome
+
+    @metronome.setter
+    def metronome(self, value: "Metronome") -> None:
+        if not isinstance(value, Metronome):
+            raise TypeError
+        self._metronome = value
+
+    @property
+    def quarter_duration(self) -> None:
+        raise AttributeError("Use get_duration() instead.")
+
+    @quarter_duration.setter
+    def quarter_duration(self, value: Any) -> None:
+        raise AttributeError("TimelineDuration.quarter_duration cannot be set.")
+
+    def get_quarter_duration(self) -> QuarterDuration:
+        self._quarter_duration.value = convert_duration_to_quarter_duration_value(
+            self.metronome, self.calculate_in_seconds()
+        )
+        return self._quarter_duration
 
 
 class TimelineTree(ValuedTree):

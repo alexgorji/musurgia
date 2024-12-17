@@ -1,7 +1,33 @@
 from unittest import TestCase
+
+from musicscore.metronome import Metronome
+from musicscore.quarterduration import QuarterDuration
 from musurgia.musurgia_exceptions import WrongTreeValueError
 from musurgia.tests.utils_for_tests import create_test_timeline_tree
 from musurgia.trees.timelinetree import TimelineDuration, TimelineTree
+
+
+class TimelineDurationTestCase(TestCase):
+    def setUp(self):
+        self.tld = TimelineDuration(4)
+        return super().setUp()
+
+    def test_set_quarter_duration_error(self):
+        with self.assertRaises(AttributeError):
+            self.tld.quarter_duration = QuarterDuration(4)
+
+    def test_get_quarter_duration(self):
+        self.assertEqual(self.tld.metronome.per_minute, 60)
+        self.assertEqual(self.tld.get_quarter_duration(), QuarterDuration(4))
+
+    def test_update_quarter_duration(self):
+        self.assertEqual(self.tld.get_quarter_duration(), 4)
+        self.tld.metronome = Metronome(120)
+        self.assertEqual(self.tld.get_quarter_duration(), 8)
+        self.tld._set_seconds(5)
+        self.assertEqual(self.tld.get_quarter_duration(), 10)
+        self.tld.metronome = Metronome(120, 2)
+        self.assertEqual(self.tld.get_quarter_duration(), 20)
 
 
 class TimeLineTreeTestCase(TestCase):
