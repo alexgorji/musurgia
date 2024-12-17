@@ -113,9 +113,25 @@ class TimelineTree(ValuedTree):
 
 
 class SimpleTimelineChordFactory(AbstractChordFactory):
-    def __init__(self, timline_node: TimelineTree, *args: Any, **kwargs: Any):
+    def __init__(
+        self,
+        timline_node: TimelineTree,
+        show_metronome: bool = False,
+        *args: Any,
+        **kwargs: Any,
+    ):
         super().__init__(*args, **kwargs)
         self._timeline_node: TimelineTree = timline_node
+        self._show_metronome: bool
+        self.show_metronome = show_metronome
+
+    @property
+    def show_metronome(self) -> bool:
+        return self._show_metronome
+
+    @show_metronome.setter
+    def show_metronome(self, value: bool) -> None:
+        self._show_metronome = value
 
     def update_chord_midis(self) -> None:
         self._chord.midis = 72
@@ -126,4 +142,5 @@ class SimpleTimelineChordFactory(AbstractChordFactory):
         )
 
     def update_chord_metronome(self) -> None:
-        self._chord.metronome = self._timeline_node.get_duration().get_metronome()
+        if self.show_metronome:
+            self._chord.metronome = self._timeline_node.get_duration().get_metronome()

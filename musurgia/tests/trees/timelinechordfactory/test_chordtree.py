@@ -19,7 +19,7 @@ from musicscore.metronome import Metronome
 class TimelineChordTreeTestCase(TestCase):
     def setUp(self):
         self.tlt = TimelineTree(duration=TimelineDuration(4))
-        self.chf = SimpleTimelineChordFactory(self.tlt)
+        self.chf = SimpleTimelineChordFactory(self.tlt, show_metronome=True)
 
     def test_tree_chord(self):
         ch = self.chf.get_chord()
