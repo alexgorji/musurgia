@@ -4,7 +4,7 @@ from typing import Any, Union
 from musicscore.metronome import Metronome  # type: ignore
 from musicscore.quarterduration import QuarterDuration  # type: ignore
 
-from musurgia.chordfactory import AbstractChordFactory
+from musurgia.chordfactory.chordfactory import AbstractChordFactory
 from musurgia.timing.duration import (
     ReadonlyDuration,
     convert_duration_to_quarter_duration_value,

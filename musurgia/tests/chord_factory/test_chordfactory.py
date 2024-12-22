@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from musicscore.chord import XMLWords
 
-from musurgia.chordfactory import AbstractChordFactory
+from musurgia.chordfactory.chordfactory import AbstractChordFactory
 
 
 class SimpleDemoChordFactory(AbstractChordFactory):
