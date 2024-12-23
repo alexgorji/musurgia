@@ -6,9 +6,15 @@ from musicscore.chord import Chord  # type: ignore
 
 class ChordFactoryType(ABCMeta):
     def __new__(mcls, name, bases, namespace, /, **kwargs):  # type: ignore
-        namespace["_CHORD_UPDATE_METHODS"] = {
+        chord_update_methods = {
             k for k in namespace.keys() if k.startswith("update_chord_")
         }
+
+        for base in bases:
+            base_methods = getattr(base, "_CHORD_UPDATE_METHODS", set())
+            chord_update_methods.update(base_methods)
+
+        namespace["_CHORD_UPDATE_METHODS"] = chord_update_methods
         return super().__new__(mcls, name, bases, namespace, **kwargs)
 
 
@@ -18,7 +24,7 @@ class AbstractChordFactory(ABC, metaclass=ChordFactoryType):
         self._chord: Chord = Chord(60, 1)
 
     def _update_chord(self) -> None:
-        for method_name in self.__class__._CHORD_UPDATE_METHODS:  # type: ignore
+        for method_name in self._CHORD_UPDATE_METHODS:  # type: ignore
             getattr(self, method_name)()
 
     @property

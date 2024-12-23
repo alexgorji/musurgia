@@ -11,7 +11,6 @@ from musurgia.pdf.drawobject import MasterDrawObject
 from musurgia.trees.timelinetree import TimelineDuration, TimelineTree
 from musurgia.trees.valuedtree import ValuedTree
 
-
 def create_test_path(path, test_name):
     return path.parent.joinpath(f"{path.stem}_{test_name}")
 
