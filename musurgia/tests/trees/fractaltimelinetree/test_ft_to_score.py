@@ -20,7 +20,7 @@ class TestSimpleFractalTreeChordFactory(TestCase):
         sftchf = SimpleFractalTreeChordFactory(timline_node=self.ft)
         print(sftchf._CHORD_UPDATE_METHODS)
         assert sftchf._timeline_node == self.ft
-        chord = sftchf.get_chord()
+        chord = sftchf.create_chord()
         assert (
             chord.quarter_duration.value
             == self.ft.get_duration().calculate_in_seconds()
@@ -138,7 +138,7 @@ class TestFtToScore(XMLTestCase):
             for node in layer:
                 chord = SimpleFractalTreeChordFactory(
                     node, show_metronome=_show_metronome
-                ).get_chord()
+                ).create_chord()
                 part.add_chord(chord)
                 _show_metronome = False
         self.score.set_possible_subdivisions([2, 3, 4, 5, 6, 7, 8])

@@ -11,7 +11,7 @@ class ChordFactoryType(ABCMeta):
         }
 
         for base in bases:
-            base_methods = getattr(base, "_CHORD_UPDATE_METHODS", set())
+            base_methods = getattr(base, "_CHORD_UPDATE_METHODS", set())  # type: ignore
             chord_update_methods.update(base_methods)
 
         namespace["_CHORD_UPDATE_METHODS"] = chord_update_methods
@@ -21,7 +21,7 @@ class ChordFactoryType(ABCMeta):
 class AbstractChordFactory(ABC, metaclass=ChordFactoryType):
     def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self._chord: Chord = Chord(60, 1)
+        # self._chord: Chord = Chord(60, 1)
 
     def _update_chord(self) -> None:
         for method_name in self._CHORD_UPDATE_METHODS:  # type: ignore
@@ -43,6 +43,7 @@ class AbstractChordFactory(ABC, metaclass=ChordFactoryType):
     def update_chord_midis(self) -> None:
         pass
 
-    def get_chord(self) -> "Chord":
+    def create_chord(self) -> "Chord":
+        self._chord = Chord(60, 1)
         self._update_chord()
         return self._chord

@@ -19,7 +19,7 @@ class TimelineChordTreeTestCase(TestCase):
         self.chf = SimpleTimelineChordFactory(self.tlt, show_metronome=True)
 
     def test_tree_chord(self):
-        ch = self.chf.get_chord()
+        ch = self.chf.create_chord()
         self.assertTrue(isinstance(ch, Chord))
         with self.assertRaises(AttributeError):
             self.chf.chord = Chord(60, 2)
@@ -30,12 +30,12 @@ class TimelineChordTreeTestCase(TestCase):
     def test_update_quarter_duration(self):
         self.assertEqual(self.tlt.get_duration().get_quarter_duration(), 4)
         self.tlt.get_duration().metronome = Metronome(120)
-        self.assertEqual(self.chf.get_chord().quarter_duration, 8)
+        self.assertEqual(self.chf.create_chord().quarter_duration, 8)
         self.tlt.update_duration(5)
-        self.assertEqual(self.chf.get_chord().quarter_duration, 10)
+        self.assertEqual(self.chf.create_chord().quarter_duration, 10)
         self.tlt.get_duration().metronome = Metronome(120, 2)
         self.tlt.metronome = Metronome(120, 2)
-        self.assertEqual(self.chf.get_chord().quarter_duration, 20)
+        self.assertEqual(self.chf.create_chord().quarter_duration, 20)
 
 
 path = Path(__file__)
@@ -61,7 +61,7 @@ class TimeLineTreeToScoreTestCase(XMLTestCase):
                 part.add_chord(
                     SimpleTimelineChordFactory(
                         node, show_metronome=_show_metronome
-                    ).get_chord()
+                    ).create_chord()
                 )
                 _show_metronome = False
         self.score.set_possible_subdivisions([2, 3, 4, 5, 6, 7, 8])

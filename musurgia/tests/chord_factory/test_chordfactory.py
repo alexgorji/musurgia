@@ -19,7 +19,7 @@ class SimpleDemoChordFactory(AbstractChordFactory):
 class ChordFactoryTestCase(TestCase):
     def test_simple_demo_chord_factory(self):
         chf = SimpleDemoChordFactory()
-        ch = chf.get_chord()
+        ch = chf.create_chord()
         self.assertEqual(ch.midis[0].value, 72)
         self.assertEqual(ch.quarter_duration, 4)
         self.assertEqual(ch.get_words()[0].value_, "something")

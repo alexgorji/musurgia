@@ -47,4 +47,3 @@ class AbstractMusicalTree(TimelineTree, ABC):
 class SimpleMusicalTree(AbstractMusicalTree):
     def get_midis(self) -> list[Midi]:
         return [Midi(72)]
-
