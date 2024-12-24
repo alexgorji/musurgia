@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from musicscore.midi import Midi
-from musurgia.magicrandom import Random
+from musurgia.magicrandom import MagicRandom
 from musurgia.tests.utils_for_tests import XMLTestCase, test_fractal_structur_list
 from musurgia.trees.musicaltree import MidiMusicalTree
 
@@ -38,7 +38,7 @@ class TestRandomMusicalTree(XMLTestCase):
 
     def set_random_midis(self, musical_tree, root_midi_range, periodicitiy, seed):
         min_midi, max_midi = root_midi_range
-        random_ = Random(
+        random_ = MagicRandom(
             pool=list(range(min_midi, max_midi + 1)),
             periodicity=periodicitiy,
             seed=seed,

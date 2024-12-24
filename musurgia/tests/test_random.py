@@ -1,10 +1,10 @@
-from musurgia.magicrandom import Random
+from musurgia.magicrandom import MagicRandom
 from musurgia.tests.utils_for_tests import PdfTestCase
 
 
 class TestRandom(PdfTestCase):
     def test_counter(self):
-        r = Random(pool=["a", "b", "c"], periodicity=1, seed=20)
+        r = MagicRandom(pool=["a", "b", "c"], periodicity=1, seed=20)
         assert r.counter == 0
         assert next(r) == "c"
 
@@ -14,9 +14,9 @@ class TestRandom(PdfTestCase):
 
     def test_forbidden_list(self):
         with self.assertRaises(TypeError):
-            Random(pool=[1, 2, 3], forbidden_list="[2]")
+            MagicRandom(pool=[1, 2, 3], forbidden_list="[2]")
 
-        r = Random(
+        r = MagicRandom(
             pool=[1, 3, 2, 4, 5, 6], periodicity=4, seed=20, forbidden_list=[2, 3, 1]
         )
         previous_forbidden_list = r.forbidden_list[:]
@@ -34,31 +34,31 @@ class TestRandom(PdfTestCase):
 
     def test_periodicity(self):
         with self.assertRaises(TypeError):
-            Random(pool=[1, 2, 3], periodicity=-1)
+            MagicRandom(pool=[1, 2, 3], periodicity=-1)
         with self.assertRaises(TypeError):
-            Random(pool=[1, 2, 3], periodicity=1.6)
+            MagicRandom(pool=[1, 2, 3], periodicity=1.6)
 
-        assert Random(pool=[1, 2, 3, 4]).periodicity == 2
-        assert Random(pool=[1]).periodicity == 0
-        assert Random(pool=[1, 2, 3, 4], periodicity=5).periodicity == 3
+        assert MagicRandom(pool=[1, 2, 3, 4]).periodicity == 2
+        assert MagicRandom(pool=[1]).periodicity == 0
+        assert MagicRandom(pool=[1, 2, 3, 4], periodicity=5).periodicity == 3
 
     def test_pool(self):
         with self.assertRaises(TypeError):
-            Random(pool=3)
+            MagicRandom(pool=3)
         with self.assertRaises(TypeError):
-            Random(pool=None)
-        assert Random(pool=[1, 2, 3, 2, 1]).pool == [1, 2, 3]
+            MagicRandom(pool=None)
+        assert MagicRandom(pool=[1, 2, 3, 2, 1]).pool == [1, 2, 3]
 
     def test_seed(self):
-        assert Random(pool=[1, 2, 3], periodicity=0).seed is None
-        assert Random(pool=[1, 2, 3], periodicity=0, seed=10).seed == 10
+        assert MagicRandom(pool=[1, 2, 3], periodicity=0).seed is None
+        assert MagicRandom(pool=[1, 2, 3], periodicity=0, seed=10).seed == 10
         assert (
-            Random(pool=[1, 2, 3], periodicity=0, seed="Can be a string too").seed
+            MagicRandom(pool=[1, 2, 3], periodicity=0, seed="Can be a string too").seed
             == "Can be a string too"
         )
 
     def test_get_previous_elements(self):
-        r = Random(pool=[1, 3, 2, 4, 5], periodicity=2, seed=20)
+        r = MagicRandom(pool=[1, 3, 2, 4, 5], periodicity=2, seed=20)
         assert [r.__next__() for _ in range(20)] == [
             3,
             2,

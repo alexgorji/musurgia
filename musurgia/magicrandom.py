@@ -2,23 +2,23 @@ from typing import Optional, Any, Iterator, Union, TypeVar
 
 from musurgia.musurgia_types import NonNegativeInteger, check_type
 
-__all__ = ["Random"]
+__all__ = ["MagicRandom"]
 
-T = TypeVar("T", bound="Random")
+T = TypeVar("T", bound="MagicRandom")
 
 
-class Random:
+class MagicRandom:
     """
     .. code-block:: python
 
-        from musurgia.random import Random
+        from musurgia.random import MagicRandom
 
-    Random is a class for creating pseudo random series of values. Values are chosen from a list of values
+    MagicRandom is a class for creating pseudo random series of values. Values are chosen from a list of values
     called a 'pool' which does not contain any duplicates. The property 'periodicity' defines the minimum number of
     other values which must be given out before a value can appear again.
 
-    >>> first = Random(pool=[1, 3, 2, 4, 5], periodicity=2, seed=20)
-    >>> second = Random(pool=[1, 3, 2, 4, 5], periodicity=2, seed=20)
+    >>> first = MagicRandom(pool=[1, 3, 2, 4, 5], periodicity=2, seed=20)
+    >>> second = MagicRandom(pool=[1, 3, 2, 4, 5], periodicity=2, seed=20)
     >>> [first.__next__() for _ in range(20)]
     [3, 2, 1, 5, 3, 1, 4, 3, 2, 4, 5, 3, 2, 4, 1, 5, 4, 1, 3, 5]
     >>> [second.__next__() for _ in range(20)]
@@ -66,7 +66,7 @@ class Random:
 
         :return: NonNegativeInteger
 
-        >>> r = Random(pool=['a', 'b', 'c'], periodicity=1, seed=20)
+        >>> r = MagicRandom(pool=['a', 'b', 'c'], periodicity=1, seed=20)
         >>> r.counter
         0
         >>> next(r)
@@ -93,7 +93,7 @@ class Random:
         :obj:`periodicity`, :obj:`permutation_order_iterator` will remove so many elements from the beginning of this list until the
         right length is achieved.
 
-        >>> r = Random(pool=[1, 3, 2, 4, 5, 6], periodicity=4, seed=20, forbidden_list=[2, 3, 1])
+        >>> r = MagicRandom(pool=[1, 3, 2, 4, 5, 6], periodicity=4, seed=20, forbidden_list=[2, 3, 1])
         >>> previous_forbidden_list = r.forbidden_list[:]
         >>> el1 = next(r)
         >>> el1 not in previous_forbidden_list
@@ -140,11 +140,11 @@ class Random:
         If set to ``None``, ``len(self.pool) - 2`` is returned. If len(self.pool) is ``1``, ``0`` is returned.
         If set to a value equal or greater than ``len(self.pool)``, ``len(self.pool) - 1`` is returned.
 
-        >>> Random(pool=[1, 2, 3, 4]).periodicity
+        >>> MagicRandom(pool=[1, 2, 3, 4]).periodicity
         2
-        >>> Random(pool=[1]).periodicity
+        >>> MagicRandom(pool=[1]).periodicity
         0
-        >>> Random(pool=[1, 2, 3, 4], periodicity=5).periodicity
+        >>> MagicRandom(pool=[1, 2, 3, 4], periodicity=5).periodicity
         3
         """
         if self._periodicity is None:
@@ -175,7 +175,7 @@ class Random:
         Duplicates will be omitted without chaining the order of each element's first appearances.
         :return: ``None`` or ``list``
 
-        >>> Random(pool=[1, 2, 3, 2, 1]).pool
+        >>> MagicRandom(pool=[1, 2, 3, 2, 1]).pool
         [1, 2, 3]
         """
         return self._pool
@@ -194,11 +194,11 @@ class Random:
 
         .. seealso:: https://docs.python.org/3/library/random.html#random.seed
 
-        >>> Random(pool=[1, 2, 3], periodicity=0).seed
+        >>> MagicRandom(pool=[1, 2, 3], periodicity=0).seed
 
-        >>> Random(pool=[1, 2, 3], periodicity=0, seed=10).seed
+        >>> MagicRandom(pool=[1, 2, 3], periodicity=0, seed=10).seed
         10
-        >>> Random(pool=[1, 2, 3], periodicity=0, seed='Can be a string too').seed
+        >>> MagicRandom(pool=[1, 2, 3], periodicity=0, seed='Can be a string too').seed
         'Can be a string too'
         """
         return self._seed
@@ -213,7 +213,7 @@ class Random:
         """
         :return: list of all randomly chosen values
 
-        >>> r = Random(pool=[1, 3, 2, 4, 5], periodicity=2, seed=20)
+        >>> r = MagicRandom(pool=[1, 3, 2, 4, 5], periodicity=2, seed=20)
         >>> [r.__next__() for _ in range(20)]
         [3, 2, 1, 5, 3, 1, 4, 3, 2, 4, 5, 3, 2, 4, 1, 5, 4, 1, 3, 5]
         >>> r.get_previous_elements()
@@ -223,7 +223,7 @@ class Random:
 
     def __iter__(self) -> Iterator[Any]:
         """
-        The core methode of Random. This is a generator to generate random values. :obj:`__next__` method calls :obj:`__iter__().__next__()`.
+        The core methode of MagicRandom. This is a generator to generate random values. :obj:`__next__` method calls :obj:`__iter__().__next__()`.
 
         :return: a random value out of :obj:`pool` considering :obj:`seed`, :obj:`periodicity` and :obj:`forbidden_list`
         """

@@ -3,7 +3,7 @@ from fractions import Fraction
 from typing import Any, Iterator, Literal, Union
 
 from musicscore.midi import Midi  # type: ignore
-from musurgia.magicrandom import Random
+from musurgia.magicrandom import MagicRandom
 from musurgia.utils import RelativeValueGenerator
 
 
@@ -25,7 +25,7 @@ class OneMidiGenerator(MidiGenerator):
         return Midi(self._midi_value)
 
 
-class RandomMidiGenerator(Random, MidiGenerator):
+class RandomMidiGenerator(MagicRandom, MidiGenerator):
     def __next__(self) -> Midi:
         return Midi(float(super().__next__()))
 
