@@ -25,4 +25,3 @@ class TestSimpleMusicalTree(XMLTestCase):
         with self.file_path(path, "simple") as xml_path:
             score.export_xml(xml_path)
 
-
