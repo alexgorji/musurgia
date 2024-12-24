@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from copy import deepcopy
-from typing import Any
+from typing import Any, cast
 
 from musicscore.midi import Midi  # type: ignore
 from musicscore.score import Score  # type: ignore
@@ -64,63 +64,31 @@ class MusicalTree(TimelineTree):
                 part.add_chord(node.get_chord_factory().create_chord())
         return score
 
-
-# class TreeMidiGeneratorMixin:
-#     def __init__(self, root_midis: list[Midi] = [Midi(72)], *args: Any, **kwargs: Any):
-#         super().__init__(*args, **kwargs)
-#         self._root_midis = root_midis
-#         self._children_midi_generator: MidiGenerator
-#         self._midis: list[Midi]
-
-#     @property
-#     def children_midi_generator(self) -> MidiGenerator:
-#         return self._children_midi_generator
-
-#     @children_midi_generator.setter
-#     def children_midi_generator(self, value: MidiGenerator) -> None:
-#         self._children_midi_generator = value
-
-#     def get_children_midi_generator(self):
-#         try:
-#             return self._children_midi_generator
-#         except AttributeError:
-#             self._children_midi_generator = OneMidiGenerator(72)
-#             return self._children_midi_generator
-
-#     def get_midis(self):
-#         return [72]
-#         # try:
-#         #     return self._midis
-#         # except AttributeError:
-#         #     if self.is_root:
-#         #         self._midis = self._root_midis
-#         #     else:
-#         #         parent = self.get_parent()
-#         #         for node in parent.get_children():
-#         #             node._midis = next(parent.get_children_midi_generator())
-#         # return self._midis
-
-
-# class RelativeMidiGeneratorMixin:
-#     def __init__(self, *args: Any, **kwargs: Any):
-#         super().__init__(*args, **kwargs)
-
-
-class OneToneTreeChordFactory(TreeChordFactory):
-    def __init__(self, midi: Midi, *args: Any, **kwargs: Any):
-        super().__init__(*args, **kwargs)
-        self._midi = midi
-
+class MidiMusicalTreeChordFactory(TreeChordFactory):
     def update_chord_midis(self) -> None:
-        self._chord.midis = deepcopy([self._midi])
+        self._chord.midis = deepcopy(cast(MidiMusicalTree, self.get_musical_tree_node()).get_midis())
 
 
-class SimpleMusicalTree(MusicalTree):
-    def __init__(self, midi: Midi=Midi(72), *args: Any, **kwargs: Any) -> None:
+class MidiMusicalTree(MusicalTree):
+    def __init__(self, midis: list[Midi]=[Midi(72)], *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self._tree_chord_factory: TreeChordFactory = OneToneTreeChordFactory(
-            midi=midi, musical_tree_node=self
+        self._midis: list[Midi]
+        self.midis = midis
+        self._tree_chord_factory: TreeChordFactory = MidiMusicalTreeChordFactory(
+            musical_tree_node=self
         )
+
+    @property
+    def midis(self) -> list[Midi]:
+        return self._midis
+
+    @midis.setter
+    def midis(self, value: list[Midi]) -> None:
+        self._midis = value
+
+    def get_midis(self) -> list[Midi]:
+        return self.midis
 
     def get_chord_factory(self) -> TreeChordFactory:
         return self._tree_chord_factory
+
