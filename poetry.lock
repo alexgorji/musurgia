@@ -567,31 +567,31 @@ dev = ["meson-python (>=0.13.1,<0.17.0)", "numpy (>=1.25)", "pybind11 (>=2.6,!=2
 
 [[package]]
 name = "musicscore"
-version = "2.3.3"
+version = "2.4.0"
 description = "Generating musicxml files."
 optional = false
 python-versions = "<3.13,>=3.9"
 files = [
-    {file = "musicscore-2.3.3-py3-none-any.whl", hash = "sha256:c33626822623f15f07a8cb6490ede44f2e82476c87a8be23d551141d40f15e4b"},
-    {file = "musicscore-2.3.3.tar.gz", hash = "sha256:d62d928f23b674c51070f6899dc4cf7c4a2380cbd1d410ae9a429b909f88189d"},
+    {file = "musicscore-2.4.0-py3-none-any.whl", hash = "sha256:f70d7219f41345cf6d5b3138a49c7cd08200a676a624df0338be1c249c6a3b1c"},
+    {file = "musicscore-2.4.0.tar.gz", hash = "sha256:e0777aafd50a562ce6fb09297b1c90bb29aee5fbd773e06289aa5324934617eb"},
 ]
 
 [package.dependencies]
-musicxml = ">=1.4.2,<2.0.0"
+musicxml = ">=1.6,<2.0"
 
 [[package]]
 name = "musicxml"
-version = "1.5.1"
+version = "1.6.1"
 description = "generating musicxml"
 optional = false
 python-versions = "<3.13,>=3.9"
 files = [
-    {file = "musicxml-1.5.1-py3-none-any.whl", hash = "sha256:ee27d5d12d70444e1df5b8c86a43c7f6cd4be7dcf7e0304f362145c268c39674"},
-    {file = "musicxml-1.5.1.tar.gz", hash = "sha256:64a3408a648a321c7636f9308fc90b072b50231fd8bd5b108577b451afbc92f8"},
+    {file = "musicxml-1.6.1-py3-none-any.whl", hash = "sha256:43ad9607453a0e91585b6c18a45dd1ba9681e1317b5133e34b5195f18d513d5a"},
+    {file = "musicxml-1.6.1.tar.gz", hash = "sha256:a90e5ef8512c40af9f65ab8d0627afa19ef4a26aac97052287a6f0b2f9db7ae9"},
 ]
 
 [package.dependencies]
-verysimpletree = ">=1.0,<2.0"
+verysimpletree = ">=1.2,<2.0"
 
 [[package]]
 name = "mypy"
@@ -1076,4 +1076,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "0b89cab32bc4693c872939a89c53428d44ace26e119f79baf2b07aa4538a23a0"
+content-hash = "090f8c582fce52780f2157be015b7e2730c089bf7141026d07f244c57bfcaaec"
