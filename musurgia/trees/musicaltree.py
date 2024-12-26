@@ -5,6 +5,7 @@ from typing import Any
 from musicscore.midi import Midi  # type: ignore
 from musicscore.score import Score  # type: ignore
 from musurgia.chordfactory.chordfactory import AbstractChordFactory
+from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.trees.timelinetree import TimelineTree
 
 
@@ -99,3 +100,7 @@ class MidiMusicalTree(MusicalTree):
 
     def get_chord_factory(self) -> TreeChordFactory:
         return self._tree_chord_factory
+
+
+class FractalMusicalTree(FractalTimelineTree, MidiMusicalTree):
+    pass

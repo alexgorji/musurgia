@@ -8,6 +8,7 @@ from diff_pdf_visually import pdf_similar  # type: ignore
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.pdf import TextLabel, DrawObjectColumn, StraightLine
 from musurgia.pdf.drawobject import MasterDrawObject
+from musurgia.trees.musicaltree import FractalMusicalTree
 from musurgia.trees.timelinetree import TimelineDuration, TimelineTree
 from musurgia.trees.valuedtree import ValuedTree
 
@@ -289,6 +290,20 @@ def create_simple_column(list_of_draw_objects):
 
 def create_test_fractal_timline_tree():
     ft = FractalTimelineTree(
+        duration=TimelineDuration(10),
+        proportions=(1, 2, 3, 4),
+        main_permutation_order=(3, 1, 4, 2),
+        permutation_index=(1, 1),
+    )
+    ft.add_layer()
+
+    ft.add_layer(lambda node: node.get_fractal_order() > 1)
+    ft.add_layer(lambda node: node.get_fractal_order() > 2)
+    return ft
+
+
+def create_test_fractal_musical_tree():
+    ft = FractalMusicalTree(
         duration=TimelineDuration(10),
         proportions=(1, 2, 3, 4),
         main_permutation_order=(3, 1, 4, 2),

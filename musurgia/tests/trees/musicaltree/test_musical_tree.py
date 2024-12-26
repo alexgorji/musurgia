@@ -3,7 +3,10 @@ from pathlib import Path
 
 from musicscore.midi import Midi
 from musurgia.magicrandom import MagicRandom
-from musurgia.tests.utils_for_tests import XMLTestCase, test_fractal_structur_list
+from musurgia.tests.utils_for_tests import (
+    XMLTestCase,
+    test_fractal_structur_list,
+)
 from musurgia.trees.musicaltree import MidiMusicalTree
 from musurgia.utils import RelativeValueGenerator
 
