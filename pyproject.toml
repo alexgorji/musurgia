@@ -44,3 +44,14 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff.lint]
 ignore = ["F403", "F405", "E741", "F821"]
 unfixable = ["F401"]
+
+[tool.mypy]
+exclude = [
+    "tests"
+]
+
+[[tool.mypy.overrides]]
+module = [
+    "musicscore.*",
+]
+ignore_missing_imports = true
