@@ -1,4 +1,6 @@
+from itertools import cycle
 from pathlib import Path
+from unittest import TestCase
 
 from musicscore.midi import Midi
 from musurgia.magicrandom import MagicRandom
@@ -7,7 +9,13 @@ from musurgia.tests.utils_for_tests import (
     create_test_fractal_relative_musical_tree,
     test_fractal_structur_list,
 )
-from musurgia.trees.musicaltree import MidiMusicalTree, RelativeMusicTree
+from musurgia.trees.musicaltree import (
+    FractalDirectionIterator,
+    FractalMusicalTree,
+    MidiMusicalTree,
+    RelativeMusicTree,
+)
+from musurgia.trees.timelinetree import TimelineDuration
 
 path = Path(__file__)
 
@@ -76,13 +84,150 @@ class TestRelativeMidiMusicalTree(XMLTestCase):
             score.export_xml(xml_path)
 
 
+class TestFractalDirectionIterator(TestCase):
+    def test_fractal_direction_iterator(self):
+        ft = FractalMusicalTree(
+            duration=TimelineDuration(10),
+            proportions=(1, 2, 3, 4),
+            main_permutation_order=(3, 1, 4, 2),
+            permutation_index=(1, 1),
+        )
+        ft.add_layer()
+        fdi = FractalDirectionIterator(main_direction_cell=[1, -1], fractal_node=ft)
+        self.assertEqual(fdi.get_main_directions(), [1, -1, 1, -1])
+        self.assertEqual(fdi.get_directions(), [1, 1, -1, -1])
+
+
 class TestRelativeFractalMusicalTree(XMLTestCase):
     def setUp(self):
         self.ft = create_test_fractal_relative_musical_tree()
         self.ft.get_chord_factory().show_metronome = True
+
+    def test_default_direction_iterator(self):
+        # self.ft.set_relative_midis()
+        for node in self.ft.traverse():
+            self.assertEqual(
+                node.direction_iterator.get_main_directions(), [1, -1, 1, -1]
+            )
+        expected = """└── [1, 1, -1, -1]
+    ├── [-1, -1, 1, 1]
+    │   ├── []
+    │   ├── [-1, -1, 1, 1]
+    │   │   ├── []
+    │   │   ├── []
+    │   │   ├── []
+    │   │   └── []
+    │   ├── []
+    │   └── [1, 1, -1, -1]
+    │       ├── []
+    │       ├── []
+    │       ├── []
+    │       └── []
+    ├── []
+    ├── [1, -1, 1, -1]
+    │   ├── []
+    │   ├── []
+    │   ├── [-1, -1, 1, 1]
+    │   │   ├── []
+    │   │   ├── []
+    │   │   ├── []
+    │   │   └── []
+    │   └── [1, -1, 1, -1]
+    │       ├── []
+    │       ├── []
+    │       ├── []
+    │       └── []
+    └── [-1, 1, -1, 1]
+        ├── [-1, -1, 1, 1]
+        │   ├── []
+        │   ├── []
+        │   ├── []
+        │   └── []
+        ├── [1, 1, -1, -1]
+        │   ├── []
+        │   ├── []
+        │   ├── []
+        │   └── []
+        ├── []
+        └── []
+"""
+        self.assertEqual(
+            self.ft.get_tree_representation(
+                key=lambda node: node.direction_iterator.get_directions()
+            ),
+            expected,
+        )
 
     def test_relative_fractal_musical_tree(self):
         score = self.ft.export_score()
         score.get_quantized = True
         with self.file_path(path, "fractal_relative") as xml_path:
             score.export_xml(xml_path)
+
+    def test_relative_fractat_musical_ziczac_tree(self):
+        for node in self.ft.traverse():
+            node.direction_iterator = cycle([-1, 1])
+        self.ft.set_relative_midis()
+        score = self.ft.export_score()
+        score.get_quantized = True
+        with self.file_path(path, "fractal_relative_ziczac") as xml_path:
+            score.export_xml(xml_path)
+
+    def test_set_relatve_midis_again(self):
+        expected = """└── 60
+    ├── 68.0
+    │   ├── 80.0
+    │   ├── 76.0
+    │   │   ├── 68.0
+    │   │   ├── 71.0
+    │   │   ├── 76.0
+    │   │   └── 75.0
+    │   ├── 68.0
+    │   └── 70.0
+    │       ├── 72.0
+    │       ├── 75.0
+    │       ├── 76.0
+    │       └── 72.0
+    ├── 80.0
+    ├── 84.0
+    │   ├── 76.0
+    │   ├── 72.0
+    │   ├── 80.0
+    │   │   ├── 68.0
+    │   │   ├── 72.0
+    │   │   ├── 80.0
+    │   │   └── 78.0
+    │   └── 68.0
+    │       ├── 76.0
+    │       ├── 80.0
+    │       ├── 72.0
+    │       └── 84.0
+    └── 68.0
+        ├── 60.0
+        │   ├── 68.0
+        │   ├── 65.0
+        │   ├── 60.0
+        │   └── 61.0
+        ├── 68.0
+        │   ├── 66.0
+        │   ├── 63.0
+        │   ├── 62.0
+        │   └── 66.0
+        ├── 62.0
+        └── 66.0
+"""
+        self.assertEqual(
+            self.ft.get_tree_representation(
+                key=lambda node: node.get_chord_factory().midis[0].value
+            ),
+            expected,
+        )
+        for node in self.ft.traverse():
+            node.direction_iterator.reset()
+        self.ft.set_relative_midis()
+        self.assertEqual(
+            self.ft.get_tree_representation(
+                key=lambda node: node.get_chord_factory().midis[0].value
+            ),
+            expected,
+        )
