@@ -8,7 +8,7 @@ from diff_pdf_visually import pdf_similar  # type: ignore
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.pdf import TextLabel, DrawObjectColumn, StraightLine
 from musurgia.pdf.drawobject import MasterDrawObject
-from musurgia.trees.musicaltree import FractalMusicalTree, FractalRelativeMusicTree
+from musurgia.trees.musicaltree import FractalMusicalTree, FractalRelativeMusicTree, MidiMusicalTreeChordFactory
 from musurgia.trees.timelinetree import TimelineDuration, TimelineTree
 from musurgia.trees.valuedtree import ValuedTree
 
@@ -315,9 +315,15 @@ def create_test_fractal_musical_tree():
     ft.add_layer(lambda node: node.get_fractal_order() > 2)
     return ft
 
+class FractalMusicalTreeChordFactory(MidiMusicalTreeChordFactory):
+    def update_chord_fractal_order(self):
+        self._chord.add_words(str(self.get_musical_tree_node().get_fractal_order()), placement="below", relative_y=-10)
+
+class MyFractalRelativeMusicTree(FractalRelativeMusicTree):
+    TreeChordFactoryClass = FractalMusicalTreeChordFactory
 
 def create_test_fractal_relative_musical_tree():
-    ft = FractalRelativeMusicTree(
+    ft = MyFractalRelativeMusicTree(
         duration=TimelineDuration(10),
         proportions=(1, 2, 3, 4),
         main_permutation_order=(3, 1, 4, 2),

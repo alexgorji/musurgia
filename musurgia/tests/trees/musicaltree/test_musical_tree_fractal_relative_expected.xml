@@ -33,6 +33,9 @@
       <system-distance>117</system-distance>
       <top-system-distance>117</top-system-distance>
     </system-layout>
+    <staff-layout>
+      <staff-distance>100</staff-distance>
+    </staff-layout>
   </defaults>
   <part-list>
     <score-part id="part-1">
@@ -64,6 +67,11 @@
           <line>2</line>
         </clef>
       </attributes>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">0</words>
+        </direction-type>
+      </direction>
       <direction placement="above">
         <direction-type>
           <metronome>
@@ -151,6 +159,11 @@
           <line>2</line>
         </clef>
       </attributes>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">3</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -163,6 +176,11 @@
         <dot />
         <accidental>flat</accidental>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -179,6 +197,11 @@
       <attributes>
         <divisions>1</divisions>
       </attributes>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">4</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>C</step>
@@ -193,6 +216,11 @@
       <attributes>
         <divisions>1</divisions>
       </attributes>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">2</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -231,6 +259,11 @@
           <line>2</line>
         </clef>
       </attributes>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">2</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -252,6 +285,11 @@
           <tuplet type="start" number="1" bracket="yes" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">4</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>E</step>
@@ -291,6 +329,11 @@
           <tied type="stop" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -329,6 +372,11 @@
           <tied type="stop" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">3</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>B</step>
@@ -362,6 +410,11 @@
           <tied type="stop" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -378,6 +431,11 @@
       <attributes>
         <divisions>5</divisions>
       </attributes>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>E</step>
@@ -396,6 +454,11 @@
           <tuplet type="start" number="1" bracket="yes" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">2</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>C</step>
@@ -436,6 +499,11 @@
           <tied type="stop" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">3</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -478,6 +546,11 @@
           <tied type="stop" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">4</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -520,6 +593,11 @@
       <attributes>
         <divisions>5</divisions>
       </attributes>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">4</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>C</step>
@@ -537,6 +615,11 @@
           <tuplet type="start" number="1" bracket="yes" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">3</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -579,6 +662,11 @@
           <tied type="stop" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">2</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>D</step>
@@ -594,6 +682,11 @@
         </time-modification>
         <beam number="1">continue</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>F</step>
@@ -642,6 +735,11 @@
           <line>2</line>
         </clef>
       </attributes>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">2</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -663,6 +761,11 @@
           <tuplet type="start" number="1" bracket="yes" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">2</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -681,6 +784,11 @@
         <beam number="1">continue</beam>
         <beam number="2">begin</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">4</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>B</step>
@@ -722,6 +830,11 @@
           <tied type="stop" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>E</step>
@@ -738,6 +851,11 @@
         <beam number="1">continue</beam>
         <beam number="2">forward hook</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">3</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>E</step>
@@ -756,6 +874,11 @@
         </time-modification>
         <beam number="1">continue</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -796,6 +919,11 @@
           <tied type="stop" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">3</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>C</step>
@@ -807,6 +935,11 @@
         <beam number="1">continue</beam>
         <beam number="2">continue</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>E</step>
@@ -821,6 +954,11 @@
         <beam number="2">end</beam>
         <beam number="3">backward hook</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">4</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>E</step>
@@ -834,6 +972,11 @@
         <beam number="1">continue</beam>
         <beam number="2">begin</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">2</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>C</step>
@@ -846,6 +989,11 @@
         <beam number="2">end</beam>
         <beam number="3">backward hook</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -862,6 +1010,11 @@
       <attributes>
         <divisions>280</divisions>
       </attributes>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>E</step>
@@ -880,6 +1033,11 @@
           <tuplet type="start" number="1" bracket="yes" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">2</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>C</step>
@@ -922,6 +1080,11 @@
           <tied type="stop" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">2</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -940,6 +1103,11 @@
         <beam number="1">continue</beam>
         <beam number="2">end</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">4</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>C</step>
@@ -959,6 +1127,11 @@
           <tuplet type="stop" number="1" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <grace />
         <pitch>
@@ -968,6 +1141,11 @@
         </pitch>
         <voice>1</voice>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">3</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>F</step>
@@ -989,6 +1167,11 @@
           <tuplet type="start" number="1" bracket="yes" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>E</step>
@@ -1005,6 +1188,11 @@
         <beam number="1">continue</beam>
         <beam number="2">forward hook</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">2</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -1022,6 +1210,11 @@
         </time-modification>
         <beam number="1">continue</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">3</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>C</step>
@@ -1059,6 +1252,11 @@
           <tied type="stop" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">4</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>C</step>
@@ -1094,6 +1292,11 @@
       <attributes>
         <divisions>30</divisions>
       </attributes>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">2</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>A</step>
@@ -1115,6 +1318,11 @@
           <tuplet type="start" number="1" bracket="yes" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">4</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>F</step>
@@ -1130,6 +1338,11 @@
         </time-modification>
         <beam number="1">continue</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <grace />
         <pitch>
@@ -1138,6 +1351,11 @@
         </pitch>
         <voice>1</voice>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">3</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>C</step>
@@ -1155,6 +1373,11 @@
         </time-modification>
         <beam number="1">continue</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">3</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>F</step>
@@ -1176,6 +1399,11 @@
           <tuplet type="stop" number="1" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <grace />
         <pitch>
@@ -1185,6 +1413,11 @@
         </pitch>
         <voice>1</voice>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">4</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>D</step>
@@ -1204,6 +1437,11 @@
           <tuplet type="start" number="1" bracket="yes" />
         </notations>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">2</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>F</step>
@@ -1222,6 +1460,11 @@
         <beam number="1">continue</beam>
         <beam number="2">end</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">2</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>D</step>
@@ -1237,6 +1480,11 @@
         </time-modification>
         <beam number="1">continue</beam>
       </note>
+      <direction placement="below">
+        <direction-type>
+          <words relative-y="-10">1</words>
+        </direction-type>
+      </direction>
       <note>
         <pitch>
           <step>F</step>

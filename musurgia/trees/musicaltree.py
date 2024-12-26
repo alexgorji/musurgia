@@ -118,7 +118,10 @@ class MidiValueMicroTone(Enum):
     EIGHT = 0.25
 
 DirectionValue = Literal[-1, 1]
+
 class RelativeMusicTree(MusicalTree):
+    TreeChordFactoryClass = MidiMusicalTreeChordFactory
+
     def __init__(
         self,
         midi_value_range: Optional[tuple[MidiValue]] = None,
@@ -129,8 +132,8 @@ class RelativeMusicTree(MusicalTree):
         self._midi_value_range: Optional[tuple[MidiValue]] = midi_value_range
         self._micro_tone: MidiValueMicroTone = MidiValueMicroTone.HALF
         self._direction_iterator: Iterator[DirectionValue] = cycle([-1, 1])
-        self._tree_chord_factory: MidiMusicalTreeChordFactory = (
-            MidiMusicalTreeChordFactory(musical_tree_node=self)
+        self._tree_chord_factory = (
+            self.TreeChordFactoryClass(musical_tree_node=self)
         )
 
     @property
