@@ -132,8 +132,6 @@ class RelativeMusicTree(MusicalTree):
         self._tree_chord_factory: MidiMusicalTreeChordFactory = (
             MidiMusicalTreeChordFactory(musical_tree_node=self)
         )
-        if self.midi_value_range:
-            self.set_relative_midis()
 
     @property
     def micro_tone(self) -> MidiValueMicroTone:
@@ -185,3 +183,7 @@ class RelativeMusicTree(MusicalTree):
                     min_midi = float(children_midi_value_ranges[index])
                     max_midi = float(children_midi_value_ranges[index + 1])
                     children[index].midi_value_range = (min_midi, max_midi)
+
+
+class FractalRelativeMusicTree(FractalTimelineTree, RelativeMusicTree):
+    pass

@@ -1,10 +1,10 @@
-from itertools import cycle
 from pathlib import Path
 
 from musicscore.midi import Midi
 from musurgia.magicrandom import MagicRandom
 from musurgia.tests.utils_for_tests import (
     XMLTestCase,
+    create_test_fractal_relative_musical_tree,
     test_fractal_structur_list,
 )
 from musurgia.trees.musicaltree import MidiMusicalTree, RelativeMusicTree
@@ -73,4 +73,16 @@ class TestRelativeMidiMusicalTree(XMLTestCase):
         score = self.mt.export_score()
         score.get_quantized = True
         with self.file_path(path, "relative") as xml_path:
+            score.export_xml(xml_path)
+
+
+class TestRelativeFractalMusicalTree(XMLTestCase):
+    def setUp(self):
+        self.ft = create_test_fractal_relative_musical_tree()
+        self.ft.get_chord_factory().show_metronome = True
+
+    def test_relative_fractal_musical_tree(self):
+        score = self.ft.export_score()
+        score.get_quantized = True
+        with self.file_path(path, "fractal_relative") as xml_path:
             score.export_xml(xml_path)
