@@ -1,8 +1,8 @@
 from fractions import Fraction
 from typing import Any, Union
 
-from musicscore.metronome import Metronome  # type: ignore
-from musicscore.quarterduration import QuarterDuration  # type: ignore
+from musicscore.metronome import Metronome
+from musicscore.quarterduration import QuarterDuration
 
 from musurgia.chordfactory.chordfactory import AbstractChordFactory
 from musurgia.timing.duration import (
