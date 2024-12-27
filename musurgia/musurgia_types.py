@@ -432,6 +432,11 @@ ClockMode = Literal["hms", "ms", "msreduced"]
 check_clock_mode_type = LiteralCheckGenerator(ClockMode, "ClockMode").generate_checker()
 
 
+MidiValue = Union[int, float]
+check_midi_value_type = LiteralCheckGenerator(
+    MidiValue, "MidiValue"
+).generate_checker()
+
 def _get_name_of_check_type_function(musurgia_type: MusurgiaType) -> str:
     """
     >>> _get_name_of_check_type_function("MatrixIndex")

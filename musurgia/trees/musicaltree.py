@@ -10,7 +10,7 @@ from musurgia.chordfactory.chordfactory import AbstractChordFactory
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.trees.timelinetree import TimelineTree
 from musurgia.utils import RelativeValueGenerator
-
+from musurgia.musurgia_types import MidiValue
 
 class TreeChordFactory(AbstractChordFactory):
     def __init__(
@@ -41,7 +41,7 @@ class TreeChordFactory(AbstractChordFactory):
         self._show_metronome = value
 
     def get_midis(self) -> list[Midi]:
-        return self._midis
+        return self.midis
     
     def get_musical_tree_node(self) -> "MusicalTree":
         return self._musical_tree_node
@@ -70,7 +70,7 @@ class MusicalTree(TimelineTree):
         self.set_tree_chord_factory_class(TreeChordFactory)
 
 
-    def set_tree_chord_factory_class(self, value: TreeChordFactory) -> None:
+    def set_tree_chord_factory_class(self, value: type[TreeChordFactory]) -> None:
         self._tree_chord_factory = value(self)
 
     def get_chord_factory(self) -> TreeChordFactory:
@@ -87,9 +87,6 @@ class MusicalTree(TimelineTree):
 
 class FractalMusicalTree(FractalTimelineTree, MusicalTree):
     pass
-
-
-MidiValue = Union[int, float]
 
 
 class MidiValueMicroTone(Enum):

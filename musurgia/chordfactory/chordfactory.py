@@ -19,9 +19,6 @@ class ChordFactoryType(ABCMeta):
 
 
 class AbstractChordFactory(ABC, metaclass=ChordFactoryType):
-    def __init__(self, *args: Any, **kwargs: Any):
-        super().__init__(*args, **kwargs)
-        # self._chord: Chord = Chord(60, 1)
 
     def _update_chord(self) -> None:
         for method_name in self._CHORD_UPDATE_METHODS:  # type: ignore
