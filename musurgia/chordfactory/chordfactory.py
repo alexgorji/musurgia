@@ -1,7 +1,7 @@
 from abc import ABC, ABCMeta, abstractmethod
 from typing import Any
 
-from musicscore.chord import Chord  # type: ignore
+from musicscore.chord import Chord
 
 
 class ChordFactoryType(ABCMeta):
