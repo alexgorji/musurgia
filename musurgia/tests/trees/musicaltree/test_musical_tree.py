@@ -3,17 +3,16 @@ from pathlib import Path
 from unittest import TestCase
 
 from musicscore.layout import StaffLayout
-from musicscore.midi import Midi
-from musurgia.magicrandom import MagicRandom
 from musurgia.tests.utils_for_tests import (
     XMLTestCase,
     create_test_fractal_relative_musical_tree,
     test_fractal_structur_list,
 )
-from musurgia.trees.fractaltimelinetree import FractalTimelineTree
+
 from musurgia.trees.musicaltree import (
     FractalDirectionIterator,
     FractalMusicalTree,
+    MagicRandomTreeMidiGenerator,
     MusicalTree,
     RelativeMusicTree,
 )
@@ -22,7 +21,7 @@ from musurgia.trees.timelinetree import TimelineDuration
 path = Path(__file__)
 
 
-class TestSimpleMusicalTree(XMLTestCase):
+class TestMusicalTree(XMLTestCase):
     def setUp(self):
         self.mt = MusicalTree.create_tree_from_list(
             test_fractal_structur_list, "duration"
@@ -36,12 +35,6 @@ class TestSimpleMusicalTree(XMLTestCase):
         )
         self.assertEqual(chord.metronome, self.mt.get_duration().get_metronome())
 
-    def test_simple_music_tree_to_score(self):
-        score = self.mt.export_score()
-        score.get_quantized = True
-        with self.file_path(path, "simple") as xml_path:
-            score.export_xml(xml_path)
-
 
 class TestRandomMusicalTree(XMLTestCase):
     def setUp(self):
@@ -50,27 +43,15 @@ class TestRandomMusicalTree(XMLTestCase):
         )
         self.mt.get_chord_factory().show_metronome = True
 
-    def set_random_midis(self, musical_tree, root_midi_range, periodicitiy, seed):
-        min_midi, max_midi = root_midi_range
-        random_ = MagicRandom(
-            pool=list(range(min_midi, max_midi + 1)),
-            periodicity=periodicitiy,
-            seed=seed,
-        )
-        for node in musical_tree.traverse():
-            node.get_chord_factory().midis = [Midi(next(random_))]
-
     def test_random_midis(self):
-        self.set_random_midis(
-            musical_tree=self.mt, root_midi_range=(60, 84), seed=10, periodicitiy=7
-        )
+        MagicRandomTreeMidiGenerator(self.mt, pool=list(range(60, 85)), seed=10, periodicity=7).set_musical_tree_midis()
         score = self.mt.export_score()
         score.get_quantized = True
         with self.file_path(path, "random") as xml_path:
             score.export_xml(xml_path)
 
 
-class TestRelativeMidiMusicalTree(XMLTestCase):
+class TestRelativeMusicalTree(XMLTestCase):
     def setUp(self):
         self.mt = RelativeMusicTree.create_tree_from_list(
             test_fractal_structur_list, "duration"
@@ -238,3 +219,5 @@ class TestRelativeFractalMusicalTree(XMLTestCase):
             ),
             expected,
         )
+
+

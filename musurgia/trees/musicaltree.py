@@ -2,11 +2,12 @@ from abc import abstractmethod
 from copy import deepcopy
 from enum import Enum
 from itertools import cycle
-from typing import Any, Iterator, Literal, Optional, Union
+from typing import Any, Iterator, Literal, Optional
 
 from musicscore.midi import Midi
 from musicscore.score import Score
 from musurgia.chordfactory.chordfactory import AbstractChordFactory
+from musurgia.magicrandom import MagicRandom
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.trees.timelinetree import TimelineTree
 from musurgia.utils import RelativeValueGenerator
@@ -61,6 +62,22 @@ class TreeChordFactory(AbstractChordFactory):
             )
         else:
             self._chord._metronome = None
+
+
+class TreeMidiGenerator:
+    def __init__(self, musical_tree_node: "MusicalTree", *args: Any, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self._musical_tree_node: "MusicalTree" = musical_tree_node
+        
+    @abstractmethod
+    def set_musical_tree_midis(self) -> None:
+        pass
+
+
+class MagicRandomTreeMidiGenerator(TreeMidiGenerator, MagicRandom):
+    def set_musical_tree_midis(self) -> None:
+        for node in self._musical_tree_node.traverse():
+            node.get_chord_factory().midis = next(self)
 
 
 class MusicalTree(TimelineTree):
