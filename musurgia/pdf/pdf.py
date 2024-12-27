@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 from types import TracebackType
-from typing import Protocol, Any, TYPE_CHECKING, Optional, Union
+from typing import Protocol, Any, TYPE_CHECKING, Optional, Union, cast
 
 from fpdf import FPDF
 
@@ -138,8 +138,11 @@ class Pdf(FPDF, HasOutProtocol):
         orientation: PageOrientation = "",
         format: Union[PageFormat, tuple[float, float]] = "",
         same: bool = False,
-        duration: int = 0,
+        duration: float = 0.0,
         transition: Optional[Any] = None,
+        label_style: Optional[Any] = None,
+        label_prefix: Optional[str] = None,
+        label_start: Optional[int] = None,
     ) -> None:
         check_type(
             orientation,
@@ -165,20 +168,23 @@ class Pdf(FPDF, HasOutProtocol):
         )
         check_type(
             duration,
-            int,
+            float,
             class_name="PageOrientation",
             method_name="add_page",
             argument_name="duration",
         )
 
         if orientation == "":
-            orientation = self.cur_orientation
+            orientation = cast(PageOrientation, self.cur_orientation)
         super().add_page(
             orientation=orientation,
             format=format,
             same=same,
             duration=duration,
             transition=transition,
+            label_style=label_style,
+            label_prefix=label_prefix,
+            label_start=label_start,
         )
         self._absolute_positions[self.page] = [0, 0.0]
 
