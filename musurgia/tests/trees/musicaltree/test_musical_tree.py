@@ -10,10 +10,11 @@ from musurgia.tests.utils_for_tests import (
     create_test_fractal_relative_musical_tree,
     test_fractal_structur_list,
 )
+from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.trees.musicaltree import (
     FractalDirectionIterator,
     FractalMusicalTree,
-    MidiMusicalTree,
+    MusicalTree,
     RelativeMusicTree,
 )
 from musurgia.trees.timelinetree import TimelineDuration
@@ -23,7 +24,7 @@ path = Path(__file__)
 
 class TestSimpleMusicalTree(XMLTestCase):
     def setUp(self):
-        self.mt = MidiMusicalTree.create_tree_from_list(
+        self.mt = MusicalTree.create_tree_from_list(
             test_fractal_structur_list, "duration"
         )
         self.mt.get_chord_factory().show_metronome = True
@@ -44,7 +45,7 @@ class TestSimpleMusicalTree(XMLTestCase):
 
 class TestRandomMusicalTree(XMLTestCase):
     def setUp(self):
-        self.mt = MidiMusicalTree.create_tree_from_list(
+        self.mt = MusicalTree.create_tree_from_list(
             test_fractal_structur_list, "duration"
         )
         self.mt.get_chord_factory().show_metronome = True
