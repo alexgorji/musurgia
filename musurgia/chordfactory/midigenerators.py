@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from fractions import Fraction
 from typing import Any, Iterator, Literal, Union
 
-from musicscore.midi import Midi  # type: ignore
+from musicscore.midi import Midi
 from musurgia.magicrandom import MagicRandom
 from musurgia.utils import RelativeValueGenerator
 
