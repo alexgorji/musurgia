@@ -319,22 +319,19 @@ class FractalMusicalTreeChordFactory(TreeChordFactory):
     def update_chord_fractal_order(self):
         self._chord.add_words(str(self.get_musical_tree_node().get_fractal_order()), placement="below", relative_y=-10)
 
-class MyFractalRelativeMusicTree(FractalRelativeMusicTree):
-    TreeChordFactoryClass = FractalMusicalTreeChordFactory
 
 def create_test_fractal_relative_musical_tree():
-    ft = MyFractalRelativeMusicTree(
+    ft = FractalRelativeMusicTree(
         duration=TimelineDuration(10),
         proportions=(1, 2, 3, 4),
         main_permutation_order=(3, 1, 4, 2),
         permutation_index=(1, 1),
-        midi_value_range=(60, 84),
     )
     ft.add_layer()
 
     ft.add_layer(lambda node: node.get_fractal_order() > 1)
     ft.add_layer(lambda node: node.get_fractal_order() > 2)
-    ft.set_relative_midis()
+    
     return ft
 
 

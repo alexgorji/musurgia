@@ -18,7 +18,6 @@ class TestSimpleFractalTreeChordFactory(TestCase):
 
     def test_node(self):
         sftchf = SimpleFractalTreeChordFactory(timline_node=self.ft)
-        print(sftchf._CHORD_UPDATE_METHODS)
         assert sftchf._timeline_node == self.ft
         chord = sftchf.create_chord()
         assert (

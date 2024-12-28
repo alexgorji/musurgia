@@ -12,9 +12,12 @@ from musurgia.tests.utils_for_tests import (
 from musurgia.trees.musicaltree import (
     FractalDirectionIterator,
     FractalMusicalTree,
+    FractalRelativeMusicTree,
     MagicRandomTreeMidiGenerator,
     MusicalTree,
     RelativeMusicTree,
+    RelativeTreeChordFactory,
+    RelativeTreeMidiGenerator,
 )
 from musurgia.trees.timelinetree import TimelineDuration
 
@@ -36,7 +39,7 @@ class TestMusicalTree(XMLTestCase):
         self.assertEqual(chord.metronome, self.mt.get_duration().get_metronome())
 
 
-class TestRandomMusicalTree(XMLTestCase):
+class TestTreeMidiGenerator(XMLTestCase):
     def setUp(self):
         self.mt = MusicalTree.create_tree_from_list(
             test_fractal_structur_list, "duration"
@@ -50,22 +53,27 @@ class TestRandomMusicalTree(XMLTestCase):
         with self.file_path(path, "random") as xml_path:
             score.export_xml(xml_path)
 
-
 class TestRelativeMusicalTree(XMLTestCase):
     def setUp(self):
         self.mt = RelativeMusicTree.create_tree_from_list(
             test_fractal_structur_list, "duration"
         )
-        self.mt.midi_value_range = (60, 84)
         self.mt.get_chord_factory().show_metronome = True
+        self.mt.get_chord_factory().midi_value_range=(60, 84)
+
+    def test_chord_factory(self):
+        self.assertTrue(self.mt.get_chord_factory(), RelativeTreeChordFactory)
+        rtm = RelativeTreeMidiGenerator(musical_tree_node=self.mt)
+        self.assertEqual(rtm.get_musical_tree_node(), self.mt)
+        self.assertTrue(rtm.get_musical_tree_node().get_chord_factory(), RelativeTreeChordFactory)
+
 
     def test_relative_midis(self):
-        self.mt.set_relative_midis()
+        RelativeTreeMidiGenerator(musical_tree_node=self.mt).set_musical_tree_midis()
         score = self.mt.export_score()
         score.get_quantized = True
         with self.file_path(path, "relative") as xml_path:
             score.export_xml(xml_path)
-
 
 class TestFractalDirectionIterator(TestCase):
     def test_fractal_direction_iterator(self):
@@ -80,6 +88,14 @@ class TestFractalDirectionIterator(TestCase):
         self.assertEqual(fdi.get_main_directions(), [1, -1, 1, -1])
         self.assertEqual(fdi.get_directions(), [1, 1, -1, -1])
 
+class TestRelativeFractalMusicalTreeInit(TestCase):
+    def test_init(self):
+        FractalRelativeMusicTree(
+            duration=TimelineDuration(10),
+            proportions=(1, 2, 3, 4),
+            main_permutation_order=(3, 1, 4, 2),
+            permutation_index=(1, 1)
+        )
 
 class TestRelativeFractalMusicalTree(XMLTestCase):
     def setUp(self):
@@ -87,10 +103,9 @@ class TestRelativeFractalMusicalTree(XMLTestCase):
         self.ft.get_chord_factory().show_metronome = True
 
     def test_default_direction_iterator(self):
-        # self.ft.set_relative_midis()
         for node in self.ft.traverse():
             self.assertEqual(
-                node.direction_iterator.get_main_directions(), [1, -1, 1, -1]
+                node.get_chord_factory().direction_iterator.get_main_directions(), [1, -1, 1, -1]
             )
         expected = """└── [1, 1, -1, -1]
     ├── [-1, -1, 1, 1]
@@ -136,12 +151,14 @@ class TestRelativeFractalMusicalTree(XMLTestCase):
 """
         self.assertEqual(
             self.ft.get_tree_representation(
-                key=lambda node: node.direction_iterator.get_directions()
+                key=lambda node: node.get_chord_factory().direction_iterator.get_directions()
             ),
             expected,
         )
 
     def test_relative_fractal_musical_tree(self):
+        self.ft.get_chord_factory().midi_value_range = (60, 84)
+        RelativeTreeMidiGenerator(musical_tree_node=self.ft).set_musical_tree_midis()
         score = self.ft.export_score()
         score.staff_layout = StaffLayout()
         score.staff_layout.staff_distance = 100
@@ -151,8 +168,10 @@ class TestRelativeFractalMusicalTree(XMLTestCase):
 
     def test_relative_fractat_musical_ziczac_tree(self):
         for node in self.ft.traverse():
-            node.direction_iterator = cycle([-1, 1])
-        self.ft.set_relative_midis()
+            node.get_chord_factory().direction_iterator = cycle([-1, 1])
+        self.ft.get_chord_factory().midi_value_range = (60, 84)
+        RelativeTreeMidiGenerator(musical_tree_node=self.ft).set_musical_tree_midis()
+
         score = self.ft.export_score()
         score.staff_layout = StaffLayout()
         score.staff_layout.staff_distance = 100
@@ -160,64 +179,4 @@ class TestRelativeFractalMusicalTree(XMLTestCase):
         score.get_quantized = True
         with self.file_path(path, "fractal_relative_ziczac") as xml_path:
             score.export_xml(xml_path)
-
-    def test_set_relatve_midis_again(self):
-        expected = """└── 60
-    ├── 68.0
-    │   ├── 80.0
-    │   ├── 76.0
-    │   │   ├── 68.0
-    │   │   ├── 71.0
-    │   │   ├── 76.0
-    │   │   └── 75.0
-    │   ├── 68.0
-    │   └── 70.0
-    │       ├── 72.0
-    │       ├── 75.0
-    │       ├── 76.0
-    │       └── 72.0
-    ├── 80.0
-    ├── 84.0
-    │   ├── 76.0
-    │   ├── 72.0
-    │   ├── 80.0
-    │   │   ├── 68.0
-    │   │   ├── 72.0
-    │   │   ├── 80.0
-    │   │   └── 78.0
-    │   └── 68.0
-    │       ├── 76.0
-    │       ├── 80.0
-    │       ├── 72.0
-    │       └── 84.0
-    └── 68.0
-        ├── 60.0
-        │   ├── 68.0
-        │   ├── 65.0
-        │   ├── 60.0
-        │   └── 61.0
-        ├── 68.0
-        │   ├── 66.0
-        │   ├── 63.0
-        │   ├── 62.0
-        │   └── 66.0
-        ├── 62.0
-        └── 66.0
-"""
-        self.assertEqual(
-            self.ft.get_tree_representation(
-                key=lambda node: node.get_chord_factory().midis[0].value
-            ),
-            expected,
-        )
-        for node in self.ft.traverse():
-            node.direction_iterator.reset()
-        self.ft.set_relative_midis()
-        self.assertEqual(
-            self.ft.get_tree_representation(
-                key=lambda node: node.get_chord_factory().midis[0].value
-            ),
-            expected,
-        )
-
 

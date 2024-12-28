@@ -1,3 +1,4 @@
+from enum import Enum
 from fractions import Fraction
 from typing import Any, Optional, Union, Literal, Callable, cast, get_args
 
@@ -29,6 +30,9 @@ MUSURGIA_TYPES = [
     "PageOrientation",
     "MarginType",
     "ClockMode",
+    "MidiValue"
+    "DirectionValue",
+    "MidiValueMicroTone"
 ]
 
 MusurgiaType = Literal[
@@ -57,6 +61,9 @@ MusurgiaType = Literal[
     "PageOrientation",
     "MarginType",
     "ClockMode",
+    "MidiValue",
+    "DirectionValue",
+    "MidiValueMicroTone"
 ]
 
 
@@ -435,6 +442,16 @@ check_clock_mode_type = LiteralCheckGenerator(ClockMode, "ClockMode").generate_c
 MidiValue = Union[int, float]
 check_midi_value_type = LiteralCheckGenerator(
     MidiValue, "MidiValue"
+).generate_checker()
+
+class MidiValueMicroTone(Enum):
+    HALF = 1.0
+    QUARTER = 0.5
+    EIGHT = 0.25
+
+DirectionValue = Literal[-1, 1]
+check_direction_value_type = LiteralCheckGenerator(
+    DirectionValue, "DirectionValue"
 ).generate_checker()
 
 def _get_name_of_check_type_function(musurgia_type: MusurgiaType) -> str:
