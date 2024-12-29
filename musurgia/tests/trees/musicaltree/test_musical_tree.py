@@ -31,7 +31,7 @@ class TestMusicalTree(XMLTestCase):
         )
         self.mt.get_chord_factory().show_metronome = True
 
-    def test_simple_music_tree_root_chord(self):
+    def test_musical_tree_root_chord(self):
         chord = self.mt.get_chord_factory().create_chord()
         self.assertEqual(
             chord.quarter_duration, self.mt.get_duration().get_quarter_duration()

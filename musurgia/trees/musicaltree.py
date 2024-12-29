@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from copy import deepcopy
 from itertools import cycle
-from typing import Any, Iterator,  Optional, cast
+from typing import Any, Iterator, Optional, cast
 
 from musicscore.midi import Midi
 from musicscore.score import Score

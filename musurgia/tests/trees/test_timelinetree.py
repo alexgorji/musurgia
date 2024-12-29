@@ -56,8 +56,8 @@ class TimeLineTreeTestCase(TestCase):
         self.assertEqual(str(err.exception), expected)
 
     def test_timeline_get_value(self):
-        tft = create_test_timeline_tree()
-        self.assertEqual(tft.get_value(), 60)
+        tlt = create_test_timeline_tree()
+        self.assertEqual(tlt.get_value(), 60)
         expected = """└── 60.0
     ├── 20.0
     │   ├── 10.0
@@ -72,13 +72,13 @@ class TimeLineTreeTestCase(TestCase):
         └── 2.0
 """
         self.assertEqual(
-            tft.get_tree_representation(key=lambda node: float(node.get_value())),
+            tlt.get_tree_representation(key=lambda node: float(node.get_value())),
             expected,
         )
 
     def test_timeline_update_duration(self):
-        tft = create_test_timeline_tree()
-        one_child = tft.get_children()[0].get_children()[0]
+        tlt = create_test_timeline_tree()
+        one_child = tlt.get_children()[0].get_children()[0]
         self.assertEqual(one_child.get_value(), 10)
         self.assertEqual(one_child.get_duration(), 10)
 
@@ -112,10 +112,10 @@ class TimeLineTreeTestCase(TestCase):
         └── 2.0
 """
         self.assertEqual(
-            tft.get_tree_representation(key=lambda node: float(node.get_value())),
+            tlt.get_tree_representation(key=lambda node: float(node.get_value())),
             expected,
         )
-        tft.check_tree_values()
+        tlt.check_tree_values()
 
         one_child.update_duration(TimelineDuration(5))
         self.assertEqual(one_child.get_value(), 5)
@@ -134,8 +134,46 @@ class TimeLineTreeTestCase(TestCase):
         └── 2.0
 """
         self.assertEqual(
-            tft.get_tree_representation(key=lambda node: float(node.get_value())),
+            tlt.get_tree_representation(key=lambda node: float(node.get_value())),
             expected,
         )
 
-        tft.check_tree_values()
+        tlt.check_tree_values()
+
+    def test_timeline_tree_get_and_update_metronome(self):
+        tlt = create_test_timeline_tree()
+        for node in tlt.traverse():
+            self.assertEqual(node.get_metronome().per_minute, 60)
+        
+        tlt.update_metronome(82)
+        for node in tlt.traverse():
+            self.assertEqual(node.get_metronome().per_minute, 82)
+
+    def test_timeline_tree_metronome_of_children(self):
+        duration = TimelineDuration(10)
+        duration.metronome = Metronome(80)
+        tlt = TimelineTree(duration=duration)
+        for d in [1, 2, 3, 4]:
+            tlt.add_child(TimelineTree(duration=d))
+        
+        for node in tlt.traverse():
+            self.assertEqual(node.get_metronome().per_minute, 80)
+
+        for d in [1, 2, 1]:
+            tlt.get_children()[-1].add_child(TimelineTree(duration=d))
+        
+        for node in tlt.traverse():
+            self.assertEqual(node.get_metronome().per_minute, 80)
+
+        tlt.get_children()[-1].update_metronome(Metronome(72))
+        expected = """└── 80
+    ├── 80
+    ├── 80
+    ├── 80
+    └── 72
+        ├── 72
+        ├── 72
+        └── 72
+"""
+
+        self.assertEqual(tlt.get_tree_representation(key = lambda node: node.get_metronome().per_minute), expected)

@@ -1,6 +1,6 @@
 from fractions import Fraction
-from typing import Any, Union
-
+from typing import Any, Union, cast
+from verysimpletree.tree import T
 from musicscore.metronome import Metronome
 from musicscore.quarterduration import QuarterDuration
 
@@ -51,7 +51,6 @@ class TimelineDuration(ReadonlyDuration):
     def get_metronome(self) -> Metronome:
         return self._metronome
 
-
 class TimelineTree(ValuedTree):
     def __init__(
         self,
@@ -86,10 +85,18 @@ class TimelineTree(ValuedTree):
     @property
     def duration(self) -> None:
         raise AttributeError("Use get_duration() instead.")
-
+    
+    def add_child(self, child: T) -> T:
+        added_child = super().add_child(child)
+        added_child.get_duration().metronome = self.get_duration().metronome
+        return cast(T, added_child)
+    
     def get_duration(self) -> TimelineDuration:
         return self._duration
 
+    def get_metronome(self) -> Metronome:
+        return self.get_duration().get_metronome()
+    
     def get_value(self) -> Fraction:
         return self.get_duration().calculate_in_seconds()
 
@@ -111,6 +118,11 @@ class TimelineTree(ValuedTree):
             new_value = Fraction(duration)
         self.update_value(new_value)
 
+    def update_metronome(self, value: Union[Metronome, int]) -> None:
+        if not isinstance(value, Metronome):
+            value = Metronome(value)
+        for node in self.traverse():
+            node.get_duration().metronome = value
 
 class SimpleTimelineChordFactory(AbstractChordFactory):
     def __init__(

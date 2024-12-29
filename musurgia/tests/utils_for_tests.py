@@ -74,7 +74,6 @@ test_fractal_structur_list = [
     ],
 ]
 
-
 def create_test_path(path, test_name):
     return path.parent.joinpath(f"{path.stem}_{test_name}")
 
@@ -331,7 +330,7 @@ def create_test_fractal_relative_musical_tree():
 
     ft.add_layer(lambda node: node.get_fractal_order() > 1)
     ft.add_layer(lambda node: node.get_fractal_order() > 2)
-    
+
     return ft
 
 
