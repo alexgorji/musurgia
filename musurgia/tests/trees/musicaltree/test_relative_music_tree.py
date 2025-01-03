@@ -153,3 +153,16 @@ class TestRelativeFractalMusicalTree(XMLTestCase):
         score.get_quantized = True
         with self.file_path(path, "fractal_relative_ziczac") as xml_path:
             score.export_xml(xml_path)
+
+    def test_main_direction_cell(self):
+        for node in self.ft.traverse():
+            self.assertEqual(
+                node.get_chord_factory().direction_iterator.main_direction_cell, [1, -1]
+            )
+
+        self.ft.get_chord_factory().direction_iterator.main_direction_cell = [-1, 1]
+
+        for node in self.ft.traverse():
+            self.assertEqual(
+                node.get_chord_factory().direction_iterator.main_direction_cell, [-1, 1]
+            )

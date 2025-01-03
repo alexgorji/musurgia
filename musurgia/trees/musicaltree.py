@@ -200,17 +200,36 @@ class RelativeMusicTree(MusicalTree):
 
 
 class FractalDirectionIterator:
+    DEFAULT_MAIN_DIRECTION_CELL: list[DirectionValue] = [1, -1]
+
     def __init__(
         self,
-        main_direction_cell: list[DirectionValue],
-        fractal_node: FractalTimelineTree,
+        main_direction_cell: Optional[list[DirectionValue]],
+        fractal_node: "FractalRelativeMusicTree",
         *args: Any,
         **kwargs: Any,
     ):
         super().__init__(*args, **kwargs)
-        self._fractal_node: FractalTimelineTree = fractal_node
-        self._main_direction_cell: list[DirectionValue] = main_direction_cell
+        self._fractal_node: FractalRelativeMusicTree = fractal_node
+        self._main_direction_cell: Optional[list[DirectionValue]] = main_direction_cell
         self._iter_index = -1
+
+    @property
+    def main_direction_cell(self) -> Optional[list[DirectionValue]]:
+        if self._main_direction_cell is None:
+            if self._fractal_node.up is None:
+                return self.DEFAULT_MAIN_DIRECTION_CELL
+            else:
+                return cast(
+                    Optional[list[DirectionValue]],
+                    self._fractal_node.up.get_chord_factory().direction_iterator.main_direction_cell,
+                )
+        else:
+            return self._main_direction_cell
+
+    @main_direction_cell.setter
+    def main_direction_cell(self, value: Optional[list[DirectionValue]]) -> None:
+        self._main_direction_cell = value
 
     def reset(self) -> None:
         self._iter_index = -1
@@ -222,7 +241,7 @@ class FractalDirectionIterator:
         return [self.get_main_directions()[fo - 1] for fo in fractal_orders]
 
     def get_main_directions(self) -> list[DirectionValue]:
-        cy = cycle(self._main_direction_cell)
+        cy = cycle(cast(list[DirectionValue], self.main_direction_cell))
         return [next(cy) for _ in range(len(self._fractal_node.proportions))]
 
     def __iter__(self) -> Iterator[DirectionValue]:
@@ -239,14 +258,14 @@ class FractalDirectionIterator:
 class FractalRelativeTreeChordFactory(RelativeTreeChordFactory):
     def __init__(
         self,
-        main_direction_cell: list[DirectionValue] = [1, -1],
+        main_direction_cell: Optional[list[DirectionValue]] = None,
         *args: Any,
         **kwargs: Any,
     ):
         super().__init__(*args, **kwargs)
         self.direction_iterator = FractalDirectionIterator(
             main_direction_cell=main_direction_cell,
-            fractal_node=cast(FractalTimelineTree, self.get_musical_tree_node()),
+            fractal_node=cast(FractalRelativeMusicTree, self.get_musical_tree_node()),
         )
 
 
