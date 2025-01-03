@@ -144,7 +144,7 @@ class TimeLineTreeTestCase(TestCase):
         tlt = create_test_timeline_tree()
         for node in tlt.traverse():
             self.assertEqual(node.get_metronome().per_minute, 60)
-        
+
         tlt.update_metronome(82)
         for node in tlt.traverse():
             self.assertEqual(node.get_metronome().per_minute, 82)
@@ -155,13 +155,13 @@ class TimeLineTreeTestCase(TestCase):
         tlt = TimelineTree(duration=duration)
         for d in [1, 2, 3, 4]:
             tlt.add_child(TimelineTree(duration=d))
-        
+
         for node in tlt.traverse():
             self.assertEqual(node.get_metronome().per_minute, 80)
 
         for d in [1, 2, 1]:
             tlt.get_children()[-1].add_child(TimelineTree(duration=d))
-        
+
         for node in tlt.traverse():
             self.assertEqual(node.get_metronome().per_minute, 80)
 
@@ -176,4 +176,9 @@ class TimeLineTreeTestCase(TestCase):
         └── 72
 """
 
-        self.assertEqual(tlt.get_tree_representation(key = lambda node: node.get_metronome().per_minute), expected)
+        self.assertEqual(
+            tlt.get_tree_representation(
+                key=lambda node: node.get_metronome().per_minute
+            ),
+            expected,
+        )

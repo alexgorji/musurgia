@@ -19,7 +19,6 @@ class ChordFactoryType(ABCMeta):
 
 
 class AbstractChordFactory(ABC, metaclass=ChordFactoryType):
-
     def _update_chord(self) -> None:
         for method_name in self._CHORD_UPDATE_METHODS:  # type: ignore
             getattr(self, method_name)()
