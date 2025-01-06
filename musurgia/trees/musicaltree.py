@@ -164,7 +164,7 @@ class RelativeTreeMidiGenerator(TreeMidiGenerator):
                         min_midi,
                         max_midi,
                     )
-                    children[index].get_chord_factory().midis = [min_midi]
+                    children[index].get_chord_factory().midis = [Midi(min_midi)]
 
 
 class MusicalTree(TimelineTree):
