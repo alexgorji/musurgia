@@ -2,7 +2,10 @@ from unittest import TestCase
 
 from musicscore.metronome import Metronome
 
-from musurgia.trees.musicaltree import FractalRelativeMusicTree, RelativeTreeMidiGenerator
+from musurgia.trees.musicaltree import (
+    FractalRelativeMusicTree,
+    RelativeTreeMidiGenerator,
+)
 from musurgia.trees.timelinetree import TimelineDuration
 
 
@@ -59,11 +62,15 @@ class FractalRelativeMusicTreeTestCase(TestCase):
         ├── 83.0
         └── 84.0
 """
-        self.assertEqual(self.tgf.get_tree_representation(key=lambda node: node.get_chord_factory().midis[0].value), expected)
-        
+        self.assertEqual(
+            self.tgf.get_tree_representation(
+                key=lambda node: node.get_chord_factory().midis[0].value
+            ),
+            expected,
+        )
 
     def test_directions_child(self):
-        # quantize_layer(section_1.get_layer(2)) 
+        # quantize_layer(section_1.get_layer(2))
 
         child = self.tgf.get_children()[0]
         child.add_layer()
@@ -71,5 +78,7 @@ class FractalRelativeMusicTreeTestCase(TestCase):
         child.get_chord_factory().direction_iterator.main_direction_cell = [1, 1]
         RelativeTreeMidiGenerator(musical_tree_node=child).set_musical_tree_midis()
 
-        print([node.get_chord_factory().midis[0].value for node in child.iterate_leaves()])
+        print(
+            [node.get_chord_factory().midis[0].value for node in child.iterate_leaves()]
+        )
         # print(self.tgf.get_tree_representation(key=lambda node: node.get_chord_factory().midis[0].value))

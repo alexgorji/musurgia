@@ -7,6 +7,9 @@ from musicscore.midi import Midi
 from musicscore.score import Score
 from musurgia.chordfactory.chordfactory import AbstractChordFactory
 from musurgia.magicrandom import MagicRandom
+from musurgia.musurgia_exceptions import (
+    RelativeTreeChordFactoryHasNoMidiValueRangeError,
+)
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.trees.timelinetree import TimelineTree
 from musurgia.utils import RelativeValueGenerator
@@ -138,7 +141,17 @@ class RelativeTreeMidiGenerator(TreeMidiGenerator):
         if not cast(
             RelativeTreeChordFactory, self.get_musical_tree_node().get_chord_factory()
         ).midi_value_range:
-            raise AttributeError("Set RelativeTreeChordFactory.midi_value_range!")
+            children_ranges = [
+                child.get_chord_factory().midi_value_range
+                for child in self.get_musical_tree_node().get_children()
+            ]
+            if not children_ranges or None in children_ranges:
+                raise RelativeTreeChordFactoryHasNoMidiValueRangeError()
+            else:
+                self.get_musical_tree_node().get_chord_factory().midi_value_range = (
+                    0,
+                    0,
+                )
 
         for node in self.get_musical_tree_node().traverse():
             if not node.is_leaf:
@@ -158,12 +171,17 @@ class RelativeTreeMidiGenerator(TreeMidiGenerator):
                     )
                 )
                 for index in range(len(children_midi_value_ranges) - 1):
-                    min_midi = float(children_midi_value_ranges[index])
-                    max_midi = float(children_midi_value_ranges[index + 1])
-                    children[index].get_chord_factory().midi_value_range = (
-                        min_midi,
-                        max_midi,
-                    )
+                    child = children[index]
+                    if child.get_chord_factory().midi_value_range is None:
+                        min_midi = float(children_midi_value_ranges[index])
+                        max_midi = float(children_midi_value_ranges[index + 1])
+                        children[index].get_chord_factory().midi_value_range = (
+                            min_midi,
+                            max_midi,
+                        )
+
+                    min_midi, _ = child.get_chord_factory().midi_value_range
+
                     children[index].get_chord_factory().midis = [Midi(min_midi)]
 
 

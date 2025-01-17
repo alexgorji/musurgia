@@ -274,3 +274,21 @@ class WrongTreeValueError(ValuedTreeException, ValueError):
 
 class WrongTreeValueWarning(Warning):
     pass
+
+
+# musicaltree
+
+
+class RelativeTreeException(Exception):
+    pass
+
+
+class RelativeTreeChordFactoryHasNoMidiValueRangeError(
+    AttributeError, RelativeTreeException
+):
+    msg = "Set RelativeTreeChordFactory.midi_value_range before using RelativeTreeMidiGenerator"
+
+    def __init__(self, msg: Optional[str] = None):
+        if msg is None:
+            msg = self.msg
+        super().__init__(msg)
