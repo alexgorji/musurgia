@@ -222,6 +222,7 @@ class FractalMusicalTree(FractalTimelineTree, MusicalTree):
         children = super().split(*proportions)
         for child in children:
             child._tree_chord_factory = deepcopy(self._tree_chord_factory)
+            child._tree_chord_factory._musical_tree_node = child
         return children
 
 
