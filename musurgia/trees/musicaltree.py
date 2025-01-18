@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from copy import deepcopy
 from itertools import cycle
-from typing import Any, Iterator, Optional, cast
+from typing import Any, Iterator, Optional, TypeVar, cast
 
 from musicscore.midi import Midi
 from musicscore.score import Score
@@ -89,14 +89,14 @@ class MagicRandomTreeMidiGenerator(TreeMidiGenerator, MagicRandom):
 class RelativeTreeChordFactory(TreeChordFactory):
     def __init__(
         self,
-        midi_value_range: Optional[tuple[MidiValue]] = None,
+        midi_value_range: Optional[tuple[MidiValue, MidiValue]] = None,
         micro_tone: MidiValueMicroTone = MidiValueMicroTone.HALF,
         direction_iterator: Optional[Iterator[DirectionValue]] = None,
         *args: Any,
         **kwargs: Any,
     ):
         super().__init__(*args, **kwargs)
-        self._midi_value_range: Optional[tuple[MidiValue]]
+        self._midi_value_range: Optional[tuple[MidiValue, MidiValue]]
         self._micro_tone: MidiValueMicroTone
         self._direction_iterator: Optional[Iterator[DirectionValue]]
 
@@ -113,11 +113,11 @@ class RelativeTreeChordFactory(TreeChordFactory):
         self._micro_tone = value
 
     @property
-    def midi_value_range(self) -> Optional[tuple[MidiValue]]:
+    def midi_value_range(self) -> Optional[tuple[MidiValue, MidiValue]]:
         return self._midi_value_range
 
     @midi_value_range.setter
-    def midi_value_range(self, value: Optional[tuple[MidiValue]]) -> None:
+    def midi_value_range(self, value: Optional[tuple[MidiValue, MidiValue]]) -> None:
         self._midi_value_range = value
 
     @property
@@ -142,13 +142,18 @@ class RelativeTreeMidiGenerator(TreeMidiGenerator):
             RelativeTreeChordFactory, self.get_musical_tree_node().get_chord_factory()
         ).midi_value_range:
             children_ranges = [
-                child.get_chord_factory().midi_value_range
+                cast(
+                    RelativeTreeChordFactory, child.get_chord_factory()
+                ).midi_value_range
                 for child in self.get_musical_tree_node().get_children()
             ]
             if not children_ranges or None in children_ranges:
                 raise RelativeTreeChordFactoryHasNoMidiValueRangeError()
             else:
-                self.get_musical_tree_node().get_chord_factory().midi_value_range = (
+                cast(
+                    RelativeTreeChordFactory,
+                    self.get_musical_tree_node().get_chord_factory(),
+                ).midi_value_range = (
                     0,
                     0,
                 )
@@ -209,8 +214,15 @@ class MusicalTree(TimelineTree):
         return score
 
 
+T = TypeVar("T", bound="FractalMusicalTree")
+
+
 class FractalMusicalTree(FractalTimelineTree, MusicalTree):
-    pass
+    def split(self: "T", *proportions: Any) -> list["T"]:
+        children = super().split(*proportions)
+        for child in children:
+            child._tree_chord_factory = deepcopy(self._tree_chord_factory)
+        return children
 
 
 class RelativeMusicTree(MusicalTree):

@@ -660,6 +660,6 @@ class FractalTimelineTree(TimelineTree):
             )
             new_node._fractal_order = self.get_fractal_order()
             self.add_child(new_node)
-            new_node.calculate_permutation_index()
+            new_node._permutation_index = self._permutation_index
 
         return self._get_children()

@@ -37,7 +37,7 @@ class RelativeValueGeneratorTestCase(TestCase):
         )
 
 
-class TestRelativeMusicalTree(XMLTestCase):
+class RelativeMusicalTreeTestCase(XMLTestCase):
     def setUp(self):
         self.mt = RelativeMusicTree.create_tree_from_list(
             test_fractal_structur_list, "duration"
@@ -85,7 +85,7 @@ class TestRelativeFractalMusicalTreeInit(TestCase):
         )
 
 
-class TestRelativeFractalMusicalTree(XMLTestCase):
+class FractalRelativeMusicalTreeTestCase(XMLTestCase):
     def setUp(self):
         self.ft = create_test_fractal_relative_musical_tree()
         self.ft.get_chord_factory().show_metronome = True
@@ -508,6 +508,110 @@ class TestRelativeFractalMusicalTree(XMLTestCase):
         │   └── (62.0, 60.0)
         ├── (66.0, 62.0)
         └── (62.0, 64.0)
+"""
+        self.assertEqual(
+            self.ft.get_tree_representation(
+                key=lambda node: node.get_chord_factory().midi_value_range
+            ),
+            expected,
+        )
+
+
+class FractalRelativeMusicTreeSplitTestCase(XMLTestCase):
+    def setUp(self):
+        self.ft = FractalRelativeMusicTree(
+            duration=TimelineDuration(10),
+            proportions=(1, 2, 3, 4),
+            main_permutation_order=(3, 1, 4, 2),
+            permutation_index=(1, 1),
+        )
+
+    def test_split_before_setting_midis_without_range(self):
+        self.ft.split(1, 1, 1, 1, 1)
+        expected = """└── None
+    ├── None
+    ├── None
+    ├── None
+    ├── None
+    └── None
+"""
+        print(
+            self.ft.get_tree_representation(
+                key=lambda node: node.get_chord_factory().midi_value_range
+            )
+        )
+        self.assertEqual(
+            self.ft.get_tree_representation(
+                key=lambda node: node.get_chord_factory().midi_value_range
+            ),
+            expected,
+        )
+
+        self.ft.get_chord_factory().midi_value_range = (60, 84)
+        expected = """└── (60, 84)
+    ├── None
+    ├── None
+    ├── None
+    ├── None
+    └── None
+"""
+        self.assertEqual(
+            self.ft.get_tree_representation(
+                key=lambda node: node.get_chord_factory().midi_value_range
+            ),
+            expected,
+        )
+
+        RelativeTreeMidiGenerator(musical_tree_node=self.ft).set_musical_tree_midis()
+        expected = """└── (60, 84)
+    ├── (84.0, 79.0)
+    ├── (79.0, 74.0)
+    ├── (74.0, 70.0)
+    ├── (70.0, 65.0)
+    └── (65.0, 60.0)
+"""
+        self.assertEqual(
+            self.ft.get_tree_representation(
+                key=lambda node: node.get_chord_factory().midi_value_range
+            ),
+            expected,
+        )
+
+    def test_split_before_setting_midis_with_range(self):
+        self.ft.get_chord_factory().midi_value_range = (60, 84)
+        self.ft.split(1, 1, 1, 1, 1)
+        expected = """└── (60, 84)
+    ├── (60, 84)
+    ├── (60, 84)
+    ├── (60, 84)
+    ├── (60, 84)
+    └── (60, 84)
+"""
+        self.assertEqual(
+            self.ft.get_tree_representation(
+                key=lambda node: node.get_chord_factory().midi_value_range
+            ),
+            expected,
+        )
+
+        RelativeTreeMidiGenerator(musical_tree_node=self.ft).set_musical_tree_midis()
+        self.assertEqual(
+            self.ft.get_tree_representation(
+                key=lambda node: node.get_chord_factory().midi_value_range
+            ),
+            expected,
+        )
+
+    def test_split_after_setting_midis(self):
+        self.ft.get_chord_factory().midi_value_range = (60, 84)
+        RelativeTreeMidiGenerator(musical_tree_node=self.ft).set_musical_tree_midis()
+        self.ft.split(1, 1, 1, 1, 1)
+        expected = """└── (60, 84)
+    ├── (60, 84)
+    ├── (60, 84)
+    ├── (60, 84)
+    ├── (60, 84)
+    └── (60, 84)
 """
         self.assertEqual(
             self.ft.get_tree_representation(
