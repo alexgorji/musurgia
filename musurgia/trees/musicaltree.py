@@ -107,10 +107,19 @@ class RelativeTreeChordFactory(TreeChordFactory):
         self._midi_value_range: Optional[tuple[MidiValue, MidiValue]]
         self._micro_tone: MidiValueMicroTone
         self._direction_iterator: Optional[Iterator[DirectionValue]]
+        self._include_last_midi_in_range: bool = False
 
         self.midi_value_range = midi_value_range
         self.micro_tone = micro_tone
         self.direction_iterator = direction_iterator
+
+    @property
+    def include_last_midi_in_range(self) -> bool:
+        return self._include_last_midi_in_range
+
+    @include_last_midi_in_range.setter
+    def include_last_midi_in_range(self, value: bool) -> None:
+        self._include_last_midi_in_range = value
 
     @property
     def micro_tone(self) -> MidiValueMicroTone:
@@ -142,7 +151,6 @@ class RelativeTreeChordFactory(TreeChordFactory):
         self, musical_tree_node: "MusicalTree"
     ) -> "RelativeTreeChordFactory":
         new_instance = super().create_copy(musical_tree_node)
-        # new_instance.__class__ = self.__class__
         new_instance._midi_value_range = deepcopy(self._midi_value_range)
         new_instance._micro_tone = deepcopy(self._micro_tone)
         if isinstance(
@@ -198,8 +206,10 @@ class RelativeTreeMidiGenerator(TreeMidiGenerator):
                         directions=directions,
                         proportions=proportions,
                         value_grid=node_chord_factory.micro_tone.value,
+                        include_last_midi_in_range=node_chord_factory.include_last_midi_in_range,
                     )
                 )
+
                 for index in range(len(children_midi_value_ranges) - 1):
                     child = children[index]
                     if child.get_chord_factory().midi_value_range is None:

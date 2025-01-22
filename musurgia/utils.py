@@ -119,6 +119,7 @@ class RelativeValueGenerator:
         directions: list[DirectionValueType],
         proportions: list[ConvertibleToFraction],
         value_grid: Optional[ConvertibleToFraction] = None,
+        include_last_midi_in_range: bool = False,
         *args: Any,
         **kwargs: Any,
     ):
@@ -132,6 +133,7 @@ class RelativeValueGenerator:
         self._value_grid: Optional[ConvertibleToFraction] = (
             None if not value_grid else convert_to_fraction(value_grid)
         )
+        self._include_last_midi_in_range: bool = include_last_midi_in_range
 
         self._calculate_intervals()
         self._normalizer: Normalizer
@@ -139,10 +141,27 @@ class RelativeValueGenerator:
         self._calculate_result_values()
 
     def _calculate_intervals(self) -> None:
+        if self._include_last_midi_in_range:
+            proportions = self.proportions[:-1] + [Fraction(0)]
+        else:
+            proportions = self.proportions
         self._intervals = [
             proportion * direction
-            for proportion, direction in zip(self.proportions, self.directions)
+            for proportion, direction in zip(proportions, self.directions)
         ]
+
+    def _calculate_result_values(self) -> None:
+        normalized_values = [
+            self._normalizer.get_normalized_value(value)
+            for value in self._get_input_values()
+        ]
+
+        if self.value_grid:
+            self._calculated_values = get_quantized_positions(
+                normalized_values, grid_size=self.value_grid
+            )
+        else:
+            self._calculated_values = normalized_values
 
     def _get_input_values(self) -> list[Fraction]:
         return dToX(self._intervals)
@@ -153,18 +172,6 @@ class RelativeValueGenerator:
             input_value_range=(min(input_values), max(input_values)),
             normalization_range=self.value_range,
         )
-
-    def _calculate_result_values(self) -> None:
-        normalized_values = [
-            self._normalizer.get_normalized_value(value)
-            for value in self._get_input_values()
-        ]
-        if self.value_grid:
-            self._calculated_values = get_quantized_positions(
-                normalized_values, grid_size=self.value_grid
-            )
-        else:
-            self._calculated_values = normalized_values
 
     @property
     def value_range(self) -> tuple[ConvertibleToFraction, ConvertibleToFraction]:
