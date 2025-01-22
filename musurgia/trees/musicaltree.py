@@ -15,6 +15,8 @@ from musurgia.trees.timelinetree import TimelineTree
 from musurgia.utils import RelativeValueGenerator
 from musurgia.musurgia_types import MidiValue, MidiValueMicroTone, DirectionValue
 
+TCF = TypeVar("TCF", bound="TreeChordFactory")
+
 
 class TreeChordFactory(AbstractChordFactory):
     def __init__(
@@ -65,6 +67,12 @@ class TreeChordFactory(AbstractChordFactory):
             )
         else:
             self._chord._metronome = None
+
+    def create_copy(self: TCF, musical_tree_node: "MusicalTree") -> "TCF":
+        new_instance = self.__class__(musical_tree_node=musical_tree_node)
+        new_instance._show_metronome = self._show_metronome
+        new_instance.midis = deepcopy(self._midis)
+        return new_instance
 
 
 class TreeMidiGenerator:
@@ -129,6 +137,23 @@ class RelativeTreeChordFactory(TreeChordFactory):
     @direction_iterator.setter
     def direction_iterator(self, value: Optional[Iterator[DirectionValue]]) -> None:
         self._direction_iterator = value
+
+    def create_copy(
+        self, musical_tree_node: "MusicalTree"
+    ) -> "RelativeTreeChordFactory":
+        new_instance = super().create_copy(musical_tree_node)
+        # new_instance.__class__ = self.__class__
+        new_instance._midi_value_range = deepcopy(self._midi_value_range)
+        new_instance._micro_tone = deepcopy(self._micro_tone)
+        if isinstance(
+            self._direction_iterator, FractalDirectionIterator
+        ) and isinstance(musical_tree_node, FractalRelativeMusicTree):
+            new_instance._direction_iterator = self._direction_iterator.create_copy(
+                musical_tree_node
+            )
+        else:
+            new_instance._direction_iterator = deepcopy(self._direction_iterator)
+        return new_instance
 
 
 class RelativeTreeMidiGenerator(TreeMidiGenerator):
@@ -221,8 +246,7 @@ class FractalMusicalTree(FractalTimelineTree, MusicalTree):
     def split(self: "T", *proportions: Any) -> list["T"]:
         children = super().split(*proportions)
         for child in children:
-            child._tree_chord_factory = deepcopy(self._tree_chord_factory)
-            child._tree_chord_factory._musical_tree_node = child
+            child._tree_chord_factory = self._tree_chord_factory.create_copy(child)
         return children
 
 
@@ -284,6 +308,13 @@ class FractalDirectionIterator:
             return self.get_directions()[self._iter_index]
         except IndexError:
             raise StopIteration
+
+    def create_copy(
+        self, fractal_node: "FractalRelativeMusicTree"
+    ) -> "FractalDirectionIterator":
+        return self.__class__(
+            main_direction_cell=self.main_direction_cell, fractal_node=fractal_node
+        )
 
 
 class FractalRelativeTreeChordFactory(RelativeTreeChordFactory):

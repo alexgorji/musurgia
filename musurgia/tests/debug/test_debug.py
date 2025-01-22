@@ -82,11 +82,3 @@ class FractalRelativeMusicTreeTestCase(TestCase):
         #     [node.get_chord_factory().midis[0].value for node in child.iterate_leaves()]
         # )
         # print(self.tgf.get_tree_representation(key=lambda node: node.get_chord_factory().midis[0].value))
-
-    def test_split_fractal_relative_music_tree(self):
-        section = self.tgf.get_children()[2]
-        section.get_chord_factory().midi_value_range = (60, 60)
-        RelativeTreeMidiGenerator(musical_tree_node=section).set_musical_tree_midis()
-        children = section.split(1, 1)
-        # print([child.get_duration().get_quarter_duration() for child in children])
-        chords = [child.get_chord_factory().create_chord() for child in children]

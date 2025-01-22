@@ -1,5 +1,6 @@
 from itertools import cycle
 from pathlib import Path
+import timeit
 from unittest import TestCase
 from musicscore.layout import StaffLayout
 from musurgia.musurgia_exceptions import (
@@ -11,6 +12,7 @@ from musurgia.tests.utils_for_tests import (
     test_fractal_structur_list,
 )
 
+from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.trees.musicaltree import (
     FractalDirectionIterator,
     FractalMusicalTree,
@@ -517,6 +519,27 @@ class FractalRelativeMusicalTreeTestCase(XMLTestCase):
         )
 
 
+class FractalTimelineTreeSplitTiming(TestCase):
+    def setUp(self):
+        self.ft = FractalTimelineTree(
+            duration=TimelineDuration(10),
+            proportions=(1, 2, 3, 4),
+            main_permutation_order=(3, 1, 4, 2),
+            permutation_index=(1, 1),
+        )
+
+    def test_split_timing(self):
+        for _ in range(5):
+            self.ft.add_layer()
+        leaves = list(self.ft.iterate_leaves())
+
+        def split_me():
+            leaves[0].split(1, 1, 1, 1, 1)
+
+        execution_time = timeit.timeit(split_me, number=1)
+        self.assertLess(execution_time, 1)
+
+
 class FractalRelativeMusicTreeSplitTestCase(XMLTestCase):
     def setUp(self):
         self.ft = FractalRelativeMusicTree(
@@ -525,6 +548,30 @@ class FractalRelativeMusicTreeSplitTestCase(XMLTestCase):
             main_permutation_order=(3, 1, 4, 2),
             permutation_index=(1, 1),
         )
+
+    def test_split_timing_without_midi(self):
+        for _ in range(5):
+            self.ft.add_layer()
+        leaves = list(self.ft.iterate_leaves())
+
+        def split_me():
+            leaves[0].split(1, 1, 1, 1, 1)
+
+        execution_time = timeit.timeit(split_me, number=1)
+        self.assertLess(execution_time, 1)
+
+    def test_split_timing(self):
+        for _ in range(5):
+            self.ft.add_layer()
+        self.ft.get_chord_factory().midi_value_range = (60, 84)
+        RelativeTreeMidiGenerator(musical_tree_node=self.ft).set_musical_tree_midis()
+        leaves = list(self.ft.iterate_leaves())
+
+        def split_me():
+            leaves[0].split(1, 1, 1, 1, 1)
+
+        execution_time = timeit.timeit(split_me, number=1)
+        self.assertLess(execution_time, 1)
 
     def test_split_before_setting_midis_without_range(self):
         self.ft.split(1, 1, 1, 1, 1)
