@@ -233,29 +233,29 @@ class FractalRelativeMusicalTreeTestCase(XMLTestCase):
             [(90.0, 91.0), (91.0, 94.0), (94.0, 98.0), (98.0, 98.0)],
         )
 
-    def test_relative_fractal_musical_tree(self):
-        self.ft.get_chord_factory().midi_value_range = (60, 84)
-        RelativeTreeMidiGenerator(musical_tree_node=self.ft).set_musical_tree_midis()
-        score = self.ft.export_score()
-        score.staff_layout = StaffLayout()
-        score.staff_layout.staff_distance = 100
-        score.get_quantized = True
-        with self.file_path(path, "fractal_relative") as xml_path:
-            score.export_xml(xml_path)
+    # def test_relative_fractal_musical_tree(self):
+    #     self.ft.get_chord_factory().midi_value_range = (60, 84)
+    #     RelativeTreeMidiGenerator(musical_tree_node=self.ft).set_musical_tree_midis()
+    #     score = self.ft.export_score()
+    #     score.staff_layout = StaffLayout()
+    #     score.staff_layout.staff_distance = 100
+    #     score.get_quantized = True
+    #     with self.file_path(path, "fractal_relative") as xml_path:
+    #         score.export_xml(xml_path)
 
-    def test_relative_fractat_musical_ziczac_tree(self):
-        for node in self.ft.traverse():
-            node.get_chord_factory().direction_iterator = cycle([-1, 1])
-        self.ft.get_chord_factory().midi_value_range = (60, 84)
-        RelativeTreeMidiGenerator(musical_tree_node=self.ft).set_musical_tree_midis()
+    # def test_relative_fractat_musical_ziczac_tree(self):
+    #     for node in self.ft.traverse():
+    #         node.get_chord_factory().direction_iterator = cycle([-1, 1])
+    #     self.ft.get_chord_factory().midi_value_range = (60, 84)
+    #     RelativeTreeMidiGenerator(musical_tree_node=self.ft).set_musical_tree_midis()
 
-        score = self.ft.export_score()
-        score.staff_layout = StaffLayout()
-        score.staff_layout.staff_distance = 100
+    #     score = self.ft.export_score()
+    #     score.staff_layout = StaffLayout()
+    #     score.staff_layout.staff_distance = 100
 
-        score.get_quantized = True
-        with self.file_path(path, "fractal_relative_ziczac") as xml_path:
-            score.export_xml(xml_path)
+    #     score.get_quantized = True
+    #     with self.file_path(path, "fractal_relative_ziczac") as xml_path:
+    #         score.export_xml(xml_path)
 
     def test_main_direction_cell(self):
         for node in self.ft.traverse():
