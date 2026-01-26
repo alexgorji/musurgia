@@ -24,3 +24,10 @@ test = [
 
 [tool.pytest.ini_options]
 addopts = "-s --doctest-modules --ignore=musurgia/old_pdf_tests"
+
+[tool.mypy]
+exclude = [
+    "old_pdf_tests/",
+    "other_libraries/",
+    "tests/"
+]
