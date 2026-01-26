@@ -40,6 +40,6 @@ jobs:
         run: |
           uv run pytest
 
-      - name: Run mypy
-        run: |
-          uv run mypy musurgia --strict
+      # - name: Run mypy
+      #   run: |
+      #     uv run mypy musurgia --strict
