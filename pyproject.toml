@@ -12,7 +12,6 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "mypy>=1.19.1",
     "ruff>=0.14.14",
 ]
 test = [
@@ -20,6 +19,7 @@ test = [
     "diff-pdf-visually>=1.8.1",
     "pytest>=9.0.2",
     "xmltodict>=1.0.2",
+    "mypy>=1.19.1",
 ]
 
 [tool.pytest.ini_options]

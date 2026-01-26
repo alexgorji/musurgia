@@ -394,12 +394,12 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "mypy" },
     { name = "ruff" },
 ]
 test = [
     { name = "deepdiff" },
     { name = "diff-pdf-visually" },
+    { name = "mypy" },
     { name = "pytest" },
     { name = "xmltodict" },
 ]
@@ -412,13 +412,11 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [
-    { name = "mypy", specifier = ">=1.19.1" },
-    { name = "ruff", specifier = ">=0.14.14" },
-]
+dev = [{ name = "ruff", specifier = ">=0.14.14" }]
 test = [
     { name = "deepdiff", specifier = ">=8.6.1" },
     { name = "diff-pdf-visually", specifier = ">=1.8.1" },
+    { name = "mypy", specifier = ">=1.19.1" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "xmltodict", specifier = ">=1.0.2" },
 ]
