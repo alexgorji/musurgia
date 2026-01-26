@@ -1,57 +1,26 @@
-[tool.poetry]
+[project]
 name = "musurgia"
-version = "3.2.0"
-description = "Tools for algorithmic composition."
-authors = ["Alex Gorji <aligorji@hotmail.com>"]
-license = "MIT"
-homepage = "https://github.com/alexgorji/musurgia.git"
-repository = "https://github.com/alexgorji/musurgia.git"
-readme = "README.rst"
-
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent"
+version = "4.0.0b"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fpdf2>=2.8.5",
+    "matplotlib>=3.10.8",
+    "musicscore>=2.6.0",
 ]
 
-[tool.poetry.dependencies]
-python = ">=3.9,<3.13"
-matplotlib = "^3.9.0"
-fpdf2 = "^2.8.2"
-musicscore = "^2.4.1"
-verysimpletree = "^1.2"
-
-[tool.poetry.group.test.dependencies]
-pytest-xdist = "^3.6.1"
-pytest-cov = "^6.0.0"
-xmltodict = "^0.14.2"
-deepdiff = "^8.0.1"
-diff_pdf_visually = "^1.8.0"
-mypy = "^1.14.0"
-types-fpdf2 = "^2.8.1.20241204"
-
-
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.8.3"
-
-[[tool.poetry.source]]
-name = "PyPI"
-priority = "primary"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.ruff.lint]
-ignore = ["F403", "F405", "E741", "F821"]
-unfixable = ["F401"]
-
-[tool.mypy]
-exclude = [
-    "tests"
+[dependency-groups]
+dev = [
+    "mypy>=1.19.1",
+    "ruff>=0.14.14",
+]
+test = [
+    "deepdiff>=8.6.1",
+    "diff-pdf-visually>=1.8.1",
+    "pytest>=9.0.2",
+    "xmltodict>=1.0.2",
 ]
 
-[[tool.mypy.overrides]]
-module = [
-    "musicscore.*",
-]
-ignore_missing_imports = true
+[tool.pytest.ini_options]
+addopts = "-s --doctest-modules --ignore=musurgia/old_pdf_tests"
