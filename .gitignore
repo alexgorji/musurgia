@@ -5,3 +5,4 @@ build
 musicscore
 verysimpletree
 .venv
+libcairo.2.dylib
