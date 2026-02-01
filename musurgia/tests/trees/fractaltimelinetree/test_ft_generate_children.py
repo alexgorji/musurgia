@@ -1,7 +1,9 @@
 from unittest import TestCase
 
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
-from musurgia.tests.utils_for_tests import fractal_node_info_with_permutation_order
+from musurgia.tests.helpers.utils_for_tests import (
+    fractal_node_info_with_permutation_order,
+)
 from musurgia.trees.timelinetree import TimelineDuration
 
 

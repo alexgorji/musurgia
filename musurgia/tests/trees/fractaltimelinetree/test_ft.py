@@ -10,13 +10,13 @@ from musurgia.musurgia_exceptions import (
     FractalTimelineTreeMergeWrongValuesError,
     FractalTimelineTreeHasNoChildrenError,
 )
-from musurgia.tests.utils_for_tests import create_test_fractal_timline_tree
+from musurgia.tests.helpers.utils_for_tests import create_test_fractal_timeline_tree
 from musurgia.trees.timelinetree import TimelineDuration
 
 
 class TestFt(TestCase):
     def setUp(self) -> None:
-        self.ft = create_test_fractal_timline_tree()
+        self.ft = create_test_fractal_timeline_tree()
 
     def test_get_fractal_order(self):
         expected = """└── 0

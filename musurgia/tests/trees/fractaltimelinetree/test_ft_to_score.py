@@ -2,7 +2,10 @@ from pathlib import Path
 from unittest import TestCase
 
 from musicscore.score import Score
-from musurgia.tests.utils_for_tests import XMLTestCase, create_test_fractal_timline_tree
+from musurgia.tests.helpers import (
+    XMLTestCase,
+    create_test_fractal_timeline_tree,
+)
 from musurgia.trees.timelinetree import SimpleTimelineChordFactory
 
 path = Path(__file__)
@@ -14,7 +17,7 @@ class SimpleFractalTreeChordFactory(SimpleTimelineChordFactory):
 
 class TestSimpleFractalTreeChordFactory(TestCase):
     def setUp(self) -> None:
-        self.ft = create_test_fractal_timline_tree()
+        self.ft = create_test_fractal_timeline_tree()
 
     def test_node(self):
         sftchf = SimpleFractalTreeChordFactory(timline_node=self.ft)
@@ -28,7 +31,7 @@ class TestSimpleFractalTreeChordFactory(TestCase):
 
 class TestFtToScore(XMLTestCase):
     def setUp(self) -> None:
-        self.ft = create_test_fractal_timline_tree()
+        self.ft = create_test_fractal_timeline_tree()
         self.score = Score()
 
     def test_fractal_timeline_tree_durations(self):

@@ -1,7 +1,10 @@
 from pathlib import Path
 
 from musicscore.score import Score
-from musurgia.tests.utils_for_tests import XMLTestCase, create_test_fractal_musical_tree
+from musurgia.tests.helpers import (
+    XMLTestCase,
+    create_test_fractal_musical_tree,
+)
 
 path = Path(__file__)
 

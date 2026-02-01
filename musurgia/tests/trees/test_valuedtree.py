@@ -3,7 +3,10 @@ from unittest import TestCase
 from fractions import Fraction
 import warnings
 
-from musurgia.tests.utils_for_tests import DemoValuedTree, create_test_valued_tree
+from musurgia.tests.helpers.utils_for_tests import (
+    DemoValuedTree,
+    create_test_valued_tree,
+)
 from musurgia.utils import flatten
 
 

@@ -1,6 +1,6 @@
 from unittest import TestCase
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
-from musurgia.tests.utils_for_tests import fractal_node_info
+from musurgia.tests.helpers.utils_for_tests import fractal_node_info
 from musurgia.trees.timelinetree import TimelineDuration
 from musurgia.utils import flatten
 

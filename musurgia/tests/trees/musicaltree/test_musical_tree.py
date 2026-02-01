@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from musurgia.tests.utils_for_tests import (
+from musurgia.tests.helpers import (
     XMLTestCase,
     test_fractal_structur_list,
 )

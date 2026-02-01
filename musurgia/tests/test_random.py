@@ -1,8 +1,8 @@
+import unittest
 from musurgia.magicrandom import MagicRandom
-from musurgia.tests.utils_for_tests import PdfTestCase
 
 
-class TestRandom(PdfTestCase):
+class TestRandom(unittest.TestCase):
     def test_counter(self):
         r = MagicRandom(pool=["a", "b", "c"], periodicity=1, seed=20)
         assert r.counter == 0

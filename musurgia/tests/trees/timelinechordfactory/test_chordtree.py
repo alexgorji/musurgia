@@ -3,7 +3,8 @@ from unittest import TestCase
 
 from musicscore.score import Score
 
-from musurgia.tests.utils_for_tests import XMLTestCase, create_test_valued_tree
+from musurgia.tests.helpers import XMLTestCase, create_test_valued_tree
+
 from musurgia.trees.timelinetree import (
     SimpleTimelineChordFactory,
     TimelineDuration,

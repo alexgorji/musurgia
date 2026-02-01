@@ -4,7 +4,7 @@ from fractions import Fraction
 import warnings
 
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
-from musurgia.tests.utils_for_tests import fractal_node_info
+from musurgia.tests.helpers.utils_for_tests import fractal_node_info
 from musurgia.trees.timelinetree import TimelineDuration
 from musurgia.utils import flatten
 

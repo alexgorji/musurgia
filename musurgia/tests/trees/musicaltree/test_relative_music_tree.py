@@ -6,7 +6,7 @@ from musicscore.layout import StaffLayout
 from musurgia.musurgia_exceptions import (
     RelativeTreeChordFactoryHasNoMidiValueRangeError,
 )
-from musurgia.tests.utils_for_tests import (
+from musurgia.tests.helpers import (
     XMLTestCase,
     create_test_fractal_relative_musical_tree,
     test_fractal_structur_list,

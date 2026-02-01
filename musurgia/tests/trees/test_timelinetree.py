@@ -3,7 +3,7 @@ from unittest import TestCase
 from musicscore.metronome import Metronome
 from musicscore.quarterduration import QuarterDuration
 from musurgia.musurgia_exceptions import WrongTreeValueError
-from musurgia.tests.utils_for_tests import create_test_timeline_tree
+from musurgia.tests.helpers.utils_for_tests import create_test_timeline_tree
 from musurgia.trees.timelinetree import TimelineDuration, TimelineTree
 
 
