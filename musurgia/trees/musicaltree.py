@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from copy import deepcopy
 from itertools import cycle
-from typing import Any, Iterator, Optional, TypeVar, cast
+from typing import Any, Iterator, Optional, Type, TypeVar, cast
 
 from musicscore.midi import Midi
 from musicscore.score import Score
@@ -261,7 +261,7 @@ class FractalMusicalTree(FractalTimelineTree, MusicalTree):
 
 
 class RelativeMusicTree(MusicalTree):
-    DEFAULT_TREE_CHORD_FACTORY = RelativeTreeChordFactory
+    DEFAULT_TREE_CHORD_FACTORY: Type[TreeChordFactory] = RelativeTreeChordFactory
 
 
 class FractalDirectionIterator:

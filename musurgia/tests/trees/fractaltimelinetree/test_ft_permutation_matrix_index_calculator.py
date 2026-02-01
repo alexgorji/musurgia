@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from musurgia.trees.fractaltimelinetree import PermutationIndexCalculater
+from musurgia.trees.fractaltimelinetree import PermutationIndexCalculator
 
 
 class TestPermutationMatrixIndexCalculator(TestCase):
@@ -27,7 +27,7 @@ class TestPermutationMatrixIndexCalculator(TestCase):
             '3.3.3.1': (3, 1), '3.3.3.2': (3, 2), '3.3.3.3': (3, 3),
         }
         """
-        pic = PermutationIndexCalculater(3)
+        pic = PermutationIndexCalculator(3)
 
         pic.parent_index = (1, 1)
         assert pic.get_index(column_number=1) == (2, 1)

@@ -40,7 +40,7 @@ def node_info(node: "FractalTimelineTree") -> str:
     return f"{node.get_fractal_order()}: {node.get_permutation_index()}: {round(float(node.get_value()), 2)}"
 
 
-class PermutationIndexCalculater:
+class PermutationIndexCalculator:
     def __init__(
         self,
         size: PositiveInteger,
@@ -74,7 +74,7 @@ class PermutationIndexCalculater:
         return self._parent_index
 
     @parent_index.setter
-    def parent_index(self, value: MatrixIndex) -> None:
+    def parent_index(self, value: Optional[MatrixIndex]) -> None:
         if value is not None:
             check_type(
                 value,
@@ -137,7 +137,7 @@ class FractalTimelineTree(TimelineTree):
         self.set_permutation_index(permutation_index)
         self.fertile = fertile
 
-        self._pic: PermutationIndexCalculater
+        self._pic: PermutationIndexCalculator
 
     def _calculate_children_fractal_values(self) -> list["Fraction"]:
         return permute(
@@ -183,7 +183,7 @@ class FractalTimelineTree(TimelineTree):
 
         return output
 
-    def _get_pic(self) -> PermutationIndexCalculater:
+    def _get_pic(self) -> PermutationIndexCalculator:
         if self.is_root:
             try:
                 return self._pic
@@ -193,7 +193,7 @@ class FractalTimelineTree(TimelineTree):
             #     self._pic = PermutationIndexCalculater(self.get_permutation_order_matrix().get_size())
             #     return self._pic
 
-        return cast(PermutationIndexCalculater, self.get_root()._get_pic())
+        return cast(PermutationIndexCalculator, self.get_root()._get_pic())
 
     # properties
     @property
@@ -227,7 +227,7 @@ class FractalTimelineTree(TimelineTree):
             self._permutation_order_matrix = PermutationOrderMatrixGenerator(
                 main_permutation_order=value
             ).generate_permutation_order_matrix()
-            self._pic = PermutationIndexCalculater(
+            self._pic = PermutationIndexCalculator(
                 self.get_permutation_order_matrix().get_size()
             )
         else:
