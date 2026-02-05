@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "musicscore>=2.6.0",
+    "svg-py>=1.10.0",
 ]
 
 [dependency-groups]
