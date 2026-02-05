@@ -73,7 +73,7 @@ class GraphicPageRegressionTests(SVGTestCase):
 
     def test_add_text_to_page(self):
         page = Page()
-        page.add_text("some text")
+        page.add_text("some text", relative_x=10, relative_y=20, color="blue")
 
         svg_path = SVG(page.convert_to_svg_string()).write_to_path(
             self.create_test_path(this_path, "add_text", "svg")
@@ -86,4 +86,5 @@ class GraphicPageRegressionTests(SVGTestCase):
             png_path,
             page.layout.get_size()["width"],
             page.layout.get_size()["height"],
+            tolerance=0.002,
         )

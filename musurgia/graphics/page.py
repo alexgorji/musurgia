@@ -4,7 +4,8 @@ from typing import Dict, Literal, TypedDict, cast
 
 import svg
 
-from musurgia.graphics.drawobject import DrawObjectLayout, TextDrawObject
+from musurgia.graphics.drawobject import DrawObject, DrawObjectLayout, TextDrawObject
+from musurgia.graphics.svg.convertors import ConvertTextDrawObjectToSVG
 
 
 type PageSize = Literal["A3", "A4", "A5"]
@@ -59,13 +60,16 @@ class Page:
     def __init__(self, layout: PageLayout | None = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.layout = layout or PageLayout()
-        self._draw_objects = []
+        self._draw_objects: list[DrawObject] = []
 
-    def add_text(self, text: str, relative_x=0, relative_y=0):
+    def add_text(self, text: str, **kwargs):
+        relative_x = kwargs.pop("relative_x", 0)
+        relative_y = kwargs.pop("relative_y", 0)
         self._draw_objects.append(
             TextDrawObject(
                 text=text,
                 layout=DrawObjectLayout(relative_x=relative_x, relative_y=relative_y),
+                **kwargs,
             )
         )
 
@@ -80,15 +84,9 @@ class Page:
 
         for draw_object in self._draw_objects:
             if isinstance(draw_object, TextDrawObject):
-                text = svg.Text(
-                    x=10,
-                    y=20,
-                    text=draw_object.text,
-                    font_size=4.2,  # 12pt * 25.4 / 72 in mm
-                    font_family="Helvetica",
-                    fill="blue",
-                )
-                svg_object.elements = [text]
+                svg_object.elements = [
+                    ConvertTextDrawObjectToSVG(draw_object).convert()
+                ]
             else:
                 raise TypeError
         return svg_object.as_str()

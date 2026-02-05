@@ -1,0 +1,20 @@
+from unittest import TestCase
+import xml.etree.ElementTree as ET
+
+from musurgia.graphics.drawobject import DrawObjectLayout, TextDrawObject
+from musurgia.graphics.svg.convertors import ConvertTextDrawObjectToSVG
+
+
+class ConvertTextDrawObjectToSVGTestCase(TestCase):
+    def test_convertor(self):
+        draw_object = TextDrawObject(
+            "something", layout=DrawObjectLayout(relative_x=20, relative_y=10)
+        )
+        svg_str = ConvertTextDrawObjectToSVG(draw_object).convert().as_str()
+        root = ET.fromstring(svg_str)
+        assert root.attrib["x"] == "20"
+        assert root.attrib["y"] == "10"
+        assert root.attrib["font-family"] == draw_object.font_family
+        assert round(float(root.attrib["font-size"]), 4) == 4.2333
+
+        assert root.attrib["fill"] == draw_object.color
