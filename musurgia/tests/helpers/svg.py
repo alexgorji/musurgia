@@ -1,6 +1,6 @@
 from pathlib import Path
 import unittest
-from PIL import Image, ImageChops
+from PIL import Image
 import cairosvg
 import svg
 
@@ -29,7 +29,7 @@ class SVGTestCase(unittest.TestCase):
         return test_file_path.parent / f"{test_file_path.stem}_{post_fix}.{extension}"
 
     def compare_svg_to_png(
-        self, svg_path: Path, png_path: Path, width=400, height=400, tolerance=0
+        self, svg_path: Path, png_path: Path, width=400, height=400, tolerance=0.0
     ):
         rendered_png_path = svg_path.with_suffix(".rendered.png")
         cairosvg.svg2png(
@@ -45,22 +45,65 @@ class SVGTestCase(unittest.TestCase):
         img1 = img1.resize((width, height))
         img2 = img2.resize((width, height))
 
-        diff = ImageChops.difference(img1, img2)
+        percentage_diff, images_are_same, tolerance = self.compare_images(
+            img1, img2, tolerance=tolerance
+        )
 
-        if diff.getbbox() is None:
+        if images_are_same:
             return True
 
-        if tolerance > 0:
-            diff_pixels = sum(
-                diff.getchannel(c).point(bool).getdata().count(1) for c in range(4)
-            )
-            total_pixels = width * height * 4
-            if diff_pixels / total_pixels <= tolerance:
-                return True
-
-        diff_path = svg_path.with_suffix(".diff.png")
-        diff.save(diff_path)
         raise AssertionError(
             f"Rendered SVG differs from golden PNG.\n"
-            f"Saved diff image to {diff_path}"
+            f"""The comparison failed. The actual difference of
+            {percentage_diff:05.3f}% exceeds the tolerance of {tolerance:05.3f}%."""
         )
+
+    def compare_images(self, im1: Image.Image, im2: Image.Image, tolerance=0.002):
+        """
+        https://rowannicholls.github.io/python/image_analysis/comparing_two_images.html
+
+        Compare two images.
+        If tolerance is defined the outcome will compared with the accepted
+        tolerance. The tolerance is a percentage difference calculated using
+        https://rosettacode.org/wiki/Percentage_difference_between_images#Python
+        """
+        # Remove alpha layer if it exists
+        if im1.getbands() == ("R", "G", "B", "A"):
+            im1 = im1.convert("RGB")
+        if im2.getbands() == ("R", "G", "B", "A"):
+            im2 = im2.convert("RGB")
+        if im1.getbands() == ("L", "A"):
+            im1 = im1.convert("L")
+        if im2.getbands() == ("L", "A"):
+            im2 = im2.convert("L")
+
+        # Check that the images can be compared
+        if im1.mode != im2.mode:
+            raise Exception(f"Different kinds of images: {im1.mode} != {im2.mode}")
+        if im1.size != im2.size:
+            raise Exception(f"Different sizes of images: {im1.size} != {im2.size}")
+
+        # Pixel-by-pixel comparison
+        pairs = zip(im1.get_flattened_data(), im2.get_flattened_data())
+        # If the image is greyscale
+        if len(im1.getbands()) == 1:
+            # Total difference
+            diff = sum(abs(pixel1 - pixel2) for pixel1, pixel2 in pairs)
+        # If the image is RGB
+        else:
+            # Total difference
+            diff = sum(abs(c1 - c2) for p1, p2 in pairs for c1, c2 in zip(p1, p2))
+
+        # Total number of colour components
+        N = im1.size[0] * im1.size[1] * len(im1.getbands())
+
+        # Calculate the percentage difference
+        percentage_diff = diff / 255 / N * 100
+
+        # Assess if the difference falls within the tolerance
+        if percentage_diff <= tolerance:
+            images_are_same = True
+        else:
+            images_are_same = False
+
+        return percentage_diff, images_are_same, tolerance
