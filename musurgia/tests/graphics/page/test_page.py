@@ -1,12 +1,13 @@
 from pathlib import Path
-from musurgia.graphics.svg.page import Page
+from unittest import TestCase
+from musurgia.graphics.page import Page
 from musurgia.tests.helpers.svg import SVGTestCase, SVG
 import xml.etree.ElementTree as ET
 
 this_path = Path(__file__)
 
 
-class GraphicPageTestCase(SVGTestCase):
+class GraphicPageTestCase(TestCase):
     def test_page_layout_size(self):
         page = Page()
         assert page.layout.size == "A4"
@@ -47,13 +48,39 @@ class GraphicPageTestCase(SVGTestCase):
         assert root.attrib["height"] == "297mm"
         assert root.attrib["viewBox"] == "0 0 210 297"
 
-    def test_empty_page_as_png(self):
+    def test_add_text_to_page(self):
+        page = Page()
+        page.add_text("some text")
+        assert "some text" in page.convert_to_svg_string()
+
+
+class GraphicPageRegressionTests(SVGTestCase):
+    def test_empty_page(self):
         page = Page()
 
         svg_path = SVG(page.convert_to_svg_string()).write_to_path(
             self.create_test_path(this_path, "empty_page", "svg")
         )
+
         png_path = self.create_test_path(this_path, "empty_page", "png")
+
+        self.compare_svg_to_png(
+            svg_path,
+            png_path,
+            page.layout.get_size()["width"],
+            page.layout.get_size()["height"],
+        )
+
+    def test_add_text_to_page(self):
+        page = Page()
+        page.add_text("some text")
+
+        svg_path = SVG(page.convert_to_svg_string()).write_to_path(
+            self.create_test_path(this_path, "add_text", "svg")
+        )
+
+        png_path = self.create_test_path(this_path, "add_text", "png")
+
         self.compare_svg_to_png(
             svg_path,
             png_path,
