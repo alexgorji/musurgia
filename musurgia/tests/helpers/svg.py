@@ -4,6 +4,8 @@ from PIL import Image
 import cairosvg
 import svg
 
+from musurgia.graphics.page import Page
+
 # On mac python does not seem to find libcairo.2.dylib which is created when hombrew installs cairo.
 # A work around is to make a symlink to it: ln -s /opt/homebrew/lib/libcairo.2.dylib .
 
@@ -25,7 +27,15 @@ class SVGTestCase(unittest.TestCase):
         super().__init__(*args, **kwargs)
 
     @staticmethod
-    def create_test_path(test_file_path: Path, post_fix: str, extension: str) -> Path:
+    def create_test_path(
+        test_file_path: Path, post_fix: str, extension: str, directory: str = ""
+    ) -> Path:
+        if directory:
+            return (
+                test_file_path.parent
+                / directory
+                / f"{test_file_path.stem}_{post_fix}.{extension}"
+            )
         return test_file_path.parent / f"{test_file_path.stem}_{post_fix}.{extension}"
 
     def compare_svg_to_png(
@@ -107,3 +117,18 @@ class SVGTestCase(unittest.TestCase):
             images_are_same = False
 
         return percentage_diff, images_are_same, tolerance
+
+    def compare_page(self, page: Page, post_fix: str, this_path: Path, tolerance=0.0):
+        svg_path = SVG(page.convert_to_svg_string()).write_to_path(
+            self.create_test_path(this_path, post_fix, "svg")
+        )
+
+        png_path = self.create_test_path(this_path, post_fix, "png", "golden_pngs")
+
+        self.compare_svg_to_png(
+            svg_path,
+            png_path,
+            page.layout.get_size()["width"],
+            page.layout.get_size()["height"],
+            tolerance=tolerance,
+        )

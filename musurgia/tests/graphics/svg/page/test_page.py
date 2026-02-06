@@ -9,7 +9,7 @@ from musurgia.graphics.drawobject import (
     VerticalLineDrawObject,
 )
 from musurgia.graphics.page import Page
-from musurgia.tests.helpers.svg import SVGTestCase, SVG
+from musurgia.tests.helpers.svg import SVGTestCase
 import xml.etree.ElementTree as ET
 
 this_path = Path(__file__)
@@ -50,37 +50,13 @@ class PageToSVGTestCase(TestCase):
 class PageToSVGRegressionTests(SVGTestCase):
     def test_empty_page(self):
         page = Page()
-
-        svg_path = SVG(page.convert_to_svg_string()).write_to_path(
-            self.create_test_path(this_path, "empty_page", "svg")
-        )
-
-        png_path = self.create_test_path(this_path, "empty_page", "png")
-
-        self.compare_svg_to_png(
-            svg_path,
-            png_path,
-            page.layout.get_size()["width"],
-            page.layout.get_size()["height"],
-        )
+        self.compare_page(page, "empty_page", this_path)
 
     def test_add_text_to_page(self):
         page = Page()
         page.add_text("some text", relative_x=10, relative_y=20, color="blue")
 
-        svg_path = SVG(page.convert_to_svg_string()).write_to_path(
-            self.create_test_path(this_path, "add_text", "svg")
-        )
-
-        png_path = self.create_test_path(this_path, "add_text", "png")
-
-        self.compare_svg_to_png(
-            svg_path,
-            png_path,
-            page.layout.get_size()["width"],
-            page.layout.get_size()["height"],
-            tolerance=0.002,
-        )
+        self.compare_page(page, "add_text", this_path, tolerance=0.002)
 
     def test_add_draw_object_to_page(self):
         page = Page()
@@ -92,19 +68,7 @@ class PageToSVGRegressionTests(SVGTestCase):
             )
         )
 
-        svg_path = SVG(page.convert_to_svg_string()).write_to_path(
-            self.create_test_path(this_path, "add_draw_object", "svg")
-        )
-
-        png_path = self.create_test_path(this_path, "add_draw_object", "png")
-
-        self.compare_svg_to_png(
-            svg_path,
-            png_path,
-            page.layout.get_size()["width"],
-            page.layout.get_size()["height"],
-            tolerance=0.002,
-        )
+        self.compare_page(page, "add_draw_object", this_path, tolerance=0.002)
 
     def test_add_line_draw_objects_to_page(self):
         page = Page()
@@ -117,16 +81,4 @@ class PageToSVGRegressionTests(SVGTestCase):
         for draw_object in draw_objects:
             page.add_draw_object(draw_object)
 
-        svg_path = SVG(page.convert_to_svg_string()).write_to_path(
-            self.create_test_path(this_path, "add_line_draw_objects", "svg")
-        )
-
-        png_path = self.create_test_path(this_path, "add_line_draw_objects", "png")
-
-        self.compare_svg_to_png(
-            svg_path,
-            png_path,
-            page.layout.get_size()["width"],
-            page.layout.get_size()["height"],
-            tolerance=0.002,
-        )
+        self.compare_page(page, "add_line_draw_objects", this_path, tolerance=0.002)
