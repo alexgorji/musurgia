@@ -37,6 +37,6 @@ class ConvertLinDrawObjectToSVG:
             y1=self.draw_object.start["y"],
             x2=self.draw_object.end["x"],
             y2=self.draw_object.end["y"],
-            stroke="blue",
-            stroke_width=2,
+            stroke=self.draw_object.color,
+            stroke_width=self.draw_object.stroke_width,
         )

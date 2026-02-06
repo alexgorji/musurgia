@@ -46,6 +46,8 @@ class TextDrawObject(DrawObject):
 class LineDrawObject:
     end: Position
     start: Position = field(default_factory=lambda: {"x": 0, "y": 0})
+    color: str = "black"
+    stroke_width: float = 0.1
 
 
 @dataclass(frozen=True)

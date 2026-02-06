@@ -1,4 +1,5 @@
 from pathlib import Path
+from turtle import color
 from unittest import TestCase
 
 from turtledemo.penrose import star
@@ -73,9 +74,15 @@ class PageToSVGRegressionTests(SVGTestCase):
     def test_add_line_draw_objects_to_page(self):
         page = Page()
         draw_objects = [
-            HorizontalLineDrawObject(length=40, start={"x": 10, "y": 30}),
-            VerticalLineDrawObject(length=10, start={"x": 10, "y": 25}),
-            VerticalLineDrawObject(length=10, start={"x": 50, "y": 25}),
+            HorizontalLineDrawObject(
+                length=40, start={"x": 10, "y": 30}, color="blue", stroke_width=2
+            ),
+            VerticalLineDrawObject(
+                length=10, start={"x": 10, "y": 25}, color="blue", stroke_width=2
+            ),
+            VerticalLineDrawObject(
+                length=10, start={"x": 50, "y": 25}, color="blue", stroke_width=2
+            ),
         ]
 
         for draw_object in draw_objects:
