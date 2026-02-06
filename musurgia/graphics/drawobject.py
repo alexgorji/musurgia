@@ -7,19 +7,57 @@ class Position(TypedDict):
     y: int
 
 
-class AbsolutePosition(TypedDict):
-    x: int
-    y: int
-
-
-class RelativePosition(TypedDict):
-    relative_x: int
-    relative_y: int
+class Size(TypedDict):
+    width: float
+    height: float
 
 
 @dataclass(frozen=True, kw_only=True)
 class DrawObject:
     pass
+
+
+class DrawObjectBox:
+    def __init__(self):
+        self._draw_objects: list[DrawObject] = []
+
+    def add_draw_object(self, draw_object: DrawObject) -> "DrawObjectBox":
+        self._draw_objects.append(draw_object)
+        return self
+
+    @property
+    def size(self) -> Size:
+        return {"width": self._get_width(), "height": self._get_height()}
+
+    def _get_width(self) -> float:
+        w = 0
+        for draw_object in self._draw_objects:
+            if isinstance(draw_object, HorizontalLineDrawObject):
+                line_x2 = draw_object.start["x"] + draw_object.length
+            elif isinstance(draw_object, VerticalLineDrawObject):
+                line_x2 = draw_object.start["x"] + draw_object.stroke_width
+            else:
+                raise NotImplementedError
+
+            if line_x2 > w:
+                w = line_x2
+
+        return w
+
+    def _get_height(self) -> float:
+        h = 0
+        for draw_object in self._draw_objects:
+            if isinstance(draw_object, VerticalLineDrawObject):
+                line_y2 = draw_object.start["y"] + draw_object.length
+            elif isinstance(draw_object, HorizontalLineDrawObject):
+                line_y2 = draw_object.start["y"] + draw_object.stroke_width
+            else:
+                raise NotImplementedError
+
+            if line_y2 > h:
+                h = line_y2
+
+        return h
 
 
 @dataclass(frozen=True, kw_only=True)

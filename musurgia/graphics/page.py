@@ -62,8 +62,7 @@ class PageLayout:
 
 
 class Page:
-    def __init__(self, layout: PageLayout | None = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, layout: PageLayout | None = None):
         self.layout = layout or PageLayout()
         self._draw_objects: list[DrawObject] = []
 
