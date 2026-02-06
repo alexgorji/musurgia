@@ -1,15 +1,13 @@
 from unittest import TestCase
 import xml.etree.ElementTree as ET
 
-from musurgia.graphics.drawobject import DrawObjectLayout, TextDrawObject
+from musurgia.graphics.drawobject import TextDrawObject
 from musurgia.graphics.svg.convertors import ConvertTextDrawObjectToSVG
 
 
 class ConvertTextDrawObjectToSVGTestCase(TestCase):
     def test_convertor(self):
-        draw_object = TextDrawObject(
-            text="something", layout=DrawObjectLayout(relative_x=20, relative_y=10)
-        )
+        draw_object = TextDrawObject(text="something", start={"x": 20, "y": 10})
         svg_str = ConvertTextDrawObjectToSVG(draw_object).convert().as_str()
         root = ET.fromstring(svg_str)
         assert root.attrib["x"] == "20"

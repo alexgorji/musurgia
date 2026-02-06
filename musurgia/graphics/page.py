@@ -5,7 +5,6 @@ import svg
 
 from musurgia.graphics.drawobject import (
     DrawObject,
-    DrawObjectLayout,
     LineDrawObject,
     TextDrawObject,
 )
@@ -70,17 +69,6 @@ class Page:
 
     def add_draw_object(self, draw_object: DrawObject) -> None:
         self._draw_objects.append(draw_object)
-
-    def add_text(self, text: str, **kwargs):
-        relative_x = kwargs.pop("relative_x", 0)
-        relative_y = kwargs.pop("relative_y", 0)
-        self._draw_objects.append(
-            TextDrawObject(
-                text=text,
-                layout=DrawObjectLayout(relative_x=relative_x, relative_y=relative_y),
-                **kwargs,
-            )
-        )
 
     def convert_to_svg_string(self):
         size = self.layout.get_size()

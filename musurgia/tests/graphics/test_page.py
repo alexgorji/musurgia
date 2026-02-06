@@ -1,9 +1,6 @@
 from pathlib import Path
 from unittest import TestCase
-from musurgia.graphics.drawobject import DrawObjectLayout, TextDrawObject
 from musurgia.graphics.page import Page
-from musurgia.tests.helpers.svg import SVGTestCase, SVG
-import xml.etree.ElementTree as ET
 
 this_path = Path(__file__)
 

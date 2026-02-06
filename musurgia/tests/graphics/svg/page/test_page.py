@@ -2,7 +2,6 @@ from pathlib import Path
 from unittest import TestCase
 
 from musurgia.graphics.drawobject import (
-    DrawObjectLayout,
     HorizontalLineDrawObject,
     TextDrawObject,
     VerticalLineDrawObject,
@@ -25,22 +24,15 @@ class PageToSVGTestCase(TestCase):
 
     def test_add_text_to_page(self):
         page = Page()
-        page.add_text("some text")
+        page.add_draw_object(TextDrawObject(text="some text"))
         assert "some text" in page.convert_to_svg_string()
 
     def test_add_multiple_draw_objects_to_page(self):
         page = Page()
-        page.add_draw_object(
-            TextDrawObject(
-                text="Hello", layout=DrawObjectLayout(relative_x=10, relative_y=10)
-            )
-        )
+        page.add_draw_object(TextDrawObject(text="Hello", start={"x": 10, "y": 10}))
 
-        page.add_draw_object(
-            TextDrawObject(
-                text="Goodbye", layout=DrawObjectLayout(relative_x=20, relative_y=20)
-            )
-        )
+        page.add_draw_object(TextDrawObject(text="Goodbye", start={"x": 20, "y": 20}))
+
         svg_string = page.convert_to_svg_string()
         assert "Hello" in svg_string
         assert "Goodbye" in svg_string
@@ -51,23 +43,17 @@ class PageToSVGRegressionTests(SVGTestCase):
         page = Page()
         self.compare_page(page, "empty_page", this_path)
 
-    def test_add_text_to_page(self):
-        page = Page()
-        page.add_text("some text", relative_x=10, relative_y=20, color="blue")
-
-        self.compare_page(page, "add_text", this_path, tolerance=0.002)
-
     def test_add_draw_object_to_page(self):
         page = Page()
         page.add_draw_object(
             TextDrawObject(
                 text="some text",
-                layout=DrawObjectLayout(relative_x=10, relative_y=20),
+                start={"x": 10, "y": 20},
                 color="blue",
             )
         )
 
-        self.compare_page(page, "add_draw_object", this_path, tolerance=0.002)
+        self.compare_page(page, "add_text", this_path, tolerance=0.002)
 
     def test_add_line_draw_objects_to_page(self):
         page = Page()

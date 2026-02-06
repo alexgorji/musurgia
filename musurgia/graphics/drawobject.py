@@ -17,25 +17,14 @@ class RelativePosition(TypedDict):
     relative_y: int
 
 
-@dataclass(kw_only=True)
-class DrawObjectLayout:
-    relative_x: int = 0
-    relative_y: int = 0
-
-    def get_relative_position(self) -> RelativePosition:
-        return {"relative_x": self.relative_x, "relative_y": self.relative_y}
-
-    def get_absolute_position(self) -> AbsolutePosition:
-        return {"x": self.relative_x, "y": self.relative_y}
-
-
 @dataclass(frozen=True, kw_only=True)
 class DrawObject:
-    layout: DrawObjectLayout = field(default_factory=DrawObjectLayout)
+    pass
 
 
 @dataclass(frozen=True, kw_only=True)
 class TextDrawObject(DrawObject):
+    start: Position = cast(Position, field(default_factory=lambda: {"x": 0, "y": 0}))
     text: str
     font_family: str = "Helvetica"
     font_size: int = 12
@@ -43,7 +32,7 @@ class TextDrawObject(DrawObject):
 
 
 @dataclass(frozen=True, kw_only=True)
-class LineDrawObject:
+class LineDrawObject(DrawObject):
     end: Position
     start: Position = cast(Position, field(default_factory=lambda: {"x": 0, "y": 0}))
     color: str = "black"
