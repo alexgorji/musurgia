@@ -62,6 +62,9 @@ class Page:
         self.layout = layout or PageLayout()
         self._draw_objects: list[DrawObject] = []
 
+    def add_draw_object(self, draw_object: DrawObject) -> None:
+        self._draw_objects.append(draw_object)
+
     def add_text(self, text: str, **kwargs):
         relative_x = kwargs.pop("relative_x", 0)
         relative_y = kwargs.pop("relative_y", 0)
@@ -82,11 +85,15 @@ class Page:
             viewBox=svg.ViewBoxSpec(0, 0, width, height),
         )
 
-        for draw_object in self._draw_objects:
-            if isinstance(draw_object, TextDrawObject):
-                svg_object.elements = [
-                    ConvertTextDrawObjectToSVG(draw_object).convert()
-                ]
-            else:
-                raise TypeError
+        if self._draw_objects:
+            if svg_object.elements is None:
+                svg_object.elements = []
+            for draw_object in self._draw_objects:
+                if isinstance(draw_object, TextDrawObject):
+
+                    svg_object.elements.append(
+                        ConvertTextDrawObjectToSVG(draw_object).convert()
+                    )
+                else:
+                    raise TypeError
         return svg_object.as_str()
