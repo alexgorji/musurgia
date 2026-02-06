@@ -2,6 +2,11 @@ from dataclasses import dataclass, field
 from typing import TypedDict
 
 
+class Position(TypedDict):
+    x: int
+    y: int
+
+
 class AbsolutePosition(TypedDict):
     x: int
     y: int
@@ -35,3 +40,33 @@ class TextDrawObject(DrawObject):
     font_family: str = "Helvetica"
     font_size: int = 12
     color: str = "black"
+
+
+@dataclass(frozen=True, kw_only=True)
+class LineDrawObject:
+    end: Position
+    start: Position = field(default_factory=lambda: {"x": 0, "y": 0})
+
+
+@dataclass(frozen=True)
+class VerticalLineDrawObject(LineDrawObject):
+    length: int
+    end: Position = field(init=False)
+
+    def __post_init__(self):
+        object.__setattr__(
+            self, "end", {"x": self.start["x"], "y": self.start["y"] + self.length}
+        )
+
+
+@dataclass(frozen=True)
+class HorizontalLineDrawObject(LineDrawObject):
+    length: int
+    end: Position = field(init=False)
+
+    def __post_init__(self):
+        object.__setattr__(
+            self,
+            "end",
+            {"x": self.start["x"] + self.length, "y": self.start["y"]},
+        )

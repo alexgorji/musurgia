@@ -1,6 +1,13 @@
 from pathlib import Path
 from unittest import TestCase
-from musurgia.graphics.drawobject import DrawObjectLayout, TextDrawObject
+
+from turtledemo.penrose import star
+from musurgia.graphics.drawobject import (
+    DrawObjectLayout,
+    HorizontalLineDrawObject,
+    TextDrawObject,
+    VerticalLineDrawObject,
+)
 from musurgia.graphics.page import Page
 from musurgia.tests.helpers.svg import SVGTestCase, SVG
 import xml.etree.ElementTree as ET
@@ -90,6 +97,31 @@ class PageToSVGRegressionTests(SVGTestCase):
         )
 
         png_path = self.create_test_path(this_path, "add_draw_object", "png")
+
+        self.compare_svg_to_png(
+            svg_path,
+            png_path,
+            page.layout.get_size()["width"],
+            page.layout.get_size()["height"],
+            tolerance=0.002,
+        )
+
+    def test_add_line_draw_objects_to_page(self):
+        page = Page()
+        draw_objects = [
+            HorizontalLineDrawObject(length=40, start={"x": 10, "y": 30}),
+            VerticalLineDrawObject(length=10, start={"x": 10, "y": 25}),
+            VerticalLineDrawObject(length=10, start={"x": 50, "y": 25}),
+        ]
+
+        for draw_object in draw_objects:
+            page.add_draw_object(draw_object)
+
+        svg_path = SVG(page.convert_to_svg_string()).write_to_path(
+            self.create_test_path(this_path, "add_line_draw_objects", "svg")
+        )
+
+        png_path = self.create_test_path(this_path, "add_line_draw_objects", "png")
 
         self.compare_svg_to_png(
             svg_path,

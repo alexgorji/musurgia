@@ -4,8 +4,16 @@ from typing import Dict, Literal, TypedDict, cast
 
 import svg
 
-from musurgia.graphics.drawobject import DrawObject, DrawObjectLayout, TextDrawObject
-from musurgia.graphics.svg.convertors import ConvertTextDrawObjectToSVG
+from musurgia.graphics.drawobject import (
+    DrawObject,
+    DrawObjectLayout,
+    LineDrawObject,
+    TextDrawObject,
+)
+from musurgia.graphics.svg.convertors import (
+    ConvertLinDrawObjectToSVG,
+    ConvertTextDrawObjectToSVG,
+)
 
 
 type PageSize = Literal["A3", "A4", "A5"]
@@ -90,9 +98,12 @@ class Page:
                 svg_object.elements = []
             for draw_object in self._draw_objects:
                 if isinstance(draw_object, TextDrawObject):
-
                     svg_object.elements.append(
                         ConvertTextDrawObjectToSVG(draw_object).convert()
+                    )
+                elif isinstance(draw_object, LineDrawObject):
+                    svg_object.elements.append(
+                        ConvertLinDrawObjectToSVG(draw_object).convert()
                     )
                 else:
                     raise TypeError

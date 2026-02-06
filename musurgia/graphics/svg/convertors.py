@@ -1,5 +1,5 @@
 import svg
-from musurgia.graphics.drawobject import TextDrawObject
+from musurgia.graphics.drawobject import LineDrawObject, TextDrawObject
 
 
 class ConvertTextDrawObjectToSVG:
@@ -24,4 +24,19 @@ class ConvertTextDrawObjectToSVG:
             font_size=self.get_font_size_mm(),
             font_family=self.draw_object.font_family,
             fill=self.draw_object.color,
+        )
+
+
+class ConvertLinDrawObjectToSVG:
+    def __init__(self, draw_object: LineDrawObject):
+        self.draw_object = draw_object
+
+    def convert(self):
+        return svg.Line(
+            x1=self.draw_object.start["x"],
+            y1=self.draw_object.start["y"],
+            x2=self.draw_object.end["x"],
+            y2=self.draw_object.end["y"],
+            stroke="blue",
+            stroke_width=2,
         )
