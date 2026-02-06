@@ -1,8 +1,6 @@
 from pathlib import Path
-from turtle import color
 from unittest import TestCase
 
-from turtledemo.penrose import star
 from musurgia.graphics.drawobject import (
     DrawObjectLayout,
     HorizontalLineDrawObject,
@@ -34,13 +32,13 @@ class PageToSVGTestCase(TestCase):
         page = Page()
         page.add_draw_object(
             TextDrawObject(
-                "Hello", layout=DrawObjectLayout(relative_x=10, relative_y=10)
+                text="Hello", layout=DrawObjectLayout(relative_x=10, relative_y=10)
             )
         )
 
         page.add_draw_object(
             TextDrawObject(
-                "Goodbye", layout=DrawObjectLayout(relative_x=20, relative_y=20)
+                text="Goodbye", layout=DrawObjectLayout(relative_x=20, relative_y=20)
             )
         )
         svg_string = page.convert_to_svg_string()

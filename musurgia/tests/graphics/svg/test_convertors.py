@@ -8,7 +8,7 @@ from musurgia.graphics.svg.convertors import ConvertTextDrawObjectToSVG
 class ConvertTextDrawObjectToSVGTestCase(TestCase):
     def test_convertor(self):
         draw_object = TextDrawObject(
-            "something", layout=DrawObjectLayout(relative_x=20, relative_y=10)
+            text="something", layout=DrawObjectLayout(relative_x=20, relative_y=10)
         )
         svg_str = ConvertTextDrawObjectToSVG(draw_object).convert().as_str()
         root = ET.fromstring(svg_str)

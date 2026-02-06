@@ -29,12 +29,12 @@ class DrawObjectLayout:
         return {"x": self.relative_x, "y": self.relative_y}
 
 
-@dataclass(kw_only=True)
+@dataclass(frozen=True, kw_only=True)
 class DrawObject:
     layout: DrawObjectLayout = field(default_factory=DrawObjectLayout)
 
 
-@dataclass
+@dataclass(frozen=True, kw_only=True)
 class TextDrawObject(DrawObject):
     text: str
     font_family: str = "Helvetica"
@@ -50,7 +50,7 @@ class LineDrawObject:
     stroke_width: float = 0.1
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class VerticalLineDrawObject(LineDrawObject):
     length: int
     end: Position = field(init=False)
@@ -61,7 +61,7 @@ class VerticalLineDrawObject(LineDrawObject):
         )
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class HorizontalLineDrawObject(LineDrawObject):
     length: int
     end: Position = field(init=False)
