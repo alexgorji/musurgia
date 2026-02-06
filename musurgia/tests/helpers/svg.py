@@ -1,8 +1,9 @@
-from pathlib import Path
 import unittest
-from PIL import Image
+from pathlib import Path
+
 import cairosvg
 import svg
+from PIL import Image
 
 from musurgia.graphics.page import Page
 

@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import TypedDict
+from typing import TypedDict, cast
 
 
 class Position(TypedDict):
@@ -45,7 +45,7 @@ class TextDrawObject(DrawObject):
 @dataclass(frozen=True, kw_only=True)
 class LineDrawObject:
     end: Position
-    start: Position = field(default_factory=lambda: {"x": 0, "y": 0})
+    start: Position = cast(Position, field(default_factory=lambda: {"x": 0, "y": 0}))
     color: str = "black"
     stroke_width: float = 0.1
 

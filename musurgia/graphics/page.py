@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from turtle import width
 from typing import Dict, Literal, TypedDict, cast
 
 import svg
@@ -14,7 +13,6 @@ from musurgia.graphics.svg.convertors import (
     ConvertLinDrawObjectToSVG,
     ConvertTextDrawObjectToSVG,
 )
-
 
 type PageSize = Literal["A3", "A4", "A5"]
 type PageOrientation = Literal["portrait", "landscape"]
