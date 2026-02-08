@@ -1,101 +1,198 @@
-from dataclasses import dataclass, field
-from typing import TypedDict, cast
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import List, Tuple
+import cairo
 
 
-class Position(TypedDict):
-    x: int
-    y: int
+def create_measure_context() -> cairo.Context:
+    # tiny dummy surface is enough for measurement
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 1, 1)
+    return cairo.Context(surface)
 
 
-class Size(TypedDict):
+# -----------------------------
+# Value objects (dataclasses)
+# -----------------------------
+
+
+@dataclass(frozen=True)
+class Position:
+    x: float
+    y: float
+
+
+@dataclass(frozen=True)
+class Size:
     width: float
     height: float
 
 
-@dataclass(frozen=True, kw_only=True)
-class DrawObject:
-    pass
-
-
+@dataclass(frozen=True)
 class DrawObjectBox:
-    def __init__(self):
-        self._draw_objects: list[DrawObject] = []
+    draw_object: "DrawObject"
+    show: bool = False
 
-    def add_draw_object(self, draw_object: DrawObject) -> "DrawObjectBox":
-        self._draw_objects.append(draw_object)
+    def get_size(self) -> Size:
+        return self.draw_object.measure()
+
+
+# -----------------------------
+# Core drawable abstraction
+# -----------------------------
+
+
+class DrawObject(ABC):
+    def __init__(self) -> None:
+        self._box = DrawObjectBox(self)
+        self._measure_ctx: cairo.Context | None = None
+
+    @abstractmethod
+    def measure(self) -> Size:
+        raise NotImplementedError
+
+    @property
+    def box(self) -> DrawObjectBox:
+        return self._box
+
+    def _get_measure_ctx(self) -> cairo.Context:
+        if self._measure_ctx is None:
+            self._measure_ctx = create_measure_context()
+        return self._measure_ctx
+
+
+# -----------------------------
+# Container
+# -----------------------------
+
+
+class Container:
+    def __init__(self):
+        self._draw_objects: List[Tuple[Position, DrawObject]] = []
+
+    def add_draw_object(
+        self, position: Position, draw_object: DrawObject
+    ) -> "Container":
+        self._draw_objects.append((position, draw_object))
         return self
 
     @property
     def size(self) -> Size:
-        return {"width": self._get_width(), "height": self._get_height()}
+        return Size(self._get_width(), self._get_height())
 
     def _get_width(self) -> float:
-        w = 0
-        for draw_object in self._draw_objects:
-            if isinstance(draw_object, HorizontalLineDrawObject):
-                line_x2 = draw_object.start["x"] + draw_object.length
-            elif isinstance(draw_object, VerticalLineDrawObject):
-                line_x2 = draw_object.start["x"] + draw_object.stroke_width
-            else:
-                raise NotImplementedError
-
-            if line_x2 > w:
-                w = line_x2
-
+        w = 0.0
+        for position, draw_object in self._draw_objects:
+            x2 = position.x + draw_object.measure().width
+            if x2 > w:
+                w = x2
         return w
 
     def _get_height(self) -> float:
-        h = 0
-        for draw_object in self._draw_objects:
-            if isinstance(draw_object, VerticalLineDrawObject):
-                line_y2 = draw_object.start["y"] + draw_object.length
-            elif isinstance(draw_object, HorizontalLineDrawObject):
-                line_y2 = draw_object.start["y"] + draw_object.stroke_width
-            else:
-                raise NotImplementedError
-
-            if line_y2 > h:
-                h = line_y2
-
+        h = 0.0
+        for position, draw_object in self._draw_objects:
+            y2 = position.y + draw_object.measure().height
+            if y2 > h:
+                h = y2
         return h
 
 
-@dataclass(frozen=True, kw_only=True)
+# -----------------------------
+# Draw objects
+# -----------------------------
+
+
 class TextDrawObject(DrawObject):
-    start: Position = cast(Position, field(default_factory=lambda: {"x": 0, "y": 0}))
-    text: str
-    font_family: str = "Helvetica"
-    font_size: int = 12
-    color: str = "black"
+    def __init__(
+        self,
+        *,
+        text: str,
+        start: Position = Position(0, 0),
+        font_family: str = "Helvetica",
+        font_size: int = 12,
+        color: str = "black",
+    ):
+        super().__init__()
+        self.start = start
+        self.text = text
+        self.font_family = font_family
+        self.font_size = font_size
+        self.color = color
+
+    def measure(self) -> Size:
+        ctx = self._get_measure_ctx()
+        ctx.save()
+        ctx.select_font_face(self.font_family)
+        ctx.set_font_size(self.font_size)
+        ext = ctx.text_extents(self.text)
+        ctx.restore()
+        return Size(width=ext.width, height=ext.height)
 
 
-@dataclass(frozen=True, kw_only=True)
 class LineDrawObject(DrawObject):
-    end: Position
-    start: Position = cast(Position, field(default_factory=lambda: {"x": 0, "y": 0}))
-    color: str = "black"
-    stroke_width: float = 0.1
+    def __init__(
+        self,
+        *,
+        start: Position = Position(0, 0),
+        end: Position,
+        color: str = "black",
+        thickness: float = 2,
+    ):
+        super().__init__()
+        self.start = start
+        self.end = end
+        self.color = color
+        self.thickness = thickness
 
 
-@dataclass(frozen=True, kw_only=True)
+    def measure(self) -> Size:
+        ctx = self._get_measure_ctx()
+        # save the context so nothing leaks
+        ctx.save()
+        ctx.set_line_width(self.thickness)
+        ctx.new_path()
+        ctx.move_to(self.start.x, self.start.y)
+        ctx.line_to(self.end.x, self.end.y)
+
+        # path_extents gives (x1, y1, x2, y2) of the bounding box
+        x1, y1, x2, y2 = ctx.path_extents()
+        ctx.restore()
+
+        width = x2 - x1
+        height = y2 - y1
+        return Size(width=width, height=height)
+
+
 class VerticalLineDrawObject(LineDrawObject):
-    length: int
-    end: Position = field(init=False)
-
-    def __post_init__(self):
-        object.__setattr__(
-            self, "end", {"x": self.start["x"], "y": self.start["y"] + self.length}
+    def __init__(
+        self,
+        *,
+        start: Position = Position(0, 0),
+        length: float,
+        color: str = "black",
+        thickness: float = 2,
+    ):
+        end = Position(start.x, start.y + length)
+        super().__init__(
+            start=start,
+            end=end,
+            color=color,
+            thickness=thickness,
         )
 
 
-@dataclass(frozen=True, kw_only=True)
 class HorizontalLineDrawObject(LineDrawObject):
-    length: int
-    end: Position = field(init=False)
-
-    def __post_init__(self):
-        object.__setattr__(
-            self,
-            "end",
-            {"x": self.start["x"] + self.length, "y": self.start["y"]},
+    def __init__(
+        self,
+        *,
+        start: Position = Position(0, 0),
+        length: float,
+        color: str = "black",
+        thickness: float = 2,
+    ):
+        end = Position(start.x + length, start.y)
+        super().__init__(
+            start=start,
+            end=end,
+            color=color,
+            thickness=thickness,
         )

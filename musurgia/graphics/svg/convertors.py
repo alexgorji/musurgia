@@ -11,8 +11,8 @@ class ConvertTextDrawObjectToSVG:
 
     def convert(self):
         return svg.Text(
-            x=self.draw_object.start["x"],
-            y=self.draw_object.start["y"],
+            x=self.draw_object.start.x,
+            y=self.draw_object.start.y,
             text=self.draw_object.text,
             font_size=self.get_font_size_mm(),
             font_family=self.draw_object.font_family,
@@ -26,10 +26,10 @@ class ConvertLinDrawObjectToSVG:
 
     def convert(self):
         return svg.Line(
-            x1=self.draw_object.start["x"],
-            y1=self.draw_object.start["y"],
-            x2=self.draw_object.end["x"],
-            y2=self.draw_object.end["y"],
+            x1=self.draw_object.start.x,
+            y1=self.draw_object.start.y,
+            x2=self.draw_object.end.x,
+            y2=self.draw_object.end.y,
             stroke=self.draw_object.color,
-            stroke_width=self.draw_object.stroke_width,
+            stroke_width=self.draw_object.thickness,
         )

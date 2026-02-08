@@ -3,6 +3,7 @@ from unittest import TestCase
 
 from musurgia.graphics.drawobject import (
     HorizontalLineDrawObject,
+    Position,
     TextDrawObject,
     VerticalLineDrawObject,
 )
@@ -29,9 +30,9 @@ class PageToSVGTestCase(TestCase):
 
     def test_add_multiple_draw_objects_to_page(self):
         page = Page()
-        page.add_draw_object(TextDrawObject(text="Hello", start={"x": 10, "y": 10}))
+        page.add_draw_object(TextDrawObject(text="Hello", start=Position(10, 10)))
 
-        page.add_draw_object(TextDrawObject(text="Goodbye", start={"x": 20, "y": 20}))
+        page.add_draw_object(TextDrawObject(text="Goodbye", start=Position(20, 20)))
 
         svg_string = page.convert_to_svg_string()
         assert "Hello" in svg_string
@@ -48,7 +49,7 @@ class PageToSVGRegressionTests(SVGTestCase):
         page.add_draw_object(
             TextDrawObject(
                 text="some text",
-                start={"x": 10, "y": 20},
+                start=Position(10, 20),
                 color="blue",
             )
         )
@@ -59,13 +60,13 @@ class PageToSVGRegressionTests(SVGTestCase):
         page = Page()
         draw_objects = [
             HorizontalLineDrawObject(
-                length=40, start={"x": 10, "y": 30}, color="blue", stroke_width=2
+                length=40, start=Position(10, 30), color="blue", thickness=2
             ),
             VerticalLineDrawObject(
-                length=10, start={"x": 10, "y": 25}, color="blue", stroke_width=2
+                length=10, start=Position(10, 25), color="blue", thickness=2
             ),
             VerticalLineDrawObject(
-                length=10, start={"x": 50, "y": 25}, color="blue", stroke_width=2
+                length=10, start=Position(50, 25), color="blue", thickness=2
             ),
         ]
 
