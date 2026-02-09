@@ -125,11 +125,35 @@ class TextDrawObject(DrawObject):
         color: str = "black",
     ):
         super().__init__()
-        self.start = start
-        self.text = text
-        self.font_family = font_family
-        self.font_size = font_size
-        self.color = color
+        self._text = text
+        self._start = start
+
+        self._font_family = font_family
+        self._font_size = font_size
+        self._color = color
+
+    @property
+    def text(self):
+        return self._text
+
+    @property
+    def start(self):
+        return self._start
+
+    @property
+    def font_family(self):
+        return self._font_family
+
+    @property
+    def font_size(self):
+        return self._font_size
+
+    @property
+    def color(self):
+        return self._color
+
+    def set_color(self, val):
+        self._color = val
 
     @property
     def size(self) -> Size:
@@ -152,12 +176,35 @@ class LineDrawObject(DrawObject):
         thickness: float = 0.1,
     ):
         super().__init__()
-        self.start = start
-        self.end = end
-        self.color = color
-        self.thickness = thickness
         self.right_padding = 0
         self.bottom_padding = 0
+        super().__init__()
+        self._start = start
+        self._end = end
+        self._color = color
+        self._thickness = thickness
+
+    @property
+    def start(self):
+        return self._start
+
+    @property
+    def end(self):
+        return self._end
+
+    @property
+    def color(self):
+        return self._color
+
+    @property
+    def thickness(self):
+        return self._thickness
+
+    def set_color(self, val):
+        self._color = val
+
+    def set_thickness(self, val):
+        self._thickness = val
 
     def _build_path(self, ctx: cairo.Context) -> None:
         """
@@ -181,39 +228,15 @@ class LineDrawObject(DrawObject):
 
 
 class VerticalLineDrawObject(LineDrawObject):
-    def __init__(
-        self,
-        *,
-        start: Position = Position(0, 0),
-        length: float,
-        color: str = "black",
-        thickness: float = 0.1,
-    ):
+    def __init__(self, *, start: Position = Position(0, 0), length: float, **kwargs):
         end = Position(start.x, start.y + length)
-        super().__init__(
-            start=start,
-            end=end,
-            color=color,
-            thickness=thickness,
-        )
+        super().__init__(start=start, end=end, **kwargs)
 
 
 class HorizontalLineDrawObject(LineDrawObject):
-    def __init__(
-        self,
-        *,
-        start: Position = Position(0, 0),
-        length: float,
-        color: str = "black",
-        thickness: float = 0.1,
-    ):
+    def __init__(self, *, start: Position = Position(0, 0), length: float, **kwargs):
         end = Position(start.x + length, start.y)
-        super().__init__(
-            start=start,
-            end=end,
-            color=color,
-            thickness=thickness,
-        )
+        super().__init__(start=start, end=end, **kwargs)
 
 
 class RectangleDrawObject(DrawObject):
@@ -227,9 +250,23 @@ class RectangleDrawObject(DrawObject):
         super().__init__()
         self._size = size
         self._padding = Padding(0, 0, 0, 0)
-        self.color = color
-        self.thickness = thickness
+        self._color = color
+        self._thickness = thickness
 
     @property
     def size(self) -> Size:
         return self._size
+
+    @property
+    def color(self):
+        return self._color
+
+    @property
+    def thickness(self):
+        return self._thickness
+
+    def set_color(self, val):
+        self._color = val
+
+    def set_thickness(self, val):
+        self._thickness = val

@@ -93,8 +93,8 @@ class PageToSVGRegressionTests(SVGTestCase):
         container.add_draw_object(Position(40, 10), VerticalLineDrawObject(length=10))
         for _, draw_object in container.get_draw_objects():
             if isinstance(draw_object, LineDrawObject):
-                draw_object.color = "blue"
-                draw_object.thickness = 1
+                draw_object.set_color("blue")
+                draw_object.set_thickness(1)
 
         parent_container = Container()
         parent_container.add_draw_object(Position(30, 30), container)
