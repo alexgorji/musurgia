@@ -214,3 +214,22 @@ class HorizontalLineDrawObject(LineDrawObject):
             color=color,
             thickness=thickness,
         )
+
+
+class RectangleDrawObject(DrawObject):
+    def __init__(
+        self,
+        *,
+        size: Size,
+        color: str = "black",
+        thickness: float = 0.1,
+    ):
+        super().__init__()
+        self._size = size
+        self._padding = Padding(0, 0, 0, 0)
+        self.color = color
+        self.thickness = thickness
+
+    @property
+    def size(self) -> Size:
+        return self._size

@@ -4,6 +4,7 @@ from musurgia.graphics.drawobject import (
     HorizontalLineDrawObject,
     LineDrawObject,
     Position,
+    RectangleDrawObject,
     Size,
     TextDrawObject,
     VerticalLineDrawObject,
@@ -30,6 +31,12 @@ class TextDrawObjectTestCase(TestCase):
         assert size.height > 0
         size2 = t.size
         assert size == size2, f"Repeated measurement must be identical for {t.text}"
+
+
+class RectangleDrawObjectTestCase(TestCase):
+    def test_rectangle_size(self):
+        r = RectangleDrawObject(size=Size(30, 40))
+        assert r.size == Size(30, 40)
 
 
 class DrawObjectBoxTestCase(TestCase):

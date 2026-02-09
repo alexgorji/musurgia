@@ -6,6 +6,7 @@ from musurgia.graphics.drawobject import (
     HorizontalLineDrawObject,
     LineDrawObject,
     Position,
+    RectangleDrawObject,
     Size,
     TextDrawObject,
     VerticalLineDrawObject,
@@ -104,3 +105,10 @@ class PageToSVGRegressionTests(SVGTestCase):
         self.compare_page(
             page, "add_nested_container", this_path, width=210, height=297
         )
+
+    def test_add_rectangle(self):
+        page = Page()
+        r = RectangleDrawObject(size=Size(30, 40), color="blue", thickness=1)
+        page.add_draw_object(Position(10, 10), r)
+
+        self.compare_page(page, "add_rectangle", this_path, width=210, height=297)

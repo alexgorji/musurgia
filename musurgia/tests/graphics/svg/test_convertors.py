@@ -5,6 +5,7 @@ import svg
 from musurgia.graphics.drawobject import (
     LineDrawObject,
     Position,
+    RectangleDrawObject,
     Size,
     TextDrawObject,
 )
@@ -41,6 +42,13 @@ class ConvertDrawObjectToSVGElementTestCase(TestCase):
         assert isinstance(
             SVGConverterRegistry.convert(
                 Position(0, 0), LineDrawObject(end=Position(30, 40))
+            )[0],
+            svg.Element,
+        )
+
+        assert isinstance(
+            SVGConverterRegistry.convert(
+                Position(0, 0), RectangleDrawObject(size=Size(20, 40))
             )[0],
             svg.Element,
         )

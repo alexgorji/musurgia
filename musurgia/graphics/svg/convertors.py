@@ -6,6 +6,7 @@ from musurgia.graphics.drawobject import (
     HorizontalLineDrawObject,
     LineDrawObject,
     Position,
+    RectangleDrawObject,
     TextDrawObject,
     Container,
     VerticalLineDrawObject,
@@ -51,6 +52,19 @@ class LineDrawObjectToSVGConvertor(DrawObjectConvertor[LineDrawObject]):
         )
 
 
+class RectangleDrawObjectToSVGConvertor(DrawObjectConvertor[RectangleDrawObject]):
+    def convert(self):
+        return svg.Rect(
+            x=self.position.x,
+            y=self.position.y,
+            width=self.draw_object.size.width,
+            height=self.draw_object.size.height,
+            stroke=self.draw_object.color,
+            fill="transparent",
+            stroke_width=self.draw_object.thickness,
+        )
+
+
 U = TypeVar("U", bound=DrawObject)
 
 
@@ -85,3 +99,4 @@ SVGConverterRegistry.register(LineDrawObject, LineDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(HorizontalLineDrawObject, LineDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(VerticalLineDrawObject, LineDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(TextDrawObject, TextDrawObjectToSVGConvertor)
+SVGConverterRegistry.register(RectangleDrawObject, RectangleDrawObjectToSVGConvertor)
