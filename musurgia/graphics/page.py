@@ -1,11 +1,12 @@
 from dataclasses import dataclass, field
-from typing import Dict, Literal, TypedDict, cast
+from typing import Dict, List, Literal, Tuple, TypedDict, cast
 
 import svg
 
 from musurgia.graphics.drawobject import (
     DrawObject,
     LineDrawObject,
+    Position,
     TextDrawObject,
 )
 from musurgia.graphics.svg.convertors import (
@@ -64,10 +65,10 @@ class PageLayout:
 class Page:
     def __init__(self, layout: PageLayout | None = None):
         self.layout = layout or PageLayout()
-        self._draw_objects: list[DrawObject] = []
+        self._draw_objects: List[Tuple[Position, DrawObject]] = []
 
-    def add_draw_object(self, draw_object: DrawObject) -> None:
-        self._draw_objects.append(draw_object)
+    def add_draw_object(self, position: Position, draw_object: DrawObject) -> None:
+        self._draw_objects.append((position, draw_object))
 
     def convert_to_svg_string(self):
         size = self.layout.get_size()
@@ -81,14 +82,14 @@ class Page:
         if self._draw_objects:
             if svg_object.elements is None:
                 svg_object.elements = []
-            for draw_object in self._draw_objects:
+            for position, draw_object in self._draw_objects:
                 if isinstance(draw_object, TextDrawObject):
                     svg_object.elements.append(
-                        ConvertTextDrawObjectToSVG(draw_object).convert()
+                        ConvertTextDrawObjectToSVG(position, draw_object).convert()
                     )
                 elif isinstance(draw_object, LineDrawObject):
                     svg_object.elements.append(
-                        ConvertLinDrawObjectToSVG(draw_object).convert()
+                        ConvertLinDrawObjectToSVG(position, draw_object).convert()
                     )
                 else:
                     raise TypeError

@@ -25,14 +25,18 @@ class PageToSVGTestCase(TestCase):
 
     def test_add_text_to_page(self):
         page = Page()
-        page.add_draw_object(TextDrawObject(text="some text"))
+        page.add_draw_object(Position(0, 0), TextDrawObject(text="some text"))
         assert "some text" in page.convert_to_svg_string()
 
     def test_add_multiple_draw_objects_to_page(self):
         page = Page()
-        page.add_draw_object(TextDrawObject(text="Hello", start=Position(10, 10)))
+        page.add_draw_object(
+            Position(0, 0), TextDrawObject(text="Hello", start=Position(10, 10))
+        )
 
-        page.add_draw_object(TextDrawObject(text="Goodbye", start=Position(20, 20)))
+        page.add_draw_object(
+            Position(0, 0), TextDrawObject(text="Goodbye", start=Position(20, 20))
+        )
 
         svg_string = page.convert_to_svg_string()
         assert "Hello" in svg_string
@@ -47,11 +51,12 @@ class PageToSVGRegressionTests(SVGTestCase):
     def test_add_draw_object_to_page(self):
         page = Page()
         page.add_draw_object(
+            Position(0, 0),
             TextDrawObject(
                 text="some text",
                 start=Position(10, 20),
                 color="blue",
-            )
+            ),
         )
 
         self.compare_page(page, "add_text", this_path, tolerance=0.002)
@@ -71,6 +76,6 @@ class PageToSVGRegressionTests(SVGTestCase):
         ]
 
         for draw_object in draw_objects:
-            page.add_draw_object(draw_object)
+            page.add_draw_object(Position(0, 0), draw_object)
 
         self.compare_page(page, "add_line_draw_objects", this_path, tolerance=0.002)
