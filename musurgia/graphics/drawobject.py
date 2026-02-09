@@ -48,7 +48,7 @@ class DrawObjectBox:
         return self._draw_object
 
     @property
-    def size(self) -> Size:
+    def size(self):
         do = self.draw_object
         return Size(
             do.size.width + do.padding.right + do.padding.left,
@@ -99,7 +99,7 @@ class Container(DrawObject):
         self._draw_objects: List[Tuple[Position, DrawObject]] = []
         self._padding = Padding(0, 0, 0, 0)
 
-    def _get_padding(self) -> Padding:
+    def _get_padding(self):
         return self._padding
 
     def add_draw_object(
@@ -112,10 +112,10 @@ class Container(DrawObject):
         return self._draw_objects
 
     @property
-    def size(self) -> Size:
+    def size(self):
         return Size(self._get_width(), self._get_height())
 
-    def _get_width(self) -> float:
+    def _get_width(self):
         w = 0.0
         for position, draw_object in self._draw_objects:
             x2 = position.x + draw_object.size.width
@@ -123,7 +123,7 @@ class Container(DrawObject):
                 w = x2
         return w
 
-    def _get_height(self) -> float:
+    def _get_height(self):
         h = 0.0
         for position, draw_object in self._draw_objects:
             y2 = position.y + draw_object.size.height
@@ -278,7 +278,7 @@ class LineDrawObject(DrawObject):
         )
 
     @property
-    def size(self) -> Size:
+    def size(self):
         ctx = self._get_measure_ctx()
         ctx.save()
         self._build_path(ctx)
@@ -314,11 +314,11 @@ class RectangleDrawObject(DrawObject):
         self._color = color
         self._thickness = thickness
 
-    def _get_padding(self) -> Padding:
+    def _get_padding(self):
         return self._padding
 
     @property
-    def size(self) -> Size:
+    def size(self):
         return self._size
 
     @property
