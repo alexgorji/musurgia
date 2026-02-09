@@ -129,7 +129,7 @@ class SVGTestCase(unittest.TestCase):
         self.compare_svg_to_png(
             svg_path,
             png_path,
-            page.layout.get_size()["width"],
-            page.layout.get_size()["height"],
+            page.layout.get_size().width,
+            page.layout.get_size().height,
             tolerance=tolerance,
         )

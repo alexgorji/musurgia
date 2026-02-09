@@ -23,7 +23,7 @@ class LineDrawObjectTestCase(TestCase):
 
 class TextDrawObjectTestCase(TestCase):
 
-    def test_text_measure(self):
+    def test_text_size(self):
         t = TextDrawObject(text="Hello World")
         size = t.size
         assert size.width > 0

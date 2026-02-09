@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict, List, Literal, Tuple, TypedDict, cast
+from typing import Dict, List, Literal, Tuple
 
 import svg
 
@@ -9,6 +9,7 @@ from musurgia.graphics.drawobject import (
     Position,
     TextDrawObject,
     Container,
+    Size,
 )
 from musurgia.graphics.svg.convertors import (
     ConvertContainerToSVGElements,
@@ -20,21 +21,17 @@ type PageSize = Literal["A3", "A4", "A5"]
 type PageOrientation = Literal["portrait", "landscape"]
 
 
-class Margins(TypedDict):
-    left: int
+@dataclass
+class Margins:
+    top: int
     right: int
     bottom: int
-    top: int
-
-
-class Size(TypedDict):
-    height: int
-    width: int
+    left: int
 
 
 PAGE_SIZES: Dict[PageSize, Size] = {
-    "A4": {"height": 297, "width": 210},
-    "A3": {"height": 420, "width": 297},
+    "A4": Size(210, 297),
+    "A3": Size(297, 420),
 }
 
 
@@ -42,25 +39,14 @@ PAGE_SIZES: Dict[PageSize, Size] = {
 class PageLayout:
     size: PageSize | Size = "A4"
     orientation: PageOrientation = "portrait"
-    margins: Margins = field(
-        default_factory=lambda: cast(
-            Margins,
-            {
-                "left": 0,
-                "right": 0,
-                "bottom": 0,
-                "top": 0,
-            },
-        )
-    )
+    margins: Margins = field(default_factory=lambda: Margins(0, 0, 0, 0))
 
     def get_size(self) -> Size:
-        if isinstance(self.size, dict):
+        if isinstance(self.size, Size):
             return self.size
-        size = cast(Size, dict(PAGE_SIZES[self.size]))
+        size = PAGE_SIZES[self.size]
         if self.orientation == "landscape":
-            size["height"], size["width"] = size["width"], size["height"]
-
+            return Size(size.height, size.width)
         return size
 
 
@@ -74,7 +60,7 @@ class Page:
 
     def convert_to_svg_string(self):
         size = self.layout.get_size()
-        height, width = size["height"], size["width"]
+        height, width = size.height, size.width
         svg_object = svg.SVG(
             width=svg.Length(width, "mm"),
             height=svg.Length(height, "mm"),
