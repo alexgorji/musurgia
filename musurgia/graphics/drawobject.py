@@ -20,6 +20,9 @@ class Position:
     x: float
     y: float
 
+    def __add__(self, other):
+        return Position(self.x + other.x, self.y + other.y)
+
 
 @dataclass(frozen=True)
 class Size:
@@ -72,7 +75,7 @@ class DrawObject(ABC):
 # -----------------------------
 
 
-class Container:
+class Container(DrawObject):
     def __init__(self):
         self._draw_objects: List[Tuple[Position, DrawObject]] = []
 
@@ -81,6 +84,9 @@ class Container:
     ) -> "Container":
         self._draw_objects.append((position, draw_object))
         return self
+
+    def get_draw_objects(self):
+        return self._draw_objects
 
     @property
     def size(self) -> Size:

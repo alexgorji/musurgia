@@ -8,8 +8,10 @@ from musurgia.graphics.drawobject import (
     LineDrawObject,
     Position,
     TextDrawObject,
+    Container,
 )
 from musurgia.graphics.svg.convertors import (
+    ConvertContainerToSVGElements,
     ConvertLinDrawObjectToSVG,
     ConvertTextDrawObjectToSVG,
 )
@@ -83,7 +85,11 @@ class Page:
             if svg_object.elements is None:
                 svg_object.elements = []
             for position, draw_object in self._draw_objects:
-                if isinstance(draw_object, TextDrawObject):
+                if isinstance(draw_object, Container):
+                    svg_object.elements.extend(
+                        ConvertContainerToSVGElements(position, draw_object).convert()
+                    )
+                elif isinstance(draw_object, TextDrawObject):
                     svg_object.elements.append(
                         ConvertTextDrawObjectToSVG(position, draw_object).convert()
                     )

@@ -4,6 +4,7 @@ from musurgia.graphics.drawobject import (
     LineDrawObject,
     Position,
     TextDrawObject,
+    Container,
 )
 
 
@@ -40,3 +41,29 @@ class ConvertLinDrawObjectToSVG:
             stroke=self.draw_object.color,
             stroke_width=self.draw_object.thickness,
         )
+
+
+class ConvertContainerToSVGElements:
+    def __init__(self, position: Position, container: Container):
+        self.position = position
+        self.container = container
+
+    def convert(self) -> List[svg.Element]:
+        output = []
+        for position, draw_object in self.container.get_draw_objects():
+            position_sum = self.position + position
+            if isinstance(draw_object, Container):
+                output.extend(
+                    ConvertContainerToSVGElements(position_sum, draw_object).convert()
+                )
+            elif isinstance(draw_object, LineDrawObject):
+                output.append(
+                    ConvertLinDrawObjectToSVG(position_sum, draw_object).convert()
+                )
+            elif isinstance(draw_object, TextDrawObject):
+                output.append(
+                    ConvertTextDrawObjectToSVG(position_sum, draw_object).convert()
+                )
+            else:
+                raise TypeError
+        return output

@@ -2,6 +2,7 @@ from pathlib import Path
 from unittest import TestCase
 
 from musurgia.graphics.drawobject import (
+    Container,
     HorizontalLineDrawObject,
     Position,
     TextDrawObject,
@@ -79,3 +80,20 @@ class PageToSVGRegressionTests(SVGTestCase):
             page.add_draw_object(Position(0, 0), draw_object)
 
         self.compare_page(page, "add_line_draw_objects", this_path, tolerance=0.002)
+
+    def test_add_nested_container_to_page(self):
+        container = Container()
+        container.add_draw_object(Position(10, 10), VerticalLineDrawObject(length=10))
+        container.add_draw_object(Position(10, 15), HorizontalLineDrawObject(length=30))
+        container.add_draw_object(Position(40, 10), VerticalLineDrawObject(length=10))
+        for _, draw_object in container.get_draw_objects():
+            draw_object.color = "blue"
+            draw_object.thickness = 1
+
+        parent_container = Container()
+        parent_container.add_draw_object(Position(30, 30), container)
+
+        page = Page()
+        page.add_draw_object(Position(50, 50), parent_container)
+
+        self.compare_page(page, "add_nested_container", this_path, tolerance=0.0)
