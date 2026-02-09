@@ -3,6 +3,7 @@ from musurgia.graphics.drawobject import (
     Container,
     HorizontalLineDrawObject,
     LineDrawObject,
+    Padding,
     Position,
     RectangleDrawObject,
     Size,
@@ -20,6 +21,21 @@ class LineDrawObjectTestCase(TestCase):
     def test_vertical_line(self):
         hl = VerticalLineDrawObject(start=Position(20, 30), length=10)
         assert hl.end.x, hl.end.y == (20, 40)
+
+    def test_line_padding(self):
+        line = LineDrawObject(end=Position(20, 30))
+        assert line.padding == Padding(0, 0, 0, 0)
+
+        line = LineDrawObject(start=Position(20, 30), end=Position(40, 60))
+        assert line.padding == Padding(30, 0, 0, 20)
+
+        line = LineDrawObject(
+            start=Position(20, 30),
+            end=Position(40, 60),
+            right_padding=40,
+            bottom_padding=50,
+        )
+        assert line.padding == Padding(30, 40, 50, 20)
 
 
 class TextDrawObjectTestCase(TestCase):
@@ -43,6 +59,22 @@ class DrawObjectBoxTestCase(TestCase):
     def test_line_draw_object(self):
         line = LineDrawObject(end=Position(20, 30))
         assert line.box.size == Size(20, 30)
+
+        line = LineDrawObject(start=Position(20, 30), end=Position(40, 60))
+        assert line.size == Size(20, 30)
+        assert line.box.size == Size(40, 60)
+
+        line = LineDrawObject(
+            start=Position(20, 30),
+            end=Position(40, 60),
+            right_padding=50,
+            bottom_padding=100,
+        )
+
+        assert line.box.size == Size(90, 160)
+
+    def test_box_rectangle(self):
+        pass
 
 
 class ContainerTestCase(TestCase):

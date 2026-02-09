@@ -31,6 +31,13 @@ class Size:
 
 
 @dataclass(frozen=True)
+class Padding:
+    top: float
+    right: float
+    bottom: float
+    left: float
+
+
 class DrawObjectBox:
     def __init__(self, draw_object: "DrawObject", show=False):
         self._draw_object = draw_object
@@ -42,7 +49,11 @@ class DrawObjectBox:
 
     @property
     def size(self) -> Size:
-        return self.draw_object.size
+        do = self.draw_object
+        return Size(
+            do.size.width + do.padding.right + do.padding.left,
+            do.size.height + do.padding.top + do.padding.bottom,
+        )
 
 
 # -----------------------------
@@ -64,10 +75,18 @@ class DrawObject(ABC):
     def box(self) -> DrawObjectBox:
         return self._box
 
+    @property
+    def padding(self) -> Padding:
+        return self._get_padding()
+
     def _get_measure_ctx(self) -> cairo.Context:
         if self._measure_ctx is None:
             self._measure_ctx = create_measure_context()
         return self._measure_ctx
+
+    @abstractmethod
+    def _get_padding(self) -> Padding:
+        pass
 
 
 # -----------------------------
@@ -78,6 +97,10 @@ class DrawObject(ABC):
 class Container(DrawObject):
     def __init__(self):
         self._draw_objects: List[Tuple[Position, DrawObject]] = []
+        self._padding = Padding(0, 0, 0, 0)
+
+    def _get_padding(self) -> Padding:
+        return self._padding
 
     def add_draw_object(
         self, position: Position, draw_object: DrawObject
@@ -120,6 +143,8 @@ class TextDrawObject(DrawObject):
         *,
         text: str,
         start: Position = Position(0, 0),
+        right_padding=0,
+        bottom_padding=0,
         font_family: str = "Helvetica",
         font_size: int = 12,
         color: str = "black",
@@ -127,6 +152,8 @@ class TextDrawObject(DrawObject):
         super().__init__()
         self._text = text
         self._start = start
+        self._right_padding = right_padding
+        self._bottom_padding = bottom_padding
 
         self._font_family = font_family
         self._font_size = font_size
@@ -139,6 +166,14 @@ class TextDrawObject(DrawObject):
     @property
     def start(self):
         return self._start
+
+    @property
+    def right_padding(self):
+        return self._right_padding
+
+    @property
+    def bottom_padding(self):
+        return self._bottom_padding
 
     @property
     def font_family(self):
@@ -165,6 +200,14 @@ class TextDrawObject(DrawObject):
         ctx.restore()
         return Size(width=ext.width, height=ext.height)
 
+    def _get_padding(self):
+        return Padding(
+            top=self.start.y,
+            right=self.right_padding,
+            bottom=self.bottom_padding,
+            left=self.start.x,
+        )
+
 
 class LineDrawObject(DrawObject):
     def __init__(
@@ -172,15 +215,17 @@ class LineDrawObject(DrawObject):
         *,
         start: Position = Position(0, 0),
         end: Position,
+        right_padding=0,
+        bottom_padding=0,
         color: str = "black",
         thickness: float = 0.1,
     ):
         super().__init__()
-        self.right_padding = 0
-        self.bottom_padding = 0
         super().__init__()
         self._start = start
         self._end = end
+        self._right_padding = right_padding
+        self._bottom_padding = bottom_padding
         self._color = color
         self._thickness = thickness
 
@@ -191,6 +236,14 @@ class LineDrawObject(DrawObject):
     @property
     def end(self):
         return self._end
+
+    @property
+    def right_padding(self):
+        return self._right_padding
+
+    @property
+    def bottom_padding(self):
+        return self._bottom_padding
 
     @property
     def color(self):
@@ -216,7 +269,14 @@ class LineDrawObject(DrawObject):
         ctx.move_to(self.start.x, self.start.y)
         ctx.line_to(self.end.x, self.end.y)
 
-        # path_extents gives (x1, y1, x2, y2) of the bounding box
+    def _get_padding(self):
+        return Padding(
+            top=self.start.y,
+            right=self.right_padding,
+            bottom=self.bottom_padding,
+            left=self.start.x,
+        )
+
     @property
     def size(self) -> Size:
         ctx = self._get_measure_ctx()
@@ -244,14 +304,18 @@ class RectangleDrawObject(DrawObject):
         self,
         *,
         size: Size,
+        padding=Padding(0, 0, 0, 0),
         color: str = "black",
         thickness: float = 0.1,
     ):
         super().__init__()
         self._size = size
-        self._padding = Padding(0, 0, 0, 0)
+        self._padding = padding
         self._color = color
         self._thickness = thickness
+
+    def _get_padding(self) -> Padding:
+        return self._padding
 
     @property
     def size(self) -> Size:
