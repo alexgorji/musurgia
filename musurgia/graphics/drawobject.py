@@ -29,11 +29,17 @@ class Size:
 
 @dataclass(frozen=True)
 class DrawObjectBox:
-    draw_object: "DrawObject"
-    show: bool = False
+    def __init__(self, draw_object: "DrawObject", show=False):
+        self._draw_object = draw_object
+        self.show = show
 
-    def get_size(self) -> Size:
-        return self.draw_object.measure()
+    @property
+    def draw_object(self):
+        return self._draw_object
+
+    @property
+    def size(self) -> Size:
+        return self.draw_object.size
 
 
 # -----------------------------
@@ -46,8 +52,9 @@ class DrawObject(ABC):
         self._box = DrawObjectBox(self)
         self._measure_ctx: cairo.Context | None = None
 
+    @property
     @abstractmethod
-    def measure(self) -> Size:
+    def size(self) -> Size:
         raise NotImplementedError
 
     @property
@@ -82,7 +89,7 @@ class Container:
     def _get_width(self) -> float:
         w = 0.0
         for position, draw_object in self._draw_objects:
-            x2 = position.x + draw_object.measure().width
+            x2 = position.x + draw_object.size.width
             if x2 > w:
                 w = x2
         return w
@@ -90,7 +97,7 @@ class Container:
     def _get_height(self) -> float:
         h = 0.0
         for position, draw_object in self._draw_objects:
-            y2 = position.y + draw_object.measure().height
+            y2 = position.y + draw_object.size.height
             if y2 > h:
                 h = y2
         return h
@@ -118,7 +125,8 @@ class TextDrawObject(DrawObject):
         self.font_size = font_size
         self.color = color
 
-    def measure(self) -> Size:
+    @property
+    def size(self) -> Size:
         ctx = self._get_measure_ctx()
         ctx.save()
         ctx.select_font_face(self.font_family)
@@ -144,22 +152,25 @@ class LineDrawObject(DrawObject):
         self.thickness = thickness
 
 
-    def measure(self) -> Size:
-        ctx = self._get_measure_ctx()
-        # save the context so nothing leaks
-        ctx.save()
-        ctx.set_line_width(self.thickness)
+    def _build_path(self, ctx: cairo.Context) -> None:
+        """
+        Prepares the path in the Cairo context for this line.
+        Does NOT stroke or fill.
+        """
         ctx.new_path()
+        ctx.set_line_width(self.thickness)
         ctx.move_to(self.start.x, self.start.y)
         ctx.line_to(self.end.x, self.end.y)
 
         # path_extents gives (x1, y1, x2, y2) of the bounding box
+    @property
+    def size(self) -> Size:
+        ctx = self._get_measure_ctx()
+        ctx.save()
+        self._build_path(ctx)
         x1, y1, x2, y2 = ctx.path_extents()
         ctx.restore()
-
-        width = x2 - x1
-        height = y2 - y1
-        return Size(width=width, height=height)
+        return Size(width=x2 - x1, height=y2 - y1)
 
 
 class VerticalLineDrawObject(LineDrawObject):

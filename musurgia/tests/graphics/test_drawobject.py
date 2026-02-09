@@ -1,6 +1,5 @@
 from unittest import TestCase
 from musurgia.graphics.drawobject import (
-    # DrawObjectBox,
     Container,
     HorizontalLineDrawObject,
     LineDrawObject,
@@ -26,17 +25,17 @@ class TextDrawObjectTestCase(TestCase):
 
     def test_text_measure(self):
         t = TextDrawObject(text="Hello World")
-        size = t.measure()
+        size = t.size
         assert size.width > 0
         assert size.height > 0
-        size2 = t.measure()
+        size2 = t.size
         assert size == size2, f"Repeated measurement must be identical for {t.text}"
 
 
 class DrawObjectBoxTestCase(TestCase):
     def test_line_draw_object(self):
         line = LineDrawObject(end=Position(20, 30))
-        assert line.box.get_size() == Size(20, 30)
+        assert line.box.size == Size(20, 30)
 
 
 class ContainerTestCase(TestCase):

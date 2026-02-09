@@ -37,3 +37,4 @@ class GraphicPageTestCase(TestCase):
             "left": 30,
             "right": 40,
         }
+
