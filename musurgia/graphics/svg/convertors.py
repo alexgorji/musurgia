@@ -20,6 +20,11 @@ class DrawObjectConvertor(ABC, Generic[T]):
         self.position = position
         self.draw_object = draw_object
 
+    def convert_box(self):
+        return RectangleDrawObjectToSVGConvertor(
+            self.position, self.draw_object.box.get_rectangle()
+        ).convert()
+
     @abstractmethod
     def convert(self) -> svg.Element:
         pass
@@ -92,7 +97,11 @@ class SVGConverterRegistry:
         except KeyError:
             raise TypeError(f"No SVG converter for {type(draw_object)}")
 
-        return [converter_cls(position, draw_object).convert()]
+        converter = converter_cls(position, draw_object)
+        converted = [converter.convert()]
+        if draw_object.box.show:
+            converted.append(converter.convert_box())
+        return converted
 
 
 SVGConverterRegistry.register(LineDrawObject, LineDrawObjectToSVGConvertor)

@@ -74,7 +74,15 @@ class DrawObjectBoxTestCase(TestCase):
         assert line.box.size == Size(90, 160)
 
     def test_box_rectangle(self):
-        pass
+        line = LineDrawObject(
+            start=Position(20, 30),
+            end=Position(40, 60),
+            right_padding=50,
+            bottom_padding=100,
+        )
+        box_rectangle = line.box.get_rectangle()
+        assert isinstance(box_rectangle, RectangleDrawObject)
+        assert box_rectangle.size == line.box.size
 
 
 class ContainerTestCase(TestCase):

@@ -5,6 +5,7 @@ from musurgia.graphics.drawobject import (
     Container,
     HorizontalLineDrawObject,
     LineDrawObject,
+    Padding,
     Position,
     RectangleDrawObject,
     Size,
@@ -112,3 +113,17 @@ class PageToSVGRegressionTests(SVGTestCase):
         page.add_draw_object(Position(10, 10), r)
 
         self.compare_page(page, "add_rectangle", this_path, width=210, height=297)
+
+    def test_show_box(self):
+        page = Page()
+        r = RectangleDrawObject(
+            size=Size(30, 40),
+            color="blue",
+            thickness=1,
+            padding=Padding(10, 20, 30, 40),
+        )
+        r.box.show = True
+
+        page.add_draw_object(Position(50, 50), r)
+
+        self.compare_page(page, "show_box", this_path, width=210, height=297)

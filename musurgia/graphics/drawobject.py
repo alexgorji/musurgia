@@ -41,6 +41,7 @@ class Padding:
 class DrawObjectBox:
     def __init__(self, draw_object: "DrawObject", show=False):
         self._draw_object = draw_object
+        self._rectangle = None
         self.show = show
 
     @property
@@ -54,6 +55,11 @@ class DrawObjectBox:
             do.size.width + do.padding.right + do.padding.left,
             do.size.height + do.padding.top + do.padding.bottom,
         )
+
+    def get_rectangle(self):
+        if not self._rectangle:
+            self._get_rectangle = RectangleDrawObject(size=self.size, color="green")
+        return self._get_rectangle
 
 
 # -----------------------------

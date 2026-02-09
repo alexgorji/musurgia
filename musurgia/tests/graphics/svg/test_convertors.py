@@ -52,3 +52,12 @@ class ConvertDrawObjectToSVGElementTestCase(TestCase):
             )[0],
             svg.Element,
         )
+
+
+class ConvertBoxToSVG(TestCase):
+    def test_box_is_converted(self):
+        line = LineDrawObject(end=Position(30, 40))
+        assert len(SVGConverterRegistry.convert(Position(0, 0), line)) == 1
+
+        line.box.show = True
+        assert len(SVGConverterRegistry.convert(Position(0, 0), line)) == 2
