@@ -149,14 +149,15 @@ class LineDrawObject(DrawObject):
         start: Position = Position(0, 0),
         end: Position,
         color: str = "black",
-        thickness: float = 2,
+        thickness: float = 0.1,
     ):
         super().__init__()
         self.start = start
         self.end = end
         self.color = color
         self.thickness = thickness
-
+        self.right_padding = 0
+        self.bottom_padding = 0
 
     def _build_path(self, ctx: cairo.Context) -> None:
         """
@@ -186,7 +187,7 @@ class VerticalLineDrawObject(LineDrawObject):
         start: Position = Position(0, 0),
         length: float,
         color: str = "black",
-        thickness: float = 2,
+        thickness: float = 0.1,
     ):
         end = Position(start.x, start.y + length)
         super().__init__(
@@ -204,7 +205,7 @@ class HorizontalLineDrawObject(LineDrawObject):
         start: Position = Position(0, 0),
         length: float,
         color: str = "black",
-        thickness: float = 2,
+        thickness: float = 0.1,
     ):
         end = Position(start.x + length, start.y)
         super().__init__(
