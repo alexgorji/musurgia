@@ -5,16 +5,11 @@ import svg
 
 from musurgia.graphics.drawobject import (
     DrawObject,
-    LineDrawObject,
     Position,
-    TextDrawObject,
-    Container,
     Size,
 )
 from musurgia.graphics.svg.convertors import (
-    ConvertContainerToSVGElements,
-    ConvertLinDrawObjectToSVG,
-    ConvertTextDrawObjectToSVG,
+    SVGConverterRegistry,
 )
 
 type PageSize = Literal["A3", "A4", "A5"]
@@ -71,18 +66,8 @@ class Page:
             if svg_object.elements is None:
                 svg_object.elements = []
             for position, draw_object in self._draw_objects:
-                if isinstance(draw_object, Container):
-                    svg_object.elements.extend(
-                        ConvertContainerToSVGElements(position, draw_object).convert()
-                    )
-                elif isinstance(draw_object, TextDrawObject):
-                    svg_object.elements.append(
-                        ConvertTextDrawObjectToSVG(position, draw_object).convert()
-                    )
-                elif isinstance(draw_object, LineDrawObject):
-                    svg_object.elements.append(
-                        ConvertLinDrawObjectToSVG(position, draw_object).convert()
-                    )
-                else:
-                    raise TypeError
+                svg_object.elements.extend(
+                    SVGConverterRegistry.convert(position, draw_object)
+                )
+
         return svg_object.as_str()

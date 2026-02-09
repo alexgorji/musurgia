@@ -6,9 +6,10 @@ from musurgia.graphics.drawobject import (
     VerticalLineDrawObject,
     Position,
 )
-from musurgia.graphics.svg.convertors import ConvertContainerToSVGElements
 
 import svg
+
+from musurgia.graphics.svg.convertors import SVGConverterRegistry
 
 
 class ContainerTestCase(TestCase):
@@ -21,9 +22,7 @@ class ContainerTestCase(TestCase):
         parent_container = Container()
         parent_container.add_draw_object(Position(30, 30), container)
 
-        elements = ConvertContainerToSVGElements(
-            Position(50, 50), parent_container
-        ).convert()
+        elements = SVGConverterRegistry.convert(Position(50, 50), parent_container)
 
         for el in elements:
             assert isinstance(el, svg.Element)

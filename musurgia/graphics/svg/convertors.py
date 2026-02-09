@@ -1,18 +1,30 @@
-from typing import List
+from abc import ABC, abstractmethod
+from typing import Dict, Generic, TypeVar
 import svg
 from musurgia.graphics.drawobject import (
+    DrawObject,
+    HorizontalLineDrawObject,
     LineDrawObject,
     Position,
     TextDrawObject,
     Container,
+    VerticalLineDrawObject,
 )
 
+T = TypeVar("T", bound=DrawObject)
 
-class ConvertTextDrawObjectToSVG:
-    def __init__(self, position: Position, draw_object: TextDrawObject):
+
+class DrawObjectConvertor(ABC, Generic[T]):
+    def __init__(self, position: Position, draw_object: T):
         self.position = position
         self.draw_object = draw_object
 
+    @abstractmethod
+    def convert(self) -> svg.Element:
+        pass
+
+
+class TextDrawObjectToSVGConvertor(DrawObjectConvertor[TextDrawObject]):
     def get_font_size_mm(self):
         return self.draw_object.font_size * 25.4 / 72
 
@@ -27,11 +39,7 @@ class ConvertTextDrawObjectToSVG:
         )
 
 
-class ConvertLinDrawObjectToSVG:
-    def __init__(self, position: Position, draw_object: LineDrawObject):
-        self.position = position
-        self.draw_object = draw_object
-
+class LineDrawObjectToSVGConvertor(DrawObjectConvertor[LineDrawObject]):
     def convert(self):
         return svg.Line(
             x1=self.draw_object.start.x + self.position.x,
@@ -43,27 +51,37 @@ class ConvertLinDrawObjectToSVG:
         )
 
 
-class ConvertContainerToSVGElements:
-    def __init__(self, position: Position, container: Container):
-        self.position = position
-        self.container = container
+U = TypeVar("U", bound=DrawObject)
 
-    def convert(self) -> List[svg.Element]:
-        output = []
-        for position, draw_object in self.container.get_draw_objects():
-            position_sum = self.position + position
-            if isinstance(draw_object, Container):
-                output.extend(
-                    ConvertContainerToSVGElements(position_sum, draw_object).convert()
-                )
-            elif isinstance(draw_object, LineDrawObject):
-                output.append(
-                    ConvertLinDrawObjectToSVG(position_sum, draw_object).convert()
-                )
-            elif isinstance(draw_object, TextDrawObject):
-                output.append(
-                    ConvertTextDrawObjectToSVG(position_sum, draw_object).convert()
-                )
-            else:
-                raise TypeError
-        return output
+
+class SVGConverterRegistry:
+    _registry: Dict[type[DrawObject], type[DrawObjectConvertor]] = {}
+
+    @classmethod
+    def register(cls, draw_type: type[U], converter_cls: type[DrawObjectConvertor[U]]):
+        cls._registry[draw_type] = converter_cls
+
+    @classmethod
+    def convert(
+        cls,
+        position: Position,
+        draw_object: DrawObject | Container,
+    ) -> list[svg.Element]:
+        if isinstance(draw_object, Container):
+            elements: list[svg.Element] = []
+            for pos, obj in draw_object.get_draw_objects():
+                elements.extend(cls.convert(position + pos, obj))
+            return elements
+
+        try:
+            converter_cls = cls._registry[type(draw_object)]
+        except KeyError:
+            raise TypeError(f"No SVG converter for {type(draw_object)}")
+
+        return [converter_cls(position, draw_object).convert()]
+
+
+SVGConverterRegistry.register(LineDrawObject, LineDrawObjectToSVGConvertor)
+SVGConverterRegistry.register(HorizontalLineDrawObject, LineDrawObjectToSVGConvertor)
+SVGConverterRegistry.register(VerticalLineDrawObject, LineDrawObjectToSVGConvertor)
+SVGConverterRegistry.register(TextDrawObject, TextDrawObjectToSVGConvertor)
