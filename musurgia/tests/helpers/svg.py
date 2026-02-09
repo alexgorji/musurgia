@@ -40,7 +40,12 @@ class SVGTestCase(unittest.TestCase):
         return test_file_path.parent / f"{test_file_path.stem}_{post_fix}.{extension}"
 
     def compare_svg_to_png(
-        self, svg_path: Path, png_path: Path, width=400, height=400, tolerance=0.0
+        self,
+        svg_path: Path,
+        png_path: Path,
+        width=int(210 * 96 / 25.4),
+        height=int(297 * 96 / 25.4),
+        tolerance=0.0,
     ):
         rendered_png_path = svg_path.with_suffix(".rendered.png")
         cairosvg.svg2png(
@@ -119,17 +124,27 @@ class SVGTestCase(unittest.TestCase):
 
         return percentage_diff, images_are_same, tolerance
 
-    def compare_page(self, page: Page, post_fix: str, this_path: Path, tolerance=0.0):
+    def compare_page(
+        self,
+        page: Page,
+        post_fix: str,
+        this_path: Path,
+        width=None,
+        height=None,
+        tolerance=0.0,
+    ):
         svg_path = SVG(page.convert_to_svg_string()).write_to_path(
             self.create_test_path(this_path, post_fix, "svg")
         )
 
         png_path = self.create_test_path(this_path, post_fix, "png", "golden_pngs")
+        width = width or int(page.layout.get_size().width * 96 / 25.4)
+        height = height or int(page.layout.get_size().height * 96 / 25.4)
 
         self.compare_svg_to_png(
             svg_path,
             png_path,
-            page.layout.get_size().width,
-            page.layout.get_size().height,
+            width,
+            height,
             tolerance=tolerance,
         )
