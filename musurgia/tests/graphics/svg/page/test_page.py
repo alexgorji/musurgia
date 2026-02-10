@@ -134,3 +134,15 @@ class PageToSVGRegressionTests(SVGTestCase):
             page, "boxed_rectangle", this_path, width=210 * 2, height=297 * 2
         )
 
+    def test_boxed_text(self):
+        page = Page()
+        t1 = TextDrawObject(
+            text="The quick Brown fox Jumps over The lazy Dog",
+            color="blue",
+            font_size=20,
+        )
+
+        t1.box.show = True
+        page.add_draw_object(Position(50, 50), t1)
+
+        self.compare_page(page, "boxed_text", this_path, width=210 * 2, height=297 * 2)

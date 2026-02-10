@@ -165,6 +165,10 @@ class TextDrawObject(DrawObject):
         self._font_size = font_size
         self._color = color
 
+    @staticmethod
+    def convert_font_size_to_mm(font_size):
+        return font_size * 25.4 / 72
+
     @property
     def text(self):
         return self._text
@@ -198,13 +202,17 @@ class TextDrawObject(DrawObject):
 
     @property
     def size(self) -> Size:
+        ext = self.get_text_extents()
+        return Size(width=ext.width, height=ext.height)
+
+    def get_text_extents(self) -> cairo.TextExtents:
         ctx = self._get_measure_ctx()
         ctx.save()
         ctx.select_font_face(self.font_family)
-        ctx.set_font_size(self.font_size)
+        ctx.set_font_size(self.convert_font_size_to_mm(self.font_size))
         ext = ctx.text_extents(self.text)
         ctx.restore()
-        return Size(width=ext.width, height=ext.height)
+        return ext
 
     def _get_padding(self):
         return Padding(

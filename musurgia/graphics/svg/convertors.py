@@ -31,15 +31,16 @@ class DrawObjectConvertor(ABC, Generic[T]):
 
 
 class TextDrawObjectToSVGConvertor(DrawObjectConvertor[TextDrawObject]):
-    def get_font_size_mm(self):
-        return self.draw_object.font_size * 25.4 / 72
 
     def convert(self):
+        ext = self.draw_object.get_text_extents()
         return svg.Text(
             x=self.draw_object.start.x + self.position.x,
-            y=self.draw_object.start.y + self.position.y,
+            y=self.draw_object.start.y + self.position.y - ext.y_bearing,
             text=self.draw_object.text,
-            font_size=self.get_font_size_mm(),
+            font_size=TextDrawObject.convert_font_size_to_mm(
+                self.draw_object.font_size
+            ),
             font_family=self.draw_object.font_family,
             fill=self.draw_object.color,
         )

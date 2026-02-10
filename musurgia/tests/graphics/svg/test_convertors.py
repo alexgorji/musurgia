@@ -23,7 +23,7 @@ class ConvertTextDrawObjectToSVGTestCase(TestCase):
         )
         root = ET.fromstring(svg_str)
         assert root.attrib["x"] == "0"
-        assert root.attrib["y"] == "0"
+        assert root.attrib["y"] == "3.0468424479166663"
         assert root.attrib["font-family"] == draw_object.font_family
         assert round(float(root.attrib["font-size"]), 4) == 4.2333
 
