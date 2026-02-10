@@ -114,16 +114,23 @@ class PageToSVGRegressionTests(SVGTestCase):
 
         self.compare_page(page, "add_rectangle", this_path, width=210, height=297)
 
-    def test_show_box(self):
+    def test_boxed_rectangle(self):
         page = Page()
-        r = RectangleDrawObject(
+        r1 = RectangleDrawObject(size=Size(30, 40), color="blue", thickness=5)
+
+        r2 = RectangleDrawObject(
             size=Size(30, 40),
             color="blue",
             thickness=1,
             padding=Padding(10, 20, 30, 40),
         )
-        r.box.show = True
+        r1.box.show = True
+        r2.box.show = True
 
-        page.add_draw_object(Position(50, 50), r)
+        page.add_draw_object(Position(50, 50), r1)
+        page.add_draw_object(Position(50, 150), r2)
 
-        self.compare_page(page, "show_box", this_path, width=210, height=297)
+        self.compare_page(
+            page, "boxed_rectangle", this_path, width=210 * 2, height=297 * 2
+        )
+
