@@ -53,20 +53,63 @@ class PageToSVGRegressionTests(SVGTestCase):
         page = Page()
         self.compare_page(page, "empty_page", this_path)
 
-    def test_add_draw_object_to_page(self):
+    def test_add_text_draw_object_to_page(self):
         page = Page()
-        page.add_draw_object(
-            Position(0, 0),
-            TextDrawObject(
-                text="some text",
-                start=Position(10, 20),
-                color="blue",
-            ),
+        t1 = TextDrawObject(
+            text="The quick Brown fox Jumps over The lazy Dog",
+            color="blue",
+            font_size=12,
         )
 
-        self.compare_page(page, "add_text", this_path, width=210, height=297)
+        t1.box.show = True
+        page.add_draw_object(Position(30, 50), t1)
 
-    def test_add_line_draw_objects_to_page(self):
+        t2 = TextDrawObject(
+            text="The quick Brown fox Jumps over The lazy Dog",
+            color="red",
+            start=Position(10, 20),
+            font_size=12,
+        )
+        t2.box.show = True
+        page.add_draw_object(Position(30, 100), t2)
+
+        t3 = TextDrawObject(
+            text="The quick Brown fox Jumps over The lazy Dog",
+            color="orange",
+            start=Position(10, 20),
+            font_size=15,
+            right_padding=30,
+            bottom_padding=40,
+        )
+        t3.box.show = True
+        page.add_draw_object(Position(30, 180), t3)
+
+        self.compare_page(
+            page, "add_text_draw_object", this_path, width=210 * 2, height=297 * 2
+        )
+
+    def test_add_line_draw_object_to_page(self):
+        page = Page()
+        l1 = LineDrawObject(end=Position(30, 40), color="blue", thickness=2)
+        l1.box.show = True
+
+        page.add_draw_object(Position(30, 30), l1)
+
+        l2 = HorizontalLineDrawObject(length=20, color="gray", thickness=2)
+        l2.box.show = True
+
+        page.add_draw_object(Position(30, 100), l2)
+
+        l3 = VerticalLineDrawObject(length=20, color="gray", thickness=2)
+        l3.box.show = True
+
+        page.add_draw_object(Position(30, 150), l3)
+
+        self.compare_page(
+            page, "add_line_draw_objects", this_path, width=210, height=297
+        )
+
+    def test_add_multiple_line_draw_objects_to_page(self):
         page = Page()
         draw_objects = [
             HorizontalLineDrawObject(
@@ -84,7 +127,7 @@ class PageToSVGRegressionTests(SVGTestCase):
             page.add_draw_object(Position(0, 0), draw_object)
 
         self.compare_page(
-            page, "add_line_draw_objects", this_path, width=210, height=297
+            page, "add_multiple_line_draw_objects", this_path, width=210, height=297
         )
 
     def test_add_nested_container_to_page(self):
@@ -133,16 +176,3 @@ class PageToSVGRegressionTests(SVGTestCase):
         self.compare_page(
             page, "boxed_rectangle", this_path, width=210 * 2, height=297 * 2
         )
-
-    def test_boxed_text(self):
-        page = Page()
-        t1 = TextDrawObject(
-            text="The quick Brown fox Jumps over The lazy Dog",
-            color="blue",
-            font_size=20,
-        )
-
-        t1.box.show = True
-        page.add_draw_object(Position(50, 50), t1)
-
-        self.compare_page(page, "boxed_text", this_path, width=210 * 2, height=297 * 2)

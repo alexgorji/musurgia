@@ -1,4 +1,5 @@
 from unittest import TestCase
+
 from musurgia.graphics.drawobject import (
     Container,
     HorizontalLineDrawObject,
@@ -37,6 +38,14 @@ class LineDrawObjectTestCase(TestCase):
         )
         assert line.padding == Padding(30, 40, 50, 20)
 
+    def test_horizontal_line_size(self):
+        hl = HorizontalLineDrawObject(length=10, thickness=2)
+        assert hl.size == Size(10, 2)
+
+    def test_vertical_line_size(self):
+        vl = VerticalLineDrawObject(length=10, thickness=2)
+        assert vl.size == Size(2, 10)
+
 
 class TextDrawObjectTestCase(TestCase):
 
@@ -56,22 +65,6 @@ class RectangleDrawObjectTestCase(TestCase):
 
 
 class DrawObjectBoxTestCase(TestCase):
-    def test_line_draw_object(self):
-        line = LineDrawObject(end=Position(20, 30))
-        assert line.box.size == Size(20, 30)
-
-        line = LineDrawObject(start=Position(20, 30), end=Position(40, 60))
-        assert line.size == Size(20, 30)
-        assert line.box.size == Size(40, 60)
-
-        line = LineDrawObject(
-            start=Position(20, 30),
-            end=Position(40, 60),
-            right_padding=50,
-            bottom_padding=100,
-        )
-
-        assert line.box.size == Size(90, 160)
 
     def test_box_rectangle(self):
         line = LineDrawObject(
@@ -94,4 +87,4 @@ class ContainerTestCase(TestCase):
         container.add_draw_object(Position(20, 40), hl).add_draw_object(
             Position(20, 37), marker_1
         ).add_draw_object(Position(40, 37), marker_2)
-        assert container.size == Size(40, 43)
+        assert container.size == Size(41, 43)

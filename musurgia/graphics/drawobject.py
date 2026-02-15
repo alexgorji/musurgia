@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+import math
 from typing import List, Tuple
 import cairo
 
@@ -38,6 +39,14 @@ class Padding:
     left: float
 
 
+@dataclass(frozen=True)
+class Coordinates:
+    tl: Position
+    tr: Position
+    br: Position
+    bl: Position
+
+
 class DrawObjectBox:
     def __init__(self, draw_object: "DrawObject", show=False):
         self._draw_object = draw_object
@@ -70,7 +79,6 @@ class DrawObjectBox:
 class DrawObject(ABC):
     def __init__(self) -> None:
         self._box = DrawObjectBox(self)
-        self._measure_ctx: cairo.Context | None = None
 
     @property
     @abstractmethod
@@ -85,14 +93,12 @@ class DrawObject(ABC):
     def padding(self) -> Padding:
         return self._get_padding()
 
-    def _get_measure_ctx(self) -> cairo.Context:
-        if self._measure_ctx is None:
-            self._measure_ctx = create_measure_context()
-        return self._measure_ctx
-
     @abstractmethod
     def _get_padding(self) -> Padding:
         pass
+
+    def get_bounding_box_coordinates(self) -> Coordinates | None:
+        return None
 
 
 # -----------------------------
@@ -206,7 +212,7 @@ class TextDrawObject(DrawObject):
         return Size(width=ext.width, height=ext.height)
 
     def get_text_extents(self) -> cairo.TextExtents:
-        ctx = self._get_measure_ctx()
+        ctx = create_measure_context()
         ctx.save()
         ctx.select_font_face(self.font_family)
         ctx.set_font_size(self.convert_font_size_to_mm(self.font_size))
@@ -234,7 +240,6 @@ class LineDrawObject(DrawObject):
         color: str = "black",
         thickness: float = 0.1,
     ):
-        super().__init__()
         super().__init__()
         self._start = start
         self._end = end
@@ -273,16 +278,6 @@ class LineDrawObject(DrawObject):
     def set_thickness(self, val):
         self._thickness = val
 
-    def _build_path(self, ctx: cairo.Context) -> None:
-        """
-        Prepares the path in the Cairo context for this line.
-        Does NOT stroke or fill.
-        """
-        ctx.new_path()
-        ctx.set_line_width(self.thickness)
-        ctx.move_to(self.start.x, self.start.y)
-        ctx.line_to(self.end.x, self.end.y)
-
     def _get_padding(self):
         return Padding(
             top=self.start.y,
@@ -291,26 +286,98 @@ class LineDrawObject(DrawObject):
             left=self.start.x,
         )
 
+    def get_bounding_box_coordinates(self) -> Coordinates:
+        x1, y1 = self.start.x, self.start.y
+
+        x2, y2 = self.end.x, self.end.y
+
+        # vector
+        dx = x2 - x1
+        dy = y2 - y1
+        length = math.hypot(dx, dy)
+
+        if length == 0:
+            raise ValueError()
+
+        # normalized direction vector (length 1)
+        ux = dx / length
+        uy = dy / length
+
+        # unit normal vector(orthogonal)
+        nx = -uy
+        ny = ux
+
+        half_th = self.thickness / 2
+
+        # corners of the rotated rectangle"
+        p1 = (x1 + nx * half_th, y1 + ny * half_th)
+        p2 = (x1 - nx * half_th, y1 - ny * half_th)
+        p3 = (x2 + nx * half_th, y2 + ny * half_th)
+        p4 = (x2 - nx * half_th, y2 - ny * half_th)
+
+        xs = [p1[0], p2[0], p3[0], p4[0]]
+        ys = [p1[1], p2[1], p3[1], p4[1]]
+
+        xmin = min(xs)
+        xmax = max(xs)
+        ymin = min(ys)
+        ymax = max(ys)
+
+        return Coordinates(
+            Position(xmin, ymin),
+            Position(xmax, ymin),
+            Position(xmax, ymax),
+            Position(xmin, ymax),
+        )
+
     @property
     def size(self):
-        ctx = self._get_measure_ctx()
-        ctx.save()
-        self._build_path(ctx)
-        x1, y1, x2, y2 = ctx.path_extents()
-        ctx.restore()
-        return Size(width=x2 - x1, height=y2 - y1)
+        coor = self.get_bounding_box_coordinates()
+        return Size(coor.tr.x - coor.tl.x, coor.bl.y - coor.tl.y)
 
 
 class VerticalLineDrawObject(LineDrawObject):
-    def __init__(self, *, start: Position = Position(0, 0), length: float, **kwargs):
+    def __init__(
+        self,
+        *,
+        start: Position = Position(0, 0),
+        length: float,
+        color: str = "black",
+        thickness: float = 0.1,
+        right_padding=0,
+        bottom_padding=0,
+    ):
         end = Position(start.x, start.y + length)
-        super().__init__(start=start, end=end, **kwargs)
+        super().__init__(
+            start=start,
+            end=end,
+            color=color,
+            thickness=thickness,
+            right_padding=right_padding,
+            bottom_padding=bottom_padding,
+        )
 
 
 class HorizontalLineDrawObject(LineDrawObject):
-    def __init__(self, *, start: Position = Position(0, 0), length: float, **kwargs):
+    def __init__(
+        self,
+        *,
+        start: Position = Position(0, 0),
+        length: float,
+        color: str = "black",
+        thickness: float = 0.1,
+        right_padding=0,
+        bottom_padding=0,
+    ):
         end = Position(start.x + length, start.y)
-        super().__init__(start=start, end=end, **kwargs)
+        super().__init__(
+            start=start,
+            end=end,
+            color=color,
+            thickness=thickness,
+            right_padding=right_padding,
+            bottom_padding=bottom_padding,
+        )
 
 
 class RectangleDrawObject(DrawObject):
