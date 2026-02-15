@@ -20,7 +20,7 @@ class DrawObjectConvertor(ABC, Generic[T]):
         self.position = position
         self.draw_object = draw_object
 
-    def convert_box(self):
+    def _convert_box(self):
         position = self.position
         if coor := self.draw_object.get_bounding_box_coordinates():
             position += coor.tl
@@ -30,49 +30,69 @@ class DrawObjectConvertor(ABC, Generic[T]):
         ).convert()
 
     @abstractmethod
-    def convert(self) -> svg.Element:
+    def _convert(self) -> list[svg.Element]:
         pass
+
+    def convert(self) -> list[svg.Element]:
+        if self.draw_object.box.show:
+            return self._convert() + (self._convert_box())
+
+        return self._convert()
 
 
 class TextDrawObjectToSVGConvertor(DrawObjectConvertor[TextDrawObject]):
 
-    def convert(self):
+    def _convert(self) -> list[svg.Element]:
         ext = self.draw_object.get_text_extents()
-        return svg.Text(
-            x=self.draw_object.start.x + self.position.x,
-            y=self.draw_object.start.y + self.position.y - ext.y_bearing,
-            text=self.draw_object.text,
-            font_size=TextDrawObject.convert_font_size_to_mm(
-                self.draw_object.font_size
-            ),
-            font_family=self.draw_object.font_family,
-            fill=self.draw_object.color,
-        )
+        return [
+            svg.Text(
+                x=self.draw_object.start.x + self.position.x,
+                y=self.draw_object.start.y + self.position.y - ext.y_bearing,
+                text=self.draw_object.text,
+                font_size=TextDrawObject.convert_font_size_to_mm(
+                    self.draw_object.font_size
+                ),
+                font_family=self.draw_object.font_family,
+                fill=self.draw_object.color,
+            )
+        ]
 
 
 class LineDrawObjectToSVGConvertor(DrawObjectConvertor[LineDrawObject]):
-    def convert(self):
-        return svg.Line(
-            x1=self.draw_object.start.x + self.position.x,
-            y1=self.draw_object.start.y + self.position.y,
-            x2=self.draw_object.end.x + self.position.x,
-            y2=self.draw_object.end.y + self.position.y,
-            stroke=self.draw_object.color,
-            stroke_width=self.draw_object.thickness,
-        )
+    def _convert(self) -> list[svg.Element]:
+        return [
+            svg.Line(
+                x1=self.draw_object.start.x + self.position.x,
+                y1=self.draw_object.start.y + self.position.y,
+                x2=self.draw_object.end.x + self.position.x,
+                y2=self.draw_object.end.y + self.position.y,
+                stroke=self.draw_object.color,
+                stroke_width=self.draw_object.thickness,
+            )
+        ]
 
 
 class RectangleDrawObjectToSVGConvertor(DrawObjectConvertor[RectangleDrawObject]):
-    def convert(self):
-        return svg.Rect(
-            x=self.position.x + self.draw_object.padding.left,
-            y=self.position.y + self.draw_object.padding.top,
-            width=self.draw_object.size.width,
-            height=self.draw_object.size.height,
-            stroke=self.draw_object.color,
-            fill="transparent",
-            stroke_width=self.draw_object.thickness,
-        )
+    def _convert(self) -> list[svg.Element]:
+        return [
+            svg.Rect(
+                x=self.position.x + self.draw_object.padding.left,
+                y=self.position.y + self.draw_object.padding.top,
+                width=self.draw_object.size.width,
+                height=self.draw_object.size.height,
+                stroke=self.draw_object.color,
+                fill="transparent",
+                stroke_width=self.draw_object.thickness,
+            )
+        ]
+
+
+class ContainerToSVGConvertor(DrawObjectConvertor[Container]):
+    def _convert(self) -> list[svg.Element]:
+        elements: list[svg.Element] = []
+        for pos, child in self.draw_object.get_draw_objects():
+            elements.extend(SVGConverterRegistry.convert(self.position + pos, child))
+        return elements
 
 
 U = TypeVar("U", bound=DrawObject)
@@ -86,26 +106,15 @@ class SVGConverterRegistry:
         cls._registry[draw_type] = converter_cls
 
     @classmethod
-    def convert(
-        cls,
-        position: Position,
-        draw_object: DrawObject | Container,
-    ) -> list[svg.Element]:
-        if isinstance(draw_object, Container):
-            elements: list[svg.Element] = []
-            for pos, obj in draw_object.get_draw_objects():
-                elements.extend(cls.convert(position + pos, obj))
-            return elements
-
+    def convert(cls, position: Position, draw_object: DrawObject) -> list[svg.Element]:
         try:
             converter_cls = cls._registry[type(draw_object)]
         except KeyError:
             raise TypeError(f"No SVG converter for {type(draw_object)}")
 
         converter = converter_cls(position, draw_object)
-        converted = [converter.convert()]
-        if draw_object.box.show:
-            converted.append(converter.convert_box())
+        converted = converter.convert()
+
         return converted
 
 
@@ -114,3 +123,4 @@ SVGConverterRegistry.register(HorizontalLineDrawObject, LineDrawObjectToSVGConve
 SVGConverterRegistry.register(VerticalLineDrawObject, LineDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(TextDrawObject, TextDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(RectangleDrawObject, RectangleDrawObjectToSVGConvertor)
+SVGConverterRegistry.register(Container, ContainerToSVGConvertor)

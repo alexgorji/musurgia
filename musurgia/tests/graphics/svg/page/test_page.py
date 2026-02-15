@@ -176,3 +176,34 @@ class PageToSVGRegressionTests(SVGTestCase):
         self.compare_page(
             page, "boxed_rectangle", this_path, width=210 * 2, height=297 * 2
         )
+
+    def test_add_container(self):
+        page = Page()
+        container = Container()
+
+        l1 = LineDrawObject(end=Position(20, 40), color="blue", thickness=2)
+
+        r1 = RectangleDrawObject(
+            size=Size(30, 40),
+            color="blue",
+            thickness=1,
+            padding=Padding(2, 4, 6, 8),
+        )
+
+        t1 = TextDrawObject(
+            text="I am in a container",
+            color="red",
+            font_size=12,
+        )
+
+        positions = [Position(0, 0), Position(0, 50), Position(0, 100)]
+        for p, o in zip(positions, [l1, r1, t1]):
+            o.box.show = True
+            container.add_draw_object(p, o)
+
+        container.box.show = True
+        page.add_draw_object(Position(10, 10), container)
+
+        self.compare_page(
+            page, "add_container", this_path, width=210 * 2, height=297 * 2
+        )

@@ -19,7 +19,9 @@ class ConvertTextDrawObjectToSVGTestCase(TestCase):
     def test_convertor(self):
         draw_object = TextDrawObject(text="something")
         svg_str = (
-            TextDrawObjectToSVGConvertor(Position(0, 0), draw_object).convert().as_str()
+            TextDrawObjectToSVGConvertor(Position(0, 0), draw_object)
+            .convert()[0]
+            .as_str()
         )
         root = ET.fromstring(svg_str)
         assert root.attrib["x"] == "0"
