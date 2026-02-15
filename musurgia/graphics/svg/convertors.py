@@ -46,7 +46,7 @@ class TextDrawObjectToSVGConvertor(DrawObjectConvertor[TextDrawObject]):
         ext = self.draw_object.get_text_extents()
         return [
             svg.Text(
-                x=self.draw_object.start.x + self.position.x,
+                x=self.draw_object.start.x + self.position.x - ext.x_bearing,
                 y=self.draw_object.start.y + self.position.y - ext.y_bearing,
                 text=self.draw_object.text,
                 font_size=TextDrawObject.convert_font_size_to_mm(
