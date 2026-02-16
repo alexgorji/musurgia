@@ -73,12 +73,13 @@ class LineDrawObjectToSVGConvertor(DrawObjectConvertor[LineDrawObject]):
 
 class RectangleDrawObjectToSVGConvertor(DrawObjectConvertor[RectangleDrawObject]):
     def _convert(self) -> list[svg.Element]:
+        th = self.draw_object.thickness
         return [
             svg.Rect(
-                x=self.position.x + self.draw_object.padding.left,
-                y=self.position.y + self.draw_object.padding.top,
-                width=self.draw_object.size.width,
-                height=self.draw_object.size.height,
+                x=self.position.x + self.draw_object.padding.left + th / 2,
+                y=self.position.y + self.draw_object.padding.top + th / 2,
+                width=self.draw_object.size.width - th,
+                height=self.draw_object.size.height - th,
                 stroke=self.draw_object.color,
                 fill="transparent",
                 stroke_width=self.draw_object.thickness,
