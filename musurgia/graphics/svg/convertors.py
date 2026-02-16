@@ -22,8 +22,7 @@ class DrawObjectConvertor(ABC, Generic[T]):
 
     def _convert_box(self):
         position = self.position
-        if coor := self.draw_object.get_bounding_box_coordinates():
-            position += coor.tl
+        position += self.draw_object.get_bounding_box_coordinates().tl
         return RectangleDrawObjectToSVGConvertor(
             position,
             self.draw_object.box.get_rectangle(),

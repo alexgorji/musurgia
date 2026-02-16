@@ -23,10 +23,20 @@ class LineDrawObjectTestCase(TestCase):
         hl = VerticalLineDrawObject(start=Position(20, 30), length=10)
         assert hl.end.x, hl.end.y == (20, 40)
 
-    def test_line_padding(self):
-        line = LineDrawObject(end=Position(20, 30))
+    def test_default_line_padding(self):
+        line = LineDrawObject(end=Position(30, 40))
         assert line.padding == Padding(0, 0, 0, 0)
 
+        line = LineDrawObject(start=Position(0, 40), end=Position(30, 0))
+        assert line.padding == Padding(0, 0, 0, 0)
+
+        line = LineDrawObject(start=Position(30, 40), end=Position(0, 0))
+        assert line.padding == Padding(0, 0, 0, 0)
+
+        line = LineDrawObject(start=Position(30, 0), end=Position(0, 40))
+        assert line.padding == Padding(0, 0, 0, 0)
+
+    def test_line_padding(self):
         line = LineDrawObject(start=Position(20, 30), end=Position(40, 60))
         assert line.padding == Padding(30, 0, 0, 20)
 
@@ -45,6 +55,28 @@ class LineDrawObjectTestCase(TestCase):
     def test_vertical_line_size(self):
         vl = VerticalLineDrawObject(length=10, thickness=2)
         assert vl.size == Size(2, 10)
+
+    def test_line_size(self):
+        l1 = LineDrawObject(start=Position(0, 40), end=Position(30, 0))
+        self.assertAlmostEqual(l1.size.width, 30, delta=0.5)
+        self.assertAlmostEqual(l1.size.height, 40, delta=0.5)
+
+    def test_line_get_bounding_box_coordinates(self):
+        l1 = LineDrawObject(start=Position(0, 40), end=Position(30, 0))
+        coors = l1.get_bounding_box_coordinates()
+        self.assertAlmostEqual(coors.tl.x, 0, delta=0.5)
+        self.assertAlmostEqual(coors.tl.y, 0, delta=0.5)
+        self.assertAlmostEqual(coors.tr.x, 30, delta=0.5)
+        self.assertAlmostEqual(coors.tr.y, 0, delta=0.5)
+        self.assertAlmostEqual(coors.br.x, 30, delta=0.5)
+        self.assertAlmostEqual(coors.br.y, 40, delta=0.5)
+        self.assertAlmostEqual(coors.bl.x, 0, delta=0.5)
+        self.assertAlmostEqual(coors.bl.y, 40, delta=0.5)
+
+    def test_line_box_size(self):
+        l1 = LineDrawObject(start=Position(0, 40), end=Position(30, 0))
+        self.assertAlmostEqual(l1.box.size.width, 30, delta=0.5)
+        self.assertAlmostEqual(l1.box.size.height, 40, delta=0.5)
 
 
 class TextDrawObjectTestCase(TestCase):
@@ -87,4 +119,4 @@ class ContainerTestCase(TestCase):
         container.add_draw_object(Position(20, 40), hl).add_draw_object(
             Position(20, 37), marker_1
         ).add_draw_object(Position(40, 37), marker_2)
-        assert container.size == Size(41, 43)
+        assert container.size == Size(40.5, 43)

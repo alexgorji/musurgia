@@ -90,20 +90,24 @@ class PageToSVGRegressionTests(SVGTestCase):
 
     def test_add_line_draw_object_to_page(self):
         page = Page()
+
         l1 = LineDrawObject(end=Position(30, 40), color="blue", thickness=2)
         l1.box.show = True
-
         page.add_draw_object(Position(30, 30), l1)
 
         l2 = HorizontalLineDrawObject(length=20, color="gray", thickness=2)
         l2.box.show = True
-
         page.add_draw_object(Position(30, 100), l2)
 
         l3 = VerticalLineDrawObject(length=20, color="gray", thickness=2)
         l3.box.show = True
-
         page.add_draw_object(Position(30, 150), l3)
+
+        l4 = LineDrawObject(
+            start=Position(0, 40), end=Position(30, 0), color="orange", thickness=2
+        )
+        l4.box.show = True
+        page.add_draw_object(Position(130, 30), l4)
 
         self.compare_page(
             page, "add_line_draw_objects", this_path, width=210, height=297
@@ -182,6 +186,9 @@ class PageToSVGRegressionTests(SVGTestCase):
         container = Container()
 
         l1 = LineDrawObject(end=Position(20, 40), color="blue", thickness=2)
+        l2 = LineDrawObject(
+            start=Position(0, 40), end=Position(20, 0), color="orange", thickness=2
+        )
 
         r1 = RectangleDrawObject(
             size=Size(30, 40),
@@ -196,12 +203,18 @@ class PageToSVGRegressionTests(SVGTestCase):
             font_size=12,
         )
 
-        positions = [Position(0, 0), Position(0, 50), Position(0, 100)]
-        for p, o in zip(positions, [l1, r1, t1]):
+        positions = [
+            Position(0, 0),
+            Position(0, 50),
+            Position(0, 100),
+            Position(60, 150),
+        ]
+        for p, o in zip(positions, [l1, r1, t1, l2]):
             o.box.show = True
             container.add_draw_object(p, o)
 
         container.box.show = True
+        print(container.get_bounding_box_coordinates())
         page.add_draw_object(Position(10, 10), container)
 
         self.compare_page(

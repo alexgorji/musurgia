@@ -25,8 +25,8 @@ class Position:
         return Position(self.x + other.x, self.y + other.y)
 
     @staticmethod
-    def from_values(values: Tuple[float, float]):
-        return Position(values[0], values[1])
+    def from_values(x: float, y: float):
+        return Position(x, y)
 
 
 @dataclass(frozen=True)
@@ -64,10 +64,9 @@ class DrawObjectBox:
     @property
     def size(self):
         do = self.draw_object
-        if coor := self.draw_object.get_bounding_box_coordinates():
-            width, height = coor.tr.x - coor.tl.x, coor.bl.y - coor.tl.y
-        else:
-            width, height = do.size.width, do.size.height
+        coor = self.draw_object.get_bounding_box_coordinates()
+        width, height = coor.tr.x - coor.tl.x, coor.bl.y - coor.tl.y
+
         return Size(
             width + do.padding.right + do.padding.left,
             height + do.padding.top + do.padding.bottom,
@@ -104,8 +103,9 @@ class DrawObject(ABC):
     def _get_padding(self) -> Padding:
         pass
 
-    def get_bounding_box_coordinates(self) -> Coordinates | None:
-        return None
+    @abstractmethod
+    def get_bounding_box_coordinates(self) -> Coordinates:
+        pass
 
 
 # -----------------------------
@@ -133,55 +133,40 @@ class Container(DrawObject):
 
     @property
     def size(self):
-        return Size(self._get_width(), self._get_height())
-
-    def _get_width(self):
-        w = 0.0
-        for position, draw_object in self._draw_objects:
-            x2 = position.x + draw_object.box.size.width
-            if x2 > w:
-                w = x2
-        return w
-
-    def _get_height(self):
-        h = 0.0
-        for position, draw_object in self._draw_objects:
-            y2 = position.y + draw_object.box.size.height
-            if y2 > h:
-                h = y2
-        return h
+        coor = self.get_bounding_box_coordinates()
+        return Size(coor.tr.x - coor.tl.x, coor.bl.y - coor.tl.y)
 
     def get_bounding_box_coordinates(self):
         tl, tr, br, bl = [
-            [0, 0],
-            [self.size.width, 0],
-            [self.size.width, self.size.height],
-            [0, self.size.height],
+            [0.0, 0.0],
+            [0.0, 0.0],
+            [0.0, 0.0],
+            [0.0, 0.0],
         ]
-        for _, do in self.get_draw_objects():
-            if coor := do.get_bounding_box_coordinates():
-                if coor.tl.x < tl[0]:
-                    tl[0] = coor.tl.x
-                if coor.tl.y < tl[1]:
-                    tl[1] = coor.tl.y
-                if coor.tr.x > tr[0]:
-                    tr[0] = coor.tr.x
-                if coor.tr.y < tr[1]:
-                    tr[1] = coor.tr.y
-                if coor.br.x > br[0]:
-                    br[0] = coor.br.x
-                if coor.br.y > br[1]:
-                    br[1] = coor.br.y
-                if coor.bl.x < bl[0]:
-                    bl[0] = coor.bl.x
-                if coor.bl.y > bl[1]:
-                    bl[1] = coor.bl.y
+        for p, d in self.get_draw_objects():
+            coor = d.get_bounding_box_coordinates()
+            if coor.tl.x + p.x < tl[0]:
+                tl[0] = coor.tl.x + p.x
+            if coor.tl.y + p.y < tl[1]:
+                tl[1] = coor.tl.y + p.y
+            if coor.tr.x + p.x > tr[0]:
+                tr[0] = coor.tr.x + p.x
+            if coor.tr.y + p.y < tr[1]:
+                tr[1] = coor.tr.y + p.y
+            if coor.br.x + p.x > br[0]:
+                br[0] = coor.br.x + p.x
+            if coor.br.y + p.y > br[1]:
+                br[1] = coor.br.y + p.y
+            if coor.bl.x + p.x < bl[0]:
+                bl[0] = coor.bl.x + p.x
+            if coor.bl.y + p.y > bl[1]:
+                bl[1] = coor.bl.y + p.y
 
         return Coordinates(
-            Position.from_values(tuple(tl)),
-            Position.from_values(tuple(tr)),
-            Position.from_values(tuple(br)),
-            Position.from_values(tuple(bl)),
+            Position.from_values(*tl),
+            Position.from_values(*tr),
+            Position.from_values(*br),
+            Position.from_values(*bl),
         )
 
 
@@ -269,6 +254,14 @@ class TextDrawObject(DrawObject):
             left=self.start.x,
         )
 
+    def get_bounding_box_coordinates(self) -> Coordinates:
+        return Coordinates(
+            Position(0, 0),
+            Position(self.size.width, 0),
+            Position(self.size.width, self.size.height),
+            Position(0, self.size.height),
+        )
+
 
 class LineDrawObject(DrawObject):
     def __init__(
@@ -321,10 +314,10 @@ class LineDrawObject(DrawObject):
 
     def _get_padding(self):
         return Padding(
-            top=self.start.y,
+            top=min(self.start.y, self.end.y),
             right=self.right_padding,
             bottom=self.bottom_padding,
-            left=self.start.x,
+            left=min(self.start.x, self.end.x),
         )
 
     def get_bounding_box_coordinates(self) -> Coordinates:
@@ -456,3 +449,11 @@ class RectangleDrawObject(DrawObject):
 
     def set_thickness(self, val):
         self._thickness = val
+
+    def get_bounding_box_coordinates(self) -> Coordinates:
+        return Coordinates(
+            Position(0, 0),
+            Position(self.size.width, 0),
+            Position(self.size.width, self.size.height),
+            Position(0, self.size.height),
+        )
