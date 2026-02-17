@@ -78,6 +78,13 @@ class LineDrawObjectTestCase(TestCase):
         self.assertAlmostEqual(l1.box.size.width, 30, delta=0.5)
         self.assertAlmostEqual(l1.box.size.height, 40, delta=0.5)
 
+    def test_get_length(self):
+        l1 = LineDrawObject(start=Position(0, 40), end=Position(30, 0))
+        assert l1.get_length() == 50
+
+        vl = VerticalLineDrawObject(length=10, thickness=2)
+        assert vl.get_length() == 10
+
 
 class TextDrawObjectTestCase(TestCase):
 

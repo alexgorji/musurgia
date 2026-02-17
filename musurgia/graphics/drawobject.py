@@ -369,6 +369,9 @@ class LineDrawObject(DrawObject):
         coor = self.get_bounding_box_coordinates()
         return Size(coor.tr.x - coor.tl.x, coor.bl.y - coor.tl.y)
 
+    def get_length(self):
+        return math.hypot(self.end.x - self.start.x, self.end.y - self.start.y)
+
 
 class VerticalLineDrawObject(LineDrawObject):
     def __init__(
