@@ -108,6 +108,19 @@ class DrawObject(ABC):
         pass
 
 
+class ColorMixin:
+    def __init__(self, color="black", **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._color = color
+
+    @property
+    def color(self):
+        return self._color
+
+    def set_color(self, val):
+        self._color = val
+
+
 # -----------------------------
 # Container
 # -----------------------------
@@ -173,9 +186,7 @@ class Container(DrawObject):
 # -----------------------------
 # Draw objects
 # -----------------------------
-
-
-class TextDrawObject(DrawObject):
+class TextDrawObject(ColorMixin, DrawObject):
     def __init__(
         self,
         *,
@@ -185,9 +196,9 @@ class TextDrawObject(DrawObject):
         bottom_padding=0,
         font_family: str = "Helvetica",
         font_size: int = 12,
-        color: str = "black",
+        **kwargs,
     ):
-        super().__init__()
+        super().__init__(**kwargs)
         self._text = text
         self._start = start
         self._right_padding = right_padding
@@ -195,7 +206,6 @@ class TextDrawObject(DrawObject):
 
         self._font_family = font_family
         self._font_size = font_size
-        self._color = color
 
     @staticmethod
     def convert_font_size_to_mm(font_size):
@@ -224,13 +234,6 @@ class TextDrawObject(DrawObject):
     @property
     def font_size(self):
         return self._font_size
-
-    @property
-    def color(self):
-        return self._color
-
-    def set_color(self, val):
-        self._color = val
 
     @property
     def size(self) -> Size:
@@ -263,7 +266,7 @@ class TextDrawObject(DrawObject):
         )
 
 
-class LineDrawObject(DrawObject):
+class LineDrawObject(ColorMixin, DrawObject):
     def __init__(
         self,
         *,
@@ -271,15 +274,14 @@ class LineDrawObject(DrawObject):
         end: Position,
         right_padding=0,
         bottom_padding=0,
-        color: str = "black",
         thickness: float = 0.1,
+        **kwargs,
     ):
-        super().__init__()
+        super().__init__(**kwargs)
         self._start = start
         self._end = end
         self._right_padding = right_padding
         self._bottom_padding = bottom_padding
-        self._color = color
         self._thickness = thickness
 
     @property
@@ -299,15 +301,8 @@ class LineDrawObject(DrawObject):
         return self._bottom_padding
 
     @property
-    def color(self):
-        return self._color
-
-    @property
     def thickness(self):
         return self._thickness
-
-    def set_color(self, val):
-        self._color = val
 
     def set_thickness(self, val):
         self._thickness = val
@@ -379,19 +374,19 @@ class VerticalLineDrawObject(LineDrawObject):
         *,
         start: Position = Position(0, 0),
         length: float,
-        color: str = "black",
         thickness: float = 0.1,
         right_padding=0,
         bottom_padding=0,
+        **kwargs,
     ):
         end = Position(start.x, start.y + length)
         super().__init__(
             start=start,
             end=end,
-            color=color,
             thickness=thickness,
             right_padding=right_padding,
             bottom_padding=bottom_padding,
+            **kwargs,
         )
 
 
@@ -401,35 +396,34 @@ class HorizontalLineDrawObject(LineDrawObject):
         *,
         start: Position = Position(0, 0),
         length: float,
-        color: str = "black",
         thickness: float = 0.1,
         right_padding=0,
         bottom_padding=0,
+        **kwargs,
     ):
         end = Position(start.x + length, start.y)
         super().__init__(
             start=start,
             end=end,
-            color=color,
             thickness=thickness,
             right_padding=right_padding,
             bottom_padding=bottom_padding,
+            **kwargs,
         )
 
 
-class RectangleDrawObject(DrawObject):
+class RectangleDrawObject(ColorMixin, DrawObject):
     def __init__(
         self,
         *,
         size: Size,
         padding=Padding(0, 0, 0, 0),
-        color: str = "black",
         thickness: float = 0.1,
+        **kwargs,
     ):
-        super().__init__()
+        super().__init__(**kwargs)
         self._size = size
         self._padding = padding
-        self._color = color
         self._thickness = thickness
 
     def _get_padding(self):
@@ -440,15 +434,8 @@ class RectangleDrawObject(DrawObject):
         return self._size
 
     @property
-    def color(self):
-        return self._color
-
-    @property
     def thickness(self):
         return self._thickness
-
-    def set_color(self, val):
-        self._color = val
 
     def set_thickness(self, val):
         self._thickness = val

@@ -20,6 +20,9 @@ class LineTestCase(TestCase):
         self.assertAlmostEqual(l1.size.width, 30, delta=0.5)
         self.assertAlmostEqual(l1.size.height, 40, delta=0.5)
 
+    def test_color(self):
+        assert LineDrawObject(end=Position(10, 20), color="blue").color == "blue"
+
     def test_get_length(self):
         l1 = LineDrawObject(start=Position(0, 40), end=Position(30, 0))
         assert l1.get_length() == 50
@@ -77,6 +80,9 @@ class HorizontalLineTestCase(TestCase):
         hl = HorizontalLineDrawObject(length=10, thickness=2)
         assert hl.size == Size(10, 2)
 
+    def test_color(self):
+        assert HorizontalLineDrawObject(length=20, color="blue").color == "blue"
+
     def test_get_length(self):
         vl = HorizontalLineDrawObject(length=10, thickness=2)
         assert vl.get_length() == 10
@@ -91,6 +97,9 @@ class VerticalLineTestCase(TestCase):
     def test_size(self):
         vl = VerticalLineDrawObject(length=10, thickness=2)
         assert vl.size == Size(2, 10)
+
+    def test_color(self):
+        assert VerticalLineDrawObject(length=20, color="blue").color == "blue"
 
     def test_get_length(self):
         vl = VerticalLineDrawObject(length=10, thickness=2)
@@ -107,11 +116,17 @@ class TextTestCase(TestCase):
         size2 = t.size
         assert size == size2, f"Repeated measurement must be identical for {t.text}"
 
+    def test_color(self):
+        assert TextDrawObject(text="20", color="blue").color == "blue"
+
 
 class RectangleTestCase(TestCase):
     def test_size(self):
         r = RectangleDrawObject(size=Size(30, 40))
         assert r.size == Size(30, 40)
+
+    def test_color(self):
+        assert RectangleDrawObject(size=Size(10, 20), color="blue").color == "blue"
 
 
 class ContainerTestCase(TestCase):
@@ -124,6 +139,10 @@ class ContainerTestCase(TestCase):
             Position(20, 37), marker_1
         ).add_draw_object(Position(40, 37), marker_2)
         assert container.size == Size(40.5, 43)
+
+    def test_color(self):
+        with self.assertRaises(TypeError):
+            Container(color="blue")
 
 
 class DrawObjectBoxTestCase(TestCase):
