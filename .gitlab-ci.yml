@@ -1,0 +1,28 @@
+stages:
+  - typecheck
+  - test
+
+.default-python:
+  before_script:
+    - apt-get update
+    - apt-get install -y build-essential libcairo2-dev pkg-config libffi-dev
+    - pip install uv
+    - uv sync --group test
+
+mypy:
+  stage: typecheck
+  image: python:3.12
+  extends: .default-python
+  script:
+    - uv run mypy musurgia
+
+test:
+  stage: test
+  extends: .default-python
+  parallel:
+    matrix:
+      - PYTHON_VERSION: ['3.11', '3.12', '3.13', '3.14']
+  image: python:${PYTHON_VERSION}
+  script:
+    - python --version
+    - uv run pytest

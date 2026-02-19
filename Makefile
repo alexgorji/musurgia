@@ -5,4 +5,4 @@ test:
 
 .PHONY: typecheck
 typecheck:
-	uv run mypy ./musurgia
+	uv run mypy musurgia
