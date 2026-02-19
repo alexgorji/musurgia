@@ -13,15 +13,16 @@ from musurgia.graphics.drawobject import (
 )
 
 
-class LineDrawObjectTestCase(TestCase):
+class LineTestCase(TestCase):
 
-    def test_horizontal_line(self):
-        hl = HorizontalLineDrawObject(start=Position(20, 40), length=10)
-        assert hl.end.x, hl.end.y == (30, 40)
+    def test_size(self):
+        l1 = LineDrawObject(start=Position(0, 40), end=Position(30, 0))
+        self.assertAlmostEqual(l1.size.width, 30, delta=0.5)
+        self.assertAlmostEqual(l1.size.height, 40, delta=0.5)
 
-    def test_vertical_line(self):
-        hl = VerticalLineDrawObject(start=Position(20, 30), length=10)
-        assert hl.end.x, hl.end.y == (20, 40)
+    def test_get_length(self):
+        l1 = LineDrawObject(start=Position(0, 40), end=Position(30, 0))
+        assert l1.get_length() == 50
 
     def test_default_line_padding(self):
         line = LineDrawObject(end=Position(30, 40))
@@ -48,19 +49,6 @@ class LineDrawObjectTestCase(TestCase):
         )
         assert line.padding == Padding(30, 40, 50, 20)
 
-    def test_horizontal_line_size(self):
-        hl = HorizontalLineDrawObject(length=10, thickness=2)
-        assert hl.size == Size(10, 2)
-
-    def test_vertical_line_size(self):
-        vl = VerticalLineDrawObject(length=10, thickness=2)
-        assert vl.size == Size(2, 10)
-
-    def test_line_size(self):
-        l1 = LineDrawObject(start=Position(0, 40), end=Position(30, 0))
-        self.assertAlmostEqual(l1.size.width, 30, delta=0.5)
-        self.assertAlmostEqual(l1.size.height, 40, delta=0.5)
-
     def test_line_get_bounding_box_coordinates(self):
         l1 = LineDrawObject(start=Position(0, 40), end=Position(30, 0))
         coors = l1.get_bounding_box_coordinates()
@@ -78,17 +66,40 @@ class LineDrawObjectTestCase(TestCase):
         self.assertAlmostEqual(l1.box.size.width, 30, delta=0.5)
         self.assertAlmostEqual(l1.box.size.height, 40, delta=0.5)
 
-    def test_get_length(self):
-        l1 = LineDrawObject(start=Position(0, 40), end=Position(30, 0))
-        assert l1.get_length() == 50
 
+class HorizontalLineTestCase(TestCase):
+
+    def test_horizontal_line(self):
+        hl = HorizontalLineDrawObject(start=Position(20, 40), length=10)
+        assert hl.end.x, hl.end.y == (30, 40)
+
+    def test_size(self):
+        hl = HorizontalLineDrawObject(length=10, thickness=2)
+        assert hl.size == Size(10, 2)
+
+    def test_get_length(self):
+        vl = HorizontalLineDrawObject(length=10, thickness=2)
+        assert vl.get_length() == 10
+
+
+class VerticalLineTestCase(TestCase):
+
+    def test_vertical_line(self):
+        hl = VerticalLineDrawObject(start=Position(20, 30), length=10)
+        assert hl.end.x, hl.end.y == (20, 40)
+
+    def test_size(self):
+        vl = VerticalLineDrawObject(length=10, thickness=2)
+        assert vl.size == Size(2, 10)
+
+    def test_get_length(self):
         vl = VerticalLineDrawObject(length=10, thickness=2)
         assert vl.get_length() == 10
 
 
-class TextDrawObjectTestCase(TestCase):
+class TextTestCase(TestCase):
 
-    def test_text_size(self):
+    def test_size(self):
         t = TextDrawObject(text="Hello World")
         size = t.size
         assert size.width > 0
@@ -97,14 +108,25 @@ class TextDrawObjectTestCase(TestCase):
         assert size == size2, f"Repeated measurement must be identical for {t.text}"
 
 
-class RectangleDrawObjectTestCase(TestCase):
-    def test_rectangle_size(self):
+class RectangleTestCase(TestCase):
+    def test_size(self):
         r = RectangleDrawObject(size=Size(30, 40))
         assert r.size == Size(30, 40)
 
 
-class DrawObjectBoxTestCase(TestCase):
+class ContainerTestCase(TestCase):
+    def test_size(self):
+        hl = HorizontalLineDrawObject(length=20, thickness=1)
+        marker_1 = VerticalLineDrawObject(length=6, thickness=1)
+        marker_2 = VerticalLineDrawObject(length=6, thickness=1)
+        container = Container()
+        container.add_draw_object(Position(20, 40), hl).add_draw_object(
+            Position(20, 37), marker_1
+        ).add_draw_object(Position(40, 37), marker_2)
+        assert container.size == Size(40.5, 43)
 
+
+class DrawObjectBoxTestCase(TestCase):
     def test_box_rectangle(self):
         line = LineDrawObject(
             start=Position(20, 30),
@@ -115,15 +137,3 @@ class DrawObjectBoxTestCase(TestCase):
         box_rectangle = line.box.get_rectangle()
         assert isinstance(box_rectangle, RectangleDrawObject)
         assert box_rectangle.size == line.box.size
-
-
-class ContainerTestCase(TestCase):
-    def test_container_size(self):
-        hl = HorizontalLineDrawObject(length=20, thickness=1)
-        marker_1 = VerticalLineDrawObject(length=6, thickness=1)
-        marker_2 = VerticalLineDrawObject(length=6, thickness=1)
-        container = Container()
-        container.add_draw_object(Position(20, 40), hl).add_draw_object(
-            Position(20, 37), marker_1
-        ).add_draw_object(Position(40, 37), marker_2)
-        assert container.size == Size(40.5, 43)
