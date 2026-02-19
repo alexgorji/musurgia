@@ -63,6 +63,7 @@ class LabeledContainer(Container):
 class Marker(LabeledContainer):
     def __init__(
         self,
+        *,
         type: MarkerType,
         options: Mapping[str, Any] | None = None,
     ):
@@ -96,6 +97,7 @@ class Marker(LabeledContainer):
 class HorizontalSegmentedLine(Container):
     def __init__(
         self,
+        *,
         length: float,
         options: Mapping[str, Any] | None = None,
     ):
@@ -113,10 +115,12 @@ class HorizontalSegmentedLine(Container):
 
     def _build(self) -> None:
         self._start_marker = Marker(
-            MarkerType.VERTICAL, asdict(self._options.start_marker)
+            type=MarkerType.VERTICAL, options=asdict(self._options.start_marker)
         )
 
-        self._end_marker = Marker(MarkerType.VERTICAL, asdict(self._options.end_marker))
+        self._end_marker = Marker(
+            type=MarkerType.VERTICAL, options=asdict(self._options.end_marker)
+        )
 
         self._straight_line = HorizontalLineDrawObject(
             length=self._length, **asdict(self._options.straight_line)

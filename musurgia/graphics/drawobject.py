@@ -52,7 +52,7 @@ class Coordinates:
 
 
 class DrawObjectBox:
-    def __init__(self, draw_object: "DrawObject", show=False):
+    def __init__(self, *, draw_object: "DrawObject", show=False):
         self._draw_object = draw_object
         self._rectangle = None
         self.show = show
@@ -84,7 +84,8 @@ class DrawObjectBox:
 
 class DrawObject(ABC):
     def __init__(self) -> None:
-        self._box = DrawObjectBox(self)
+        self._box = DrawObjectBox(draw_object=self)
+        self.show = True
 
     @property
     @abstractmethod
@@ -109,7 +110,7 @@ class DrawObject(ABC):
 
 
 class ColorMixin:
-    def __init__(self, color="black", **kwargs) -> None:
+    def __init__(self, *, color="black", **kwargs) -> None:
         super().__init__(**kwargs)
         self._color = color
 
