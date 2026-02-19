@@ -2,15 +2,20 @@ from unittest import TestCase
 import xml.etree.ElementTree as ET
 import svg
 
+from musurgia.graphics.svg.convertors import SVGConverterRegistry
+
+
 from musurgia.graphics.drawobject import (
+    Container,
+    HorizontalLineDrawObject,
     LineDrawObject,
     Position,
     RectangleDrawObject,
     Size,
     TextDrawObject,
+    VerticalLineDrawObject,
 )
 from musurgia.graphics.svg.convertors import (
-    SVGConverterRegistry,
     TextDrawObjectToSVGConvertor,
 )
 
@@ -63,3 +68,21 @@ class ConvertBoxToSVG(TestCase):
 
         line.box.show = True
         assert len(SVGConverterRegistry.convert(Position(0, 0), line)) == 2
+
+
+class ContainerTestCase(TestCase):
+    def test_elements(self):
+        container = Container()
+        container.add_draw_object(Position(10, 10), VerticalLineDrawObject(length=5))
+        container.add_draw_object(Position(10, 15), HorizontalLineDrawObject(length=20))
+        container.add_draw_object(Position(10, 30), VerticalLineDrawObject(length=5))
+
+        parent_container = Container()
+        parent_container.add_draw_object(Position(30, 30), container)
+
+        elements = SVGConverterRegistry.convert(Position(50, 50), parent_container)
+
+        assert len(elements) == 3
+
+        for el in elements:
+            assert isinstance(el, svg.Element)

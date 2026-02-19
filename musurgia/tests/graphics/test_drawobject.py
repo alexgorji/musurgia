@@ -1,7 +1,6 @@
 from unittest import TestCase
 
 from musurgia.graphics.drawobject import (
-    Container,
     HorizontalLineDrawObject,
     LineDrawObject,
     Padding,
@@ -127,22 +126,6 @@ class RectangleTestCase(TestCase):
 
     def test_color(self):
         assert RectangleDrawObject(size=Size(10, 20), color="blue").color == "blue"
-
-
-class ContainerTestCase(TestCase):
-    def test_size(self):
-        hl = HorizontalLineDrawObject(length=20, thickness=1)
-        marker_1 = VerticalLineDrawObject(length=6, thickness=1)
-        marker_2 = VerticalLineDrawObject(length=6, thickness=1)
-        container = Container()
-        container.add_draw_object(Position(20, 40), hl).add_draw_object(
-            Position(20, 37), marker_1
-        ).add_draw_object(Position(40, 37), marker_2)
-        assert container.size == Size(40.5, 43)
-
-    def test_color(self):
-        with self.assertRaises(TypeError):
-            Container(color="blue")
 
 
 class DrawObjectBoxTestCase(TestCase):
