@@ -6,7 +6,7 @@ from musurgia.graphics.drawobject import (
 )
 
 from enum import Enum
-from dataclasses import dataclass, field, asdict, is_dataclass
+from dataclasses import dataclass, field, asdict, fields, is_dataclass
 from typing import Any, Mapping
 
 
@@ -60,7 +60,13 @@ class LabeledContainer(Container):
         self._labels = []
 
 
-class Marker(LabeledContainer):
+class LabeledMixin:
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._labels = []
+
+
+class Marker(LabeledMixin, Container):
     def __init__(
         self,
         *,
@@ -80,6 +86,7 @@ class Marker(LabeledContainer):
             self._line = HorizontalLineDrawObject(**asdict(self._options))
         else:
             self._line = VerticalLineDrawObject(**asdict(self._options))
+        self.add_draw_object(Position(0, 0), self._line)
 
     def get_type(self) -> str:
         return self._type.value
@@ -99,11 +106,24 @@ class HorizontalSegmentedLine(Container):
         self,
         *,
         length: float,
+        color: str | None = None,
+        thickness: float | None = None,
         options: Mapping[str, Any] | None = None,
     ):
         super().__init__()
         self._length = length
         self._options = SegmentedLineOptions()
+        if color:
+            for field in fields(self._options):
+                component = getattr(self._options, field.name)
+                if hasattr(component, "color"):
+                    setattr(component, "color", color)
+        if thickness:
+            for field in fields(self._options):
+                component = getattr(self._options, field.name)
+                if hasattr(component, "thickness"):
+                    setattr(component, "thickness", thickness)
+
         if options:
             _apply_overrides(self._options, options)
 

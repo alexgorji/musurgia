@@ -110,7 +110,10 @@ class SVGConverterRegistry:
         try:
             converter_cls = cls._registry[type(draw_object)]
         except KeyError:
-            raise TypeError(f"No SVG converter for {type(draw_object)}")
+            if isinstance(draw_object, Container):
+                converter_cls = cls._registry[Container]
+            else:
+                raise TypeError(f"No SVG converter for {type(draw_object)}")
 
         converter = converter_cls(position, draw_object)
         converted = converter.convert()

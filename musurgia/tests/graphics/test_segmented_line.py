@@ -1,6 +1,11 @@
 from unittest import TestCase
 
-from musurgia.graphics.drawobject import HorizontalLineDrawObject, Position
+
+from musurgia.graphics.drawobject import (
+    HorizontalLineDrawObject,
+    Position,
+    VerticalLineDrawObject,
+)
 from musurgia.graphics.segmented_line import (
     HorizontalSegmentedLine,
     Marker,
@@ -10,17 +15,23 @@ from musurgia.graphics.segmented_line import (
 
 
 class MarkerTestCase(TestCase):
-    def test_marker_type(self):
-        m = Marker(MarkerType.VERTICAL, {"length": 10})
+    def test_type(self):
+        m = Marker(type=MarkerType.VERTICAL, options={"length": 10})
         assert m.get_type() == MarkerType.VERTICAL.value
         assert m.get_length() == 10
 
 
-class SegmentedLineTestCase(TestCase):
-    def test_horizontal_segmented_line_container_components(self):
+class HorizontalSegmentedLineTestCase(TestCase):
+    def test_get_draw_objects(self):
+        hsl = HorizontalSegmentedLine(length=25, color="blue", thickness=1)
+        assert len(hsl.get_draw_objects()) == 3
+        assert len(hsl.get_draw_objects(recursive=True)) == 3
+
+    def test_components(self):
         hsl = HorizontalSegmentedLine(
             length=15,
         )
+
         start_marker, end_marker = hsl.get_markers()
         assert isinstance(start_marker, Marker)
         assert isinstance(end_marker, Marker)
@@ -43,3 +54,23 @@ class SegmentedLineTestCase(TestCase):
                 assert p == Position(15, 0)
             elif o == straight_line:
                 assert p == Position(0, 3)
+
+    def test_set_color(self):
+        hsl = HorizontalSegmentedLine(
+            length=15,
+            color="blue",
+        )
+        assert {o.color for _, o in hsl.get_draw_objects(recursive=True)} == {"blue"}
+
+    def test_set_thickness(self):
+        hsl = HorizontalSegmentedLine(
+            length=25, thickness=1, options={"straight_line": {"thickness": 2}}
+        )
+        for _, o in hsl.get_draw_objects(recursive=True):
+            if isinstance(o, VerticalLineDrawObject):
+                assert o.thickness == 1
+            if isinstance(o, HorizontalLineDrawObject):
+                assert o.thickness == 2
+
+    def test_marker_with_labels(self):
+        pass
