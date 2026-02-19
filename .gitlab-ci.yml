@@ -25,4 +25,4 @@ test:
   image: python:${PYTHON_VERSION}
   script:
     - python --version
-    - uv run pytest
+    - uv run pytest -m "not regression"

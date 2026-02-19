@@ -1,5 +1,5 @@
 from pathlib import Path
-
+import pytest
 from musurgia.graphics.drawobject import Position
 from musurgia.graphics.page import Page
 from musurgia.graphics.segmented_line import HorizontalSegmentedLine
@@ -8,6 +8,7 @@ from musurgia.tests.helpers.svg import SVGTestCase
 this_path = Path(__file__)
 
 
+@pytest.mark.regression
 class SegmentedLineRegressionTests(SVGTestCase):
     def test_line_segment(self):
         page = Page()

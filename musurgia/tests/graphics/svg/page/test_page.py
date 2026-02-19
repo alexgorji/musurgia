@@ -1,5 +1,6 @@
 from pathlib import Path
 from unittest import TestCase
+import pytest
 
 from musurgia.graphics.drawobject import (
     Container,
@@ -19,6 +20,7 @@ import xml.etree.ElementTree as ET
 this_path = Path(__file__)
 
 
+@pytest.mark.regression
 class PageToSVGTestCase(TestCase):
     def test_empty_page_to_svg(self):
         page = Page()

@@ -12,18 +12,18 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "mypy>=1.19.1",
     "ruff>=0.14.14",
 ]
 test = [
     "pytest>=9.0.2",
-    "mypy>=1.19.1",
     "cairosvg>=2.8.2",
     "pillow>=12.1.0",
 ]
 
 [tool.pytest.ini_options]
 addopts = "-s --doctest-modules --ignore=musurgia/old_modules"
-
+markers = ["regression: marks tests as regression tests"]
 
 [tool.mypy]
 exclude = '(old_modules|tests)'
