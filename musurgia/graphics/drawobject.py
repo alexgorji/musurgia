@@ -142,7 +142,18 @@ class Container(DrawObject):
         self._draw_objects.append((position, draw_object))
         return self
 
-    def get_draw_objects(self):
+    def get_draw_objects(self, recursive=False):
+        if recursive:
+            return_value = []
+            for p, o in self._draw_objects:
+                if not isinstance(o, Container):
+                    return_value.append((p, o))
+                else:
+                    return_value.extend(
+                        [(p + pp, oo) for pp, oo in o.get_draw_objects(recursive=True)]
+                    )
+            return return_value
+
         return self._draw_objects
 
     @property
