@@ -6,8 +6,10 @@ from musurgia.graphics.drawobject import (
 )
 
 from enum import Enum
-from dataclasses import dataclass, field, asdict, fields, is_dataclass
+from dataclasses import dataclass, field, asdict, fields
 from typing import Any, Mapping
+
+from musurgia.graphics.util import overrides_data_class_options
 
 
 class MarkerType(Enum):
@@ -35,25 +37,6 @@ class LineSegmentOptions:
     straight_line: StraightLineOptions = field(default_factory=StraightLineOptions)
 
 
-def _apply_overrides(obj: Any, overrides: Mapping[str, Any]) -> None:
-    # obj is a dataclass
-    # overrides is a dict
-    for key, value in overrides.items():
-        if not hasattr(obj, key):
-            raise ValueError(f"Invalid option: {key}")
-
-        current = getattr(obj, key)
-
-        if isinstance(value, Mapping):
-            if not is_dataclass(current):
-                raise ValueError(
-                    f"Cannot apply nested overrides to non-dataclass field '{key}'"
-                )
-            _apply_overrides(current, value)
-        else:
-            setattr(obj, key, value)
-
-
 class LabeledContainer(Container):
     def __init__(self):
         super().__init__()
@@ -77,7 +60,7 @@ class Marker(LabeledMixin, Container):
         self._type = type
         self._options = MarkerOptions()
         if options:
-            _apply_overrides(self._options, options)
+            overrides_data_class_options(self._options, options)
         self._line: HorizontalLineDrawObject | VerticalLineDrawObject
         self._build()
 
@@ -125,7 +108,7 @@ class HorizontalLineSegment(Container):
                     setattr(component, "thickness", thickness)
 
         if options:
-            _apply_overrides(self._options, options)
+            overrides_data_class_options(self._options, options)
 
         self._straight_line: HorizontalLineDrawObject
         self._start_marker: Marker
