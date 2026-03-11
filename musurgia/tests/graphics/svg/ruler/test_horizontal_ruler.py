@@ -8,8 +8,8 @@ from musurgia.tests.helpers.svg import SVGTestCase
 this_path = Path(__file__)
 
 
-@pytest.mark.regression
 class HorizontalRulerRegressionTests(SVGTestCase):
+    @pytest.mark.nonci
     def test_horizontal_rule(self):
         page = Page()
         page.layout.orientation = "landscape"

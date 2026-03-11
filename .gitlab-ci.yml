@@ -25,4 +25,5 @@ test:
   image: python:${PYTHON_VERSION}
   script:
     - python --version
-    - uv run pytest -m "not regression"
+    - echo "Running pytest with marker filter"
+    - uv run pytest -m "not nonci" -vv

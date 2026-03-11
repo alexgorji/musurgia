@@ -208,7 +208,7 @@ class TextDrawObject(ColorMixin, DrawObject):
         start: Position = Position(0, 0),
         right_padding: int | float = 0,
         bottom_padding: int | float = 0,
-        font_family: str = "Helvetica",
+        font_family: str = "DejaVu Sans",
         font_size: int | float = 12,
         **kwargs: Any,
     ) -> None:

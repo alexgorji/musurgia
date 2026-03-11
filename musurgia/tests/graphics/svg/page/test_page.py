@@ -20,7 +20,6 @@ import xml.etree.ElementTree as ET
 this_path = Path(__file__)
 
 
-@pytest.mark.regression
 class PageToSVGTestCase(TestCase):
     def test_empty_page_to_svg(self):
         page = Page()
@@ -55,6 +54,7 @@ class PageToSVGRegressionTests(SVGTestCase):
         page = Page()
         self.compare_page(page, "empty_page", this_path)
 
+    @pytest.mark.nonci
     def test_add_text_draw_object_to_page(self):
         page = Page()
         t1 = TextDrawObject(
@@ -183,6 +183,7 @@ class PageToSVGRegressionTests(SVGTestCase):
             page, "boxed_rectangle", this_path, width=210 * 2, height=297 * 2
         )
 
+    @pytest.mark.nonci
     def test_add_container(self):
         page = Page()
         container = Container()

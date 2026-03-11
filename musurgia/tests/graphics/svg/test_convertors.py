@@ -1,6 +1,8 @@
 from unittest import TestCase
 import xml.etree.ElementTree as ET
 import svg
+import subprocess
+from pathlib import Path
 
 from musurgia.graphics.svg.convertors import SVGConverterRegistry
 
@@ -21,6 +23,16 @@ from musurgia.graphics.svg.convertors import (
 
 
 class ConvertTextDrawObjectToSVGTestCase(TestCase):
+
+    def test_dejavu_font_resolves_to_repo_font(self):
+        fonts_dir = Path(__file__).parent / "fonts"
+        result = subprocess.run(
+            ["fc-match", "--format=%{file}", "DejaVu Sans"],
+            capture_output=True,
+            text=True,
+        )
+        assert result.stdout.strip() == str(fonts_dir / "DejaVuSans.ttf")
+
     def test_convertor(self):
         draw_object = TextDrawObject(text="something")
         svg_str = (
@@ -29,8 +41,8 @@ class ConvertTextDrawObjectToSVGTestCase(TestCase):
             .as_str()
         )
         root = ET.fromstring(svg_str)
-        assert round(float(root.attrib["x"]), 4) == (-0.1364)
-        assert root.attrib["y"] == "3.0468424479166663"
+        assert round(float(root.attrib["x"]), 4) == (-0.2294)
+        assert root.attrib["y"] == "3.216341145833333"
         assert root.attrib["font-family"] == draw_object.font_family
         assert round(float(root.attrib["font-size"]), 4) == 4.2333
 
