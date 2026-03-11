@@ -29,7 +29,7 @@ class StraightLineOptions:
 
 
 @dataclass
-class SegmentedLineOptions:
+class LineSegmentOptions:
     start_marker: MarkerOptions = field(default_factory=MarkerOptions)
     end_marker: MarkerOptions = field(default_factory=MarkerOptions)
     straight_line: StraightLineOptions = field(default_factory=StraightLineOptions)
@@ -101,7 +101,7 @@ class Marker(LabeledMixin, Container):
         return self._line.color
 
 
-class HorizontalSegmentedLine(Container):
+class HorizontalLineSegment(Container):
     def __init__(
         self,
         *,
@@ -112,7 +112,7 @@ class HorizontalSegmentedLine(Container):
     ):
         super().__init__()
         self._length = length
-        self._options = SegmentedLineOptions()
+        self._options = LineSegmentOptions()
         if color:
             for field in fields(self._options):
                 component = getattr(self._options, field.name)

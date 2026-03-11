@@ -7,7 +7,7 @@ from musurgia.graphics.drawobject import (
     VerticalLineDrawObject,
 )
 from musurgia.graphics.segmented_line import (
-    HorizontalSegmentedLine,
+    HorizontalLineSegment,
     Marker,
     MarkerOptions,
     MarkerType,
@@ -21,14 +21,14 @@ class MarkerTestCase(TestCase):
         assert m.get_length() == 10
 
 
-class HorizontalSegmentedLineTestCase(TestCase):
+class HorizontalLineSegmentTestCase(TestCase):
     def test_get_draw_objects(self):
-        hsl = HorizontalSegmentedLine(length=25, color="blue", thickness=1)
+        hsl = HorizontalLineSegment(length=25, color="blue", thickness=1)
         assert len(hsl.get_draw_objects()) == 3
         assert len(hsl.get_draw_objects(recursive=True)) == 3
 
     def test_components(self):
-        hsl = HorizontalSegmentedLine(
+        hsl = HorizontalLineSegment(
             length=15,
         )
 
@@ -56,14 +56,14 @@ class HorizontalSegmentedLineTestCase(TestCase):
                 assert p == Position(0, 3)
 
     def test_set_color(self):
-        hsl = HorizontalSegmentedLine(
+        hsl = HorizontalLineSegment(
             length=15,
             color="blue",
         )
         assert {o.color for _, o in hsl.get_draw_objects(recursive=True)} == {"blue"}
 
     def test_set_thickness(self):
-        hsl = HorizontalSegmentedLine(
+        hsl = HorizontalLineSegment(
             length=25, thickness=1, options={"straight_line": {"thickness": 2}}
         )
         for _, o in hsl.get_draw_objects(recursive=True):
