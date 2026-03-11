@@ -10,11 +10,9 @@ this_path = Path(__file__)
 
 @pytest.mark.regression
 class HorizontalLineSegmentRegressionTests(SVGTestCase):
-    def test_line_segment(self):
+    def test_horizontal_line_segment(self):
         page = Page()
         hsl = HorizontalLineSegment(length=25, color="blue", thickness=1)
         page.add_draw_object(Position(10, 10), hsl)
 
-        self.compare_page(
-            page, "line_segment", this_path, width=210 * 2, height=297 * 2
-        )
+        self.compare_page(page, "", this_path, width=210 * 2, height=297 * 2)

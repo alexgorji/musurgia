@@ -35,9 +35,12 @@ class SVGTestCase(unittest.TestCase):
             return (
                 test_file_path.parent
                 / directory
-                / f"{test_file_path.stem}_{post_fix}.{extension}"
+                / f"{test_file_path.stem}{"_" if post_fix else ""}{post_fix}.{extension}"
             )
-        return test_file_path.parent / f"{test_file_path.stem}_{post_fix}.{extension}"
+        return (
+            test_file_path.parent
+            / f"{test_file_path.stem}{"_" if post_fix else ""}{post_fix}.{extension}"
+        )
 
     def compare_svg_to_png(
         self,
