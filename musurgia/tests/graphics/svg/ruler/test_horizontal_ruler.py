@@ -1,0 +1,21 @@
+from pathlib import Path
+import pytest
+from musurgia.graphics.drawobject import Position
+from musurgia.graphics.page import Page
+from musurgia.graphics.ruler import HorizontalRuler
+from musurgia.tests.helpers.svg import SVGTestCase
+
+this_path = Path(__file__)
+
+
+@pytest.mark.regression
+class HorizontalRulerRegressionTests(SVGTestCase):
+    def test_horizontal_rule(self):
+        page = Page()
+        page.layout.orientation = "landscape"
+        hr = HorizontalRuler(
+            length=60, color="blue", thickness=1, unit_length=20, unit_division=5
+        )
+        page.add_draw_object(Position(10, 10), hr)
+
+        self.compare_page(page, "", this_path, height=210 * 2, width=297 * 2)

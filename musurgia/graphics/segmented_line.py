@@ -139,6 +139,9 @@ class HorizontalLineSegment(Container):
             self._straight_line,
         )
 
+    def get_length(self) -> float:
+        return self._length
+
     def get_markers(self) -> tuple[Marker, Marker]:
         return self._start_marker, self._end_marker
 
