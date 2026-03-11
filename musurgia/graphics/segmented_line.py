@@ -37,16 +37,21 @@ class LineSegmentOptions:
     straight_line: StraightLineOptions = field(default_factory=StraightLineOptions)
 
 
+@dataclass
+class Lable:
+    text: str
+
+
 class LabeledContainer(Container):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        self._labels = []
+        self._labels: list[Lable] = []
 
 
 class LabeledMixin:
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self._labels = []
+        self._labels: list[Lable] = []
 
 
 class Marker(LabeledMixin, Container):
@@ -55,7 +60,7 @@ class Marker(LabeledMixin, Container):
         *,
         type: MarkerType,
         options: Mapping[str, Any] | None = None,
-    ):
+    ) -> None:
         super().__init__()
         self._type = type
         self._options = MarkerOptions()
@@ -64,7 +69,7 @@ class Marker(LabeledMixin, Container):
         self._line: HorizontalLineDrawObject | VerticalLineDrawObject
         self._build()
 
-    def _build(self):
+    def _build(self) -> None:
         if self._type == MarkerType.HORIZONTAL:
             self._line = HorizontalLineDrawObject(**asdict(self._options))
         else:
@@ -138,9 +143,6 @@ class HorizontalLineSegment(Container):
             ),
             self._straight_line,
         )
-
-    def get_length(self) -> float:
-        return self._length
 
     def get_markers(self) -> tuple[Marker, Marker]:
         return self._start_marker, self._end_marker

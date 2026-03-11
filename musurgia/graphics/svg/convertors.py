@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Generic, TypeVar
+from typing import Any, Dict, Generic, TypeVar
 import svg
 from musurgia.graphics.drawobject import (
     DrawObject,
@@ -20,7 +20,7 @@ class DrawObjectConvertor(ABC, Generic[T]):
         self.position = position
         self.draw_object = draw_object
 
-    def _convert_box(self):
+    def _convert_box(self) -> list[svg.Element]:
         position = self.position
         position += self.draw_object.get_bounding_box_coordinates().tl
         return RectangleDrawObjectToSVGConvertor(
@@ -99,10 +99,12 @@ U = TypeVar("U", bound=DrawObject)
 
 
 class SVGConverterRegistry:
-    _registry: Dict[type[DrawObject], type[DrawObjectConvertor]] = {}
+    _registry: Dict[type[DrawObject], type[DrawObjectConvertor[Any]]] = {}
 
     @classmethod
-    def register(cls, draw_type: type[U], converter_cls: type[DrawObjectConvertor[U]]):
+    def register(
+        cls, draw_type: type[U], converter_cls: type[DrawObjectConvertor[U]]
+    ) -> None:
         cls._registry[draw_type] = converter_cls
 
     @classmethod

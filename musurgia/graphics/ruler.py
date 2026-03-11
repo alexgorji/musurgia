@@ -37,12 +37,12 @@ class RulerOptions:
 
 
 class RulerUnit(Container):
-    def __init__(self, *, length, division):
+    def __init__(self, *, length: float, division: int):
         self._length = length
         self._division = division
         self._build()
 
-    def _build(self):
+    def _build(self) -> None:
         pass
 
 
@@ -50,13 +50,13 @@ class HorizontalRuler(Container):
     def __init__(
         self,
         *,
-        length,
-        unit_length=10,
-        unit_division=10,
+        length: float,
+        unit_length: int | float = 10,
+        unit_division: int = 10,
         color: str | None = None,
         thickness: float | None = None,
         options: Mapping[str, Any] | None = None,
-    ):
+    ) -> None:
         super().__init__()
         self._length = length
         self._unit_length = unit_length
@@ -80,5 +80,5 @@ class HorizontalRuler(Container):
 
         self._build()
 
-    def _build(self):
+    def _build(self) -> None:
         pass

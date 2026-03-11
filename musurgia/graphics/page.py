@@ -53,7 +53,7 @@ class Page:
     def add_draw_object(self, position: Position, draw_object: DrawObject) -> None:
         self._draw_objects.append((position, draw_object))
 
-    def convert_to_svg_string(self):
+    def convert_to_svg_string(self) -> str:
         size = self.layout.get_size()
         height, width = size.height, size.width
         svg_object = svg.SVG(
