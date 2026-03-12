@@ -16,6 +16,7 @@ from musurgia.graphics.drawobject import (
     Size,
     TextDrawObject,
     VerticalLineDrawObject,
+    create_measure_context,
 )
 from musurgia.graphics.svg.convertors import (
     TextDrawObjectToSVGConvertor,
@@ -23,6 +24,15 @@ from musurgia.graphics.svg.convertors import (
 
 
 class ConvertTextDrawObjectToSVGTestCase(TestCase):
+    def test_cairo_font_extents(self):
+        ctx = create_measure_context()
+        ctx.select_font_face("DejaVu Sans")
+        ctx.set_font_size(TextDrawObject.convert_font_size_to_mm(12))
+        ext = ctx.text_extents("something")
+        print(f"\nx_bearing: {ext.x_bearing}")  # should be ~-0.2294, not 0.0
+        assert (
+            ext.x_bearing != 0.0
+        ), "cairo is using fallback font — fontconfig not applied"
 
     def test_dejavu_font_resolves_to_repo_font(self):
         fonts_dir = Path(__file__).parent / "fonts"
