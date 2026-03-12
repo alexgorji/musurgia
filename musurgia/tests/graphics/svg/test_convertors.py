@@ -1,5 +1,6 @@
 from unittest import TestCase
 import xml.etree.ElementTree as ET
+import pytest
 import svg
 import subprocess
 from pathlib import Path
@@ -24,12 +25,13 @@ from musurgia.graphics.svg.convertors import (
 
 
 class ConvertTextDrawObjectToSVGTestCase(TestCase):
+    @pytest.mark.nonci
     def test_cairo_font_extents(self):
         ctx = create_measure_context()
         ctx.select_font_face("DejaVu Sans")
         ctx.set_font_size(TextDrawObject.convert_font_size_to_mm(12))
         ext = ctx.text_extents("something")
-        print(f"\nx_bearing: {ext.x_bearing}")  # should be ~-0.2294, not 0.0
+        print(f"\nx_bearing: {ext.x_bearing}")
         assert (
             ext.x_bearing != 0.0
         ), "cairo is using fallback font — fontconfig not applied"
@@ -43,6 +45,7 @@ class ConvertTextDrawObjectToSVGTestCase(TestCase):
         )
         assert result.stdout.strip() == str(fonts_dir / "DejaVuSans.ttf")
 
+    @pytest.mark.nonci
     def test_convertor(self):
         draw_object = TextDrawObject(text="something")
         svg_str = (
