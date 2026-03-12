@@ -54,6 +54,11 @@ class PageToSVGRegressionTests(SVGTestCase):
         page = Page()
         self.compare_page(page, "empty_page", this_path)
 
+    def test_empty_page_with_grid(self):
+        page = Page()
+        page.add_grid()
+        self.compare_page(page, "empty_page_with_grid", this_path)
+
     @pytest.mark.nonci
     def test_add_text_draw_object_to_page(self):
         page = Page()

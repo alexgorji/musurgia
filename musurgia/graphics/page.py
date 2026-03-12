@@ -5,8 +5,10 @@ import svg
 
 from musurgia.graphics.drawobject import (
     DrawObject,
+    HorizontalLineDrawObject,
     Position,
     Size,
+    VerticalLineDrawObject,
 )
 from musurgia.graphics.svg.convertors import (
     SVGConverterRegistry,
@@ -48,10 +50,25 @@ class PageLayout:
 class Page:
     def __init__(self, layout: PageLayout | None = None):
         self.layout = layout or PageLayout()
-        self._draw_objects: List[Tuple[Position, DrawObject]] = []
+        self._positioned_draw_objects: List[Tuple[Position, DrawObject]] = []
 
     def add_draw_object(self, position: Position, draw_object: DrawObject) -> None:
-        self._draw_objects.append((position, draw_object))
+        self._positioned_draw_objects.append((position, draw_object))
+
+    def add_grid(self) -> None:
+        w, h = self.layout.get_size().width, self.layout.get_size().height
+        number_of_horizontal_lines = int(h / 10) + 1
+        number_of_vertical_lines = int(w / 10) + 1
+        for index in range(number_of_horizontal_lines):
+            self.add_draw_object(
+                Position(0, index * 10.0),
+                HorizontalLineDrawObject(length=w, thickness=0.1, color="green"),
+            )
+        for index in range(number_of_vertical_lines):
+            self.add_draw_object(
+                Position(index * 10.0, 0),
+                VerticalLineDrawObject(length=h, thickness=0.1, color="green"),
+            )
 
     def convert_to_svg_string(self) -> str:
         size = self.layout.get_size()
@@ -62,10 +79,10 @@ class Page:
             viewBox=svg.ViewBoxSpec(0, 0, width, height),
         )
 
-        if self._draw_objects:
+        if self._positioned_draw_objects:
             if svg_object.elements is None:
                 svg_object.elements = []
-            for position, draw_object in self._draw_objects:
+            for position, draw_object in self._positioned_draw_objects:
                 svg_object.elements.extend(
                     SVGConverterRegistry.convert(position, draw_object)
                 )
