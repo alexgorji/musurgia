@@ -66,7 +66,7 @@ class RulerUnit(Container):
                 if index in [0, self._division - 1]
                 else (self._large_markers_length - self._small_markers_length) / 2
             )
-            options = {"start_marker": {}, "end_marker": {}}
+            options: Any = {"start_marker": {}, "end_marker": {}}
             if index == 0:
                 options["start_marker"]["length"] = self._large_markers_length
                 options["end_marker"]["length"] = self._small_markers_length
