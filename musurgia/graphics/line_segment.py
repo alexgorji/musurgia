@@ -134,8 +134,23 @@ class HorizontalLineSegment(Container):
             length=self._length, **asdict(self._options.straight_line)
         )
 
-        self.add_draw_object(Position(0, 0), self._start_marker)
-        self.add_draw_object(Position(self._length, 0), self._end_marker)
+        start_marker_y_position = (
+            0
+            if self._start_marker.get_length() >= self._end_marker.get_length()
+            else (self._end_marker.get_length() - self._start_marker.get_length()) / 2
+        )
+        self.add_draw_object(Position(0, start_marker_y_position), self._start_marker)
+
+        start_marker_y_position = (
+            0
+            if self._end_marker.get_length() >= self._start_marker.get_length()
+            else (self._start_marker.get_length() - self._end_marker.get_length()) / 2
+        )
+
+        self.add_draw_object(
+            Position(self._length, start_marker_y_position),
+            self._end_marker,
+        )
         self.add_draw_object(
             Position(
                 0,
