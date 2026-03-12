@@ -6,7 +6,7 @@ from musurgia.graphics.drawobject import (
     Position,
     VerticalLineDrawObject,
 )
-from musurgia.graphics.segmented_line import (
+from musurgia.graphics.line_segment import (
     HorizontalLineSegment,
     Marker,
     MarkerOptions,

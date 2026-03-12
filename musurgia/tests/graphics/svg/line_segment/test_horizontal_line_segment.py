@@ -2,7 +2,7 @@ from pathlib import Path
 import pytest
 from musurgia.graphics.drawobject import Position
 from musurgia.graphics.page import Page
-from musurgia.graphics.segmented_line import HorizontalLineSegment
+from musurgia.graphics.line_segment import HorizontalLineSegment
 from musurgia.tests.helpers.svg import SVGTestCase
 
 this_path = Path(__file__)
