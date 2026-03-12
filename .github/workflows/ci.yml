@@ -56,13 +56,27 @@ jobs:
             build-essential \
             libcairo2-dev \
             pkg-config \
-            libffi-dev
+            libffi-dev \
+            fontconfig
 
       - name: Install uv
         run: pip install uv
 
       - name: Install dependencies
         run: uv sync --group test
+
+      - name: Set fontconfig for tests
+        run: |
+          echo "FONTCONFIG_FILE=${{ github.workspace }}/musurgia/tests/graphics/svg/fonts/fonts.conf" >> $GITHUB_ENV
+          echo "FONTCONFIG_PATH=${{ github.workspace }}/musurgia/tests/graphics/svg/fonts" >> $GITHUB_ENV
+
+      - name: Debug fontconfig
+        run: |
+          echo "FONTCONFIG_FILE=$FONTCONFIG_FILE"
+          echo "FONTCONFIG_PATH=$FONTCONFIG_PATH"
+          fc-match --format="%{file}" "DejaVu Sans"
+          ls -la ${{ github.workspace }}/musurgia/tests/graphics/svg/fonts/
+          cat ${{ github.workspace }}/musurgia/tests/graphics/svg/fonts/fonts.conf
 
       - name: Run pytest
         run: uv run pytest -m "not nonci"
