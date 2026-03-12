@@ -1,5 +1,7 @@
 from unittest import TestCase
 
+import pytest
+
 
 from musurgia.graphics.drawobject import (
     HorizontalLineDrawObject,
@@ -74,5 +76,49 @@ class HorizontalLineSegmentTestCase(TestCase):
             if isinstance(o, HorizontalLineDrawObject):
                 assert o.thickness == 2
 
+    @pytest.mark.nonci
     def test_marker_with_labels(self):
-        pass
+        self.fail()
+
+    def test_different_marker_sizes(self):
+        hsl = HorizontalLineSegment(
+            length=10,
+            options={"start_marker": {"length": 10}, "end_marker": {"length": 5}},
+        )
+
+        positioned_start_marker = next(
+            (p, o)
+            for (p, o) in hsl.get_positioned_draw_objects()
+            if o == hsl._start_marker
+        )
+
+        positioned_end_marker = next(
+            (p, o)
+            for (p, o) in hsl.get_positioned_draw_objects()
+            if o == hsl._end_marker
+        )
+
+        assert positioned_start_marker[0] == Position(0, 0)
+
+        assert positioned_end_marker[0] == Position(10, 2.5)
+
+        hsl = HorizontalLineSegment(
+            length=10,
+            options={"start_marker": {"length": 5}, "end_marker": {"length": 10}},
+        )
+
+        positioned_start_marker = next(
+            (p, o)
+            for (p, o) in hsl.get_positioned_draw_objects()
+            if o == hsl._start_marker
+        )
+
+        positioned_end_marker = next(
+            (p, o)
+            for (p, o) in hsl.get_positioned_draw_objects()
+            if o == hsl._end_marker
+        )
+
+        assert positioned_start_marker[0] == Position(0, 2.5)
+
+        assert positioned_end_marker[0] == Position(10, 0)

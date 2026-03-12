@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field, fields
 from typing import Any, Mapping
 
-from musurgia.graphics.drawobject import Container
+from musurgia.graphics.drawobject import Container, Position
+from musurgia.graphics.line_segment import HorizontalLineSegment
 from musurgia.graphics.util import overrides_data_class_options
 
 
@@ -37,13 +38,67 @@ class RulerOptions:
 
 
 class RulerUnit(Container):
-    def __init__(self, *, length: float, division: int):
+    def __init__(
+        self,
+        *,
+        length: float | int,
+        division: int,
+        large_markers_length: float | int,
+        small_markers_length: float | int,
+        color: str | None = None,
+        thickness: float | None = None,
+    ):
+        super().__init__()
         self._length = length
         self._division = division
+        self._large_markers_length = large_markers_length
+        self._small_markers_length = small_markers_length
+        self._color = color
+        self._thickness = thickness
         self._build()
 
     def _build(self) -> None:
-        pass
+        unit_division_length = self._length / self._division
+        for index in range(self._division):
+            x_position = index * unit_division_length
+            y_position = (
+                0
+                if index in [0, self._division - 1]
+                else (self._large_markers_length - self._small_markers_length) / 2
+            )
+            options = {"start_marker": {}, "end_marker": {}}
+            if index == 0:
+                options["start_marker"]["length"] = self._large_markers_length
+                options["end_marker"]["length"] = self._small_markers_length
+                if self._thickness:
+                    options["start_marker"]["thickness"] = self._thickness
+                    options["end_marker"]["thickness"] = self._thickness / 2
+
+            elif index == self._division - 1:
+                options["start_marker"]["length"] = self._small_markers_length
+                options["end_marker"]["length"] = self._large_markers_length
+                if self._thickness:
+                    options["start_marker"]["thickness"] = self._thickness / 2
+                    options["end_marker"]["thickness"] = self._thickness
+            else:
+                options["start_marker"]["length"] = self._small_markers_length
+                options["end_marker"]["length"] = self._small_markers_length
+                if self._thickness:
+                    options["start_marker"]["thickness"] = self._thickness / 2
+                    options["end_marker"]["thickness"] = self._thickness / 2
+
+            hls = HorizontalLineSegment(
+                length=unit_division_length,
+                color=self._color,
+                thickness=self._thickness,
+                options=options,
+            )
+            hls._end_marker.show = False
+
+            self.add_draw_object(
+                Position(x_position, y_position),
+                hls,
+            )
 
 
 class HorizontalRuler(Container):
@@ -76,7 +131,7 @@ class HorizontalRuler(Container):
         if options:
             overrides_data_class_options(self._options, options)
 
-        self._RulerUnits: list[RulerUnit]
+        self._ruler_units: list[RulerUnit]
 
         self._build()
 
