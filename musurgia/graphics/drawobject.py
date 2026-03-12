@@ -130,7 +130,7 @@ class ColorMixin:
 class Container(DrawObject):
     def __init__(self) -> None:
         super().__init__()
-        self._draw_objects: List[Tuple[Position, DrawObject]] = []
+        self._positioned_draw_objects: List[Tuple[Position, DrawObject]] = []
         self._padding = Padding(0, 0, 0, 0)
 
     def _get_padding(self) -> "Padding":
@@ -139,24 +139,41 @@ class Container(DrawObject):
     def add_draw_object(
         self, position: Position, draw_object: DrawObject
     ) -> "Container":
-        self._draw_objects.append((position, draw_object))
+        self._positioned_draw_objects.append((position, draw_object))
         return self
 
-    def get_draw_objects(
+    def get_draw_objects(self, recursive: bool = False) -> List[DrawObject]:
+        if recursive:
+            return_value = []
+            for _, o in self._positioned_draw_objects:
+                if not isinstance(o, Container):
+                    return_value.append(o)
+                else:
+                    return_value.extend(
+                        [oo for _, oo in o.get_positioned_draw_objects(recursive=True)]
+                    )
+            return return_value
+
+        return [o for _, o in self._positioned_draw_objects]
+
+    def get_positioned_draw_objects(
         self, recursive: bool = False
     ) -> List[Tuple[Position, DrawObject]]:
         if recursive:
             return_value = []
-            for p, o in self._draw_objects:
+            for p, o in self._positioned_draw_objects:
                 if not isinstance(o, Container):
                     return_value.append((p, o))
                 else:
                     return_value.extend(
-                        [(p + pp, oo) for pp, oo in o.get_draw_objects(recursive=True)]
+                        [
+                            (p + pp, oo)
+                            for pp, oo in o.get_positioned_draw_objects(recursive=True)
+                        ]
                     )
             return return_value
 
-        return self._draw_objects
+        return self._positioned_draw_objects
 
     @property
     def size(self) -> Size:
@@ -170,7 +187,7 @@ class Container(DrawObject):
             [0.0, 0.0],
             [0.0, 0.0],
         ]
-        for p, d in self.get_draw_objects():
+        for p, d in self.get_positioned_draw_objects():
             coor = d.get_bounding_box_coordinates()
             if coor.tl.x + p.x < tl[0]:
                 tl[0] = coor.tl.x + p.x

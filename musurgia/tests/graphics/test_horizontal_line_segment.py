@@ -24,8 +24,8 @@ class MarkerTestCase(TestCase):
 class HorizontalLineSegmentTestCase(TestCase):
     def test_get_draw_objects(self):
         hsl = HorizontalLineSegment(length=25, color="blue", thickness=1)
-        assert len(hsl.get_draw_objects()) == 3
-        assert len(hsl.get_draw_objects(recursive=True)) == 3
+        assert len(hsl.get_positioned_draw_objects()) == 3
+        assert len(hsl.get_positioned_draw_objects(recursive=True)) == 3
 
     def test_components(self):
         hsl = HorizontalLineSegment(
@@ -41,13 +41,13 @@ class HorizontalLineSegmentTestCase(TestCase):
         straight_line = hsl.get_straight_line()
         assert isinstance(straight_line, HorizontalLineDrawObject)
         assert straight_line.get_length() == 15
-        assert {do[1] for do in hsl.get_draw_objects()} == {
+        assert {do[1] for do in hsl.get_positioned_draw_objects()} == {
             start_marker,
             end_marker,
             straight_line,
         }
 
-        for p, o in hsl.get_draw_objects():
+        for p, o in hsl.get_positioned_draw_objects():
             if o == start_marker:
                 assert p == Position(0, 0)
             elif o == end_marker:
@@ -60,13 +60,15 @@ class HorizontalLineSegmentTestCase(TestCase):
             length=15,
             color="blue",
         )
-        assert {o.color for _, o in hsl.get_draw_objects(recursive=True)} == {"blue"}
+        assert {
+            o.color for _, o in hsl.get_positioned_draw_objects(recursive=True)
+        } == {"blue"}
 
     def test_set_thickness(self):
         hsl = HorizontalLineSegment(
             length=25, thickness=1, options={"straight_line": {"thickness": 2}}
         )
-        for _, o in hsl.get_draw_objects(recursive=True):
+        for _, o in hsl.get_positioned_draw_objects(recursive=True):
             if isinstance(o, VerticalLineDrawObject):
                 assert o.thickness == 1
             if isinstance(o, HorizontalLineDrawObject):

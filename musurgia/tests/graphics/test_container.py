@@ -25,7 +25,7 @@ class ContainerTestCase(TestCase):
         with self.assertRaises(TypeError):
             Container(color="blue")
 
-    def test_containers_get_draw_objects_recursive(self):
+    def _create_test_containers(self):
         start_marker = VerticalLineDrawObject(length=6, thickness=1)
         end_marker = VerticalLineDrawObject(length=6, thickness=1)
         straight_line = HorizontalLineDrawObject(length=20, thickness=1)
@@ -40,9 +40,35 @@ class ContainerTestCase(TestCase):
             straight_line_p, straight_line
         ).add_draw_object(end_marker_p, end_marker)
 
+        return [
+            line_segment,
+            start_marker_p,
+            start_marker,
+            straight_line_p,
+            straight_line,
+            end_marker_p,
+            end_marker,
+        ]
+
+    def test_containers_get_positioned_draw_objects_recursive(self):
+        [
+            line_segment,
+            start_marker_p,
+            start_marker,
+            straight_line_p,
+            straight_line,
+            end_marker_p,
+            end_marker,
+        ] = self._create_test_containers()
         assert (
-            {(p, o) for p, o in line_segment.get_draw_objects(recursive=True)}
-            == {(p, o) for p, o in line_segment.get_draw_objects(recursive=False)}
+            {
+                (p, o)
+                for p, o in line_segment.get_positioned_draw_objects(recursive=True)
+            }
+            == {
+                (p, o)
+                for p, o in line_segment.get_positioned_draw_objects(recursive=False)
+            }
             == {
                 (start_marker_p, start_marker),
                 (straight_line_p, straight_line),
@@ -50,7 +76,24 @@ class ContainerTestCase(TestCase):
             }
         )
 
-    def test_nested_containers_get_draw_objects_recursive(self):
+    def test_containers_get_draw_objects_recursive(self):
+        [
+            line_segment,
+            _,
+            start_marker,
+            _,
+            straight_line,
+            _,
+            end_marker,
+        ] = self._create_test_containers()
+
+        assert (
+            line_segment.get_draw_objects(recursive=True)
+            == line_segment.get_draw_objects(recursive=False)
+            == [start_marker, straight_line, end_marker]
+        )
+
+    def _create_test_nested_containers(self):
         start_marker = VerticalLineDrawObject(length=6, thickness=1)
         start_marker_label = TextDrawObject(text="label")
         start_marker_p = Position(0, 10)
@@ -72,16 +115,72 @@ class ContainerTestCase(TestCase):
         line_segment.add_draw_object(straight_line_p, straight_line).add_draw_object(
             end_marker_p, end_marker
         )
+        return [
+            line_segment,
+            labeled_start_marker_p,
+            labeled_start_marker,
+            straight_line_p,
+            straight_line,
+            start_marker_p,
+            start_marker,
+            start_marker_label_p,
+            start_marker_label,
+            end_marker_p,
+            end_marker,
+        ]
 
-        assert {(p, o) for p, o in line_segment.get_draw_objects()} == {
+    def test_nested_containers_get_positioned_draw_objects_recursive(self):
+        [
+            line_segment,
+            labeled_start_marker_p,
+            labeled_start_marker,
+            straight_line_p,
+            straight_line,
+            start_marker_p,
+            start_marker,
+            start_marker_label_p,
+            start_marker_label,
+            end_marker_p,
+            end_marker,
+        ] = self._create_test_nested_containers()
+        assert {(p, o) for p, o in line_segment.get_positioned_draw_objects()} == {
             (labeled_start_marker_p, labeled_start_marker),
             (straight_line_p, straight_line),
             (end_marker_p, end_marker),
         }
 
-        assert {(p, o) for p, o in line_segment.get_draw_objects(recursive=True)} == {
+        assert {
+            (p, o) for p, o in line_segment.get_positioned_draw_objects(recursive=True)
+        } == {
             (start_marker_p + labeled_start_marker_p, start_marker),
             (start_marker_label_p + labeled_start_marker_p, start_marker_label),
             (straight_line_p, straight_line),
             (end_marker_p, end_marker),
+        }
+
+    def test_nested_containers_get_draw_objects_recursive(self):
+        [
+            line_segment,
+            _,
+            labeled_start_marker,
+            _,
+            straight_line,
+            _,
+            start_marker,
+            _,
+            start_marker_label,
+            _,
+            end_marker,
+        ] = self._create_test_nested_containers()
+        assert {o for o in line_segment.get_draw_objects()} == {
+            labeled_start_marker,
+            straight_line,
+            end_marker,
+        }
+
+        assert {o for o in line_segment.get_draw_objects(recursive=True)} == {
+            start_marker,
+            start_marker_label,
+            straight_line,
+            end_marker,
         }
