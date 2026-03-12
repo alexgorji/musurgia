@@ -33,10 +33,12 @@ class DrawObjectConvertor(ABC, Generic[T]):
         pass
 
     def convert(self) -> list[svg.Element]:
+        converted = []
+        if self.draw_object.show:
+            converted += self._convert()
         if self.draw_object.box.show:
-            return self._convert() + (self._convert_box())
-
-        return self._convert()
+            converted += self._convert_box()
+        return converted
 
 
 class TextDrawObjectToSVGConvertor(DrawObjectConvertor[TextDrawObject]):
