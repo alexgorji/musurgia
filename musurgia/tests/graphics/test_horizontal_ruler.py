@@ -112,3 +112,6 @@ class HorizontalRulerTests(TestCase):
         assert len(hr._ruler_units) == 6
         for ru in hr._ruler_units:
             assert isinstance(ru, RulerUnit)
+        ru = hr._ruler_units[0]
+        assert ru._length == 10
+        assert ru._division == 10

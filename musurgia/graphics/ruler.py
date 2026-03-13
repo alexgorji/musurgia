@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field, fields
+from dataclasses import dataclass, field
 from typing import Any, Mapping
 
 from musurgia.graphics.drawobject import Container, Position
@@ -9,21 +9,11 @@ from musurgia.graphics.util import overrides_data_class_options
 @dataclass
 class UnitMarkerOptions:
     length: float = 6.0
-    thickness: float = 0.2
-    color: str = "black"
 
 
 @dataclass
 class UnitDivisionMarkerOptions:
     length: float = 3.0
-    thickness: float = 0.1
-    color: str = "black"
-
-
-@dataclass
-class UnitStraightLineOptions:
-    thickness: float = 0.2
-    color: str = "black"
 
 
 @dataclass
@@ -31,9 +21,6 @@ class RulerOptions:
     unit_marker: UnitMarkerOptions = field(default_factory=UnitMarkerOptions)
     unit_division_marker: UnitDivisionMarkerOptions = field(
         default_factory=UnitDivisionMarkerOptions
-    )
-    straight_line: UnitStraightLineOptions = field(
-        default_factory=UnitStraightLineOptions
     )
 
 
@@ -48,6 +35,7 @@ class RulerUnit(Container):
         color: str | None = None,
         thickness: float | None = None,
     ):
+
         super().__init__()
         self._length = length
         self._division = division
@@ -55,6 +43,7 @@ class RulerUnit(Container):
         self._small_markers_length = small_markers_length
         self._color = color
         self._thickness = thickness
+
         self._build()
 
     def _build(self) -> None:
@@ -116,24 +105,29 @@ class HorizontalRuler(Container):
         self._length = length
         self._unit_length = unit_length
         self._unit_division = unit_division
+        self._color = color
+        self._thickness = thickness
+        self._ruler_units: list[RulerUnit]
         self._options = RulerOptions()
-        if color:
-            for field in fields(self._options):
-                component = getattr(self._options, field.name)
-                if hasattr(component, "color"):
-                    setattr(component, "color", color)
-        if thickness:
-            for field in fields(self._options):
-                component = getattr(self._options, field.name)
-                if hasattr(component, "thickness"):
-                    setattr(component, "thickness", thickness)
-
         if options:
             overrides_data_class_options(self._options, options)
-
-        self._ruler_units: list[RulerUnit]
-
         self._build()
 
     def _build(self) -> None:
-        pass
+        self._create_ruler_units()
+        for i, ru in enumerate(self._ruler_units):
+            self.add_draw_object(Position(i * ru._length, 0), ru)
+
+    def _create_ruler_units(self) -> None:
+        number_of_units = int(self._length / self._unit_length)
+        self._ruler_units = [
+            RulerUnit(
+                length=self._unit_length,
+                division=self._unit_division,
+                large_markers_length=self._options.unit_marker.length,
+                small_markers_length=self._options.unit_division_marker.length,
+                thickness=self._thickness,
+                color=self._color,
+            )
+            for _ in range(number_of_units)
+        ]

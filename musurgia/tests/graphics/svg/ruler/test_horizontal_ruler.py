@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import pytest
 from musurgia.graphics.drawobject import Position
 from musurgia.graphics.page import Page
 from musurgia.graphics.ruler import HorizontalRuler, RulerUnit
@@ -32,9 +31,9 @@ class HorizontalRulerRegressionTests(SVGTestCase):
         page.add_draw_object(Position(10, 60), ru)
         self.compare_page(page, "unit", this_path, height=297 * 2, width=210 * 2)
 
-    @pytest.mark.nonci
     def test_horizontal_ruler(self):
         page = Page()
+        page.add_grid()
         page.layout.orientation = "landscape"
         hr = HorizontalRuler(
             length=60, color="blue", thickness=1, unit_length=20, unit_division=5
