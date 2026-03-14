@@ -97,6 +97,7 @@ class HorizontalRuler(Container):
         length: float,
         unit_length: int | float = 10,
         unit_division: int = 10,
+        show_number_interval: int = 10,
         color: str | None = None,
         thickness: float | None = None,
         options: Mapping[str, Any] | None = None,

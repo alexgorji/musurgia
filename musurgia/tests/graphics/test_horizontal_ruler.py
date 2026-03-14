@@ -1,7 +1,6 @@
 from typing import List, cast
 from unittest import TestCase
 
-import pytest
 
 from musurgia.graphics.drawobject import LineDrawObject, TextDrawObject
 from musurgia.graphics.line_segment import HorizontalLineSegment
@@ -105,7 +104,6 @@ class RulerUnitTestCase(TestCase):
         ]
 
 
-@pytest.mark.nonci
 class HorizontalRulerTests(TestCase):
     def test_ruler_units(self):
         hr = HorizontalRuler(length=60)
@@ -115,3 +113,6 @@ class HorizontalRulerTests(TestCase):
         ru = hr._ruler_units[0]
         assert ru._length == 10
         assert ru._division == 10
+
+    def test_show_numbers(self):
+        hr = HorizontalRuler(length=60)

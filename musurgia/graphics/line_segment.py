@@ -9,6 +9,7 @@ from enum import Enum
 from dataclasses import dataclass, field, asdict, fields
 from typing import Any, Mapping
 
+from musurgia.graphics.mixins import LabeledMixin
 from musurgia.graphics.util import overrides_data_class_options
 
 
@@ -35,23 +36,6 @@ class LineSegmentOptions:
     start_marker: MarkerOptions = field(default_factory=MarkerOptions)
     end_marker: MarkerOptions = field(default_factory=MarkerOptions)
     straight_line: StraightLineOptions = field(default_factory=StraightLineOptions)
-
-
-@dataclass
-class Lable:
-    text: str
-
-
-class LabeledContainer(Container):
-    def __init__(self) -> None:
-        super().__init__()
-        self._labels: list[Lable] = []
-
-
-class LabeledMixin:
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self._labels: list[Lable] = []
 
 
 class Marker(LabeledMixin, Container):
