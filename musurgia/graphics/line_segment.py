@@ -37,24 +37,7 @@ class LineSegmentOptions:
     straight_line: StraightLineOptions = field(default_factory=StraightLineOptions)
 
 
-@dataclass
-class Lable:
-    text: str
-
-
-class LabeledContainer(Container):
-    def __init__(self) -> None:
-        super().__init__()
-        self._labels: list[Lable] = []
-
-
-class LabeledMixin:
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self._labels: list[Lable] = []
-
-
-class Marker(LabeledMixin, Container):
+class Marker(Container):
     def __init__(
         self,
         *,

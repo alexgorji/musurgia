@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Any, Mapping
 
-from musurgia.graphics.drawobject import Container, Position
-from musurgia.graphics.line_segment import HorizontalLineSegment
+from musurgia.graphics.drawobject import Container, Position, TextDrawObject
+from musurgia.graphics.line_segment import HorizontalLineSegment, Marker
 from musurgia.graphics.util import overrides_data_class_options
 
 
@@ -97,6 +97,8 @@ class HorizontalRuler(Container):
         length: float,
         unit_length: int | float = 10,
         unit_division: int = 10,
+        labels_interval: int = 1,
+        label_offset=Position(1, 3),
         color: str | None = None,
         thickness: float | None = None,
         options: Mapping[str, Any] | None = None,
@@ -105,21 +107,33 @@ class HorizontalRuler(Container):
         self._length = length
         self._unit_length = unit_length
         self._unit_division = unit_division
+        self._labels_interval = labels_interval
+        self._label_offset = label_offset
         self._color = color
         self._thickness = thickness
-        self._ruler_units: list[RulerUnit]
         self._options = RulerOptions()
         if options:
             overrides_data_class_options(self._options, options)
         self._build()
 
     def _build(self) -> None:
+        self._build_ruler_units()
+        self._build_labels()
+
+    def _build_ruler_units(self):
         self._create_ruler_units()
-        for i, ru in enumerate(self._ruler_units):
-            self.add_draw_object(Position(i * ru._length, 0), ru)
+        for p, ru in zip(self._get_ruler_unit_positions(), self._ruler_units):
+            self.add_draw_object(p, ru)
+
+    def _build_labels(self):
+        for i, (p, _) in enumerate(self.get_positioned_ruler_units()):
+            if i % self._labels_interval == 0:
+                self.add_draw_object(
+                    Position(p.x + self._label_offset.x, 0),
+                    TextDrawObject(text=str(i), color=self._color),
+                )
 
     def _create_ruler_units(self) -> None:
-        number_of_units = int(self._length / self._unit_length)
         self._ruler_units = [
             RulerUnit(
                 length=self._unit_length,
@@ -129,5 +143,47 @@ class HorizontalRuler(Container):
                 thickness=self._thickness,
                 color=self._color,
             )
-            for _ in range(number_of_units)
+            for _ in range(self._get_number_ruler_units())
+        ]
+
+    def _get_division_size(self):
+        return self._unit_length / self._unit_division
+
+    def _get_ruler_unit_positions(self):
+        return [
+            Position(i * self._unit_length, self._label_offset.y)
+            for i in range(self._get_number_ruler_units())
+        ]
+
+    def _get_number_ruler_units(self):
+        return int(self._length / self._unit_length)
+
+    def get_positioned_ruler_units(self):
+        return [
+            (p, o)
+            for (p, o) in self.get_positioned_draw_objects()
+            if isinstance(o, RulerUnit)
+        ]
+
+    def get_positioned_markers(self):
+        return [
+            (rup + lp + mp, m)
+            for (rup, ru) in self.get_positioned_ruler_units()
+            for (lp, l) in [
+                (p, o)
+                for (p, o) in ru.get_positioned_draw_objects()
+                if isinstance(o, HorizontalLineSegment)
+            ]
+            for (mp, m) in [
+                (pp, oo)
+                for (pp, oo) in l.get_positioned_draw_objects()
+                if isinstance(oo, Marker) and oo.show
+            ]
+        ]
+
+    def get_positioned_labels(self):
+        return [
+            (p, o)
+            for p, o in self.get_positioned_draw_objects()
+            if isinstance(o, TextDrawObject)
         ]

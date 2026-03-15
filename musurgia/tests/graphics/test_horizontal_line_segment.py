@@ -1,7 +1,5 @@
 from unittest import TestCase
 
-import pytest
-
 
 from musurgia.graphics.drawobject import (
     HorizontalLineDrawObject,
@@ -75,10 +73,6 @@ class HorizontalLineSegmentTestCase(TestCase):
                 assert o.thickness == 1
             if isinstance(o, HorizontalLineDrawObject):
                 assert o.thickness == 2
-
-    @pytest.mark.nonci
-    def test_marker_with_labels(self):
-        self.fail()
 
     def test_different_marker_sizes(self):
         hsl = HorizontalLineSegment(

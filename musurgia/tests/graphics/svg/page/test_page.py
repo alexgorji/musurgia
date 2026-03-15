@@ -222,7 +222,6 @@ class PageToSVGRegressionTests(SVGTestCase):
             container.add_draw_object(p, o)
 
         container.box.show = True
-        print(container.get_bounding_box_coordinates())
         page.add_draw_object(Position(10, 10), container)
 
         self.compare_page(
