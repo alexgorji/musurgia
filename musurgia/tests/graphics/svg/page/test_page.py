@@ -4,16 +4,16 @@ import pytest
 
 from musurgia.graphics.drawobject import (
     Container,
-    HorizontalLineDrawObject,
     LineDrawObject,
     Padding,
     Position,
     RectangleDrawObject,
     Size,
     TextDrawObject,
-    VerticalLineDrawObject,
+    StraightLineDrawObject,
 )
 from musurgia.graphics.page import Page
+from musurgia.graphics.models import LineOrientation
 from musurgia.tests.helpers.svg import SVGTestCase
 import xml.etree.ElementTree as ET
 
@@ -102,11 +102,15 @@ class PageToSVGRegressionTests(SVGTestCase):
         l1.box.show = True
         page.add_draw_object(Position(30, 30), l1)
 
-        l2 = HorizontalLineDrawObject(length=20, color="gray", thickness=2)
+        l2 = StraightLineDrawObject(
+            type=LineOrientation.HORIZONTAL, length=20, color="gray", thickness=2
+        )
         l2.box.show = True
         page.add_draw_object(Position(30, 100), l2)
 
-        l3 = VerticalLineDrawObject(length=20, color="gray", thickness=2)
+        l3 = StraightLineDrawObject(
+            type=LineOrientation.VERTICAL, length=20, color="gray", thickness=2
+        )
         l3.box.show = True
         page.add_draw_object(Position(30, 150), l3)
 
@@ -123,14 +127,26 @@ class PageToSVGRegressionTests(SVGTestCase):
     def test_add_multiple_line_draw_objects_to_page(self):
         page = Page()
         draw_objects = [
-            HorizontalLineDrawObject(
-                length=40, start=Position(10, 30), color="blue", thickness=2
+            StraightLineDrawObject(
+                type=LineOrientation.HORIZONTAL,
+                length=40,
+                start=Position(10, 30),
+                color="blue",
+                thickness=2,
             ),
-            VerticalLineDrawObject(
-                length=10, start=Position(10, 25), color="blue", thickness=2
+            StraightLineDrawObject(
+                type=LineOrientation.VERTICAL,
+                length=10,
+                start=Position(10, 25),
+                color="blue",
+                thickness=2,
             ),
-            VerticalLineDrawObject(
-                length=10, start=Position(50, 25), color="blue", thickness=2
+            StraightLineDrawObject(
+                type=LineOrientation.VERTICAL,
+                length=10,
+                start=Position(50, 25),
+                color="blue",
+                thickness=2,
             ),
         ]
 
@@ -143,9 +159,18 @@ class PageToSVGRegressionTests(SVGTestCase):
 
     def test_add_nested_container_to_page(self):
         container = Container()
-        container.add_draw_object(Position(10, 10), VerticalLineDrawObject(length=10))
-        container.add_draw_object(Position(10, 15), HorizontalLineDrawObject(length=30))
-        container.add_draw_object(Position(40, 10), VerticalLineDrawObject(length=10))
+        container.add_draw_object(
+            Position(10, 10),
+            StraightLineDrawObject(type=LineOrientation.VERTICAL, length=10),
+        )
+        container.add_draw_object(
+            Position(10, 15),
+            StraightLineDrawObject(type=LineOrientation.HORIZONTAL, length=30),
+        )
+        container.add_draw_object(
+            Position(40, 10),
+            StraightLineDrawObject(type=LineOrientation.VERTICAL, length=10),
+        )
         for _, draw_object in container.get_positioned_draw_objects():
             if isinstance(draw_object, LineDrawObject):
                 draw_object.set_color("blue")

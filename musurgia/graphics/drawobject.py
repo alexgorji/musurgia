@@ -4,6 +4,8 @@ import math
 from typing import Any, List, Tuple
 import cairo
 
+from musurgia.graphics.models import LineOrientation
+
 
 def create_measure_context() -> cairo.Context:  # type: ignore[type-arg]
     # tiny dummy surface is enough for measurement
@@ -399,18 +401,22 @@ class LineDrawObject(ColorMixin, DrawObject):
         return math.hypot(self.end.x - self.start.x, self.end.y - self.start.y)
 
 
-class VerticalLineDrawObject(LineDrawObject):
+class StraightLineDrawObject(LineDrawObject):
     def __init__(
         self,
         *,
-        start: Position = Position(0, 0),
+        type: LineOrientation,
         length: float,
+        start: Position = Position(0, 0),
         thickness: float = 0.1,
         right_padding: int | float = 0,
         bottom_padding: int | float = 0,
         **kwargs: Any,
     ) -> None:
-        end = Position(start.x, start.y + length)
+        if type.value == "horizontal":
+            end = Position(start.x + length, start.y)
+        else:
+            end = Position(start.x, start.y + length)
         super().__init__(
             start=start,
             end=end,
@@ -419,28 +425,7 @@ class VerticalLineDrawObject(LineDrawObject):
             bottom_padding=bottom_padding,
             **kwargs,
         )
-
-
-class HorizontalLineDrawObject(LineDrawObject):
-    def __init__(
-        self,
-        *,
-        start: Position = Position(0, 0),
-        length: float,
-        thickness: float = 0.1,
-        right_padding: int | float = 0,
-        bottom_padding: int | float = 0,
-        **kwargs: Any,
-    ) -> None:
-        end = Position(start.x + length, start.y)
-        super().__init__(
-            start=start,
-            end=end,
-            thickness=thickness,
-            right_padding=right_padding,
-            bottom_padding=bottom_padding,
-            **kwargs,
-        )
+        self.type = type
 
 
 class RectangleDrawObject(ColorMixin, DrawObject):

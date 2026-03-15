@@ -2,19 +2,25 @@ from unittest import TestCase
 
 from musurgia.graphics.drawobject import (
     Container,
-    HorizontalLineDrawObject,
     Size,
+    StraightLineDrawObject,
     TextDrawObject,
-    VerticalLineDrawObject,
     Position,
 )
+from musurgia.graphics.models import LineOrientation
 
 
 class ContainerTestCase(TestCase):
     def test_size(self):
-        hl = HorizontalLineDrawObject(length=20, thickness=1)
-        marker_1 = VerticalLineDrawObject(length=6, thickness=1)
-        marker_2 = VerticalLineDrawObject(length=6, thickness=1)
+        hl = StraightLineDrawObject(
+            type=LineOrientation.HORIZONTAL, length=20, thickness=1
+        )
+        marker_1 = StraightLineDrawObject(
+            type=LineOrientation.VERTICAL, length=6, thickness=1
+        )
+        marker_2 = StraightLineDrawObject(
+            type=LineOrientation.VERTICAL, length=6, thickness=1
+        )
         container = Container()
         container.add_draw_object(Position(20, 40), hl).add_draw_object(
             Position(20, 37), marker_1
@@ -26,9 +32,15 @@ class ContainerTestCase(TestCase):
             Container(color="blue")
 
     def _create_test_containers(self):
-        start_marker = VerticalLineDrawObject(length=6, thickness=1)
-        end_marker = VerticalLineDrawObject(length=6, thickness=1)
-        straight_line = HorizontalLineDrawObject(length=20, thickness=1)
+        start_marker = StraightLineDrawObject(
+            type=LineOrientation.VERTICAL, length=6, thickness=1
+        )
+        end_marker = StraightLineDrawObject(
+            type=LineOrientation.VERTICAL, length=6, thickness=1
+        )
+        straight_line = StraightLineDrawObject(
+            type=LineOrientation.HORIZONTAL, length=20, thickness=1
+        )
 
         start_marker_p = Position(100, 110)
         straight_line_p = Position(100, 113)
@@ -94,7 +106,9 @@ class ContainerTestCase(TestCase):
         )
 
     def _create_test_nested_containers(self):
-        start_marker = VerticalLineDrawObject(length=6, thickness=1)
+        start_marker = StraightLineDrawObject(
+            type=LineOrientation.VERTICAL, length=6, thickness=1
+        )
         start_marker_label = TextDrawObject(text="label")
         start_marker_p = Position(0, 10)
         start_marker_label_p = Position(0, 0)
@@ -103,8 +117,12 @@ class ContainerTestCase(TestCase):
         labeled_start_marker.add_draw_object(
             start_marker_p, start_marker
         ).add_draw_object(start_marker_label_p, start_marker_label)
-        end_marker = VerticalLineDrawObject(length=6, thickness=1)
-        straight_line = HorizontalLineDrawObject(length=20, thickness=1)
+        end_marker = StraightLineDrawObject(
+            type=LineOrientation.VERTICAL, length=6, thickness=1
+        )
+        straight_line = StraightLineDrawObject(
+            type=LineOrientation.HORIZONTAL, length=20, thickness=1
+        )
 
         labeled_start_marker_p = Position(100, 100)
         straight_line_p = Position(100, 113)

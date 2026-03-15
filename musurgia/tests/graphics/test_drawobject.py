@@ -1,15 +1,15 @@
 from unittest import TestCase
 
 from musurgia.graphics.drawobject import (
-    HorizontalLineDrawObject,
     LineDrawObject,
     Padding,
     Position,
     RectangleDrawObject,
     Size,
+    StraightLineDrawObject,
     TextDrawObject,
-    VerticalLineDrawObject,
 )
+from musurgia.graphics.models import LineOrientation
 
 
 class LineTestCase(TestCase):
@@ -72,36 +72,58 @@ class LineTestCase(TestCase):
 class HorizontalLineTestCase(TestCase):
 
     def test_horizontal_line(self):
-        hl = HorizontalLineDrawObject(start=Position(20, 40), length=10)
+        hl = StraightLineDrawObject(
+            type=LineOrientation.HORIZONTAL, start=Position(20, 40), length=10
+        )
         assert hl.end.x, hl.end.y == (30, 40)
 
     def test_size(self):
-        hl = HorizontalLineDrawObject(length=10, thickness=2)
+        hl = StraightLineDrawObject(
+            type=LineOrientation.HORIZONTAL, length=10, thickness=2
+        )
         assert hl.size == Size(10, 2)
 
     def test_color(self):
-        assert HorizontalLineDrawObject(length=20, color="blue").color == "blue"
+        assert (
+            StraightLineDrawObject(
+                type=LineOrientation.HORIZONTAL, length=20, color="blue"
+            ).color
+            == "blue"
+        )
 
     def test_get_length(self):
-        vl = HorizontalLineDrawObject(length=10, thickness=2)
+        vl = StraightLineDrawObject(
+            type=LineOrientation.HORIZONTAL, length=10, thickness=2
+        )
         assert vl.get_length() == 10
 
 
 class VerticalLineTestCase(TestCase):
 
     def test_vertical_line(self):
-        hl = VerticalLineDrawObject(start=Position(20, 30), length=10)
+        hl = StraightLineDrawObject(
+            type=LineOrientation.VERTICAL, start=Position(20, 30), length=10
+        )
         assert hl.end.x, hl.end.y == (20, 40)
 
     def test_size(self):
-        vl = VerticalLineDrawObject(length=10, thickness=2)
+        vl = StraightLineDrawObject(
+            type=LineOrientation.VERTICAL, length=10, thickness=2
+        )
         assert vl.size == Size(2, 10)
 
     def test_color(self):
-        assert VerticalLineDrawObject(length=20, color="blue").color == "blue"
+        assert (
+            StraightLineDrawObject(
+                type=LineOrientation.VERTICAL, length=20, color="blue"
+            ).color
+            == "blue"
+        )
 
     def test_get_length(self):
-        vl = VerticalLineDrawObject(length=10, thickness=2)
+        vl = StraightLineDrawObject(
+            type=LineOrientation.VERTICAL, length=10, thickness=2
+        )
         assert vl.get_length() == 10
 
 

@@ -10,18 +10,18 @@ from musurgia.graphics.svg.convertors import SVGConverterRegistry
 
 from musurgia.graphics.drawobject import (
     Container,
-    HorizontalLineDrawObject,
     LineDrawObject,
     Position,
     RectangleDrawObject,
     Size,
+    StraightLineDrawObject,
     TextDrawObject,
-    VerticalLineDrawObject,
     create_measure_context,
 )
 from musurgia.graphics.svg.convertors import (
     TextDrawObjectToSVGConvertor,
 )
+from musurgia.graphics.models import LineOrientation
 
 
 class ConvertTextDrawObjectToSVGTestCase(TestCase):
@@ -98,9 +98,18 @@ class ConvertBoxToSVG(TestCase):
 class ContainerTestCase(TestCase):
     def test_elements(self):
         container = Container()
-        container.add_draw_object(Position(10, 10), VerticalLineDrawObject(length=5))
-        container.add_draw_object(Position(10, 15), HorizontalLineDrawObject(length=20))
-        container.add_draw_object(Position(10, 30), VerticalLineDrawObject(length=5))
+        container.add_draw_object(
+            Position(10, 10),
+            StraightLineDrawObject(type=LineOrientation.VERTICAL, length=5),
+        )
+        container.add_draw_object(
+            Position(10, 15),
+            StraightLineDrawObject(type=LineOrientation.HORIZONTAL, length=20),
+        )
+        container.add_draw_object(
+            Position(10, 30),
+            StraightLineDrawObject(type=LineOrientation.VERTICAL, length=5),
+        )
 
         parent_container = Container()
         parent_container.add_draw_object(Position(30, 30), container)

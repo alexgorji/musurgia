@@ -3,7 +3,7 @@ from unittest import TestCase
 
 
 from musurgia.graphics.drawobject import LineDrawObject, TextDrawObject
-from musurgia.graphics.line_segment import HorizontalLineSegment, Marker
+from musurgia.graphics.line_segment import LineSegment, Marker
 from musurgia.graphics.ruler import (
     HorizontalRuler,
     RulerUnit,
@@ -21,16 +21,16 @@ class RulerUnitTestCase(TestCase):
         pos = [p for p, _ in positioned_dos]
         assert len(dos) == 5
         for o in dos:
-            assert isinstance(o, HorizontalLineSegment)
+            assert isinstance(o, LineSegment)
 
-        assert [cast(HorizontalLineSegment, o)._length for o in dos] == [4, 4, 4, 4, 4]
+        assert [cast(LineSegment, o)._length for o in dos] == [4, 4, 4, 4, 4]
         assert [p.x for p in pos] == [0, 4, 8, 12, 16]
 
     def test_markers(self):
         ru = RulerUnit(
             length=20, division=5, large_markers_length=5, small_markers_length=2.5
         )
-        dos = cast(List[HorizontalLineSegment], ru.get_draw_objects())
+        dos = cast(List[LineSegment], ru.get_draw_objects())
 
         assert [o._start_marker.show for o in dos] == [
             True,
@@ -86,7 +86,7 @@ class RulerUnitTestCase(TestCase):
             thickness=1.0,
         )
 
-        dos = cast(List[HorizontalLineSegment], ru.get_draw_objects())
+        dos = cast(List[LineSegment], ru.get_draw_objects())
         for d in dos:
             assert d._straight_line.thickness == 1.0
 

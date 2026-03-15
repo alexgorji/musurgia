@@ -2,7 +2,8 @@ from dataclasses import dataclass, field
 from typing import Any, Mapping
 
 from musurgia.graphics.drawobject import Container, Position, TextDrawObject
-from musurgia.graphics.line_segment import HorizontalLineSegment, Marker
+from musurgia.graphics.line_segment import LineSegment, Marker
+from musurgia.graphics.models import LineOrientation
 from musurgia.graphics.util import overrides_data_class_options
 
 
@@ -76,7 +77,8 @@ class RulerUnit(Container):
                     options["start_marker"]["thickness"] = self._thickness / 2
                     options["end_marker"]["thickness"] = self._thickness / 2
 
-            hls = HorizontalLineSegment(
+            hls = LineSegment(
+                type=LineOrientation.HORIZONTAL,
                 length=unit_division_length,
                 color=self._color,
                 thickness=self._thickness,
@@ -172,7 +174,7 @@ class HorizontalRuler(Container):
             for (lp, l) in [
                 (p, o)
                 for (p, o) in ru.get_positioned_draw_objects()
-                if isinstance(o, HorizontalLineSegment)
+                if isinstance(o, LineSegment)
             ]
             for (mp, m) in [
                 (pp, oo)

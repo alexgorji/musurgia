@@ -1,0 +1,226 @@
+from unittest import TestCase
+
+
+from musurgia.graphics.drawobject import (
+    Position,
+    StraightLineDrawObject,
+)
+from musurgia.graphics.line_segment import (
+    LineSegment,
+    Marker,
+    MarkerOptions,
+)
+from musurgia.graphics.models import LineOrientation
+
+
+class MarkerTestCase(TestCase):
+    def test_type(self):
+        m = Marker(type=LineOrientation.VERTICAL, options={"length": 10})
+        assert m.get_type() == LineOrientation.VERTICAL.value
+        assert m.get_length() == 10
+
+
+class HorizontalLineSegmentTestCase(TestCase):
+    def test_get_draw_objects(self):
+        hsl = LineSegment(
+            type=LineOrientation.HORIZONTAL, length=25, color="blue", thickness=1
+        )
+        assert len(hsl.get_positioned_draw_objects()) == 3
+        assert len(hsl.get_positioned_draw_objects(recursive=True)) == 3
+
+    def test_components(self):
+        hsl = LineSegment(
+            type=LineOrientation.HORIZONTAL,
+            length=15,
+        )
+
+        start_marker, end_marker = hsl.get_markers()
+        assert isinstance(start_marker, Marker)
+        assert isinstance(end_marker, Marker)
+        assert start_marker.get_type() == end_marker.get_type() == "vertical"
+        assert start_marker.get_length() == MarkerOptions.length
+        assert end_marker.get_length() == MarkerOptions.length
+        straight_line = hsl.get_straight_line()
+        assert isinstance(straight_line, StraightLineDrawObject)
+        assert straight_line.type.value == "horizontal"
+        assert straight_line.get_length() == 15
+        assert {do[1] for do in hsl.get_positioned_draw_objects()} == {
+            start_marker,
+            end_marker,
+            straight_line,
+        }
+
+        for p, o in hsl.get_positioned_draw_objects():
+            if o == start_marker:
+                assert p == Position(0, 0)
+            elif o == end_marker:
+                assert p == Position(15, 0)
+            elif o == straight_line:
+                assert p == Position(0, 3)
+
+    def test_set_color(self):
+        hsl = LineSegment(
+            type=LineOrientation.HORIZONTAL,
+            length=15,
+            color="blue",
+        )
+        assert {
+            o.color for _, o in hsl.get_positioned_draw_objects(recursive=True)
+        } == {"blue"}
+
+    def test_set_thickness(self):
+        hsl = LineSegment(
+            type=LineOrientation.HORIZONTAL,
+            length=25,
+            thickness=1,
+            options={"straight_line": {"thickness": 2}},
+        )
+        for _, o in hsl.get_positioned_draw_objects(recursive=True):
+            if isinstance(o, StraightLineDrawObject):
+                if o.type.value == "horizontal":
+                    assert o.thickness == 2
+                else:
+                    assert o.thickness == 1
+
+    def test_different_marker_sizes(self):
+        hsl = LineSegment(
+            type=LineOrientation.HORIZONTAL,
+            length=10,
+            options={"start_marker": {"length": 10}, "end_marker": {"length": 5}},
+        )
+
+        positioned_start_marker = next(
+            (p, o)
+            for (p, o) in hsl.get_positioned_draw_objects()
+            if o == hsl._start_marker
+        )
+
+        positioned_end_marker = next(
+            (p, o)
+            for (p, o) in hsl.get_positioned_draw_objects()
+            if o == hsl._end_marker
+        )
+
+        assert positioned_start_marker[0] == Position(0, 0)
+
+        assert positioned_end_marker[0] == Position(10, 2.5)
+
+        hsl = LineSegment(
+            type=LineOrientation.HORIZONTAL,
+            length=10,
+            options={"start_marker": {"length": 5}, "end_marker": {"length": 10}},
+        )
+
+        positioned_start_marker = next(
+            (p, o)
+            for (p, o) in hsl.get_positioned_draw_objects()
+            if o == hsl._start_marker
+        )
+
+        positioned_end_marker = next(
+            (p, o)
+            for (p, o) in hsl.get_positioned_draw_objects()
+            if o == hsl._end_marker
+        )
+
+        assert positioned_start_marker[0] == Position(0, 2.5)
+
+        assert positioned_end_marker[0] == Position(10, 0)
+
+
+class VerticalLineSegmentTestCase(TestCase):
+    def test_get_draw_objects(self):
+        vsl = LineSegment(
+            type=LineOrientation.VERTICAL, length=25, color="blue", thickness=1
+        )
+        assert len(vsl.get_positioned_draw_objects()) == 3
+        assert len(vsl.get_positioned_draw_objects(recursive=True)) == 3
+
+    def test_components(self):
+        vsl = LineSegment(
+            type=LineOrientation.VERTICAL,
+            length=15,
+        )
+
+        start_marker, end_marker = vsl.get_markers()
+        assert isinstance(start_marker, Marker)
+        assert isinstance(end_marker, Marker)
+        assert start_marker.get_type() == end_marker.get_type() == "horizontal"
+        assert start_marker.get_length() == MarkerOptions.length
+        assert end_marker.get_length() == MarkerOptions.length
+        straight_line = vsl.get_straight_line()
+        assert isinstance(straight_line, StraightLineDrawObject)
+        assert straight_line.type.value == "vertical"
+        assert straight_line.get_length() == 15
+        assert {do[1] for do in vsl.get_positioned_draw_objects()} == {
+            start_marker,
+            end_marker,
+            straight_line,
+        }
+
+        for p, o in vsl.get_positioned_draw_objects():
+            if o == start_marker:
+                assert p == Position(0, 0)
+            elif o == end_marker:
+                assert p == Position(0, 15)
+            elif o == straight_line:
+                assert p == Position(3, 0)
+
+    def test_set_thickness(self):
+        vsl = LineSegment(
+            type=LineOrientation.VERTICAL,
+            length=25,
+            thickness=1,
+            options={"straight_line": {"thickness": 2}},
+        )
+        for _, o in vsl.get_positioned_draw_objects(recursive=True):
+            if isinstance(o, StraightLineDrawObject):
+                if o.type.value == "vertical":
+                    assert o.thickness == 2
+                else:
+                    assert o.thickness == 1
+
+    def test_different_marker_sizes(self):
+        vsl = LineSegment(
+            type=LineOrientation.VERTICAL,
+            length=10,
+            options={"start_marker": {"length": 10}, "end_marker": {"length": 5}},
+        )
+
+        positioned_start_marker = next(
+            (p, o)
+            for (p, o) in vsl.get_positioned_draw_objects()
+            if o == vsl._start_marker
+        )
+
+        positioned_end_marker = next(
+            (p, o)
+            for (p, o) in vsl.get_positioned_draw_objects()
+            if o == vsl._end_marker
+        )
+
+        assert positioned_start_marker[0] == Position(0, 0)
+
+        assert positioned_end_marker[0] == Position(2.5, 10)
+
+        vsl = LineSegment(
+            type=LineOrientation.VERTICAL,
+            length=10,
+            options={"start_marker": {"length": 5}, "end_marker": {"length": 10}},
+        )
+
+        positioned_start_marker = next(
+            (p, o)
+            for (p, o) in vsl.get_positioned_draw_objects()
+            if o == vsl._start_marker
+        )
+
+        positioned_end_marker = next(
+            (p, o)
+            for (p, o) in vsl.get_positioned_draw_objects()
+            if o == vsl._end_marker
+        )
+
+        assert positioned_start_marker[0] == Position(2.5, 0)
+
+        assert positioned_end_marker[0] == Position(0, 10)

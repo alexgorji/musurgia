@@ -5,14 +5,14 @@ import svg
 
 from musurgia.graphics.drawobject import (
     DrawObject,
-    HorizontalLineDrawObject,
+    StraightLineDrawObject,
     Position,
     Size,
-    VerticalLineDrawObject,
 )
 from musurgia.graphics.svg.convertors import (
     SVGConverterRegistry,
 )
+from musurgia.graphics.models import LineOrientation
 
 type PageSize = Literal["A3", "A4", "A5"]
 type PageOrientation = Literal["portrait", "landscape"]
@@ -62,12 +62,22 @@ class Page:
         for index in range(number_of_horizontal_lines):
             self.add_draw_object(
                 Position(0, index * 10.0),
-                HorizontalLineDrawObject(length=w, thickness=0.1, color="green"),
+                StraightLineDrawObject(
+                    type=LineOrientation.HORIZONTAL,
+                    length=w,
+                    thickness=0.1,
+                    color="green",
+                ),
             )
         for index in range(number_of_vertical_lines):
             self.add_draw_object(
                 Position(index * 10.0, 0),
-                VerticalLineDrawObject(length=h, thickness=0.1, color="green"),
+                StraightLineDrawObject(
+                    type=LineOrientation.VERTICAL,
+                    length=h,
+                    thickness=0.1,
+                    color="green",
+                ),
             )
 
     def convert_to_svg_string(self) -> str:

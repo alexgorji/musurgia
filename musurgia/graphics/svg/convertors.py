@@ -3,13 +3,12 @@ from typing import Any, Dict, Generic, TypeVar
 import svg
 from musurgia.graphics.drawobject import (
     DrawObject,
-    HorizontalLineDrawObject,
+    StraightLineDrawObject,
     LineDrawObject,
     Position,
     RectangleDrawObject,
     TextDrawObject,
     Container,
-    VerticalLineDrawObject,
 )
 
 T = TypeVar("T", bound=DrawObject)
@@ -126,8 +125,7 @@ class SVGConverterRegistry:
 
 
 SVGConverterRegistry.register(LineDrawObject, LineDrawObjectToSVGConvertor)
-SVGConverterRegistry.register(HorizontalLineDrawObject, LineDrawObjectToSVGConvertor)
-SVGConverterRegistry.register(VerticalLineDrawObject, LineDrawObjectToSVGConvertor)
+SVGConverterRegistry.register(StraightLineDrawObject, LineDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(TextDrawObject, TextDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(RectangleDrawObject, RectangleDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(Container, ContainerToSVGConvertor)
