@@ -26,4 +26,4 @@ test:
   script:
     - python --version
     - echo "Running pytest with marker filter"
-    - uv run pytest -m "not nonci" -vv
+    - uv run pytest -m "not nonci and not wip"

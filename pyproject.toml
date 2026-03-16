@@ -23,7 +23,7 @@ test = [
 
 [tool.pytest.ini_options]
 addopts = "-s --doctest-modules --ignore=musurgia/old_modules"
-markers = ["nonci: marks non ci tests"]
+markers = ["nonci: marks non ci tests", "wip: marks wip tests"]
 
 [tool.mypy]
 exclude = '(old_modules|tests)'

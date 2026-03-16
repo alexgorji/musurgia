@@ -79,4 +79,4 @@ jobs:
           cat ${{ github.workspace }}/musurgia/tests/graphics/svg/fonts/fonts.conf
 
       - name: Run pytest
-        run: uv run pytest -m "not nonci"
+        run: uv run pytest -m "not nonci and not wip"
