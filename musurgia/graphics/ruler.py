@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
-from typing import Any, Mapping
+from typing import Any, Mapping, Tuple
 
 from musurgia.graphics.drawobject import Container, Position, TextDrawObject
 from musurgia.graphics.line_segment import LineSegment, Marker
 from musurgia.graphics.models import LineOrientation
-from musurgia.graphics.util import overrides_data_class_options
+from musurgia.graphics.util import overrides_data_class_options, toggle_position
 
 
 @dataclass
@@ -29,6 +29,7 @@ class RulerUnit(Container):
     def __init__(
         self,
         *,
+        type: LineOrientation,
         length: float | int,
         division: int,
         large_markers_length: float | int,
@@ -38,6 +39,7 @@ class RulerUnit(Container):
     ):
 
         super().__init__()
+        self.type = type
         self._length = length
         self._division = division
         self._large_markers_length = large_markers_length
@@ -50,11 +52,13 @@ class RulerUnit(Container):
     def _build(self) -> None:
         unit_division_length = self._length / self._division
         for index in range(self._division):
-            x_position = index * unit_division_length
-            y_position = (
-                0
-                if index in [0, self._division - 1]
-                else (self._large_markers_length - self._small_markers_length) / 2
+            position = Position(
+                index * unit_division_length,
+                (
+                    0
+                    if index in [0, self._division - 1]
+                    else (self._large_markers_length - self._small_markers_length) / 2
+                ),
             )
             options: Any = {"start_marker": {}, "end_marker": {}}
             if index == 0:
@@ -77,35 +81,39 @@ class RulerUnit(Container):
                     options["start_marker"]["thickness"] = self._thickness / 2
                     options["end_marker"]["thickness"] = self._thickness / 2
 
-            hls = LineSegment(
-                type=LineOrientation.HORIZONTAL,
+            ls = LineSegment(
+                type=self.type,
                 length=unit_division_length,
                 color=self._color,
                 thickness=self._thickness,
                 options=options,
             )
-            hls._end_marker.show = False
+            ls._end_marker.show = False
 
+            if self.type.value == "vertical":
+                position = toggle_position(position)
             self.add_draw_object(
-                Position(x_position, y_position),
-                hls,
+                position,
+                ls,
             )
 
 
-class HorizontalRuler(Container):
+class Ruler(Container):
     def __init__(
         self,
         *,
+        type: LineOrientation,
         length: float,
         unit_length: int | float = 10,
         unit_division: int = 10,
         labels_interval: int = 1,
-        label_offset=Position(1, 3),
+        label_offset: Tuple[int | float, int | float] = (1, 3),
         color: str | None = None,
         thickness: float | None = None,
         options: Mapping[str, Any] | None = None,
     ) -> None:
         super().__init__()
+        self.type = type
         self._length = length
         self._unit_length = unit_length
         self._unit_division = unit_division
@@ -130,14 +138,19 @@ class HorizontalRuler(Container):
     def _build_labels(self):
         for i, (p, _) in enumerate(self.get_positioned_ruler_units()):
             if i % self._labels_interval == 0:
+                if self.type.value == "horizontal":
+                    position = Position(p.x + self._label_offset[0], 0)
+                else:
+                    position = Position(0, p.y + self._label_offset[0])
                 self.add_draw_object(
-                    Position(p.x + self._label_offset.x, 0),
+                    position,
                     TextDrawObject(text=str(i), color=self._color),
                 )
 
     def _create_ruler_units(self) -> None:
         self._ruler_units = [
             RulerUnit(
+                type=self.type,
                 length=self._unit_length,
                 division=self._unit_division,
                 large_markers_length=self._options.unit_marker.length,
@@ -152,8 +165,13 @@ class HorizontalRuler(Container):
         return self._unit_length / self._unit_division
 
     def _get_ruler_unit_positions(self):
+        if self.type.value == "horizontal":
+            return [
+                Position(i * self._unit_length, self._label_offset[1])
+                for i in range(self._get_number_ruler_units())
+            ]
         return [
-            Position(i * self._unit_length, self._label_offset.y)
+            Position(self._label_offset[1], i * self._unit_length)
             for i in range(self._get_number_ruler_units())
         ]
 
