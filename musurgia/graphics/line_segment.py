@@ -164,3 +164,6 @@ class LineSegment(Container):
 
     def get_straight_line(self) -> StraightLineDrawObject:
         return self._straight_line
+
+    def get_length(self) -> float:
+        return self.get_straight_line().get_length()

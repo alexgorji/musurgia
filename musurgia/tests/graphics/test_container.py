@@ -202,3 +202,8 @@ class ContainerTestCase(TestCase):
             straight_line,
             end_marker,
         }
+
+    def test_empty_container(self):
+        empty_container = Container()
+        assert empty_container.get_draw_objects() == []
+        assert empty_container.get_positioned_draw_objects() == []
