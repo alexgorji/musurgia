@@ -130,12 +130,12 @@ class Ruler(Container):
         self._build_ruler_units()
         self._build_labels()
 
-    def _build_ruler_units(self):
+    def _build_ruler_units(self) -> None:
         self._create_ruler_units()
         for p, ru in zip(self._get_ruler_unit_positions(), self._ruler_units):
             self.add_draw_object(p, ru)
 
-    def _build_labels(self):
+    def _build_labels(self) -> None:
         for i, (p, _) in enumerate(self.get_positioned_ruler_units()):
             if i % self._labels_interval == 0:
                 if self.type.value == "horizontal":
@@ -161,10 +161,10 @@ class Ruler(Container):
             for _ in range(self._get_number_ruler_units())
         ]
 
-    def _get_division_size(self):
+    def _get_division_size(self) -> float:
         return self._unit_length / self._unit_division
 
-    def _get_ruler_unit_positions(self):
+    def _get_ruler_unit_positions(self) -> list[Position]:
         if self.type.value == "horizontal":
             return [
                 Position(i * self._unit_length, self._label_offset[1])
@@ -175,17 +175,17 @@ class Ruler(Container):
             for i in range(self._get_number_ruler_units())
         ]
 
-    def _get_number_ruler_units(self):
+    def _get_number_ruler_units(self) -> int:
         return int(self._length / self._unit_length)
 
-    def get_positioned_ruler_units(self):
+    def get_positioned_ruler_units(self) -> list[tuple[Position, RulerUnit]]:
         return [
             (p, o)
             for (p, o) in self.get_positioned_draw_objects()
             if isinstance(o, RulerUnit)
         ]
 
-    def get_positioned_markers(self):
+    def get_positioned_markers(self) -> list[tuple[Position, Marker]]:
         return [
             (rup + lp + mp, m)
             for (rup, ru) in self.get_positioned_ruler_units()
@@ -201,7 +201,7 @@ class Ruler(Container):
             ]
         ]
 
-    def get_positioned_labels(self):
+    def get_positioned_labels(self) -> list[tuple[Position, TextDrawObject]]:
         return [
             (p, o)
             for p, o in self.get_positioned_draw_objects()
