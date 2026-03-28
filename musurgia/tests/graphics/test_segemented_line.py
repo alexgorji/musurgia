@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 from musurgia.graphics.drawobject import Position, TextDrawObject
+from musurgia.graphics.line_segment import Marker
 from musurgia.graphics.models import LineOrientation
 from musurgia.graphics.segmented_line import SegmentedLine
 
@@ -36,15 +37,17 @@ class HorizontalSegmentedLineTestCase(TestCase):
         lss = self.sl.get_line_segments()
         for ls in lss:
             start, end = ls.get_markers()
+            assert isinstance(start, Marker)
             assert start.get_length() == 6
-            assert end.get_length() == 6
             assert start.get_color() == "black"
-            assert end.get_color() == "black"
             assert start.show is True
+
             if ls != lss[-1]:
-                assert end.show is False
+                assert end is None
             else:
-                assert end.show is True
+                assert isinstance(end, Marker)
+                assert end.get_length() == 6
+                assert end.get_color() == "black"
 
     def test_setting_marker_length(self):
         sl = SegmentedLine(
@@ -55,7 +58,8 @@ class HorizontalSegmentedLineTestCase(TestCase):
         for ls in sl.get_line_segments():
             start, end = ls.get_markers()
             assert start.get_length() == 100
-            assert end.get_length() == 100
+            if end:
+                assert end.get_length() == 100
 
     def test_aligned_segmented_lines(self):
         lengths = [1, 2, 3.4, 5.6]

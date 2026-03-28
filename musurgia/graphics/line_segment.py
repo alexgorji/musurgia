@@ -77,11 +77,13 @@ class LineSegment(Container):
         color: str | None = None,
         thickness: float | None = None,
         options: Mapping[str, Any] | None = None,
+        no_end_marker=False,
     ):
         super().__init__()
         self.type = type
         self._length = length
         self._options = LineSegmentOptions()
+        self._no_end_marker = no_end_marker
         if color:
             for field in fields(self._options):
                 component = getattr(self._options, field.name)
@@ -98,7 +100,7 @@ class LineSegment(Container):
 
         self._straight_line: StraightLineDrawObject
         self._start_marker: Marker
-        self._end_marker: Marker
+        self._end_marker: Marker | None
 
         self._build()
 
@@ -108,10 +110,13 @@ class LineSegment(Container):
             options=asdict(self._options.start_marker),
         )
 
-        self._end_marker = Marker(
-            type=toggle_line_orientation(self.type),
-            options=asdict(self._options.end_marker),
-        )
+        if not self._no_end_marker:
+            self._end_marker = Marker(
+                type=toggle_line_orientation(self.type),
+                options=asdict(self._options.end_marker),
+            )
+        else:
+            self._end_marker = None
 
         self._straight_line = StraightLineDrawObject(
             type=self.type, length=self._length, **asdict(self._options.straight_line)
@@ -121,7 +126,8 @@ class LineSegment(Container):
             0,
             (
                 0
-                if self._start_marker.get_length() >= self._end_marker.get_length()
+                if not self._end_marker
+                or self._start_marker.get_length() >= self._end_marker.get_length()
                 else (self._end_marker.get_length() - self._start_marker.get_length())
                 / 2
             ),
@@ -131,15 +137,20 @@ class LineSegment(Container):
             self._length,
             (
                 0
-                if self._end_marker.get_length() >= self._start_marker.get_length()
+                if not self._end_marker
+                or self._end_marker.get_length() >= self._start_marker.get_length()
                 else (self._start_marker.get_length() - self._end_marker.get_length())
                 / 2
             ),
         )
 
-        straight_line_position = Position(
-            0,
-            max(self._end_marker.get_length(), self._start_marker.get_length()) / 2,
+        straight_line_position = (
+            Position(
+                0,
+                max(self._end_marker.get_length(), self._start_marker.get_length()) / 2,
+            )
+            if self._end_marker
+            else Position(0, self._start_marker.get_length() / 2)
         )
 
         if self.type.value == "vertical":
@@ -149,17 +160,18 @@ class LineSegment(Container):
 
         self.add_draw_object(start_marker_position, self._start_marker)
 
-        self.add_draw_object(
-            end_marker_position,
-            self._end_marker,
-        )
+        if self._end_marker:
+            self.add_draw_object(
+                end_marker_position,
+                self._end_marker,
+            )
 
         self.add_draw_object(
             straight_line_position,
             self._straight_line,
         )
 
-    def get_markers(self) -> tuple[Marker, Marker]:
+    def get_markers(self) -> tuple[Marker, Marker | None]:
         return self._start_marker, self._end_marker
 
     def get_straight_line(self) -> StraightLineDrawObject:

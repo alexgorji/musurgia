@@ -45,19 +45,24 @@ class SegmentedLine(Container):
                 ),
             )
 
-            do = LineSegment(
-                type=self.type,
-                length=len,
-                color=self._color,
-                thickness=self._thickness,
-                options=asdict(options),
-            )
-            _, end = do.get_markers()
-
             if len == self._segment_lengths[-1]:
-                end.show = True
+                do = LineSegment(
+                    type=self.type,
+                    length=len,
+                    color=self._color,
+                    thickness=self._thickness,
+                    options=asdict(options),
+                    no_end_marker=False,
+                )
             else:
-                end.show = False
+                do = LineSegment(
+                    type=self.type,
+                    length=len,
+                    color=self._color,
+                    thickness=self._thickness,
+                    options=asdict(options),
+                    no_end_marker=True,
+                )
 
             self.add_draw_object(position=position, draw_object=do)
             h_position = Position(h_position.x + len, 0)

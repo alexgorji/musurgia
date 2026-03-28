@@ -58,6 +58,31 @@ class HorizontalLineSegmentTestCase(TestCase):
             elif o == straight_line:
                 assert p == Position(0, 3)
 
+    def test_no_end_marker_components(self):
+        hsl = LineSegment(
+            type=LineOrientation.HORIZONTAL, length=15, no_end_marker=True
+        )
+
+        start_marker, end_marker = hsl.get_markers()
+        assert end_marker is None
+        assert isinstance(start_marker, Marker)
+        assert start_marker.get_type() == "vertical"
+        assert start_marker.get_length() == MarkerOptions.length
+        straight_line = hsl.get_straight_line()
+        assert isinstance(straight_line, StraightLineDrawObject)
+        assert straight_line.type.value == "horizontal"
+        assert straight_line.get_length() == 15
+        assert {do[1] for do in hsl.get_positioned_draw_objects()} == {
+            start_marker,
+            straight_line,
+        }
+
+        for p, o in hsl.get_positioned_draw_objects():
+            if o == start_marker:
+                assert p == Position(0, 0)
+            elif o == straight_line:
+                assert p == Position(0, 3)
+
     def test_set_color(self):
         hsl = LineSegment(
             type=LineOrientation.HORIZONTAL,
