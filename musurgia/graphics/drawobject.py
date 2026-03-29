@@ -413,6 +413,7 @@ class StraightLineDrawObject(LineDrawObject):
         bottom_padding: int | float = 0,
         **kwargs: Any,
     ) -> None:
+        self.type = type
         if type.value == "horizontal":
             end = Position(start.x + length, start.y)
         else:
