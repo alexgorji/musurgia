@@ -152,6 +152,25 @@ class HorizontalLineSegmentTestCase(TestCase):
 
         assert positioned_end_marker[0] == Position(10, 0)
 
+    def test_component_getters(self):
+        hsl = LineSegment(type=LineOrientation.HORIZONTAL, length=15)
+        assert hsl.get_straight_line(positioned=True)[0] == Position(0, 3)
+        straight_line = hsl.get_straight_line(positioned=True)[1]
+        assert isinstance(straight_line, StraightLineDrawObject)
+        assert straight_line == hsl.get_straight_line(positioned=False)
+
+        positioned_start, positioned_end = hsl.get_markers(positioned=True)
+        start, end = hsl.get_markers(positioned=False)
+
+        assert positioned_start[1] == start
+        assert positioned_start[0] == Position(0, 0)
+        assert start.get_length() == 6
+
+        if positioned_end and end:
+            assert positioned_end[1] == end
+            assert positioned_end[0] == Position(15, 0)
+            assert end.get_length() == 6
+
 
 class VerticalLineSegmentTestCase(TestCase):
     def test_get_draw_objects(self):
@@ -249,3 +268,22 @@ class VerticalLineSegmentTestCase(TestCase):
         assert positioned_start_marker[0] == Position(2.5, 0)
 
         assert positioned_end_marker[0] == Position(0, 10)
+
+    def test_component_getters(self):
+        vsl = LineSegment(type=LineOrientation.VERTICAL, length=15)
+        assert vsl.get_straight_line(positioned=True)[0] == Position(3, 0)
+        straight_line = vsl.get_straight_line(positioned=True)[1]
+        assert isinstance(straight_line, StraightLineDrawObject)
+        assert straight_line == vsl.get_straight_line(positioned=False)
+
+        positioned_start, positioned_end = vsl.get_markers(positioned=True)
+        start, end = vsl.get_markers(positioned=False)
+
+        assert positioned_start[1] == start
+        assert positioned_start[0] == Position(0, 0)
+        assert start.get_length() == 6
+
+        if positioned_end and end:
+            assert positioned_end[1] == end
+            assert positioned_end[0] == Position(0, 15)
+            assert end.get_length() == 6

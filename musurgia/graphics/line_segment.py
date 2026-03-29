@@ -5,7 +5,7 @@ from musurgia.graphics.drawobject import (
 )
 
 from dataclasses import dataclass, field, asdict, fields
-from typing import Any, Mapping
+from typing import Any, Literal, Mapping, cast, overload
 
 from musurgia.graphics.models import LineOrientation
 from musurgia.graphics.util import (
@@ -171,11 +171,62 @@ class LineSegment(Container):
             self._straight_line,
         )
 
-    def get_markers(self) -> tuple[Marker, Marker | None]:
-        return self._start_marker, self._end_marker
 
-    def get_straight_line(self) -> StraightLineDrawObject:
-        return self._straight_line
+    @overload
+    def get_markers(
+        self, positioned: Literal[False] = False
+    ) -> tuple[Marker, Marker | None]: ...
+
+    @overload
+    def get_markers(
+        self, positioned: Literal[True]
+    ) -> tuple[tuple[Position, Marker], tuple[Position, Marker] | None]: ...
+
+    def get_markers(
+        self, positioned=False
+    ) -> (
+        tuple[Marker, Marker | None]
+        | tuple[tuple[Position, Marker], tuple[Position, Marker] | None]
+    ):
+        if not positioned:
+            return self._start_marker, self._end_marker
+        else:
+            positioned_start = [
+                (p, cast(Marker, o))
+                for (p, o) in self.get_positioned_draw_objects()
+                if o == self._start_marker
+            ][0]
+
+            positioned_end = None
+            if self._end_marker:
+                positioned_end = [
+                    (p, cast(Marker, o))
+                    for (p, o) in self.get_positioned_draw_objects()
+                    if o == self._end_marker
+                ][0]
+
+            return (positioned_start, positioned_end)
+
+    @overload
+    def get_straight_line(
+        self, positioned: Literal[False] = False
+    ) -> StraightLineDrawObject: ...
+
+    @overload
+    def get_straight_line(
+        self, positioned: Literal[True]
+    ) -> tuple[Position, StraightLineDrawObject]: ...
+
+    def get_straight_line(
+        self, positioned=False
+    ) -> StraightLineDrawObject | tuple[Position, StraightLineDrawObject]:
+        if not positioned:
+            return self._straight_line
+        return [
+            (p, cast(StraightLineDrawObject, o))
+            for (p, o) in self.get_positioned_draw_objects()
+            if o == self._straight_line
+        ][0]
 
     def get_length(self) -> float:
         return self.get_straight_line().get_length()
