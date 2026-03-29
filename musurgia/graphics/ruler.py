@@ -88,7 +88,8 @@ class RulerUnit(Container):
                 thickness=self._thickness,
                 options=options,
             )
-            ls._end_marker.show = False
+            if ls._end_marker:
+                ls._end_marker.show = False
 
             if self.type.value == "vertical":
                 position = toggle_position(position)

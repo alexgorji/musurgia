@@ -77,8 +77,8 @@ class LineSegment(Container):
         color: str | None = None,
         thickness: float | None = None,
         options: Mapping[str, Any] | None = None,
-        no_end_marker=False,
-    ):
+        no_end_marker: bool = False,
+    ) -> None:
         super().__init__()
         self.type = type
         self._length = length
@@ -171,10 +171,9 @@ class LineSegment(Container):
             self._straight_line,
         )
 
-
     @overload
     def get_markers(
-        self, positioned: Literal[False] = False
+        self, positioned: Literal[False]
     ) -> tuple[Marker, Marker | None]: ...
 
     @overload
@@ -183,7 +182,7 @@ class LineSegment(Container):
     ) -> tuple[tuple[Position, Marker], tuple[Position, Marker] | None]: ...
 
     def get_markers(
-        self, positioned=False
+        self, positioned: bool = False
     ) -> (
         tuple[Marker, Marker | None]
         | tuple[tuple[Position, Marker], tuple[Position, Marker] | None]
@@ -218,7 +217,7 @@ class LineSegment(Container):
     ) -> tuple[Position, StraightLineDrawObject]: ...
 
     def get_straight_line(
-        self, positioned=False
+        self, positioned: bool = False
     ) -> StraightLineDrawObject | tuple[Position, StraightLineDrawObject]:
         if not positioned:
             return self._straight_line
