@@ -37,11 +37,13 @@ class PageToSVGTestCase(TestCase):
     def test_add_multiple_draw_objects_to_page(self):
         page = Page()
         page.add_draw_object(
-            Position(0, 0), TextDrawObject(text="Hello", start=Position(10, 10))
+            Position(0, 0),
+            TextDrawObject(text="Hello", padding=Padding(10, 0, 0, 10)),
         )
 
         page.add_draw_object(
-            Position(0, 0), TextDrawObject(text="Goodbye", start=Position(20, 20))
+            Position(0, 0),
+            TextDrawObject(text="Goodbye", padding=Padding(20, 0, 0, 20)),
         )
 
         svg_string = page.convert_to_svg_string()
@@ -74,7 +76,7 @@ class PageToSVGRegressionTests(SVGTestCase):
         t2 = TextDrawObject(
             text="The quick Brown fox Jumps over The lazy Dog",
             color="red",
-            start=Position(10, 20),
+            padding=Padding(20, 0, 0, 10),
             font_size=12,
         )
         t2.box.show = True
@@ -83,10 +85,8 @@ class PageToSVGRegressionTests(SVGTestCase):
         t3 = TextDrawObject(
             text="The quick Brown fox Jumps over The lazy Dog",
             color="orange",
-            start=Position(10, 20),
+            padding=Padding(20, 30, 40, 10),
             font_size=15,
-            right_padding=30,
-            bottom_padding=40,
         )
         t3.box.show = True
         page.add_draw_object(Position(30, 180), t3)

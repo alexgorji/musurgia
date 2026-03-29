@@ -39,10 +39,10 @@ class Size:
 
 @dataclass(frozen=True)
 class Padding:
-    top: float
-    right: float
-    bottom: float
-    left: float
+    top: float | int = 0
+    right: float | int = 0
+    bottom: float | int = 0
+    left: float | int = 0
 
 
 @dataclass(frozen=True)
@@ -227,18 +227,14 @@ class TextDrawObject(ColorMixin, DrawObject):
         self,
         *,
         text: str,
-        start: Position = Position(0, 0),
-        right_padding: int | float = 0,
-        bottom_padding: int | float = 0,
+        padding: Padding = Padding(),
         font_family: str = "DejaVu Sans",
         font_size: int | float = 12,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self._text = text
-        self._start = start
-        self._right_padding = right_padding
-        self._bottom_padding = bottom_padding
+        self._padding = padding
 
         self._font_family = font_family
         self._font_size = font_size
@@ -250,18 +246,6 @@ class TextDrawObject(ColorMixin, DrawObject):
     @property
     def text(self) -> str:
         return self._text
-
-    @property
-    def start(self) -> Position:
-        return self._start
-
-    @property
-    def right_padding(self) -> int | float:
-        return self._right_padding
-
-    @property
-    def bottom_padding(self) -> int | float:
-        return self._bottom_padding
 
     @property
     def font_family(self) -> str:
@@ -286,12 +270,7 @@ class TextDrawObject(ColorMixin, DrawObject):
         return ext
 
     def _get_padding(self) -> Padding:
-        return Padding(
-            top=self.start.y,
-            right=self.right_padding,
-            bottom=self.bottom_padding,
-            left=self.start.x,
-        )
+        return self._padding
 
     def get_bounding_box_coordinates(self) -> Coordinates:
         return Coordinates(
