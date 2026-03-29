@@ -3,7 +3,57 @@ from unittest import TestCase
 from musurgia.graphics.drawobject import Position, TextDrawObject
 from musurgia.graphics.line_segment import Marker
 from musurgia.graphics.models import LineOrientation
-from musurgia.graphics.segmented_line import SegmentedLine
+from musurgia.graphics.segmented_line import SegmentedLine, LineSegment
+
+
+def _check_straight_line_alignment(segmented_line: SegmentedLine):
+    positioned_line_segments = segmented_line.get_positioned_line_segments()
+    first_positioned_line_segment = positioned_line_segments[0]
+
+    if segmented_line.type.value == "horizontal":
+        first_straight_line_y = (
+            first_positioned_line_segment[1].get_straight_line(positioned=True)[0].y
+            + first_positioned_line_segment[0].y
+        )
+        for ls in positioned_line_segments[1:]:
+            assert (
+                ls[1].get_straight_line(positioned=True)[0].y + ls[0].y
+                == first_straight_line_y
+            )
+    else:
+        first_straight_line_x = (
+            first_positioned_line_segment[1].get_straight_line(positioned=True)[0].x
+            + first_positioned_line_segment[0].x
+        )
+        for ls in positioned_line_segments[1:]:
+            assert (
+                ls[1].get_straight_line(positioned=True)[0].x + ls[0].x
+                == first_straight_line_x
+            )
+
+
+def _check_centered_markers(line_segment: LineSegment):
+    straight_line_position = line_segment.get_straight_line(positioned=True)[0]
+    positioned_start_marker, positioned_end_marker = line_segment.get_markers(
+        positioned=True
+    )
+    if line_segment.type.value == "horizontal":
+        assert (
+            positioned_start_marker[0].y + positioned_start_marker[1].get_length() / 2
+            == straight_line_position.y
+        )
+    else:
+        assert (
+            positioned_start_marker[0].x + positioned_start_marker[1].get_length() / 2
+            == straight_line_position.x
+        )
+    return True
+
+
+def _check_all_straight_lines_centered(segmented_line: SegmentedLine):
+    for ls in segmented_line.get_line_segments():
+        assert _check_centered_markers(ls)
+    return True
 
 
 class HorizontalSegmentedLineTestCase(TestCase):
@@ -49,7 +99,7 @@ class HorizontalSegmentedLineTestCase(TestCase):
                 assert end.get_length() == 6
                 assert end.get_color() == "black"
 
-    def test_setting_marker_length(self):
+    def test_setting_default_marker_length(self):
         sl = SegmentedLine(
             type=LineOrientation.HORIZONTAL,
             segment_lengths=self.lengths,
@@ -64,7 +114,5 @@ class HorizontalSegmentedLineTestCase(TestCase):
     def test_aligned_segmented_lines(self):
         lengths = [1, 2, 3.4, 5.6]
         sl = SegmentedLine(type=LineOrientation.HORIZONTAL, segment_lengths=lengths)
-        lss = sl.get_positioned_line_segments()
-        first_straight_line_y_position = lss[0][0].y
-        for ls in lss[1:]:
-            assert ls[0].y == first_straight_line_y_position
+        _check_straight_line_alignment(sl)
+        _check_all_straight_lines_centered(sl)

@@ -75,7 +75,7 @@ class HorizontalLineTestCase(TestCase):
         hl = StraightLineDrawObject(
             type=LineOrientation.HORIZONTAL, start=Position(20, 40), length=10
         )
-        assert hl.end.x, hl.end.y == (30, 40)
+        assert (hl.end.x, hl.end.y) == (30, 40)
 
     def test_size(self):
         hl = StraightLineDrawObject(
@@ -101,10 +101,10 @@ class HorizontalLineTestCase(TestCase):
 class VerticalLineTestCase(TestCase):
 
     def test_vertical_line(self):
-        hl = StraightLineDrawObject(
+        vl = StraightLineDrawObject(
             type=LineOrientation.VERTICAL, start=Position(20, 30), length=10
         )
-        assert hl.end.x, hl.end.y == (20, 40)
+        assert (vl.end.x, vl.end.y) == (20, 40)
 
     def test_size(self):
         vl = StraightLineDrawObject(
