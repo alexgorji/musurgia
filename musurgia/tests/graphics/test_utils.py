@@ -2,7 +2,11 @@ from unittest import TestCase
 
 from musurgia.graphics.drawobject import Position
 from musurgia.graphics.models import LineOrientation
-from musurgia.graphics.util import toggle_line_orientation, toggle_position
+from musurgia.graphics.util import (
+    override_options_mappings,
+    toggle_line_orientation,
+    toggle_position,
+)
 
 
 class Toggles(TestCase):
@@ -17,3 +21,16 @@ class Toggles(TestCase):
         toggled = toggle_position(p)
         assert toggled == Position(200, 100)
         assert toggle_position(toggled) == p
+
+
+class OverrideOptionsMappings(TestCase):
+    def test_override_simple(self):
+        options = {"start_marker": {"length": 10, "color": "blue"}}
+        override = {
+            "start_marker": {"length": 20},
+            "end_marker": {"length": 30, "color": "red"},
+        }
+        assert override_options_mappings(options, override) == {
+            "start_marker": {"length": 20, "color": "blue"},
+            "end_marker": {"length": 30, "color": "red"},
+        }

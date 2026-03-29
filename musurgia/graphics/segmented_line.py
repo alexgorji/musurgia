@@ -1,12 +1,11 @@
-from dataclasses import asdict
+from typing import Any, Mapping
 
 from musurgia.graphics.drawobject import Container, Position
 from musurgia.graphics.line_segment import (
     LineSegment,
-    LineSegmentOptions,
-    MarkerOptions,
 )
 from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.util import override_options_mappings
 
 
 class SegmentedLine(Container):
@@ -18,7 +17,7 @@ class SegmentedLine(Container):
         marker_length: int | float | None = None,
         color: str | None = None,
         thickness: float | None = None,
-        options: dict[int, LineSegmentOptions] | None = None,
+        options: dict[int, Mapping[str, Any]] | None = None,
     ) -> None:
         super().__init__()
         self.type = type
@@ -33,21 +32,19 @@ class SegmentedLine(Container):
         _line_segments = []
         for index, len in enumerate(self._segment_lengths):
 
-            options = None
+            options: dict[str, Any] = {
+                "start_marker": {},
+                "end_marker": {},
+                "straight_line": {},
+            }
+            if self._marker_length:
+                options["start_marker"]["length"] = options["end_marker"]["length"] = (
+                    self._marker_length
+                )
 
             if self._options:
-                if line_segment_options := self._options.get(index + 1):
-                    options = line_segment_options
-
-            if not options:
-                options = LineSegmentOptions(
-                    start_marker=MarkerOptions(
-                        length=self._marker_length or MarkerOptions.length
-                    ),
-                    end_marker=MarkerOptions(
-                        length=self._marker_length or MarkerOptions.length
-                    ),
-                )
+                if override := self._options.get(index + 1):
+                    options = override_options_mappings(options, override)
 
             if len == self._segment_lengths[-1]:
                 ls = LineSegment(
@@ -55,7 +52,7 @@ class SegmentedLine(Container):
                     length=len,
                     color=self._color,
                     thickness=self._thickness,
-                    options=asdict(options),
+                    options=options,
                     no_end_marker=False,
                 )
             else:
@@ -64,7 +61,7 @@ class SegmentedLine(Container):
                     length=len,
                     color=self._color,
                     thickness=self._thickness,
-                    options=asdict(options),
+                    options=options,
                     no_end_marker=True,
                 )
             _line_segments.append(ls)

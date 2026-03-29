@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from musurgia.graphics.drawobject import Position, TextDrawObject
-from musurgia.graphics.line_segment import LineSegmentOptions, Marker, MarkerOptions
+from musurgia.graphics.line_segment import Marker
 from musurgia.graphics.models import LineOrientation
 from musurgia.graphics.segmented_line import SegmentedLine, LineSegment
 
@@ -117,9 +117,8 @@ class HorizontalSegmentedLineTestCase(TestCase):
             type=LineOrientation.HORIZONTAL,
             segment_lengths=self.lengths,
             marker_length=100,
-            options={2: LineSegmentOptions(start_marker=MarkerOptions(length=10))},
+            options={2: {"start_marker": {"length": 10}}},
         )
-
         for index, ls in enumerate(sl.get_line_segments()):
             if index == 1:
                 assert ls.get_markers()[0].get_length() == 10
@@ -127,6 +126,55 @@ class HorizontalSegmentedLineTestCase(TestCase):
                 assert ls.get_markers()[0].get_length() == 100
         _check_all_straight_lines_centered(sl)
         _check_straight_line_alignment(sl)
+
+    def test_color(self):
+        sl = SegmentedLine(
+            type=LineOrientation.HORIZONTAL, segment_lengths=self.lengths, color="blue"
+        )
+
+        assert {do.get_color() for do in sl.get_draw_objects(recursive=True)} == {
+            "blue"
+        }
+
+        sl = SegmentedLine(
+            type=LineOrientation.HORIZONTAL,
+            segment_lengths=self.lengths,
+            color="blue",
+            options={2: {"start_marker": {"color": "red"}}},
+        )
+
+        for index, sl in enumerate(sl.get_line_segments()):
+            if index == 1:
+                assert sl.get_markers()[0].get_color() == "red"
+            else:
+                assert sl.get_markers()[0].get_color() == "blue"
+
+    def test_thickness(self):
+        sl = SegmentedLine(
+            type=LineOrientation.HORIZONTAL, segment_lengths=self.lengths, thickness=5
+        )
+
+        for ls in sl.get_line_segments():
+            assert ls.get_straight_line().thickness == 5
+            start, end = ls.get_markers()
+            assert start.get_thickness() == 5
+            if end:
+                assert end.get_thickness() == 5
+
+        sl = SegmentedLine(
+            type=LineOrientation.HORIZONTAL,
+            segment_lengths=self.lengths,
+            thickness=5,
+            options={2: {"start_marker": {"thickness": 2}}},
+        )
+
+        for index, ls in enumerate(sl.get_line_segments()):
+            assert ls.get_straight_line().thickness == 5
+            start, end = ls.get_markers()
+            expected = 2 if index == 1 else 5
+            assert start.get_thickness() == expected
+            if end:
+                assert end.get_thickness() == 5
 
 
 class VerticalSegmentedLineTestCase(TestCase):
@@ -191,7 +239,7 @@ class VerticalSegmentedLineTestCase(TestCase):
             type=LineOrientation.VERTICAL,
             segment_lengths=self.lengths,
             marker_length=100,
-            options={2: LineSegmentOptions(start_marker=MarkerOptions(length=10))},
+            options={2: {"start_marker": {"length": 10}}},
         )
 
         for index, ls in enumerate(sl.get_line_segments()):

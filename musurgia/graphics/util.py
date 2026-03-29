@@ -1,6 +1,7 @@
+import copy
 from dataclasses import is_dataclass
-from typing import Any, Mapping
-
+from typing import Any
+from collections.abc import Mapping
 from musurgia.graphics.drawobject import Position
 from musurgia.graphics.models import LineOrientation
 
@@ -22,6 +23,24 @@ def overrides_data_class_options(obj: Any, overrides: Mapping[str, Any]) -> None
             overrides_data_class_options(current, value)
         else:
             setattr(obj, key, value)
+
+
+def override_options_mappings(
+    options: Mapping[str, Any], overrides: Mapping[str, Any]
+) -> dict[str, Any]:
+    overridden = dict(copy.deepcopy(options))
+
+    for key, value in overrides.items():
+        if key not in overridden:
+            overridden[key] = value
+        else:
+            current = overridden[key]
+            if isinstance(current, Mapping) and isinstance(value, Mapping):
+                overridden[key] = override_options_mappings(current, value)
+            else:
+                overridden[key] = value
+
+    return overridden
 
 
 def toggle_line_orientation(type: LineOrientation) -> LineOrientation:

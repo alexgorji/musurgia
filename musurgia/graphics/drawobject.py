@@ -123,6 +123,9 @@ class ColorMixin:
     def set_color(self, val: str) -> None:
         self._color = val
 
+    def get_color(self) -> str:
+        return self._color
+
 
 # -----------------------------
 # Container

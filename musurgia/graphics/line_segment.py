@@ -172,6 +172,9 @@ class LineSegment(Container):
         )
 
     @overload
+    def get_markers(self) -> tuple[Marker, Marker | None]: ...
+
+    @overload
     def get_markers(
         self, positioned: Literal[False]
     ) -> tuple[Marker, Marker | None]: ...
