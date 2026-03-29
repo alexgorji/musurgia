@@ -1,11 +1,14 @@
 from unittest import TestCase
 
+import pytest
+
 
 from musurgia.graphics.drawobject import (
     Position,
     StraightLineDrawObject,
 )
 from musurgia.graphics.line_segment import (
+    Label,
     LineSegment,
     Marker,
     MarkerOptions,
@@ -18,6 +21,19 @@ class MarkerTestCase(TestCase):
         m = Marker(type=LineOrientation.VERTICAL, options={"length": 10})
         assert m.get_type() == LineOrientation.VERTICAL.value
         assert m.get_length() == 10
+
+    def test_labels(self):
+        labels = [Label(text="First Layer"), Label(text="Second Layer", offset=10)]
+        m = Marker(
+            type=LineOrientation.VERTICAL,
+            options={
+                "length": 10,
+                "labels": labels,
+            },
+        )
+        assert len(m.get_labels()) == 2
+        assert set(m.get_labels()) == set(labels)
+        assert m.size.height == 10 + 10
 
 
 class HorizontalLineSegmentTestCase(TestCase):
@@ -170,6 +186,22 @@ class HorizontalLineSegmentTestCase(TestCase):
             assert positioned_end[1] == end
             assert positioned_end[0] == Position(15, 0)
             assert end.get_length() == 6
+
+    @pytest.mark.wip
+    def test_add_labels(self):
+        hsl = LineSegment(
+            type=LineOrientation.HORIZONTAL,
+            length=10,
+            options={
+                "start_marker": {
+                    "labels": [
+                        Label(text="first layer"),
+                        Label(text="Second layer", offset=10),
+                    ]
+                }
+            },
+        )
+        self.fail()
 
 
 class VerticalLineSegmentTestCase(TestCase):

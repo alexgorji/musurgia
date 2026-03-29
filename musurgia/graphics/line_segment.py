@@ -1,7 +1,9 @@
 from musurgia.graphics.drawobject import (
     Container,
+    Padding,
     Position,
     StraightLineDrawObject,
+    TextDrawObject,
 )
 
 from dataclasses import dataclass, field, asdict, fields
@@ -15,11 +17,36 @@ from musurgia.graphics.util import (
 )
 
 
+class Label(TextDrawObject):
+    def __init__(
+        self,
+        *,
+        text: str,
+        offset: float | int = 0,
+        padding: Padding = Padding(),
+        font_family: str = "DejaVu Sans",
+        font_size: int | float = 12,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            text=text,
+            padding=padding,
+            font_family=font_family,
+            font_size=font_size,
+            **kwargs,
+        )
+        self._offset = offset
+
+    def get_offset(self) -> float | int:
+        return self._offset
+
+
 @dataclass
 class MarkerOptions:
     length: float = 6.0
     thickness: float = 0.1
     color: str = "black"
+    labels: list[Label] = field(default_factory=lambda: [])
 
 
 @dataclass
@@ -43,7 +70,7 @@ class Marker(Container):
         options: Mapping[str, Any] | None = None,
     ) -> None:
         super().__init__()
-        self._type = type
+        self.type = type
         self._options = MarkerOptions()
         if options:
             overrides_data_class_options(self._options, options)
@@ -51,12 +78,36 @@ class Marker(Container):
         self._build()
 
     def _build(self) -> None:
-        self._line = StraightLineDrawObject(type=self._type, **asdict(self._options))
+        options = asdict(self._options)
+        labels = self._options.labels
+        options.pop("labels")
 
-        self.add_draw_object(Position(0, 0), self._line)
+        labels.sort(key=lambda label: label.get_offset(), reverse=True)
+
+        self._line = StraightLineDrawObject(type=self.type, **options)
+
+        if labels:
+            line_position = Position(0, labels[0].get_offset())
+            if self.type == LineOrientation.HORIZONTAL:
+                line_position = toggle_position(line_position)
+        else:
+            line_position = Position(0, 0)
+
+        self.add_draw_object(line_position, self._line)
+
+        for label in labels:
+            position = Position(0, labels[0].get_offset()) - Position(
+                0, label.get_offset()
+            )
+            if self.type == LineOrientation.HORIZONTAL:
+                position = toggle_position(position)
+            self.add_draw_object(position, label)
+
+    def get_labels(self) -> list[Label]:
+        return [do for do in self.get_draw_objects() if isinstance(do, Label)]
 
     def get_type(self) -> str:
-        return self._type.value
+        return self.type.value
 
     def get_length(self) -> float:
         return self._line.get_length()

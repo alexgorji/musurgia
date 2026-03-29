@@ -26,6 +26,9 @@ class Position:
     def __add__(self, other: "Position") -> "Position":
         return Position(self.x + other.x, self.y + other.y)
 
+    def __sub__(self, other: "Position") -> "Position":
+        return Position(self.x - other.x, self.y - other.y)
+
     @staticmethod
     def from_values(x: float, y: float) -> "Position":
         return Position(x, y)
