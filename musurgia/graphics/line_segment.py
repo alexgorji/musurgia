@@ -245,7 +245,7 @@ class LineSegment(Container):
         else:
             positioned_start = [
                 (p, cast(Marker, o))
-                for (p, o) in self.get_positioned_draw_objects()
+                for (p, o) in self.get_draw_objects(positioned=True)
                 if o == self._start_marker
             ][0]
 
@@ -253,7 +253,7 @@ class LineSegment(Container):
             if self._end_marker:
                 positioned_end = [
                     (p, cast(Marker, o))
-                    for (p, o) in self.get_positioned_draw_objects()
+                    for (p, o) in self.get_draw_objects(positioned=True)
                     if o == self._end_marker
                 ][0]
 
@@ -276,7 +276,7 @@ class LineSegment(Container):
             return self._straight_line
         return [
             (p, cast(StraightLineDrawObject, o))
-            for (p, o) in self.get_positioned_draw_objects()
+            for (p, o) in self.get_draw_objects(positioned=True)
             if o == self._straight_line
         ][0]
 

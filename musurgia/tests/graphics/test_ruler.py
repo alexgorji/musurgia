@@ -20,7 +20,7 @@ class HorizontalRulerUnitTestCase(TestCase):
             large_markers_length=5,
             small_markers_length=2.5,
         )
-        positioned_dos = ru.get_positioned_draw_objects()
+        positioned_dos = ru.get_draw_objects(positioned=True)
         dos = [o for _, o in positioned_dos]
         pos = [p for p, _ in positioned_dos]
         assert len(dos) == 5
@@ -190,7 +190,7 @@ class VerticalRulerUnitTestCase(TestCase):
             large_markers_length=5,
             small_markers_length=2.5,
         )
-        positioned_dos = ru.get_positioned_draw_objects()
+        positioned_dos = ru.get_draw_objects(positioned=True)
         dos = [o for _, o in positioned_dos]
         pos = [p for p, _ in positioned_dos]
         assert len(dos) == 5

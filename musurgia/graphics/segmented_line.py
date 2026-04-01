@@ -102,7 +102,7 @@ class SegmentedLine(Container):
     def get_positioned_line_segments(self) -> list[tuple[Position, LineSegment]]:
         return [
             (p, o)
-            for (p, o) in self.get_positioned_draw_objects()
+            for (p, o) in self.get_draw_objects(positioned=True)
             if isinstance(o, LineSegment)
         ]
 

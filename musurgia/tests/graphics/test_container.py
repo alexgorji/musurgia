@@ -75,11 +75,15 @@ class ContainerTestCase(TestCase):
         assert (
             {
                 (p, o)
-                for p, o in line_segment.get_positioned_draw_objects(recursive=True)
+                for p, o in line_segment.get_draw_objects(
+                    positioned=True, recursive=True
+                )
             }
             == {
                 (p, o)
-                for p, o in line_segment.get_positioned_draw_objects(recursive=False)
+                for p, o in line_segment.get_draw_objects(
+                    positioned=True, recursive=False
+                )
             }
             == {
                 (start_marker_p, start_marker),
@@ -161,14 +165,15 @@ class ContainerTestCase(TestCase):
             end_marker_p,
             end_marker,
         ] = self._create_test_nested_containers()
-        assert {(p, o) for p, o in line_segment.get_positioned_draw_objects()} == {
+        assert {(p, o) for p, o in line_segment.get_draw_objects(positioned=True)} == {
             (labeled_start_marker_p, labeled_start_marker),
             (straight_line_p, straight_line),
             (end_marker_p, end_marker),
         }
 
         assert {
-            (p, o) for p, o in line_segment.get_positioned_draw_objects(recursive=True)
+            (p, o)
+            for p, o in line_segment.get_draw_objects(positioned=True, recursive=True)
         } == {
             (start_marker_p + labeled_start_marker_p, start_marker),
             (start_marker_label_p + labeled_start_marker_p, start_marker_label),
@@ -177,6 +182,7 @@ class ContainerTestCase(TestCase):
         }
 
     def test_nested_containers_get_draw_objects_recursive(self):
+
         [
             line_segment,
             _,
@@ -190,6 +196,7 @@ class ContainerTestCase(TestCase):
             _,
             end_marker,
         ] = self._create_test_nested_containers()
+
         assert {o for o in line_segment.get_draw_objects()} == {
             labeled_start_marker,
             straight_line,
@@ -206,4 +213,4 @@ class ContainerTestCase(TestCase):
     def test_empty_container(self):
         empty_container = Container()
         assert empty_container.get_draw_objects() == []
-        assert empty_container.get_positioned_draw_objects() == []
+        assert empty_container.get_draw_objects(positioned=True) == []

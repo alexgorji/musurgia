@@ -182,7 +182,7 @@ class Ruler(Container):
     def get_positioned_ruler_units(self) -> list[tuple[Position, RulerUnit]]:
         return [
             (p, o)
-            for (p, o) in self.get_positioned_draw_objects()
+            for (p, o) in self.get_draw_objects(positioned=True)
             if isinstance(o, RulerUnit)
         ]
 
@@ -192,12 +192,12 @@ class Ruler(Container):
             for (rup, ru) in self.get_positioned_ruler_units()
             for (lp, l) in [
                 (p, o)
-                for (p, o) in ru.get_positioned_draw_objects()
+                for (p, o) in ru.get_draw_objects(positioned=True)
                 if isinstance(o, LineSegment)
             ]
             for (mp, m) in [
                 (pp, oo)
-                for (pp, oo) in l.get_positioned_draw_objects()
+                for (pp, oo) in l.get_draw_objects(positioned=True)
                 if isinstance(oo, Marker) and oo.show
             ]
         ]
@@ -205,6 +205,6 @@ class Ruler(Container):
     def get_positioned_labels(self) -> list[tuple[Position, TextDrawObject]]:
         return [
             (p, o)
-            for p, o in self.get_positioned_draw_objects()
+            for p, o in self.get_draw_objects(positioned=True)
             if isinstance(o, TextDrawObject)
         ]

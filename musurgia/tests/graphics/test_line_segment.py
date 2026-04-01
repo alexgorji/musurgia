@@ -41,8 +41,8 @@ class HorizontalLineSegmentTestCase(TestCase):
         hsl = LineSegment(
             type=LineOrientation.HORIZONTAL, length=25, color="blue", thickness=1
         )
-        assert len(hsl.get_positioned_draw_objects()) == 3
-        assert len(hsl.get_positioned_draw_objects(recursive=True)) == 3
+        assert len(hsl.get_draw_objects(positioned=True)) == 3
+        assert len(hsl.get_draw_objects(positioned=True, recursive=True)) == 3
 
     def test_components(self):
         hsl = LineSegment(
@@ -60,13 +60,13 @@ class HorizontalLineSegmentTestCase(TestCase):
         assert isinstance(straight_line, StraightLineDrawObject)
         assert straight_line.type.value == "horizontal"
         assert straight_line.get_length() == 15
-        assert {do[1] for do in hsl.get_positioned_draw_objects()} == {
+        assert {do[1] for do in hsl.get_draw_objects(positioned=True)} == {
             start_marker,
             end_marker,
             straight_line,
         }
 
-        for p, o in hsl.get_positioned_draw_objects():
+        for p, o in hsl.get_draw_objects(positioned=True):
             if o == start_marker:
                 assert p == Position(0, 0)
             elif o == end_marker:
@@ -88,12 +88,12 @@ class HorizontalLineSegmentTestCase(TestCase):
         assert isinstance(straight_line, StraightLineDrawObject)
         assert straight_line.type.value == "horizontal"
         assert straight_line.get_length() == 15
-        assert {do[1] for do in hsl.get_positioned_draw_objects()} == {
+        assert {do[1] for do in hsl.get_draw_objects(positioned=True)} == {
             start_marker,
             straight_line,
         }
 
-        for p, o in hsl.get_positioned_draw_objects():
+        for p, o in hsl.get_draw_objects(positioned=True):
             if o == start_marker:
                 assert p == Position(0, 0)
             elif o == straight_line:
@@ -106,7 +106,7 @@ class HorizontalLineSegmentTestCase(TestCase):
             color="blue",
         )
         assert {
-            o.color for _, o in hsl.get_positioned_draw_objects(recursive=True)
+            o.color for _, o in hsl.get_draw_objects(positioned=True, recursive=True)
         } == {"blue"}
 
     def test_set_thickness(self):
@@ -116,7 +116,7 @@ class HorizontalLineSegmentTestCase(TestCase):
             thickness=1,
             options={"straight_line": {"thickness": 2}},
         )
-        for _, o in hsl.get_positioned_draw_objects(recursive=True):
+        for _, o in hsl.get_draw_objects(positioned=True, recursive=True):
             if isinstance(o, StraightLineDrawObject):
                 if o.type.value == "horizontal":
                     assert o.thickness == 2
@@ -132,13 +132,13 @@ class HorizontalLineSegmentTestCase(TestCase):
 
         positioned_start_marker = next(
             (p, o)
-            for (p, o) in hsl.get_positioned_draw_objects()
+            for (p, o) in hsl.get_draw_objects(positioned=True)
             if o == hsl._start_marker
         )
 
         positioned_end_marker = next(
             (p, o)
-            for (p, o) in hsl.get_positioned_draw_objects()
+            for (p, o) in hsl.get_draw_objects(positioned=True)
             if o == hsl._end_marker
         )
 
@@ -154,13 +154,13 @@ class HorizontalLineSegmentTestCase(TestCase):
 
         positioned_start_marker = next(
             (p, o)
-            for (p, o) in hsl.get_positioned_draw_objects()
+            for (p, o) in hsl.get_draw_objects(positioned=True)
             if o == hsl._start_marker
         )
 
         positioned_end_marker = next(
             (p, o)
-            for (p, o) in hsl.get_positioned_draw_objects()
+            for (p, o) in hsl.get_draw_objects(positioned=True)
             if o == hsl._end_marker
         )
 
@@ -212,8 +212,8 @@ class VerticalLineSegmentTestCase(TestCase):
         vsl = LineSegment(
             type=LineOrientation.VERTICAL, length=25, color="blue", thickness=1
         )
-        assert len(vsl.get_positioned_draw_objects()) == 3
-        assert len(vsl.get_positioned_draw_objects(recursive=True)) == 3
+        assert len(vsl.get_draw_objects(positioned=True)) == 3
+        assert len(vsl.get_draw_objects(positioned=True, recursive=True)) == 3
 
     def test_components(self):
         vsl = LineSegment(
@@ -231,13 +231,13 @@ class VerticalLineSegmentTestCase(TestCase):
         assert isinstance(straight_line, StraightLineDrawObject)
         assert straight_line.type.value == "vertical"
         assert straight_line.get_length() == 15
-        assert {do[1] for do in vsl.get_positioned_draw_objects()} == {
+        assert {do[1] for do in vsl.get_draw_objects(positioned=True)} == {
             start_marker,
             end_marker,
             straight_line,
         }
 
-        for p, o in vsl.get_positioned_draw_objects():
+        for p, o in vsl.get_draw_objects(positioned=True):
             if o == start_marker:
                 assert p == Position(0, 0)
             elif o == end_marker:
@@ -252,7 +252,7 @@ class VerticalLineSegmentTestCase(TestCase):
             thickness=1,
             options={"straight_line": {"thickness": 2}},
         )
-        for _, o in vsl.get_positioned_draw_objects(recursive=True):
+        for _, o in vsl.get_draw_objects(positioned=True):
             if isinstance(o, StraightLineDrawObject):
                 if o.type.value == "vertical":
                     assert o.thickness == 2
@@ -268,13 +268,13 @@ class VerticalLineSegmentTestCase(TestCase):
 
         positioned_start_marker = next(
             (p, o)
-            for (p, o) in vsl.get_positioned_draw_objects()
+            for (p, o) in vsl.get_draw_objects(positioned=True)
             if o == vsl._start_marker
         )
 
         positioned_end_marker = next(
             (p, o)
-            for (p, o) in vsl.get_positioned_draw_objects()
+            for (p, o) in vsl.get_draw_objects(positioned=True)
             if o == vsl._end_marker
         )
 
@@ -290,13 +290,13 @@ class VerticalLineSegmentTestCase(TestCase):
 
         positioned_start_marker = next(
             (p, o)
-            for (p, o) in vsl.get_positioned_draw_objects()
+            for (p, o) in vsl.get_draw_objects(positioned=True)
             if o == vsl._start_marker
         )
 
         positioned_end_marker = next(
             (p, o)
-            for (p, o) in vsl.get_positioned_draw_objects()
+            for (p, o) in vsl.get_draw_objects(positioned=True)
             if o == vsl._end_marker
         )
 

@@ -28,7 +28,7 @@ class VerticalRulerRegressionTests(SVGTestCase):
         ru.box.show = True
 
         x = 10
-        for p, o in ru.get_positioned_draw_objects():
+        for p, o in ru.get_draw_objects(positioned=True):
             position = Position(x, 10) + p
             page.add_draw_object(position, o)
             x += 10

@@ -91,7 +91,7 @@ class RectangleDrawObjectToSVGConvertor(DrawObjectConvertor[RectangleDrawObject]
 class ContainerToSVGConvertor(DrawObjectConvertor[Container]):
     def _convert(self) -> list[svg.Element]:
         elements: list[svg.Element] = []
-        for pos, child in self.draw_object.get_positioned_draw_objects():
+        for pos, child in self.draw_object.get_draw_objects(positioned=True):
             elements.extend(SVGConverterRegistry.convert(self.position + pos, child))
         return elements
 
