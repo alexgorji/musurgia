@@ -7,7 +7,7 @@ from musurgia.graphics.segmented_line import SegmentedLine, LineSegment
 
 
 def _check_straight_line_alignment(segmented_line: SegmentedLine):
-    positioned_line_segments = segmented_line.get_positioned_line_segments()
+    positioned_line_segments = segmented_line.get_line_segments(positioned=True)
     first_positioned_line_segment = positioned_line_segments[0]
 
     if segmented_line.type.value == "horizontal":
@@ -75,7 +75,7 @@ class HorizontalSegmentedLineTestCase(TestCase):
 
     def test_get_positioned_line_segments(self):
         self.sl.add_draw_object(Position(10, 10), TextDrawObject(text="dummy"))
-        plss = self.sl.get_positioned_line_segments()
+        plss = self.sl.get_line_segments(positioned=True)
         assert len(plss) == 4
 
     def test_default_marker_values(self):
@@ -196,7 +196,7 @@ class VerticalSegmentedLineTestCase(TestCase):
 
     def test_get_positioned_line_segments(self):
         self.sl.add_draw_object(Position(10, 10), TextDrawObject(text="dummy"))
-        plss = self.sl.get_positioned_line_segments()
+        plss = self.sl.get_line_segments(positioned=True)
         assert len(plss) == 4
 
     def test_default_marker_values(self):

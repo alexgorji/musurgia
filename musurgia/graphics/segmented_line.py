@@ -1,4 +1,4 @@
-from typing import Any, Mapping
+from typing import Any, Literal, Mapping, overload
 
 from musurgia.graphics.drawobject import Container, Position
 from musurgia.graphics.line_segment import (
@@ -96,15 +96,28 @@ class SegmentedLine(Container):
                 self.add_draw_object(position=position, draw_object=ls)
                 current_y += ls.get_length()
 
-    def get_line_segments(self) -> list[LineSegment]:
-        return [o for o in self.get_draw_objects() if isinstance(o, LineSegment)]
+    @overload
+    def get_line_segments(self) -> list[LineSegment]: ...
 
-    def get_positioned_line_segments(self) -> list[tuple[Position, LineSegment]]:
-        return [
-            (p, o)
-            for (p, o) in self.get_draw_objects(positioned=True)
-            if isinstance(o, LineSegment)
-        ]
+    @overload
+    def get_line_segments(self, *, positioned: Literal[False]) -> list[LineSegment]: ...
+
+    @overload
+    def get_line_segments(
+        self, *, positioned: Literal[True]
+    ) -> list[tuple[Position, LineSegment]]: ...
+
+    def get_line_segments(
+        self, *, positioned: bool = False
+    ) -> list[LineSegment] | list[tuple[Position, LineSegment]]:
+        if not positioned:
+            return [o for o in self.get_draw_objects() if isinstance(o, LineSegment)]
+        else:
+            return [
+                (p, o)
+                for (p, o) in self.get_draw_objects(positioned=True)
+                if isinstance(o, LineSegment)
+            ]
 
     def get_length(self) -> float | int:
         return sum([sl.get_length() for sl in self.get_line_segments()])
