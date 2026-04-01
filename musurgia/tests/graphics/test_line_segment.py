@@ -1,7 +1,5 @@
 from unittest import TestCase
 
-import pytest
-
 
 from musurgia.graphics.drawobject import (
     Position,
@@ -32,7 +30,9 @@ class MarkerTestCase(TestCase):
             },
         )
         assert len(m.get_labels()) == 2
-        assert set(m.get_labels()) == set(labels)
+        assert set(
+            [(label.text, label.get_offset()) for label in m.get_labels()]
+        ) == set([(label.text, label.get_offset()) for label in labels])
         assert m.size.height == 10 + 10
 
 
@@ -187,21 +187,24 @@ class HorizontalLineSegmentTestCase(TestCase):
             assert positioned_end[0] == Position(15, 0)
             assert end.get_length() == 6
 
-    @pytest.mark.wip
     def test_add_labels(self):
+        labels = [
+            Label(text="first layer", offset=20),
+            Label(text="Second layer", offset=10),
+        ]
+
         hsl = LineSegment(
             type=LineOrientation.HORIZONTAL,
             length=10,
-            options={
-                "start_marker": {
-                    "labels": [
-                        Label(text="first layer"),
-                        Label(text="Second layer", offset=10),
-                    ]
-                }
-            },
+            options={"start_marker": {"labels": labels, "length": 30}},
         )
-        self.fail()
+        start, _ = hsl.get_markers()
+
+        assert len(start.get_labels()) == 2
+        assert set(
+            [(label.text, label.get_offset()) for label in start.get_labels()]
+        ) == set([(label.text, label.get_offset()) for label in labels])
+        assert start.size.height == 30 + 20
 
 
 class VerticalLineSegmentTestCase(TestCase):

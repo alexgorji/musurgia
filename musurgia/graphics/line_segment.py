@@ -78,9 +78,9 @@ class Marker(Container):
         self._build()
 
     def _build(self) -> None:
+        print(self._options)
         options = asdict(self._options)
-        labels = self._options.labels
-        options.pop("labels")
+        labels = options.pop("labels")
 
         labels.sort(key=lambda label: label.get_offset(), reverse=True)
 
@@ -148,7 +148,6 @@ class LineSegment(Container):
 
         if options:
             overrides_data_class_options(self._options, options)
-
         self._straight_line: StraightLineDrawObject
         self._start_marker: Marker
         self._end_marker: Marker | None
