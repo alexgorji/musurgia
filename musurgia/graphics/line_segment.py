@@ -78,7 +78,6 @@ class Marker(Container):
         self._build()
 
     def _build(self) -> None:
-        print(self._options)
         options = asdict(self._options)
         labels = options.pop("labels")
 
@@ -117,6 +116,29 @@ class Marker(Container):
 
     def get_color(self) -> str:
         return self._line.color
+
+    @overload
+    def get_line(self) -> StraightLineDrawObject: ...
+
+    @overload
+    def get_line(self, *, positioned: Literal[False]) -> StraightLineDrawObject: ...
+
+    @overload
+    def get_line(
+        self, *, positioned: Literal[True]
+    ) -> tuple[Position, StraightLineDrawObject]: ...
+
+    def get_line(
+        self, *, positioned: bool = False
+    ) -> StraightLineDrawObject | tuple[Position, StraightLineDrawObject]:
+        positioned_line = [
+            (p, cast(StraightLineDrawObject, o))
+            for (p, o) in self.get_draw_objects(positioned=True)
+            if o == self._line
+        ][0]
+        if positioned:
+            return positioned_line
+        return positioned_line[1]
 
 
 class LineSegment(Container):
