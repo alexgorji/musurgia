@@ -176,6 +176,49 @@ class LineSegment(Container):
 
         self._build()
 
+    def _calculate_start_marker_position(self) -> Position:
+        p = Position(
+            0,
+            (
+                0
+                if not self._end_marker
+                or self._start_marker.get_length() >= self._end_marker.get_length()
+                else (self._end_marker.get_length() - self._start_marker.get_length())
+                / 2
+            ),
+        )
+        if self.type.value == "vertical":
+            p = toggle_position(p)
+        return p
+
+    def _calculate_end_marker_position(self) -> Position:
+        p = Position(
+            self._length,
+            (
+                0
+                if not self._end_marker
+                or self._end_marker.get_length() >= self._start_marker.get_length()
+                else (self._start_marker.get_length() - self._end_marker.get_length())
+                / 2
+            ),
+        )
+        if self.type.value == "vertical":
+            p = toggle_position(p)
+        return p
+
+    def _calculate_straight_line_position(self) -> Position:
+        p = (
+            Position(
+                0,
+                max(self._end_marker.get_length(), self._start_marker.get_length()) / 2,
+            )
+            if self._end_marker
+            else Position(0, self._start_marker.get_length() / 2)
+        )
+        if self.type.value == "vertical":
+            p = toggle_position(p)
+        return p
+
     def _build(self) -> None:
         self._start_marker = Marker(
             type=toggle_line_orientation(self.type),
@@ -194,52 +237,18 @@ class LineSegment(Container):
             type=self.type, length=self._length, **asdict(self._options.straight_line)
         )
 
-        start_marker_position = Position(
-            0,
-            (
-                0
-                if not self._end_marker
-                or self._start_marker.get_length() >= self._end_marker.get_length()
-                else (self._end_marker.get_length() - self._start_marker.get_length())
-                / 2
-            ),
+        self.add_draw_object(
+            self._calculate_start_marker_position(), self._start_marker
         )
-
-        end_marker_position = Position(
-            self._length,
-            (
-                0
-                if not self._end_marker
-                or self._end_marker.get_length() >= self._start_marker.get_length()
-                else (self._start_marker.get_length() - self._end_marker.get_length())
-                / 2
-            ),
-        )
-
-        straight_line_position = (
-            Position(
-                0,
-                max(self._end_marker.get_length(), self._start_marker.get_length()) / 2,
-            )
-            if self._end_marker
-            else Position(0, self._start_marker.get_length() / 2)
-        )
-
-        if self.type.value == "vertical":
-            end_marker_position = toggle_position(end_marker_position)
-            start_marker_position = toggle_position(start_marker_position)
-            straight_line_position = toggle_position(straight_line_position)
-
-        self.add_draw_object(start_marker_position, self._start_marker)
 
         if self._end_marker:
             self.add_draw_object(
-                end_marker_position,
+                self._calculate_end_marker_position(),
                 self._end_marker,
             )
 
         self.add_draw_object(
-            straight_line_position,
+            self._calculate_straight_line_position(),
             self._straight_line,
         )
 
