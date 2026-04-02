@@ -140,6 +140,13 @@ class Marker(Container):
             return positioned_line
         return positioned_line[1]
 
+    def get_middle_of_line_coordinate(self) -> float:
+        position, line = self.get_line(positioned=True)
+        if self.type.value == "vertical":
+            return position.y + line.get_length() / 2
+        else:
+            return position.x + line.get_length() / 2
+
 
 class LineSegment(Container):
     def __init__(
@@ -182,9 +189,12 @@ class LineSegment(Container):
             (
                 0
                 if not self._end_marker
-                or self._start_marker.get_length() >= self._end_marker.get_length()
-                else (self._end_marker.get_length() - self._start_marker.get_length())
-                / 2
+                or self._start_marker.get_middle_of_line_coordinate()
+                >= self._end_marker.get_middle_of_line_coordinate()
+                else (
+                    self._end_marker.get_middle_of_line_coordinate()
+                    - self._start_marker.get_middle_of_line_coordinate()
+                )
             ),
         )
         if self.type.value == "vertical":
@@ -197,9 +207,12 @@ class LineSegment(Container):
             (
                 0
                 if not self._end_marker
-                or self._end_marker.get_length() >= self._start_marker.get_length()
-                else (self._start_marker.get_length() - self._end_marker.get_length())
-                / 2
+                or self._end_marker.get_middle_of_line_coordinate()
+                >= self._start_marker.get_middle_of_line_coordinate()
+                else (
+                    self._start_marker.get_middle_of_line_coordinate()
+                    - self._end_marker.get_middle_of_line_coordinate()
+                )
             ),
         )
         if self.type.value == "vertical":
@@ -210,10 +223,13 @@ class LineSegment(Container):
         p = (
             Position(
                 0,
-                max(self._end_marker.get_length(), self._start_marker.get_length()) / 2,
+                max(
+                    self._end_marker.get_middle_of_line_coordinate(),
+                    self._start_marker.get_middle_of_line_coordinate(),
+                ),
             )
             if self._end_marker
-            else Position(0, self._start_marker.get_length() / 2)
+            else Position(0, self._start_marker.get_middle_of_line_coordinate())
         )
         if self.type.value == "vertical":
             p = toggle_position(p)
