@@ -151,6 +151,9 @@ class Container(DrawObject):
         return self
 
     @overload
+    def get_draw_objects(self, recursive: bool) -> List[DrawObject]: ...
+
+    @overload
     def get_draw_objects(self) -> List[DrawObject]: ...
 
     @overload
