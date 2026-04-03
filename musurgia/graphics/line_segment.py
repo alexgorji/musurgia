@@ -164,11 +164,13 @@ class LineSegment(Container):
         self._length = length
         self._options = LineSegmentOptions()
         self._no_end_marker = no_end_marker
+
         if color:
             for field in fields(self._options):
                 component = getattr(self._options, field.name)
                 if hasattr(component, "color"):
                     setattr(component, "color", color)
+
         if thickness:
             for field in fields(self._options):
                 component = getattr(self._options, field.name)
@@ -305,6 +307,14 @@ class LineSegment(Container):
                 ][0]
 
             return (positioned_start, positioned_end)
+
+    def get_labels(self) -> list[Label]:
+        return [
+            label
+            for marker in self.get_markers()
+            if marker
+            for label in marker.get_labels()
+        ]
 
     @overload
     def get_straight_line(

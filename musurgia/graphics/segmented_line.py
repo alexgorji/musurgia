@@ -2,6 +2,7 @@ from typing import Any, Literal, Mapping, overload
 
 from musurgia.graphics.drawobject import Container, Position
 from musurgia.graphics.line_segment import (
+    Label,
     LineSegment,
 )
 from musurgia.graphics.models import LineOrientation
@@ -95,6 +96,9 @@ class SegmentedLine(Container):
                 )
                 self.add_draw_object(position=position, draw_object=ls)
                 current_y += ls.get_length()
+
+    def get_labels(self) -> list[Label]:
+        return [label for ls in self.get_line_segments() for label in ls.get_labels()]
 
     @overload
     def get_line_segments(self) -> list[LineSegment]: ...

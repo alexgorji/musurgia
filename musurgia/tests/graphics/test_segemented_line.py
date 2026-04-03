@@ -1,59 +1,13 @@
 from unittest import TestCase
 
 from musurgia.graphics.drawobject import Position, TextDrawObject
-from musurgia.graphics.line_segment import Marker
+from musurgia.graphics.line_segment import Label, Marker
 from musurgia.graphics.models import LineOrientation
-from musurgia.graphics.segmented_line import SegmentedLine, LineSegment
-
-
-def _check_straight_line_alignment(segmented_line: SegmentedLine):
-    positioned_line_segments = segmented_line.get_line_segments(positioned=True)
-    first_positioned_line_segment = positioned_line_segments[0]
-
-    if segmented_line.type.value == "horizontal":
-        first_straight_line_y = (
-            first_positioned_line_segment[1].get_straight_line(positioned=True)[0].y
-            + first_positioned_line_segment[0].y
-        )
-        for ls in positioned_line_segments[1:]:
-            assert (
-                ls[1].get_straight_line(positioned=True)[0].y + ls[0].y
-                == first_straight_line_y
-            )
-    else:
-        first_straight_line_x = (
-            first_positioned_line_segment[1].get_straight_line(positioned=True)[0].x
-            + first_positioned_line_segment[0].x
-        )
-        for ls in positioned_line_segments[1:]:
-            assert (
-                ls[1].get_straight_line(positioned=True)[0].x + ls[0].x
-                == first_straight_line_x
-            )
-
-
-def _check_centered_markers(line_segment: LineSegment):
-    straight_line_position = line_segment.get_straight_line(positioned=True)[0]
-    positioned_start_marker, positioned_end_marker = line_segment.get_markers(
-        positioned=True
-    )
-    if line_segment.type.value == "horizontal":
-        assert (
-            positioned_start_marker[0].y + positioned_start_marker[1].get_length() / 2
-            == straight_line_position.y
-        )
-    else:
-        assert (
-            positioned_start_marker[0].x + positioned_start_marker[1].get_length() / 2
-            == straight_line_position.x
-        )
-    return True
-
-
-def _check_all_straight_lines_centered(segmented_line: SegmentedLine):
-    for ls in segmented_line.get_line_segments():
-        assert _check_centered_markers(ls)
-    return True
+from musurgia.graphics.segmented_line import SegmentedLine
+from musurgia.tests.graphics.test_utils import (
+    check_all_straight_lines_centered,
+    check_straight_line_alignment,
+)
 
 
 class HorizontalSegmentedLineTestCase(TestCase):
@@ -109,8 +63,8 @@ class HorizontalSegmentedLineTestCase(TestCase):
     def test_aligned_segmented_lines(self):
         lengths = [1, 2, 3.4, 5.6]
         sl = SegmentedLine(type=LineOrientation.HORIZONTAL, segment_lengths=lengths)
-        _check_straight_line_alignment(sl)
-        _check_all_straight_lines_centered(sl)
+        check_straight_line_alignment(sl)
+        check_all_straight_lines_centered(sl)
 
     def test_different_marker_lengths(self):
         sl = SegmentedLine(
@@ -124,8 +78,8 @@ class HorizontalSegmentedLineTestCase(TestCase):
                 assert ls.get_markers()[0].get_length() == 10
             else:
                 assert ls.get_markers()[0].get_length() == 100
-        _check_all_straight_lines_centered(sl)
-        _check_straight_line_alignment(sl)
+        check_all_straight_lines_centered(sl)
+        check_straight_line_alignment(sl)
 
     def test_color(self):
         sl = SegmentedLine(
@@ -175,6 +129,59 @@ class HorizontalSegmentedLineTestCase(TestCase):
             assert start.get_thickness() == expected
             if end:
                 assert end.get_thickness() == 5
+
+    def test_add_labels(self):
+        labels_1 = [
+            Label(text="First first layer", offset=20),
+            Label(text="First second layer", offset=10),
+        ]
+        labels_2 = [
+            Label(text="Second first layer", offset=5),
+            Label(text="Second second layer", offset=2),
+            Label(text="Second third layer"),
+        ]
+
+        sl = SegmentedLine(
+            type=LineOrientation.HORIZONTAL,
+            segment_lengths=self.lengths,
+            thickness=5,
+            options={
+                2: {"start_marker": {"labels": labels_1}},
+                4: {"start_marker": {"labels": labels_2}},
+            },
+        )
+
+        lss = sl.get_line_segments()
+        (start_1, _), (start_2, _) = lss[1].get_markers(), lss[3].get_markers()
+        assert len(start_1.get_labels()) == 2
+        assert len(start_2.get_labels()) == 3
+        check_straight_line_alignment(sl)
+        check_all_straight_lines_centered(sl)
+
+    def test_get_labels(self):
+        labels_1 = [
+            Label(text="First first layer", offset=20),
+            Label(text="First second layer", offset=10),
+        ]
+        labels_2 = [
+            Label(text="Second first layer", offset=5),
+            Label(text="Second second layer", offset=2),
+            Label(text="Second third layer"),
+        ]
+
+        sl = SegmentedLine(
+            type=LineOrientation.HORIZONTAL,
+            segment_lengths=self.lengths,
+            thickness=5,
+            options={
+                2: {"start_marker": {"labels": labels_1}},
+                4: {"start_marker": {"labels": labels_2}},
+            },
+        )
+
+        assert set([label.text for label in sl.get_labels()]) == set(
+            [label.text for label in labels_1 + labels_2]
+        )
 
 
 class VerticalSegmentedLineTestCase(TestCase):
@@ -231,8 +238,8 @@ class VerticalSegmentedLineTestCase(TestCase):
         lengths = [1, 2, 3.4, 5.6]
         sl = SegmentedLine(type=LineOrientation.VERTICAL, segment_lengths=lengths)
 
-        _check_all_straight_lines_centered(sl)
-        _check_straight_line_alignment(sl)
+        check_all_straight_lines_centered(sl)
+        check_straight_line_alignment(sl)
 
     def test_different_marker_lengths(self):
         sl = SegmentedLine(
@@ -247,5 +254,33 @@ class VerticalSegmentedLineTestCase(TestCase):
                 assert ls.get_markers()[0].get_length() == 10
             else:
                 assert ls.get_markers()[0].get_length() == 100
-        _check_all_straight_lines_centered(sl)
-        _check_straight_line_alignment(sl)
+        check_all_straight_lines_centered(sl)
+        check_straight_line_alignment(sl)
+
+    def test_add_labels(self):
+        labels_1 = [
+            Label(text="First first layer", offset=20),
+            Label(text="First second layer", offset=10),
+        ]
+        labels_2 = [
+            Label(text="Second first layer", offset=5),
+            Label(text="Second second layer", offset=2),
+            Label(text="Second third layer"),
+        ]
+
+        sl = SegmentedLine(
+            type=LineOrientation.VERTICAL,
+            segment_lengths=self.lengths,
+            thickness=5,
+            options={
+                2: {"start_marker": {"labels": labels_1}},
+                4: {"start_marker": {"labels": labels_2}},
+            },
+        )
+
+        lss = sl.get_line_segments()
+        (start_1, _), (start_2, _) = lss[1].get_markers(), lss[3].get_markers()
+        assert len(start_1.get_labels()) == 2
+        assert len(start_2.get_labels()) == 3
+        check_straight_line_alignment(sl)
+        check_all_straight_lines_centered(sl)

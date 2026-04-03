@@ -12,6 +12,7 @@ from musurgia.graphics.line_segment import (
     MarkerOptions,
 )
 from musurgia.graphics.models import LineOrientation
+from musurgia.tests.graphics.test_utils import check_centered_markers
 
 
 class MarkerTestCase(TestCase):
@@ -34,6 +35,68 @@ class MarkerTestCase(TestCase):
             [(label.text, label.get_offset()) for label in m.get_labels()]
         ) == set([(label.text, label.get_offset()) for label in labels])
         assert m.size.height == 10 + 10
+
+    def test_get_line(self):
+        m = Marker(
+            type=LineOrientation.VERTICAL,
+            options={
+                "length": 10,
+                "labels": [
+                    Label(text="First Layer"),
+                    Label(text="Second Layer", offset=10),
+                ],
+            },
+        )
+
+        assert isinstance(m.get_line(), StraightLineDrawObject)
+
+        p, line = m.get_line(positioned=True)
+        assert isinstance(line, StraightLineDrawObject)
+        assert p == Position(0, 10)
+
+    def test_get_middle_of_line_coordinate(self):
+        m = Marker(
+            type=LineOrientation.VERTICAL,
+            options={
+                "length": 10,
+            },
+        )
+        assert m.get_middle_of_line_coordinate() == 5
+
+        m = Marker(
+            type=LineOrientation.VERTICAL,
+            options={
+                "length": 10,
+                "labels": [
+                    Label(text="First Layer"),
+                ],
+            },
+        )
+        assert m.get_middle_of_line_coordinate() == 5
+
+        m = Marker(
+            type=LineOrientation.VERTICAL,
+            options={
+                "length": 10,
+                "labels": [
+                    Label(text="First Layer", offset=10),
+                    Label(text="Second Layer"),
+                ],
+            },
+        )
+        assert m.get_middle_of_line_coordinate() == 15
+        m = Marker(
+            type=LineOrientation.VERTICAL,
+            options={
+                "length": 10,
+                "labels": [
+                    Label(text="First Layer", offset=15),
+                    Label(text="Second Layer", offset=10),
+                    Label(text="Third Layer", offset=5),
+                ],
+            },
+        )
+        assert m.get_middle_of_line_coordinate() == 20
 
 
 class HorizontalLineSegmentTestCase(TestCase):
@@ -108,6 +171,80 @@ class HorizontalLineSegmentTestCase(TestCase):
         assert {
             o.color for _, o in hsl.get_draw_objects(positioned=True, recursive=True)
         } == {"blue"}
+
+    def test_set_labeled_color(self):
+        hsl = LineSegment(
+            type=LineOrientation.HORIZONTAL,
+            length=15,
+            color="blue",
+            options={
+                "start_marker": {
+                    "labels": [
+                        Label(text="label one"),
+                        Label(text="label two"),
+                    ]
+                },
+                "end_marker": {
+                    "labels": [
+                        Label(text="label three"),
+                    ]
+                },
+            },
+        )
+
+        assert {
+            o.color for _, o in hsl.get_draw_objects(positioned=True, recursive=True)
+        } == {"blue", "black"}
+
+        for do in hsl.get_draw_objects(recursive=True):
+            if isinstance(do, Label):
+                do.set_color("blue")
+        assert {
+            o.color for _, o in hsl.get_draw_objects(positioned=True, recursive=True)
+        } == {"blue"}
+
+        hsl = LineSegment(
+            type=LineOrientation.HORIZONTAL,
+            length=15,
+            color="blue",
+            options={
+                "start_marker": {
+                    "labels": [
+                        Label(text="red label"),
+                        Label(text="yellow label"),
+                    ]
+                },
+                "end_marker": {
+                    "labels": [
+                        Label(text="orange label"),
+                    ]
+                },
+            },
+        )
+        assert {
+            o.color for _, o in hsl.get_draw_objects(positioned=True, recursive=True)
+        } == {"blue", "black"}
+        hsl = LineSegment(
+            type=LineOrientation.HORIZONTAL,
+            length=15,
+            color="blue",
+            options={
+                "start_marker": {
+                    "labels": [
+                        Label(text="red label", color="red"),
+                        Label(text="yellow label", color="yellow"),
+                    ]
+                },
+                "end_marker": {
+                    "labels": [
+                        Label(text="orange label", color="orange"),
+                    ]
+                },
+            },
+        )
+        assert {
+            o.color for _, o in hsl.get_draw_objects(positioned=True, recursive=True)
+        } == {"blue", "red", "yellow", "orange"}
 
     def test_set_thickness(self):
         hsl = LineSegment(
@@ -205,6 +342,37 @@ class HorizontalLineSegmentTestCase(TestCase):
             [(label.text, label.get_offset()) for label in start.get_labels()]
         ) == set([(label.text, label.get_offset()) for label in labels])
         assert start.size.height == 30 + 20
+        check_centered_markers(hsl)
+
+    def test_get_labels(self):
+        start_labels = [
+            Label(text="first"),
+            Label(text="second"),
+        ]
+        end_labels = [
+            Label(text="third"),
+        ]
+
+        hsl = LineSegment(
+            type=LineOrientation.HORIZONTAL,
+            length=10,
+            options={
+                "start_marker": {"labels": start_labels, "length": 30},
+                "end_marker": {"labels": end_labels},
+            },
+        )
+        assert set(l.text for l in hsl.get_labels()) == {"first", "second", "third"}
+
+        hsl = LineSegment(
+            type=LineOrientation.HORIZONTAL,
+            length=10,
+            no_end_marker=True,
+            options={
+                "start_marker": {"labels": start_labels, "length": 30},
+                "end_marker": {"labels": end_labels},
+            },
+        )
+        assert set(l.text for l in hsl.get_labels()) == {"first", "second"}
 
 
 class VerticalLineSegmentTestCase(TestCase):
@@ -322,3 +490,23 @@ class VerticalLineSegmentTestCase(TestCase):
             assert positioned_end[1] == end
             assert positioned_end[0] == Position(0, 15)
             assert end.get_length() == 6
+
+    def test_add_labels(self):
+        labels = [
+            Label(text="first layer", offset=20),
+            Label(text="Second layer", offset=10),
+        ]
+
+        vsl = LineSegment(
+            type=LineOrientation.VERTICAL,
+            length=10,
+            options={"start_marker": {"labels": labels, "length": 30}},
+        )
+        start, _ = vsl.get_markers()
+
+        assert len(start.get_labels()) == 2
+        assert set(
+            [(label.text, label.get_offset()) for label in start.get_labels()]
+        ) == set([(label.text, label.get_offset()) for label in labels])
+        assert start.size.width == 30 + 20
+        check_centered_markers(vsl)
