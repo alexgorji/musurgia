@@ -1,7 +1,6 @@
 from musurgia.graphics.drawobject import (
     Coordinates,
     DrawObject,
-    Padding,
     Position,
     Size,
 )
@@ -14,24 +13,12 @@ class Container(DrawObject):
     def __init__(self) -> None:
         super().__init__()
         self._positioned_draw_objects: list[tuple[Position, DrawObject]] = []
-        self._padding = Padding(0, 0, 0, 0)
-
-    def _get_padding(self) -> "Padding":
-        return self._padding
-
 
     def add_draw_object(
         self, position: Position, draw_object: DrawObject
     ) -> "Container":
         self._positioned_draw_objects.append((position, draw_object))
         return self
-
-    def clip(self, start=Position(0, 0), width=None, height=None) -> "Container":
-        width = self._get_clipping_area_width(start=start, width=width)
-        height = self._get_clipping_area_height(start=start, height=height)
-        clipping_area = ClippingArea(start, width, height)
-        print(start, width, height)
-        return clipping_area.clip(self)
 
     @overload
     def get_draw_objects(self) -> list[DrawObject]: ...

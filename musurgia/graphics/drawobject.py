@@ -72,10 +72,12 @@ class DrawObjectBox:
         coor = self.draw_object.get_bounding_box_coordinates()
         width, height = coor.tr.x - coor.tl.x, coor.bl.y - coor.tl.y
 
-        return Size(
-            width + do.padding.right + do.padding.left,
-            height + do.padding.top + do.padding.bottom,
-        )
+        padding = getattr(do, "padding", None)
+        if padding is not None:
+            width += padding.left + padding.right
+            height += padding.top + padding.bottom
+
+        return Size(width, height)
 
     def get_rectangle(self) -> "RectangleDrawObject":
         rectangle = RectangleDrawObject(size=self.size, color="green")
@@ -100,14 +102,6 @@ class DrawObject(ABC):
     @property
     def box(self) -> DrawObjectBox:
         return self._box
-
-    @property
-    def padding(self) -> Padding:
-        return self._get_padding()
-
-    @abstractmethod
-    def _get_padding(self) -> Padding:
-        pass
 
     @abstractmethod
     def get_bounding_box_coordinates(self) -> Coordinates:
@@ -145,7 +139,7 @@ class TextDrawObject(ColorMixin, DrawObject):
     ) -> None:
         super().__init__(**kwargs)
         self._text = text
-        self._padding = padding
+        self.padding = padding
 
         self._font_family = font_family
         self._font_size = font_size
@@ -180,9 +174,6 @@ class TextDrawObject(ColorMixin, DrawObject):
         ctx.restore()
         return ext
 
-    def _get_padding(self) -> Padding:
-        return self._padding
-
     def get_bounding_box_coordinates(self) -> Coordinates:
         return Coordinates(
             Position(0, 0),
@@ -198,16 +189,12 @@ class LineDrawObject(ColorMixin, DrawObject):
         *,
         start: Position = Position(0, 0),
         end: Position,
-        right_padding: int | float = 0,
-        bottom_padding: int | float = 0,
         thickness: float = 0.1,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self._start = start
         self._end = end
-        self._right_padding = right_padding
-        self._bottom_padding = bottom_padding
         self._thickness = thickness
 
     @property
@@ -219,27 +206,11 @@ class LineDrawObject(ColorMixin, DrawObject):
         return self._end
 
     @property
-    def right_padding(self) -> int | float:
-        return self._right_padding
-
-    @property
-    def bottom_padding(self) -> int | float:
-        return self._bottom_padding
-
-    @property
     def thickness(self) -> float:
         return self._thickness
 
     def set_thickness(self, val: float) -> None:
         self._thickness = val
-
-    def _get_padding(self) -> Padding:
-        return Padding(
-            top=min(self.start.y, self.end.y),
-            right=self.right_padding,
-            bottom=self.bottom_padding,
-            left=min(self.start.x, self.end.x),
-        )
 
     def get_bounding_box_coordinates(self) -> Coordinates:
         x1, y1 = self.start.x, self.start.y
@@ -302,8 +273,6 @@ class StraightLineDrawObject(LineDrawObject):
         length: float,
         start: Position = Position(0, 0),
         thickness: float = 0.1,
-        right_padding: int | float = 0,
-        bottom_padding: int | float = 0,
         **kwargs: Any,
     ) -> None:
         self.type = type
@@ -315,8 +284,6 @@ class StraightLineDrawObject(LineDrawObject):
             start=start,
             end=end,
             thickness=thickness,
-            right_padding=right_padding,
-            bottom_padding=bottom_padding,
             **kwargs,
         )
         self.type = type
@@ -333,11 +300,8 @@ class RectangleDrawObject(ColorMixin, DrawObject):
     ) -> None:
         super().__init__(**kwargs)
         self._size = size
-        self._padding = padding
+        self.padding = padding
         self._thickness = thickness
-
-    def _get_padding(self) -> Padding:
-        return self._padding
 
     @property
     def size(self) -> Size:
