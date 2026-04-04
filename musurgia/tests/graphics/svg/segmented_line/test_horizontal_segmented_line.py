@@ -46,15 +46,15 @@ class HorizontalSegmentedLineRegressionTests(SVGTestCase):
                 2: {
                     "start_marker": {
                         "length": 20,
-                        "labels": [Label(text="2"), Label(text="3", offset=5)],
+                        "labels": [Label(text="2"), Label(text="3", offset=(0, 5))],
                     }
                 },
                 3: {
                     "start_marker": {
                         "labels": [
                             Label(text="4"),
-                            Label(text="5", offset=5),
-                            Label(text="7", offset=10),
+                            Label(text="5", offset=(0, 5)),
+                            Label(text="7", offset=(0, 10)),
                         ],
                     }
                 },
@@ -62,18 +62,18 @@ class HorizontalSegmentedLineRegressionTests(SVGTestCase):
                     "start_marker": {
                         "labels": [
                             Label(text="8"),
-                            Label(text="9", offset=5),
-                            Label(text="10", offset=10),
-                            Label(text="11", offset=15),
+                            Label(text="9", offset=(0, 5)),
+                            Label(text="10", offset=(0, 10)),
+                            Label(text="11", offset=(0, 15)),
                         ],
                     },
                     "end_marker": {
                         "labels": [
                             Label(text="12"),
-                            Label(text="13", offset=5),
-                            Label(text="14", offset=10),
-                            Label(text="15", offset=15),
-                            Label(text="16", offset=20),
+                            Label(text="13", offset=(0, 5)),
+                            Label(text="14", offset=(0, 10)),
+                            Label(text="15", offset=(0, 15)),
+                            Label(text="16", offset=(0, 20)),
                         ],
                     },
                 },

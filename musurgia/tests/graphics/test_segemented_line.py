@@ -132,12 +132,12 @@ class HorizontalSegmentedLineTestCase(TestCase):
 
     def test_add_labels(self):
         labels_1 = [
-            Label(text="First first layer", offset=20),
-            Label(text="First second layer", offset=10),
+            Label(text="First first layer", offset=(0, 20)),
+            Label(text="First second layer", offset=(0, 10)),
         ]
         labels_2 = [
-            Label(text="Second first layer", offset=5),
-            Label(text="Second second layer", offset=2),
+            Label(text="Second first layer", offset=(0, 5)),
+            Label(text="Second second layer", offset=(0, 2)),
             Label(text="Second third layer"),
         ]
 
@@ -160,12 +160,12 @@ class HorizontalSegmentedLineTestCase(TestCase):
 
     def test_get_labels(self):
         labels_1 = [
-            Label(text="First first layer", offset=20),
-            Label(text="First second layer", offset=10),
+            Label(text="First first layer", offset=(0, 20)),
+            Label(text="First second layer", offset=(0, 10)),
         ]
         labels_2 = [
-            Label(text="Second first layer", offset=5),
-            Label(text="Second second layer", offset=2),
+            Label(text="Second first layer", offset=(0, 5)),
+            Label(text="Second second layer", offset=(0, 2)),
             Label(text="Second third layer"),
         ]
 
@@ -259,12 +259,12 @@ class VerticalSegmentedLineTestCase(TestCase):
 
     def test_add_labels(self):
         labels_1 = [
-            Label(text="First first layer", offset=20),
-            Label(text="First second layer", offset=10),
+            Label(text="First first layer", offset=(0, 20)),
+            Label(text="First second layer", offset=(0, 10)),
         ]
         labels_2 = [
-            Label(text="Second first layer", offset=5),
-            Label(text="Second second layer", offset=2),
+            Label(text="Second first layer", offset=(0, 5)),
+            Label(text="Second second layer", offset=(0, 2)),
             Label(text="Second third layer"),
         ]
 

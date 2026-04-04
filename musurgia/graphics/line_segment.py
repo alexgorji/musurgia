@@ -22,7 +22,7 @@ class Label(TextDrawObject):
         self,
         *,
         text: str,
-        offset: float | int = 0,
+        offset: tuple[int | float, int | float] = (0, 0),
         padding: Padding = Padding(),
         font_family: str = "DejaVu Sans",
         font_size: int | float = 12,
@@ -37,7 +37,7 @@ class Label(TextDrawObject):
         )
         self._offset = offset
 
-    def get_offset(self) -> float | int:
+    def get_offset(self) -> tuple[int | float, int | float]:
         return self._offset
 
 
@@ -79,14 +79,15 @@ class Marker(Container):
 
     def _build(self) -> None:
         options = asdict(self._options)
-        labels = options.pop("labels")
+        labels = cast(list[Label], options.pop("labels"))
 
-        labels.sort(key=lambda label: label.get_offset(), reverse=True)
+        labels.sort(key=lambda label: label.get_offset()[1], reverse=True)
 
         self._line = StraightLineDrawObject(type=self.type, **options)
 
         if labels:
-            line_position = Position(0, labels[0].get_offset())
+            first_label = labels[0]
+            line_position = Position(0, first_label.get_offset()[1])
             if self.type == LineOrientation.HORIZONTAL:
                 line_position = toggle_position(line_position)
         else:
@@ -94,13 +95,16 @@ class Marker(Container):
 
         self.add_draw_object(line_position, self._line)
 
-        for label in labels:
-            position = Position(0, labels[0].get_offset()) - Position(
-                0, label.get_offset()
-            )
-            if self.type == LineOrientation.HORIZONTAL:
-                position = toggle_position(position)
-            self.add_draw_object(position, label)
+        if labels:
+            first_label = labels[0]
+            for label in labels:
+                position = Position.from_values(
+                    *first_label.get_offset()
+                ) - Position.from_values(*label.get_offset())
+
+                if self.type == LineOrientation.HORIZONTAL:
+                    position = toggle_position(position)
+                self.add_draw_object(position, label)
 
     def get_labels(self) -> list[Label]:
         return [do for do in self.get_draw_objects() if isinstance(do, Label)]

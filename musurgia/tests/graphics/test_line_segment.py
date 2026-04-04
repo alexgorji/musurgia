@@ -22,7 +22,7 @@ class MarkerTestCase(TestCase):
         assert m.get_length() == 10
 
     def test_labels(self):
-        labels = [Label(text="First Layer"), Label(text="Second Layer", offset=10)]
+        labels = [Label(text="First Layer"), Label(text="Second Layer", offset=(0, 10))]
         m = Marker(
             type=LineOrientation.VERTICAL,
             options={
@@ -43,7 +43,7 @@ class MarkerTestCase(TestCase):
                 "length": 10,
                 "labels": [
                     Label(text="First Layer"),
-                    Label(text="Second Layer", offset=10),
+                    Label(text="Second Layer", offset=(0, 10)),
                 ],
             },
         )
@@ -68,7 +68,7 @@ class MarkerTestCase(TestCase):
             options={
                 "length": 10,
                 "labels": [
-                    Label(text="First Layer"),
+                    Label(text="First Layer", offset=(0, 0)),
                 ],
             },
         )
@@ -79,7 +79,7 @@ class MarkerTestCase(TestCase):
             options={
                 "length": 10,
                 "labels": [
-                    Label(text="First Layer", offset=10),
+                    Label(text="First Layer", offset=(0, 10)),
                     Label(text="Second Layer"),
                 ],
             },
@@ -90,9 +90,9 @@ class MarkerTestCase(TestCase):
             options={
                 "length": 10,
                 "labels": [
-                    Label(text="First Layer", offset=15),
-                    Label(text="Second Layer", offset=10),
-                    Label(text="Third Layer", offset=5),
+                    Label(text="First Layer", offset=(0, 15)),
+                    Label(text="Second Layer", offset=(0, 10)),
+                    Label(text="Third Layer", offset=(0, 5)),
                 ],
             },
         )
@@ -326,8 +326,8 @@ class HorizontalLineSegmentTestCase(TestCase):
 
     def test_add_labels(self):
         labels = [
-            Label(text="first layer", offset=20),
-            Label(text="Second layer", offset=10),
+            Label(text="first layer", offset=(0, 20)),
+            Label(text="Second layer", offset=(0, 10)),
         ]
 
         hsl = LineSegment(
@@ -493,8 +493,8 @@ class VerticalLineSegmentTestCase(TestCase):
 
     def test_add_labels(self):
         labels = [
-            Label(text="first layer", offset=20),
-            Label(text="Second layer", offset=10),
+            Label(text="first layer", offset=(0, 20)),
+            Label(text="Second layer", offset=(0, 10)),
         ]
 
         vsl = LineSegment(
