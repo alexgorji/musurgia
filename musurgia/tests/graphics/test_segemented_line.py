@@ -12,7 +12,7 @@ from musurgia.tests.graphics.test_utils import (
 
 class HorizontalSegmentedLineTestCase(TestCase):
     def setUp(self) -> None:
-        self.lengths = [1, 2, 3.4, 5.6]
+        self.lengths = [1, 1, 3.4, 5.6]
         self.sl = SegmentedLine(
             type=LineOrientation.HORIZONTAL, segment_lengths=self.lengths
         )

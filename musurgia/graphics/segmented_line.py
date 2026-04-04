@@ -31,26 +31,26 @@ class SegmentedLine(Container):
 
     def _build_line_segments(self) -> list[LineSegment]:
         _line_segments = []
-        for index, len in enumerate(self._segment_lengths):
+        for index, length in enumerate(self._segment_lengths):
 
             options: dict[str, Any] = {
                 "start_marker": {},
                 "end_marker": {},
                 "straight_line": {},
             }
+
             if self._marker_length:
-                options["start_marker"]["length"] = options["end_marker"]["length"] = (
-                    self._marker_length
-                )
+                options["start_marker"]["length"] = self._marker_length
+                options["end_marker"]["length"] = self._marker_length
 
             if self._options:
                 if override := self._options.get(index + 1):
                     options = override_options_mappings(options, override)
 
-            if len == self._segment_lengths[-1]:
+            if index == len(self._segment_lengths) - 1:
                 ls = LineSegment(
                     type=self.type,
-                    length=len,
+                    length=length,
                     color=self._color,
                     thickness=self._thickness,
                     options=options,
@@ -59,7 +59,7 @@ class SegmentedLine(Container):
             else:
                 ls = LineSegment(
                     type=self.type,
-                    length=len,
+                    length=length,
                     color=self._color,
                     thickness=self._thickness,
                     options=options,
