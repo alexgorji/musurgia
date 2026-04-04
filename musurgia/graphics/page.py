@@ -55,7 +55,7 @@ class Page:
     def add_draw_object(self, position: Position, draw_object: DrawObject) -> None:
         self._positioned_draw_objects.append((position, draw_object))
 
-    def add_grid(self) -> None:
+    def add_grid(self, thickness: float = 0.1) -> None:
         w, h = self.layout.get_size().width, self.layout.get_size().height
         number_of_horizontal_lines = int(h / 10) + 1
         number_of_vertical_lines = int(w / 10) + 1
@@ -65,7 +65,7 @@ class Page:
                 StraightLineDrawObject(
                     type=LineOrientation.HORIZONTAL,
                     length=w,
-                    thickness=0.1,
+                    thickness=thickness,
                     color="green",
                 ),
             )
@@ -75,7 +75,7 @@ class Page:
                 StraightLineDrawObject(
                     type=LineOrientation.VERTICAL,
                     length=h,
-                    thickness=0.1,
+                    thickness=thickness,
                     color="green",
                 ),
             )
