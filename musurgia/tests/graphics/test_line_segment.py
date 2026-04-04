@@ -344,6 +344,17 @@ class HorizontalLineSegmentTestCase(TestCase):
         assert start.size.height == 30 + 20
         check_centered_markers(hsl)
 
+    def test_no_end_marker(self):
+        hsl = LineSegment(type=LineOrientation.HORIZONTAL, length=10)
+        for m in hsl.get_markers():
+            assert isinstance(m, Marker)
+            hsl = LineSegment(
+                type=LineOrientation.HORIZONTAL, length=10, no_end_marker=True
+            )
+        s, e = hsl.get_markers()
+        assert isinstance(s, Marker)
+        assert e is None
+
     def test_get_labels(self):
         start_labels = [
             Label(text="first"),

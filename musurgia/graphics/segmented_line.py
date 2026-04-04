@@ -16,6 +16,7 @@ class SegmentedLine(Container):
         type: LineOrientation,
         segment_lengths: list[int | float],
         marker_length: int | float | None = None,
+        show_last_end_marker: bool = True,
         color: str | None = None,
         thickness: float | None = None,
         options: dict[int, Mapping[str, Any]] | None = None,
@@ -24,6 +25,7 @@ class SegmentedLine(Container):
         self.type = type
         self._segment_lengths = segment_lengths or []
         self._marker_length = marker_length
+        self._show_last_end_marker = show_last_end_marker
         self._color = color
         self._thickness = thickness
         self._options = options
@@ -46,8 +48,12 @@ class SegmentedLine(Container):
             if self._options:
                 if override := self._options.get(index + 1):
                     options = override_options_mappings(options, override)
+                elif index == len(self._segment_lengths) - 1:
+                    if override := self._options.get(-1):
+                        options = override_options_mappings(options, override)
 
             if index == len(self._segment_lengths) - 1:
+                # if index == len(self._segment_lengths) - 1 and self._show_last_end_marker:
                 ls = LineSegment(
                     type=self.type,
                     length=length,

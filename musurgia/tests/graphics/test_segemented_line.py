@@ -32,6 +32,12 @@ class HorizontalSegmentedLineTestCase(TestCase):
         plss = self.sl.get_line_segments(positioned=True)
         assert len(plss) == 4
 
+    def test_end_markers(self):
+        lss = self.sl.get_line_segments()
+        for ls in lss[:-1]:
+            assert ls.get_markers()[1] is None
+        assert lss[-1].get_markers()[1] is not None
+
     def test_default_marker_values(self):
         lss = self.sl.get_line_segments()
         for ls in lss:
@@ -47,6 +53,23 @@ class HorizontalSegmentedLineTestCase(TestCase):
                 assert isinstance(end, Marker)
                 assert end.get_length() == 6
                 assert end.get_color() == "black"
+
+        lengths: list[int | float] = [10, 20, 34, 56]
+        sl = SegmentedLine(
+            type=LineOrientation.HORIZONTAL,
+            segment_lengths=lengths,
+            marker_length=10,
+            show_last_end_marker=True,
+            thickness=3,
+            color="blue",
+            options={
+                2: {"start_marker": {"length": 20}},
+            },
+        )
+        end_marker = sl.get_line_segments()[-1].get_markers()[1]
+        assert end_marker is not None
+        assert end_marker.show is True
+        assert end_marker.get_color() == "blue"
 
     def test_setting_default_marker_length(self):
         sl = SegmentedLine(
