@@ -1,20 +1,33 @@
 from dataclasses import dataclass, field
-from typing import Any, Mapping, Tuple
+from typing import Any, Mapping
 
-from musurgia.graphics.drawobject import Container, Position, TextDrawObject
-from musurgia.graphics.line_segment import LineSegment, Marker
+
+from musurgia.graphics.drawobject import Container, Padding
+from musurgia.graphics.line_segment import Label
 from musurgia.graphics.models import LineOrientation
-from musurgia.graphics.util import overrides_data_class_options, toggle_position
+from musurgia.graphics.segmented_line import SegmentedLine
+from musurgia.graphics.util import overrides_data_class_options
 
 
 @dataclass
 class UnitMarkerOptions:
     length: float = 6.0
+    thickness: float = 0.5
 
 
 @dataclass
 class UnitDivisionMarkerOptions:
     length: float = 3.0
+    thickness: float = 0.5
+
+
+@dataclass
+class RulerLabelOptions:
+    offset: tuple[int | float, int | float] = (1, 3)
+    color: str = "black"
+    padding: Padding = Padding()
+    font_family: str = "DejaVu Sans"
+    font_size: int | float = 10
 
 
 @dataclass
@@ -23,80 +36,65 @@ class RulerOptions:
     unit_division_marker: UnitDivisionMarkerOptions = field(
         default_factory=UnitDivisionMarkerOptions
     )
+    unit_length: int | float = 10
+    unit_division: int = 10
+    labels_interval: int = 1
+    label: RulerLabelOptions = field(default_factory=RulerLabelOptions)
+    thickness: float = 1
 
 
-class RulerUnit(Container):
-    def __init__(
-        self,
-        *,
-        type: LineOrientation,
-        length: float | int,
-        division: int,
-        large_markers_length: float | int,
-        small_markers_length: float | int,
-        color: str | None = None,
-        thickness: float | None = None,
-    ):
+def _get_division_length(ruler_options: RulerOptions) -> int | float:
+    return ruler_options.unit_length / ruler_options.unit_division
 
-        super().__init__()
-        self.type = type
-        self._length = length
-        self._division = division
-        self._large_markers_length = large_markers_length
-        self._small_markers_length = small_markers_length
-        self._color = color
-        self._thickness = thickness
 
-        self._build()
+def _get_number_of_units(
+    ruler_options: RulerOptions, length: int | float
+) -> int | float:
+    return length / ruler_options.unit_length
 
-    def _build(self) -> None:
-        unit_division_length = self._length / self._division
-        for index in range(self._division):
-            position = Position(
-                index * unit_division_length,
-                (
-                    0
-                    if index in [0, self._division - 1]
-                    else (self._large_markers_length - self._small_markers_length) / 2
-                ),
-            )
-            options: Any = {"start_marker": {}, "end_marker": {}}
-            if index == 0:
-                options["start_marker"]["length"] = self._large_markers_length
-                options["end_marker"]["length"] = self._small_markers_length
-                if self._thickness:
-                    options["start_marker"]["thickness"] = self._thickness
-                    options["end_marker"]["thickness"] = self._thickness / 2
 
-            elif index == self._division - 1:
-                options["start_marker"]["length"] = self._small_markers_length
-                options["end_marker"]["length"] = self._large_markers_length
-                if self._thickness:
-                    options["start_marker"]["thickness"] = self._thickness / 2
-                    options["end_marker"]["thickness"] = self._thickness
-            else:
-                options["start_marker"]["length"] = self._small_markers_length
-                options["end_marker"]["length"] = self._small_markers_length
-                if self._thickness:
-                    options["start_marker"]["thickness"] = self._thickness / 2
-                    options["end_marker"]["thickness"] = self._thickness / 2
+def _get_number_of_divisions(ruler_options: RulerOptions, length: int | float) -> int:
+    return int(
+        _get_number_of_units(ruler_options, length) * ruler_options.unit_division
+    )
 
-            ls = LineSegment(
-                type=self.type,
-                length=unit_division_length,
-                color=self._color,
-                thickness=self._thickness,
-                options=options,
-            )
-            if ls._end_marker:
-                ls._end_marker.show = False
 
-            if self.type.value == "vertical":
-                position = toggle_position(position)
-            self.add_draw_object(
-                position,
-                ls,
-            )
+def _ruler_segment_lengths(
+    ruler_options: RulerOptions, length: int | float
+) -> list[int | float]:
+    number_of_divisions = _get_number_of_divisions(ruler_options, length)
+    division_length = _get_division_length(ruler_options)
+    return [division_length for _ in range(number_of_divisions)]
+
+
+def _create_segmented_line_options(
+    ruler_options: RulerOptions, length: int | float
+) -> dict[int, Mapping[str, Any]]:
+    options: dict[int, Any] = {}
+    for index in range(_get_number_of_divisions(ruler_options, length)):
+        key = index + 1
+        options[key] = {}
+        if index % ruler_options.unit_division == 0:
+            index_of_unit = index / ruler_options.unit_division
+            options[key]["start_marker"] = {
+                "length": ruler_options.unit_marker.length,
+                "thickness": ruler_options.unit_marker.thickness,
+            }
+            if index_of_unit % ruler_options.labels_interval == 0:
+                options[key]["start_marker"]["labels"] = [
+                    Label(
+                        text=str(int(index_of_unit) + 1),
+                        color=ruler_options.label.color,
+                        font_size=ruler_options.label.font_size,
+                        font_family=ruler_options.label.font_family,
+                        offset=ruler_options.label.offset,
+                    )
+                ]
+        else:
+            options[key]["start_marker"] = {
+                "thickness": ruler_options.unit_marker.thickness,
+            }
+    return options
 
 
 class Ruler(Container):
@@ -105,106 +103,29 @@ class Ruler(Container):
         *,
         type: LineOrientation,
         length: float,
-        unit_length: int | float = 10,
-        unit_division: int = 10,
-        labels_interval: int = 1,
-        label_offset: Tuple[int | float, int | float] = (1, 3),
         color: str | None = None,
-        thickness: float | None = None,
         options: Mapping[str, Any] | None = None,
     ) -> None:
         super().__init__()
-        self.type = type
-        self._length = length
-        self._unit_length = unit_length
-        self._unit_division = unit_division
-        self._labels_interval = labels_interval
-        self._label_offset = label_offset
-        self._color = color
-        self._thickness = thickness
-        self._options = RulerOptions()
+        ruler_options = RulerOptions()
         if options:
-            overrides_data_class_options(self._options, options)
+            overrides_data_class_options(ruler_options, options)
+
+        segmented_line_options = _create_segmented_line_options(ruler_options, length)
+
+        segment_lengths = _ruler_segment_lengths(ruler_options, length)
+
+        self._segmented_line = SegmentedLine(
+            type=type,
+            segment_lengths=segment_lengths,
+            marker_length=ruler_options.unit_division_marker.length,
+            color=color,
+            thickness=ruler_options.thickness,
+            options=segmented_line_options,
+        )
+
         self._build()
 
     def _build(self) -> None:
-        self._build_ruler_units()
-        self._build_labels()
-
-    def _build_ruler_units(self) -> None:
-        self._create_ruler_units()
-        for p, ru in zip(self._get_ruler_unit_positions(), self._ruler_units):
-            self.add_draw_object(p, ru)
-
-    def _build_labels(self) -> None:
-        for i, (p, _) in enumerate(self.get_positioned_ruler_units()):
-            if i % self._labels_interval == 0:
-                if self.type.value == "horizontal":
-                    position = Position(p.x + self._label_offset[0], 0)
-                else:
-                    position = Position(0, p.y + self._label_offset[0])
-                self.add_draw_object(
-                    position,
-                    TextDrawObject(text=str(i), color=self._color),
-                )
-
-    def _create_ruler_units(self) -> None:
-        self._ruler_units = [
-            RulerUnit(
-                type=self.type,
-                length=self._unit_length,
-                division=self._unit_division,
-                large_markers_length=self._options.unit_marker.length,
-                small_markers_length=self._options.unit_division_marker.length,
-                thickness=self._thickness,
-                color=self._color,
-            )
-            for _ in range(self._get_number_ruler_units())
-        ]
-
-    def _get_division_size(self) -> float:
-        return self._unit_length / self._unit_division
-
-    def _get_ruler_unit_positions(self) -> list[Position]:
-        if self.type.value == "horizontal":
-            return [
-                Position(i * self._unit_length, self._label_offset[1])
-                for i in range(self._get_number_ruler_units())
-            ]
-        return [
-            Position(self._label_offset[1], i * self._unit_length)
-            for i in range(self._get_number_ruler_units())
-        ]
-
-    def _get_number_ruler_units(self) -> int:
-        return int(self._length / self._unit_length)
-
-    def get_positioned_ruler_units(self) -> list[tuple[Position, RulerUnit]]:
-        return [
-            (p, o)
-            for (p, o) in self.get_draw_objects(positioned=True)
-            if isinstance(o, RulerUnit)
-        ]
-
-    def get_positioned_markers(self) -> list[tuple[Position, Marker]]:
-        return [
-            (rup + lp + mp, m)
-            for (rup, ru) in self.get_positioned_ruler_units()
-            for (lp, l) in [
-                (p, o)
-                for (p, o) in ru.get_draw_objects(positioned=True)
-                if isinstance(o, LineSegment)
-            ]
-            for (mp, m) in [
-                (pp, oo)
-                for (pp, oo) in l.get_draw_objects(positioned=True)
-                if isinstance(oo, Marker) and oo.show
-            ]
-        ]
-
-    def get_positioned_labels(self) -> list[tuple[Position, TextDrawObject]]:
-        return [
-            (p, o)
-            for p, o in self.get_draw_objects(positioned=True)
-            if isinstance(o, TextDrawObject)
-        ]
+        for p, o in self._segmented_line.get_draw_objects(positioned=True):
+            self.add_draw_object(p, o)

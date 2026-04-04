@@ -23,7 +23,10 @@ class HorizontalSegmentedLineRegressionTests(SVGTestCase):
             marker_length=10,
             thickness=3,
             color="blue",
-            options={2: {"start_marker": {"length": 20}}},
+            show_last_end_marker=True,
+            options={
+                2: {"start_marker": {"length": 20}},
+            },
         )
 
         page.add_draw_object(Position(10, 10), sl)
