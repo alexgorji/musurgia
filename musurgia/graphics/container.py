@@ -7,13 +7,13 @@ from musurgia.graphics.drawobject import (
 )
 
 
-from typing import List, Literal, Tuple, overload
+from typing import Literal, overload
 
 
 class Container(DrawObject):
     def __init__(self) -> None:
         super().__init__()
-        self._positioned_draw_objects: List[Tuple[Position, DrawObject]] = []
+        self._positioned_draw_objects: list[tuple[Position, DrawObject]] = []
         self._padding = Padding(0, 0, 0, 0)
 
     def _get_padding(self) -> "Padding":
@@ -34,32 +34,32 @@ class Container(DrawObject):
         return clipping_area.clip(self)
 
     @overload
-    def get_draw_objects(self) -> List[DrawObject]: ...
+    def get_draw_objects(self) -> list[DrawObject]: ...
 
     @overload
-    def get_draw_objects(self, *, recursive: bool) -> List[DrawObject]: ...
+    def get_draw_objects(self, *, recursive: bool) -> list[DrawObject]: ...
 
     @overload
-    def get_draw_objects(self, *, positioned: Literal[False]) -> List[DrawObject]: ...
+    def get_draw_objects(self, *, positioned: Literal[False]) -> list[DrawObject]: ...
 
     @overload
     def get_draw_objects(
         self, *, positioned: Literal[False], recursive: bool
-    ) -> List[DrawObject]: ...
+    ) -> list[DrawObject]: ...
 
     @overload
     def get_draw_objects(
         self, *, positioned: Literal[True]
-    ) -> List[Tuple[Position, DrawObject]]: ...
+    ) -> list[tuple[Position, DrawObject]]: ...
 
     @overload
     def get_draw_objects(
         self, *, positioned: Literal[True], recursive: bool
-    ) -> List[Tuple[Position, DrawObject]]: ...
+    ) -> list[tuple[Position, DrawObject]]: ...
 
     def get_draw_objects(
         self, *, recursive: bool = False, positioned: bool = False
-    ) -> List[DrawObject] | List[Tuple[Position, DrawObject]]:
+    ) -> list[DrawObject] | list[tuple[Position, DrawObject]]:
         if not positioned:
             if recursive:
                 return_value = []
@@ -83,7 +83,7 @@ class Container(DrawObject):
 
     def _get_positioned_draw_objects(
         self, recursive: bool = False
-    ) -> List[Tuple[Position, DrawObject]]:
+    ) -> list[tuple[Position, DrawObject]]:
         if recursive:
             return_value = []
             for p, o in self._positioned_draw_objects:

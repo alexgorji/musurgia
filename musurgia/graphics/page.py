@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Dict, List, Literal, Tuple
+from typing import Dict, Literal
 
 import svg
 
@@ -50,7 +50,7 @@ class PageLayout:
 class Page:
     def __init__(self, layout: PageLayout | None = None):
         self.layout = layout or PageLayout()
-        self._positioned_draw_objects: List[Tuple[Position, DrawObject]] = []
+        self._positioned_draw_objects: list[tuple[Position, DrawObject]] = []
 
     def add_draw_object(self, position: Position, draw_object: DrawObject) -> None:
         self._positioned_draw_objects.append((position, draw_object))
