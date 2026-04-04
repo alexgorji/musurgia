@@ -2,8 +2,8 @@ from pathlib import Path
 from unittest import TestCase
 import pytest
 
+from musurgia.graphics.container import Container
 from musurgia.graphics.drawobject import (
-    Container,
     LineDrawObject,
     Padding,
     Position,

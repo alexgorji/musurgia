@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Generic, TypeVar
 import svg
+from musurgia.graphics.container import Container
 from musurgia.graphics.drawobject import (
     DrawObject,
     StraightLineDrawObject,
@@ -8,7 +9,6 @@ from musurgia.graphics.drawobject import (
     Position,
     RectangleDrawObject,
     TextDrawObject,
-    Container,
 )
 from musurgia.graphics.line_segment import Label
 

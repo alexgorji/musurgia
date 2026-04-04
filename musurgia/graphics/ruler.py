@@ -2,7 +2,8 @@ from dataclasses import dataclass, field
 from typing import Any, Mapping
 
 
-from musurgia.graphics.drawobject import Container, Padding
+from musurgia.graphics.container import Container
+from musurgia.graphics.drawobject import Padding
 from musurgia.graphics.line_segment import Label
 from musurgia.graphics.models import LineOrientation
 from musurgia.graphics.segmented_line import SegmentedLine

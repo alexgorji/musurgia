@@ -5,11 +5,11 @@ import svg
 import subprocess
 from pathlib import Path
 
+from musurgia.graphics.container import Container
 from musurgia.graphics.svg.convertors import SVGConverterRegistry
 
 
 from musurgia.graphics.drawobject import (
-    Container,
     LineDrawObject,
     Position,
     RectangleDrawObject,

@@ -1,7 +1,7 @@
 from unittest import TestCase
 
+from musurgia.graphics.container import Container
 from musurgia.graphics.drawobject import (
-    Container,
     Size,
     StraightLineDrawObject,
     TextDrawObject,

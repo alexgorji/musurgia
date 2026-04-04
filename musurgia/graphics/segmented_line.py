@@ -1,6 +1,7 @@
 from typing import Any, Literal, Mapping, overload
 
-from musurgia.graphics.drawobject import Container, Position
+from musurgia.graphics.container import Container
+from musurgia.graphics.drawobject import Position
 from musurgia.graphics.line_segment import (
     Label,
     LineSegment,
