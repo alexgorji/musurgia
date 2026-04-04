@@ -2,7 +2,6 @@ from unittest import TestCase
 
 from musurgia.graphics.drawobject import (
     LineDrawObject,
-    Padding,
     Position,
     RectangleDrawObject,
     Size,
@@ -25,31 +24,6 @@ class LineTestCase(TestCase):
     def test_get_length(self):
         l1 = LineDrawObject(start=Position(0, 40), end=Position(30, 0))
         assert l1.get_length() == 50
-
-    def test_default_line_padding(self):
-        line = LineDrawObject(end=Position(30, 40))
-        assert line.padding == Padding(0, 0, 0, 0)
-
-        line = LineDrawObject(start=Position(0, 40), end=Position(30, 0))
-        assert line.padding == Padding(0, 0, 0, 0)
-
-        line = LineDrawObject(start=Position(30, 40), end=Position(0, 0))
-        assert line.padding == Padding(0, 0, 0, 0)
-
-        line = LineDrawObject(start=Position(30, 0), end=Position(0, 40))
-        assert line.padding == Padding(0, 0, 0, 0)
-
-    def test_line_padding(self):
-        line = LineDrawObject(start=Position(20, 30), end=Position(40, 60))
-        assert line.padding == Padding(30, 0, 0, 20)
-
-        line = LineDrawObject(
-            start=Position(20, 30),
-            end=Position(40, 60),
-            right_padding=40,
-            bottom_padding=50,
-        )
-        assert line.padding == Padding(30, 40, 50, 20)
 
     def test_line_get_bounding_box_coordinates(self):
         l1 = LineDrawObject(start=Position(0, 40), end=Position(30, 0))
@@ -155,8 +129,6 @@ class DrawObjectBoxTestCase(TestCase):
         line = LineDrawObject(
             start=Position(20, 30),
             end=Position(40, 60),
-            right_padding=50,
-            bottom_padding=100,
         )
         box_rectangle = line.box.get_rectangle()
         assert isinstance(box_rectangle, RectangleDrawObject)

@@ -3,7 +3,6 @@ from typing import Any, Mapping
 
 
 from musurgia.graphics.container import Container
-from musurgia.graphics.drawobject import Padding
 from musurgia.graphics.line_segment import Label
 from musurgia.graphics.models import LineOrientation
 from musurgia.graphics.segmented_line import SegmentedLine
@@ -26,7 +25,6 @@ class UnitDivisionMarkerOptions:
 class RulerLabelOptions:
     offset: tuple[int | float, int | float] = (1, 3)
     color: str = "black"
-    padding: Padding = Padding()
     font_family: str = "DejaVu Sans"
     font_size: int | float = 10
 

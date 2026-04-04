@@ -1,6 +1,5 @@
 from musurgia.graphics.container import Container
 from musurgia.graphics.drawobject import (
-    Padding,
     Position,
     StraightLineDrawObject,
     TextDrawObject,
@@ -23,14 +22,12 @@ class Label(TextDrawObject):
         *,
         text: str,
         offset: tuple[int | float, int | float] = (0, 0),
-        padding: Padding = Padding(),
         font_family: str = "DejaVu Sans",
         font_size: int | float = 12,
         **kwargs: Any,
     ) -> None:
         super().__init__(
             text=text,
-            padding=padding,
             font_family=font_family,
             font_size=font_size,
             **kwargs,
