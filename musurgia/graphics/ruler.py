@@ -72,7 +72,8 @@ def _create_segmented_line_options(
     ruler_options: RulerOptions, length: int | float
 ) -> dict[int, Mapping[str, Any]]:
     options: dict[int, Any] = {}
-    for index in range(_get_number_of_divisions(ruler_options, length)):
+    number_of_divisions = _get_number_of_divisions(ruler_options, length)
+    for index in range(number_of_divisions):
         key = index + 1
         options[key] = {}
         if index % ruler_options.unit_division == 0:
@@ -95,6 +96,12 @@ def _create_segmented_line_options(
             options[key]["start_marker"] = {
                 "thickness": ruler_options.unit_marker.thickness,
             }
+        if index == number_of_divisions - 1:
+            options[key]["end_marker"] = {
+                "thickness": ruler_options.unit_marker.thickness
+            }
+            if (index + 1) % ruler_options.unit_division == 0:
+                options[key]["end_marker"]["length"] = ruler_options.unit_marker.length
     return options
 
 

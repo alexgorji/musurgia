@@ -203,6 +203,7 @@ class LineSegment(Container):
                 )
             ),
         )
+        p = p + Position(self._start_marker.get_thickness() / 2, 0)
         if self.type.value == "vertical":
             p = toggle_position(p)
         return p
@@ -221,6 +222,8 @@ class LineSegment(Container):
                 )
             ),
         )
+        if self._end_marker:
+            p = p - Position(self._end_marker.get_thickness() / 2, 0)
         if self.type.value == "vertical":
             p = toggle_position(p)
         return p
