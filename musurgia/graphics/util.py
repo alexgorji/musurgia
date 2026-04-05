@@ -2,6 +2,7 @@ import copy
 from dataclasses import is_dataclass
 from typing import Any
 from collections.abc import Mapping
+
 from musurgia.graphics.drawobject import Position
 from musurgia.graphics.models import LineOrientation
 

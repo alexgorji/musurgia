@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Dict, Literal
 
-import svg
 
 from musurgia.graphics.drawobject import (
     DrawObject,
@@ -9,10 +8,10 @@ from musurgia.graphics.drawobject import (
     Position,
     Size,
 )
-from musurgia.graphics.svg.convertors import (
-    SVGConverterRegistry,
-)
+
 from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.svg.utils import create_svg_object
+
 
 type PageSize = Literal["A3", "A4", "A5"]
 type PageOrientation = Literal["portrait", "landscape"]
@@ -83,18 +82,9 @@ class Page:
     def convert_to_svg_string(self) -> str:
         size = self.layout.get_size()
         height, width = size.height, size.width
-        svg_object = svg.SVG(
-            width=svg.Length(width, "mm"),
-            height=svg.Length(height, "mm"),
-            viewBox=svg.ViewBoxSpec(0, 0, width, height),
-        )
 
-        if self._positioned_draw_objects:
-            if svg_object.elements is None:
-                svg_object.elements = []
-            for position, draw_object in self._positioned_draw_objects:
-                svg_object.elements.extend(
-                    SVGConverterRegistry.convert(position, draw_object)
-                )
+        svg_object = create_svg_object(
+            width, height, self._positioned_draw_objects, "mm"
+        )
 
         return svg_object.as_str()
