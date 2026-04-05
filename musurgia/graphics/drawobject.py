@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import copy
 from dataclasses import dataclass
 import math
 from typing import Any
@@ -107,6 +108,11 @@ class DrawObject(ABC):
     def get_bounding_box_coordinates(self) -> Coordinates:
         pass
 
+    def clip(
+        self, clip_start: Position, clip_width: float | int, clip_height: float | int
+    ) -> "DrawObject | None":
+        return None
+
 
 class ColorMixin:
     def __init__(self, *, color: str = "black", **kwargs: Any) -> None:
@@ -211,6 +217,78 @@ class LineDrawObject(ColorMixin, DrawObject):
 
     def set_thickness(self, val: float) -> None:
         self._thickness = val
+
+    def clip(
+        self, clip_start: Position, clip_width: float | int, clip_height: float | int
+    ) -> "LineDrawObject | None":
+        """
+        Clip this line to a rectangle defined by clip_start, clip_width, clip_height.
+        Returns a new LineDrawObject or None if fully outside.
+        """
+        # --- Step 1: get bounding box of the line (already includes thickness)
+        box = self.get_bounding_box_coordinates()
+        line_xmin = box.tl.x
+        line_ymin = box.tl.y
+        line_width = self.size.width
+        line_height = self.size.height
+        line_xmax = line_xmin + line_width
+        line_ymax = line_ymin + line_height
+
+        # --- Step 2: compute intersection with clipping rectangle
+        clip_xmin = clip_start.x
+        clip_ymin = clip_start.y
+        clip_xmax = clip_start.x + clip_width
+        clip_ymax = clip_start.y + clip_height
+
+        ix_min = max(line_xmin, clip_xmin)
+        iy_min = max(line_ymin, clip_ymin)
+        ix_max = min(line_xmax, clip_xmax)
+        iy_max = min(line_ymax, clip_ymax)
+
+        # If rectangles do not overlap, nothing to draw
+        if ix_min >= ix_max or iy_min >= iy_max:
+            return None
+
+        # --- Step 3: clip the line segment using parametric equation
+        x1, y1 = self.start.x, self.start.y
+        x2, y2 = self.end.x, self.end.y
+        dx = x2 - x1
+        dy = y2 - y1
+        t0, t1 = 0.0, 1.0
+
+        def clip_test(
+            p: float, q: float, t0: float, t1: float
+        ) -> tuple[bool, float, float]:
+            if p == 0:
+                if q < 0:
+                    return False, t0, t1
+                return True, t0, t1
+            t = q / p
+            if p < 0:
+                if t > t1:
+                    return False, t0, t1
+                t0 = max(t0, t)
+            else:
+                if t < t0:
+                    return False, t0, t1
+                t1 = min(t1, t)
+            return True, t0, t1
+
+        for p, q in [
+            (-dx, x1 - ix_min),
+            (dx, ix_max - x1),
+            (-dy, y1 - iy_min),
+            (dy, iy_max - y1),
+        ]:
+            ok, t0, t1 = clip_test(p, q, t0, t1)
+            if not ok:
+                return None
+
+        # --- Step 4: return new LineDrawObject
+        clipped = copy.deepcopy(self)
+        clipped._start = Position(x1 + t0 * dx, y1 + t0 * dy)
+        clipped._end = Position(x1 + t1 * dx, y1 + t1 * dy)
+        return clipped
 
     def get_bounding_box_coordinates(self) -> Coordinates:
         x1, y1 = self.start.x, self.start.y
