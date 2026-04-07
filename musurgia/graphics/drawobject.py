@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 import math
 from typing import Any
 import cairo
 
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import Coordinates, Paddings, Position, Size
+from musurgia.graphics.geometry import LineOrientation
 
 
 def create_measure_context() -> cairo.Context:  # type: ignore[type-arg]
@@ -16,44 +16,6 @@ def create_measure_context() -> cairo.Context:  # type: ignore[type-arg]
 # -----------------------------
 # Value objects (dataclasses)
 # -----------------------------
-
-
-@dataclass(frozen=True)
-class Position:
-    x: float
-    y: float
-
-    def __add__(self, other: "Position") -> "Position":
-        return Position(self.x + other.x, self.y + other.y)
-
-    def __sub__(self, other: "Position") -> "Position":
-        return Position(self.x - other.x, self.y - other.y)
-
-    @staticmethod
-    def from_values(x: float, y: float) -> "Position":
-        return Position(x, y)
-
-
-@dataclass(frozen=True)
-class Size:
-    width: float
-    height: float
-
-
-@dataclass(frozen=True)
-class Padding:
-    top: float | int = 0
-    right: float | int = 0
-    bottom: float | int = 0
-    left: float | int = 0
-
-
-@dataclass(frozen=True)
-class Coordinates:
-    tl: Position
-    tr: Position
-    br: Position
-    bl: Position
 
 
 class DrawObjectBox:
@@ -132,7 +94,7 @@ class TextDrawObject(ColorMixin, DrawObject):
         self,
         *,
         text: str,
-        padding: Padding = Padding(),
+        padding: Paddings = Paddings(),
         font_family: str = "DejaVu Sans",
         font_size: int | float = 12,
         **kwargs: Any,
@@ -294,7 +256,7 @@ class RectangleDrawObject(ColorMixin, DrawObject):
         self,
         *,
         size: Size,
-        padding: Padding = Padding(0, 0, 0, 0),
+        padding: Paddings = Paddings(0, 0, 0, 0),
         thickness: float = 0.1,
         **kwargs: Any,
     ) -> None:

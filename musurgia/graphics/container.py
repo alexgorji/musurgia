@@ -1,8 +1,6 @@
+from musurgia.graphics.geometry import Coordinates, Position, Size
 from musurgia.graphics.drawobject import (
-    Coordinates,
     DrawObject,
-    Position,
-    Size,
 )
 
 

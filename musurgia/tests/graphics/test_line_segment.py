@@ -1,9 +1,8 @@
 from unittest import TestCase
 
 
+from musurgia.graphics.geometry import Position, Size
 from musurgia.graphics.drawobject import (
-    Position,
-    Size,
     StraightLineDrawObject,
 )
 from musurgia.graphics.line_segment import (
@@ -12,7 +11,7 @@ from musurgia.graphics.line_segment import (
     Marker,
     MarkerOptions,
 )
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import LineOrientation
 from musurgia.tests.graphics.test_utils import check_centered_markers
 
 

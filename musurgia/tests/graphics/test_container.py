@@ -1,13 +1,12 @@
 from unittest import TestCase
 
 from musurgia.graphics.container import Container
+from musurgia.graphics.geometry import Position, Size
 from musurgia.graphics.drawobject import (
-    Size,
     StraightLineDrawObject,
     TextDrawObject,
-    Position,
 )
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import LineOrientation
 
 
 class ContainerTestCase(TestCase):

@@ -1,8 +1,9 @@
 from unittest import TestCase
 
-from musurgia.graphics.drawobject import Position, TextDrawObject
+from musurgia.graphics.geometry import Position
+from musurgia.graphics.drawobject import TextDrawObject
 from musurgia.graphics.line_segment import Label, Marker
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.segmented_line import SegmentedLine
 from musurgia.tests.graphics.test_utils import (
     check_all_straight_lines_centered,

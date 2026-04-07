@@ -1,8 +1,8 @@
 from pathlib import Path
-from musurgia.graphics.drawobject import Position
+from musurgia.graphics.geometry import Position
 from musurgia.graphics.page import Page
 from musurgia.graphics.line_segment import LineSegment
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import LineOrientation
 from musurgia.tests.helpers.svg import SVGTestCase
 
 this_path = Path(__file__)

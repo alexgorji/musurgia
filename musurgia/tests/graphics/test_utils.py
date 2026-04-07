@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from musurgia.graphics.drawobject import Position
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import Position
+from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.segmented_line import LineSegment, SegmentedLine
 from musurgia.graphics.util import (
     override_options_mappings,

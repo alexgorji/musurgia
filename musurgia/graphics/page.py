@@ -2,27 +2,18 @@ from dataclasses import dataclass, field
 from typing import Dict, Literal
 
 
+from musurgia.graphics.geometry import Margins, Position, Size
 from musurgia.graphics.drawobject import (
     DrawObject,
     StraightLineDrawObject,
-    Position,
-    Size,
 )
 
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.svg.utils import create_svg_object
 
 
 type PageSize = Literal["A3", "A4", "A5"]
 type PageOrientation = Literal["portrait", "landscape"]
-
-
-@dataclass
-class Margins:
-    top: int
-    right: int
-    bottom: int
-    left: int
 
 
 PAGE_SIZES: Dict[PageSize, Size] = {

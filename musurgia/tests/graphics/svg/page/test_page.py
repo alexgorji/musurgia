@@ -3,17 +3,15 @@ from unittest import TestCase
 import pytest
 
 from musurgia.graphics.container import Container
+from musurgia.graphics.geometry import Paddings, Position, Size
 from musurgia.graphics.drawobject import (
     LineDrawObject,
-    Padding,
-    Position,
     RectangleDrawObject,
-    Size,
     TextDrawObject,
     StraightLineDrawObject,
 )
 from musurgia.graphics.page import Page
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import LineOrientation
 from musurgia.tests.helpers.svg import SVGTestCase
 import xml.etree.ElementTree as ET
 
@@ -38,12 +36,12 @@ class PageToSVGTestCase(TestCase):
         page = Page()
         page.add_draw_object(
             Position(0, 0),
-            TextDrawObject(text="Hello", padding=Padding(10, 0, 0, 10)),
+            TextDrawObject(text="Hello", padding=Paddings(10, 0, 0, 10)),
         )
 
         page.add_draw_object(
             Position(0, 0),
-            TextDrawObject(text="Goodbye", padding=Padding(20, 0, 0, 20)),
+            TextDrawObject(text="Goodbye", padding=Paddings(20, 0, 0, 20)),
         )
 
         svg_string = page.convert_to_svg_string()
@@ -76,7 +74,7 @@ class PageToSVGRegressionTests(SVGTestCase):
         t2 = TextDrawObject(
             text="The quick Brown fox Jumps over The lazy Dog",
             color="red",
-            padding=Padding(20, 0, 0, 10),
+            padding=Paddings(20, 0, 0, 10),
             font_size=12,
         )
         t2.box.show = True
@@ -85,7 +83,7 @@ class PageToSVGRegressionTests(SVGTestCase):
         t3 = TextDrawObject(
             text="The quick Brown fox Jumps over The lazy Dog",
             color="orange",
-            padding=Padding(20, 30, 40, 10),
+            padding=Paddings(20, 30, 40, 10),
             font_size=15,
         )
         t3.box.show = True
@@ -201,7 +199,7 @@ class PageToSVGRegressionTests(SVGTestCase):
             size=Size(30, 40),
             color="blue",
             thickness=1,
-            padding=Padding(10, 20, 30, 40),
+            padding=Paddings(10, 20, 30, 40),
         )
         r1.box.show = True
         r2.box.show = True
@@ -227,7 +225,7 @@ class PageToSVGRegressionTests(SVGTestCase):
             size=Size(30, 40),
             color="blue",
             thickness=1,
-            padding=Padding(2, 4, 6, 8),
+            padding=Paddings(2, 4, 6, 8),
         )
 
         t1 = TextDrawObject(

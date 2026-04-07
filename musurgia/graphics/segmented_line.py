@@ -1,12 +1,12 @@
 from typing import Any, Literal, Mapping, overload
 
 from musurgia.graphics.container import Container
-from musurgia.graphics.drawobject import Position
+from musurgia.graphics.geometry import Position
 from musurgia.graphics.line_segment import (
     Label,
     LineSegment,
 )
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.util import override_options_mappings
 
 

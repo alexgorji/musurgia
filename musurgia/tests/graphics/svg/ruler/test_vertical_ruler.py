@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from musurgia.graphics.drawobject import Position
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import Position
+from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.page import Page
 from musurgia.graphics.ruler import Ruler
 from musurgia.tests.helpers.svg import SVGTestCase

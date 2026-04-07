@@ -1,6 +1,6 @@
 from musurgia.graphics.container import Container
+from musurgia.graphics.geometry import Position
 from musurgia.graphics.drawobject import (
-    Position,
     StraightLineDrawObject,
     TextDrawObject,
 )
@@ -8,7 +8,7 @@ from musurgia.graphics.drawobject import (
 from dataclasses import dataclass, field, asdict, fields
 from typing import Any, Literal, Mapping, cast, overload
 
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.util import (
     overrides_data_class_options,
     toggle_line_orientation,

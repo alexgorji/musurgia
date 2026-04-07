@@ -4,7 +4,7 @@ from typing import Any, Mapping
 
 from musurgia.graphics.container import Container
 from musurgia.graphics.line_segment import Label
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.segmented_line import SegmentedLine
 from musurgia.graphics.util import overrides_data_class_options
 

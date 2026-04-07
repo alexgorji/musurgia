@@ -3,8 +3,8 @@ from dataclasses import is_dataclass
 from typing import Any
 from collections.abc import Mapping
 
-from musurgia.graphics.drawobject import Position
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import Position
+from musurgia.graphics.geometry import LineOrientation
 
 
 def overrides_data_class_options(obj: Any, overrides: Mapping[str, Any]) -> None:

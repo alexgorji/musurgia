@@ -1,7 +1,8 @@
 import copy
 import math
 
-from musurgia.graphics.drawobject import DrawObject, Position
+from musurgia.graphics.geometry import Position
+from musurgia.graphics.drawobject import DrawObject
 from musurgia.graphics.svg.convertors import SVGConverterRegistry
 
 

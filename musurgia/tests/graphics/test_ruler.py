@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.ruler import (
     Ruler,
     RulerOptions,

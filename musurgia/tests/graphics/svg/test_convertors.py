@@ -6,14 +6,13 @@ import subprocess
 from pathlib import Path
 
 from musurgia.graphics.container import Container
+from musurgia.graphics.geometry import Position, Size
 from musurgia.graphics.svg.convertors import SVGConverterRegistry
 
 
 from musurgia.graphics.drawobject import (
     LineDrawObject,
-    Position,
     RectangleDrawObject,
-    Size,
     StraightLineDrawObject,
     TextDrawObject,
     create_measure_context,
@@ -21,7 +20,7 @@ from musurgia.graphics.drawobject import (
 from musurgia.graphics.svg.convertors import (
     TextDrawObjectToSVGConvertor,
 )
-from musurgia.graphics.models import LineOrientation
+from musurgia.graphics.geometry import LineOrientation
 
 
 class ConvertTextDrawObjectToSVGTestCase(TestCase):

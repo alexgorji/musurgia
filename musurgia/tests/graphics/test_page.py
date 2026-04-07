@@ -1,7 +1,7 @@
 from pathlib import Path
 from unittest import TestCase
-from musurgia.graphics.drawobject import Size
-from musurgia.graphics.page import Margins, Page
+from musurgia.graphics.geometry import Margins, Size
+from musurgia.graphics.page import Page
 
 this_path = Path(__file__)
 

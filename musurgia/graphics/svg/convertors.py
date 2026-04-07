@@ -2,11 +2,11 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, Generic, TypeVar
 import svg
 from musurgia.graphics.container import Container
+from musurgia.graphics.geometry import Position
 from musurgia.graphics.drawobject import (
     DrawObject,
     StraightLineDrawObject,
     LineDrawObject,
-    Position,
     RectangleDrawObject,
     TextDrawObject,
 )
