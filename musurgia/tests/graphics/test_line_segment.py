@@ -1,3 +1,4 @@
+from decimal import Decimal
 from unittest import TestCase
 
 
@@ -131,9 +132,9 @@ class HorizontalLineSegmentTestCase(TestCase):
 
         for p, o in hsl.get_draw_objects(positioned=True):
             if o == start_marker:
-                assert p == Position(start_marker.get_thickness() / 2, 0)
+                assert p == Position(Decimal(start_marker.get_thickness() / 2), 0)
             elif o == end_marker:
-                assert p == Position(15 - end_marker.get_thickness() / 2, 0)
+                assert p == Position(15 - Decimal(end_marker.get_thickness() / 2), 0)
             elif o == straight_line:
                 assert p == Position(0, 3)
 
@@ -158,7 +159,7 @@ class HorizontalLineSegmentTestCase(TestCase):
 
         for p, o in hsl.get_draw_objects(positioned=True):
             if o == start_marker:
-                assert p == Position(start_marker.get_thickness() / 2, 0)
+                assert p == Position(Decimal(start_marker.get_thickness() / 2), 0)
             elif o == straight_line:
                 assert p == Position(0, 3)
 
@@ -281,9 +282,11 @@ class HorizontalLineSegmentTestCase(TestCase):
             if o == hsl._end_marker
         )
 
-        assert positioned_start_marker[0] == Position(marker_thickness / 2, 0)
+        assert positioned_start_marker[0] == Position(Decimal(marker_thickness / 2), 0)
 
-        assert positioned_end_marker[0] == Position(10 - marker_thickness / 2, 2.5)
+        assert positioned_end_marker[0] == Position(
+            10 - Decimal(marker_thickness / 2), Decimal(2.5)
+        )
 
         hsl = LineSegment(
             type=LineOrientation.HORIZONTAL,
@@ -303,9 +306,13 @@ class HorizontalLineSegmentTestCase(TestCase):
             if o == hsl._end_marker
         )
 
-        assert positioned_start_marker[0] == Position(marker_thickness / 2, 2.5)
+        assert positioned_start_marker[0] == Position(
+            Decimal(marker_thickness / 2), Decimal(2.5)
+        )
 
-        assert positioned_end_marker[0] == Position(10 - marker_thickness / 2, 0)
+        assert positioned_end_marker[0] == Position(
+            10 - Decimal(marker_thickness / 2), 0
+        )
 
     def test_size(self):
         hsl = LineSegment(type=LineOrientation.HORIZONTAL, length=15)
@@ -424,9 +431,9 @@ class VerticalLineSegmentTestCase(TestCase):
 
         for p, o in vsl.get_draw_objects(positioned=True):
             if o == start_marker:
-                assert p == Position(0, start_marker.get_thickness() / 2)
+                assert p == Position(0, Decimal(start_marker.get_thickness() / 2))
             elif o == end_marker:
-                assert p == Position(0, 15 - end_marker.get_thickness() / 2)
+                assert p == Position(0, 15 - Decimal(end_marker.get_thickness() / 2))
             elif o == straight_line:
                 assert p == Position(3, 0)
 
@@ -465,9 +472,11 @@ class VerticalLineSegmentTestCase(TestCase):
             if o == vsl._end_marker
         )
 
-        assert positioned_start_marker[0] == Position(0, marker_thickness / 2)
+        assert positioned_start_marker[0] == Position(0, Decimal(marker_thickness / 2))
 
-        assert positioned_end_marker[0] == Position(2.5, 10 - marker_thickness / 2)
+        assert positioned_end_marker[0] == Position(
+            Decimal(2.5), 10 - Decimal(marker_thickness / 2)
+        )
 
         vsl = LineSegment(
             type=LineOrientation.VERTICAL,
@@ -487,9 +496,13 @@ class VerticalLineSegmentTestCase(TestCase):
             if o == vsl._end_marker
         )
 
-        assert positioned_start_marker[0] == Position(2.5, marker_thickness / 2)
+        assert positioned_start_marker[0] == Position(
+            Decimal(2.5), Decimal(marker_thickness / 2)
+        )
 
-        assert positioned_end_marker[0] == Position(0, 10 - marker_thickness / 2)
+        assert positioned_end_marker[0] == Position(
+            0, 10 - Decimal(marker_thickness / 2)
+        )
 
     def test_component_getters(self):
         vsl = LineSegment(type=LineOrientation.VERTICAL, length=15)
@@ -502,12 +515,14 @@ class VerticalLineSegmentTestCase(TestCase):
         start, end = vsl.get_markers(positioned=False)
 
         assert positioned_start[1] == start
-        assert positioned_start[0] == Position(0, start.get_thickness() / 2)
+        assert positioned_start[0] == Position(0, Decimal(start.get_thickness() / 2))
         assert start.get_length() == 6
 
         if positioned_end and end:
             assert positioned_end[1] == end
-            assert positioned_end[0] == Position(0, 15 - end.get_thickness() / 2)
+            assert positioned_end[0] == Position(
+                0, 15 - Decimal(end.get_thickness() / 2)
+            )
             assert end.get_length() == 6
 
     def test_size(self):

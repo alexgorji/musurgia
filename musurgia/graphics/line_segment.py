@@ -1,5 +1,7 @@
+from decimal import Decimal
+
 from musurgia.graphics.container import Container
-from musurgia.graphics.geometry import Position
+from musurgia.graphics.geometry import Position, Scalar
 from musurgia.graphics.drawobject import (
     StraightLineDrawObject,
     TextDrawObject,
@@ -21,9 +23,9 @@ class Label(TextDrawObject):
         self,
         *,
         text: str,
-        offset: tuple[int | float, int | float] = (0, 0),
+        offset: tuple[Scalar, Scalar] = (0, 0),
         font_family: str = "DejaVu Sans",
-        font_size: int | float = 12,
+        font_size: Scalar = 12,
         **kwargs: Any,
     ) -> None:
         super().__init__(
@@ -34,21 +36,21 @@ class Label(TextDrawObject):
         )
         self._offset = offset
 
-    def get_offset(self) -> tuple[int | float, int | float]:
+    def get_offset(self) -> tuple[Scalar, Scalar]:
         return self._offset
 
 
 @dataclass
 class MarkerOptions:
-    length: float = 6.0
-    thickness: float = 0.1
+    length: Scalar = Decimal(6.0)
+    thickness: Scalar = Decimal(0.1)
     color: str = "black"
     labels: list[Label] = field(default_factory=lambda: [])
 
 
 @dataclass
 class StraightLineOptions:
-    thickness: float = 0.1
+    thickness: Scalar = Decimal(0.1)
     color: str = "black"
 
 
@@ -109,10 +111,10 @@ class Marker(Container):
     def get_type(self) -> str:
         return self.type.value
 
-    def get_length(self) -> float:
+    def get_length(self) -> Scalar:
         return self._line.get_length()
 
-    def get_thickness(self) -> float:
+    def get_thickness(self) -> Scalar:
         return self._line.thickness
 
     def get_color(self) -> str:
@@ -141,7 +143,7 @@ class Marker(Container):
             return positioned_line
         return positioned_line[1]
 
-    def get_middle_of_line_coordinate(self) -> float:
+    def get_middle_of_line_coordinate(self) -> Scalar:
         position, line = self.get_line(positioned=True)
         if self.type.value == "vertical":
             return position.y + line.get_length() / 2
@@ -154,9 +156,9 @@ class LineSegment(Container):
         self,
         *,
         type: LineOrientation,
-        length: float,
+        length: Scalar,
         color: str | None = None,
-        thickness: float | None = None,
+        thickness: Scalar | None = None,
         options: Mapping[str, Any] | None = None,
         no_end_marker: bool = False,
     ) -> None:
@@ -200,7 +202,7 @@ class LineSegment(Container):
                 )
             ),
         )
-        p = p + Position(self._start_marker.get_thickness() / 2, 0)
+        p = p + Position(Decimal(self._start_marker.get_thickness() / 2), 0)
         if self.type.value == "vertical":
             p = toggle_position(p)
         return p
@@ -220,7 +222,7 @@ class LineSegment(Container):
             ),
         )
         if self._end_marker:
-            p = p - Position(self._end_marker.get_thickness() / 2, 0)
+            p = p - Position(Decimal(self._end_marker.get_thickness() / 2), 0)
         if self.type.value == "vertical":
             p = toggle_position(p)
         return p
@@ -341,5 +343,5 @@ class LineSegment(Container):
             if o == self._straight_line
         ][0]
 
-    def get_length(self) -> float:
+    def get_length(self) -> Scalar:
         return self.get_straight_line().get_length()

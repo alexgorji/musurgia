@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
+from decimal import Decimal
 from typing import Dict, Literal
 
 
-from musurgia.graphics.geometry import Margins, Position, Size
+from musurgia.graphics.geometry import Margins, Position, Scalar, Size
 from musurgia.graphics.drawobject import (
     DrawObject,
     StraightLineDrawObject,
@@ -45,13 +46,13 @@ class Page:
     def add_draw_object(self, position: Position, draw_object: DrawObject) -> None:
         self._positioned_draw_objects.append((position, draw_object))
 
-    def add_grid(self, thickness: float = 0.1) -> None:
+    def add_grid(self, thickness: Scalar = Decimal(0.1)) -> None:
         w, h = self.layout.get_size().width, self.layout.get_size().height
         number_of_horizontal_lines = int(h / 10) + 1
         number_of_vertical_lines = int(w / 10) + 1
         for index in range(number_of_horizontal_lines):
             self.add_draw_object(
-                Position(0, index * 10.0),
+                Position(0, index * 10),
                 StraightLineDrawObject(
                     type=LineOrientation.HORIZONTAL,
                     length=w,
@@ -61,7 +62,7 @@ class Page:
             )
         for index in range(number_of_vertical_lines):
             self.add_draw_object(
-                Position(index * 10.0, 0),
+                Position(index * 10, 0),
                 StraightLineDrawObject(
                     type=LineOrientation.VERTICAL,
                     length=h,

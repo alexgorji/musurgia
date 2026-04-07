@@ -1,3 +1,4 @@
+from decimal import Decimal
 from unittest import TestCase
 
 from musurgia.graphics.geometry import Position
@@ -13,7 +14,7 @@ from musurgia.tests.graphics.test_utils import (
 
 class HorizontalSegmentedLineTestCase(TestCase):
     def setUp(self) -> None:
-        self.lengths = [1, 1, 3.4, 5.6]
+        self.lengths = [1, 1, Decimal(3.4), Decimal(5.6)]
         self.sl = SegmentedLine(
             type=LineOrientation.HORIZONTAL, segment_lengths=self.lengths
         )
@@ -85,7 +86,7 @@ class HorizontalSegmentedLineTestCase(TestCase):
                 assert end.get_length() == 100
 
     def test_aligned_segmented_lines(self):
-        lengths = [1, 2, 3.4, 5.6]
+        lengths = [1, 2, Decimal(3.4), Decimal(5.6)]
         sl = SegmentedLine(type=LineOrientation.HORIZONTAL, segment_lengths=lengths)
         check_straight_line_alignment(sl)
         check_all_straight_lines_centered(sl)
@@ -210,7 +211,7 @@ class HorizontalSegmentedLineTestCase(TestCase):
 
 class VerticalSegmentedLineTestCase(TestCase):
     def setUp(self) -> None:
-        self.lengths = [1, 2, 3.4, 5.6]
+        self.lengths = [1, 2, Decimal(3.4), Decimal(5.6)]
         self.sl = SegmentedLine(
             type=LineOrientation.VERTICAL, segment_lengths=self.lengths
         )
@@ -259,7 +260,7 @@ class VerticalSegmentedLineTestCase(TestCase):
                 assert end.get_length() == 100
 
     def test_aligned_segmented_lines(self):
-        lengths = [1, 2, 3.4, 5.6]
+        lengths = [1, 2, Decimal(3.4), Decimal(5.6)]
         sl = SegmentedLine(type=LineOrientation.VERTICAL, segment_lengths=lengths)
 
         check_all_straight_lines_centered(sl)

@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from musurgia.graphics.geometry import Coordinates, Position, Size
 from musurgia.graphics.drawobject import (
     DrawObject,
@@ -92,29 +94,30 @@ class Container(DrawObject):
 
     def get_bounding_box_coordinates(self) -> Coordinates:
         tl, tr, br, bl = [
-            [0.0, 0.0],
-            [0.0, 0.0],
-            [0.0, 0.0],
-            [0.0, 0.0],
+            [Decimal(0), Decimal(0)],
+            [Decimal(0), Decimal(0)],
+            [Decimal(0), Decimal(0)],
+            [Decimal(0), Decimal(0)],
         ]
         for p, d in self._get_positioned_draw_objects():
+            px, py = Decimal(p.x), Decimal(p.y)
             coor = d.get_bounding_box_coordinates()
-            if coor.tl.x + p.x < tl[0]:
-                tl[0] = coor.tl.x + p.x
+            if coor.tl.x + px < tl[0]:
+                tl[0] = coor.tl.x + px
             if coor.tl.y + p.y < tl[1]:
-                tl[1] = coor.tl.y + p.y
+                tl[1] = coor.tl.y + py
             if coor.tr.x + p.x > tr[0]:
-                tr[0] = coor.tr.x + p.x
+                tr[0] = coor.tr.x + px
             if coor.tr.y + p.y < tr[1]:
-                tr[1] = coor.tr.y + p.y
+                tr[1] = coor.tr.y + py
             if coor.br.x + p.x > br[0]:
-                br[0] = coor.br.x + p.x
+                br[0] = coor.br.x + px
             if coor.br.y + p.y > br[1]:
-                br[1] = coor.br.y + p.y
+                br[1] = coor.br.y + py
             if coor.bl.x + p.x < bl[0]:
-                bl[0] = coor.bl.x + p.x
+                bl[0] = coor.bl.x + px
             if coor.bl.y + p.y > bl[1]:
-                bl[1] = coor.bl.y + p.y
+                bl[1] = coor.bl.y + py
 
         return Coordinates(
             Position.from_values(*tl),

@@ -1,12 +1,12 @@
+from decimal import Decimal
 from typing import Any, Literal, Mapping, overload
 
 from musurgia.graphics.container import Container
-from musurgia.graphics.geometry import Position
+from musurgia.graphics.geometry import Position, LineOrientation, Scalar
 from musurgia.graphics.line_segment import (
     Label,
     LineSegment,
 )
-from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.util import override_options_mappings
 
 
@@ -15,11 +15,11 @@ class SegmentedLine(Container):
         self,
         *,
         type: LineOrientation,
-        segment_lengths: list[int | float],
-        marker_length: int | float | None = None,
+        segment_lengths: list[Scalar],
+        marker_length: Scalar | None = None,
         show_last_end_marker: bool = True,
         color: str | None = None,
-        thickness: float | None = None,
+        thickness: Scalar | None = None,
         options: dict[int, Mapping[str, Any]] | None = None,
     ) -> None:
         super().__init__()
@@ -81,7 +81,7 @@ class SegmentedLine(Container):
             max_straight_line_fix_position = max(
                 [ls.get_straight_line(positioned=True)[0].y for ls in line_segments]
             )
-            current_x = 0.0
+            current_x = Decimal(0)
             for ls in line_segments:
                 position = Position(
                     current_x,
@@ -94,7 +94,7 @@ class SegmentedLine(Container):
             max_straight_line_fix_position = max(
                 [ls.get_straight_line(positioned=True)[0].x for ls in line_segments]
             )
-            current_y = 0.0
+            current_y = Decimal(0)
             for ls in line_segments:
                 position = Position(
                     max_straight_line_fix_position
@@ -130,5 +130,5 @@ class SegmentedLine(Container):
                 if isinstance(o, LineSegment)
             ]
 
-    def get_length(self) -> float | int:
+    def get_length(self) -> Scalar:
         return sum([sl.get_length() for sl in self.get_line_segments()])

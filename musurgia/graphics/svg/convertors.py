@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from decimal import Decimal
 from typing import Any, Dict, Generic, TypeVar
 import svg
 from musurgia.graphics.container import Container
@@ -47,8 +48,12 @@ class TextDrawObjectToSVGConvertor(DrawObjectConvertor[TextDrawObject]):
         ext = self.draw_object.get_text_extents()
         return [
             svg.Text(
-                x=self.draw_object.padding.left + self.position.x - ext.x_bearing,
-                y=self.draw_object.padding.top + self.position.y - ext.y_bearing,
+                x=self.draw_object.padding.left
+                + self.position.x
+                - Decimal(ext.x_bearing),
+                y=self.draw_object.padding.top
+                + self.position.y
+                - Decimal(ext.y_bearing),
                 text=self.draw_object.text,
                 font_size=TextDrawObject.convert_font_size_to_mm(
                     self.draw_object.font_size
@@ -78,8 +83,12 @@ class RectangleDrawObjectToSVGConvertor(DrawObjectConvertor[RectangleDrawObject]
         th = self.draw_object.thickness
         return [
             svg.Rect(
-                x=self.position.x + self.draw_object.padding.left + th / 2,
-                y=self.position.y + self.draw_object.padding.top + th / 2,
+                x=float(self.position.x)
+                + float(self.draw_object.padding.left)
+                + float(th) / 2,
+                y=float(self.position.y)
+                + float(self.draw_object.padding.top)
+                + float(th) / 2,
                 width=self.draw_object.size.width - th,
                 height=self.draw_object.size.height - th,
                 stroke=self.draw_object.color,

@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from musurgia.graphics.geometry import Position
+from musurgia.graphics.geometry import Position, Scalar
 from musurgia.graphics.line_segment import Label
 from musurgia.graphics.page import Page
 from musurgia.graphics.geometry import LineOrientation
@@ -16,7 +16,7 @@ class HorizontalSegmentedLineRegressionTests(SVGTestCase):
     def test_horizontal_segmented_line(self):
         page = Page()
         page.add_grid()
-        lengths: list[int | float] = [10, 20, 34, 56]
+        lengths: list[Scalar] = [10, 20, 34, 56]
         sl = SegmentedLine(
             type=LineOrientation.HORIZONTAL,
             segment_lengths=lengths,
@@ -37,7 +37,7 @@ class HorizontalSegmentedLineRegressionTests(SVGTestCase):
     def test_labeled_horizontal_segmented_line(self):
         page = Page()
         page.add_grid()
-        lengths: list[int | float] = [10, 20, 34, 56]
+        lengths: list[Scalar] = [10, 20, 34, 56]
         sl = SegmentedLine(
             type=LineOrientation.HORIZONTAL,
             segment_lengths=lengths,

@@ -1,25 +1,42 @@
 from dataclasses import dataclass
+from decimal import Decimal
 from enum import Enum
+
+Scalar = Decimal | int
 
 
 @dataclass(frozen=True)
 class Size:
-    width: float
-    height: float
+    width: Scalar
+    height: Scalar
+
+
+@dataclass(frozen=True)
+class Margins:
+    top: Scalar = Decimal(0)
+    right: Scalar = Decimal(0)
+    bottom: Scalar = Decimal(0)
+    left: Scalar = Decimal(0)
+
+    def to_values(self) -> tuple[Scalar, Scalar, Scalar, Scalar]:
+        return (self.top, self.right, self.bottom, self.left)
 
 
 @dataclass(frozen=True)
 class Paddings:
-    top: float | int = 0
-    right: float | int = 0
-    bottom: float | int = 0
-    left: float | int = 0
+    top: Scalar = Decimal(0)
+    right: Scalar = Decimal(0)
+    bottom: Scalar = Decimal(0)
+    left: Scalar = Decimal(0)
+
+    def to_values(self) -> tuple[Scalar, Scalar, Scalar, Scalar]:
+        return (self.top, self.right, self.bottom, self.left)
 
 
 @dataclass(frozen=True)
 class Position:
-    x: float
-    y: float
+    x: Scalar
+    y: Scalar
 
     def __add__(self, other: "Position") -> "Position":
         return Position(self.x + other.x, self.y + other.y)
@@ -28,8 +45,11 @@ class Position:
         return Position(self.x - other.x, self.y - other.y)
 
     @staticmethod
-    def from_values(x: float, y: float) -> "Position":
+    def from_values(x: Scalar, y: Scalar) -> "Position":
         return Position(x, y)
+
+    def to_values(self) -> tuple[Scalar, Scalar]:
+        return (self.x, self.y)
 
 
 @dataclass(frozen=True)
@@ -38,14 +58,6 @@ class Coordinates:
     tr: Position
     br: Position
     bl: Position
-
-
-@dataclass
-class Margins:
-    top: int
-    right: int
-    bottom: int
-    left: int
 
 
 class LineOrientation(Enum):

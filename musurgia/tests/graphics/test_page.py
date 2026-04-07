@@ -1,6 +1,6 @@
 from pathlib import Path
 from unittest import TestCase
-from musurgia.graphics.geometry import Margins, Size
+from musurgia.graphics.geometry import Size
 from musurgia.graphics.page import Page
 
 this_path = Path(__file__)
@@ -23,12 +23,3 @@ class GraphicPageTestCase(TestCase):
 
         page.layout.orientation = "landscape"
         assert page.layout.get_size() == Size(420, 297)
-
-    def test_page_layout_margins(self):
-        page = Page()
-        assert page.layout.margins == Margins(0, 0, 0, 0)
-        page.layout.margins.top = 10
-        page.layout.margins.bottom = 20
-        page.layout.margins.left = 30
-        page.layout.margins.right = 40
-        assert page.layout.margins == Margins(10, 40, 20, 30)

@@ -1,32 +1,33 @@
 from dataclasses import dataclass, field
+from decimal import Decimal
 from typing import Any, Mapping
 
 
 from musurgia.graphics.container import Container
 from musurgia.graphics.line_segment import Label
-from musurgia.graphics.geometry import LineOrientation
+from musurgia.graphics.geometry import LineOrientation, Scalar
 from musurgia.graphics.segmented_line import SegmentedLine
 from musurgia.graphics.util import overrides_data_class_options
 
 
 @dataclass
 class UnitMarkerOptions:
-    length: float = 6.0
-    thickness: float = 0.5
+    length: Scalar = Decimal(6.0)
+    thickness: Scalar = Decimal(0.5)
 
 
 @dataclass
 class UnitDivisionMarkerOptions:
-    length: float = 3.0
-    thickness: float = 0.5
+    length: Scalar = Decimal(3.0)
+    thickness: Scalar = Decimal(0.5)
 
 
 @dataclass
 class RulerLabelOptions:
-    offset: tuple[int | float, int | float] = (1, 3)
+    offset: tuple[Scalar, Scalar] = (1, 3)
     color: str = "black"
     font_family: str = "DejaVu Sans"
-    font_size: int | float = 10
+    font_size: Scalar = 10
 
 
 @dataclass
@@ -35,39 +36,35 @@ class RulerOptions:
     unit_division_marker: UnitDivisionMarkerOptions = field(
         default_factory=UnitDivisionMarkerOptions
     )
-    unit_length: int | float = 10
+    unit_length: Scalar = 10
     unit_division: int = 10
     labels_interval: int = 1
     label: RulerLabelOptions = field(default_factory=RulerLabelOptions)
-    thickness: float = 1
+    thickness: Scalar = 1
 
 
-def _get_division_length(ruler_options: RulerOptions) -> int | float:
-    return ruler_options.unit_length / ruler_options.unit_division
+def _get_division_length(ruler_options: RulerOptions) -> Scalar:
+    return Decimal(ruler_options.unit_length / ruler_options.unit_division)
 
 
-def _get_number_of_units(
-    ruler_options: RulerOptions, length: int | float
-) -> int | float:
-    return length / ruler_options.unit_length
+def _get_number_of_units(ruler_options: RulerOptions, length: Scalar) -> Scalar:
+    return Decimal(length / ruler_options.unit_length)
 
 
-def _get_number_of_divisions(ruler_options: RulerOptions, length: int | float) -> int:
+def _get_number_of_divisions(ruler_options: RulerOptions, length: Scalar) -> int:
     return int(
         _get_number_of_units(ruler_options, length) * ruler_options.unit_division
     )
 
 
-def _ruler_segment_lengths(
-    ruler_options: RulerOptions, length: int | float
-) -> list[int | float]:
+def _ruler_segment_lengths(ruler_options: RulerOptions, length: Scalar) -> list[Scalar]:
     number_of_divisions = _get_number_of_divisions(ruler_options, length)
     division_length = _get_division_length(ruler_options)
     return [division_length for _ in range(number_of_divisions)]
 
 
 def _create_segmented_line_options(
-    ruler_options: RulerOptions, length: int | float
+    ruler_options: RulerOptions, length: Scalar
 ) -> dict[int, Mapping[str, Any]]:
     options: dict[int, Any] = {}
     number_of_divisions = _get_number_of_divisions(ruler_options, length)
@@ -108,7 +105,7 @@ class Ruler(Container):
         self,
         *,
         type: LineOrientation,
-        length: float,
+        length: Scalar,
         color: str | None = None,
         options: Mapping[str, Any] | None = None,
     ) -> None:
