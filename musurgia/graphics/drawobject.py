@@ -172,7 +172,7 @@ class LineDrawObject(ColorMixin, DrawObject):
     def thickness(self) -> Scalar:
         return self._thickness
 
-    def set_thickness(self, val: Decimal) -> None:
+    def set_thickness(self, val: Scalar) -> None:
         self._thickness = val
 
     def get_bounding_box_coordinates(self) -> Coordinates:
@@ -196,7 +196,7 @@ class LineDrawObject(ColorMixin, DrawObject):
         nx = -uy
         ny = ux
 
-        half_th = Decimal(self.thickness / 2)
+        half_th = Decimal(self.thickness) / 2
 
         # corners of the rotated rectangle"
         p1 = (x1 + nx * half_th, y1 + ny * half_th)

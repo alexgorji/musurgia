@@ -1,3 +1,4 @@
+from decimal import Decimal
 import unittest
 from pathlib import Path
 
@@ -141,8 +142,8 @@ class SVGTestCase(unittest.TestCase):
         )
 
         png_path = self.create_test_path(this_path, post_fix, "png", "golden_pngs")
-        width = width or int(page.layout.get_size().width * 96 / 25.4)
-        height = height or int(page.layout.get_size().height * 96 / 25.4)
+        width = width or int(page.layout.get_size().width * 96 / Decimal(25.4))
+        height = height or int(page.layout.get_size().height * 96 / Decimal(25.4))
 
         self.compare_svg_to_png(
             svg_path,
