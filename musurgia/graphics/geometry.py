@@ -10,6 +10,9 @@ class Size:
     width: Scalar
     height: Scalar
 
+    def to_values(self) -> tuple[Scalar, Scalar]:
+        return (self.width, self.height)
+
 
 @dataclass(frozen=True)
 class Margins:
