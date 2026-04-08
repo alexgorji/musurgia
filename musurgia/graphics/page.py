@@ -18,6 +18,7 @@ type PageOrientation = Literal["portrait", "landscape"]
 
 
 PAGE_SIZES: Dict[PageSize, Size] = {
+    "A5": Size(148, 210),
     "A4": Size(210, 297),
     "A3": Size(297, 420),
 }
@@ -36,6 +37,13 @@ class PageLayout:
         if self.orientation == "landscape":
             return Size(size.height, size.width)
         return size
+
+    def get_effective_size(self) -> Size:
+        t, r, b, l = self.margins.to_values()
+        return Size(
+            self.get_size().width - r - l,
+            self.get_size().height - b - t,
+        )
 
 
 class Page:
