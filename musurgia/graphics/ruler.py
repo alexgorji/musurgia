@@ -12,14 +12,14 @@ from musurgia.graphics.util import overrides_data_class_options
 
 @dataclass
 class UnitMarkerOptions:
-    length: Scalar = Decimal(6.0)
-    thickness: Scalar = Decimal(0.5)
+    length: Scalar = Decimal("6.0")
+    thickness: Scalar = Decimal("0.5")
 
 
 @dataclass
 class UnitDivisionMarkerOptions:
-    length: Scalar = Decimal(3.0)
-    thickness: Scalar = Decimal(0.5)
+    length: Scalar = Decimal("3.0")
+    thickness: Scalar = Decimal("0.5")
 
 
 @dataclass
@@ -43,12 +43,12 @@ class RulerOptions:
     thickness: Scalar = 1
 
 
-def _get_division_length(ruler_options: RulerOptions) -> Scalar:
-    return Decimal(ruler_options.unit_length / ruler_options.unit_division)
+def _get_division_length(ruler_options: RulerOptions) -> Decimal:
+    return Decimal(ruler_options.unit_length) / Decimal(ruler_options.unit_division)
 
 
-def _get_number_of_units(ruler_options: RulerOptions, length: Scalar) -> Scalar:
-    return Decimal(length / ruler_options.unit_length)
+def _get_number_of_units(ruler_options: RulerOptions, length: Scalar) -> Decimal:
+    return Decimal(length) / Decimal(ruler_options.unit_length)
 
 
 def _get_number_of_divisions(ruler_options: RulerOptions, length: Scalar) -> int:

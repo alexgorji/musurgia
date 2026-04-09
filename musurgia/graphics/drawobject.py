@@ -109,7 +109,7 @@ class TextDrawObject(ColorMixin, DrawObject):
 
     @staticmethod
     def convert_font_size_to_mm(font_size: Scalar) -> Decimal:
-        return font_size * Decimal(25.4) / 72
+        return font_size * Decimal("25.4") / Decimal("72")
 
     @property
     def text(self) -> str:
@@ -126,7 +126,7 @@ class TextDrawObject(ColorMixin, DrawObject):
     @property
     def size(self) -> Size:
         ext = self.get_text_extents()
-        return Size(width=Decimal(ext.width), height=Decimal(ext.height))
+        return Size(width=Decimal(str(ext.width)), height=Decimal(str(ext.height)))
 
     def get_text_extents(self) -> cairo.TextExtents:
         ctx = create_measure_context()
@@ -152,7 +152,7 @@ class LineDrawObject(ColorMixin, DrawObject):
         *,
         start: Position = Position(0, 0),
         end: Position,
-        thickness: Scalar = Decimal(0.1),
+        thickness: Scalar = Decimal("0.1"),
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -183,7 +183,7 @@ class LineDrawObject(ColorMixin, DrawObject):
         # vector
         dx = x2 - x1
         dy = y2 - y1
-        length = Decimal(math.hypot(dx, dy))
+        length = Decimal(str(math.hypot(dx, dy)))
 
         if length == 0:
             raise ValueError()
@@ -196,7 +196,7 @@ class LineDrawObject(ColorMixin, DrawObject):
         nx = -uy
         ny = ux
 
-        half_th = Decimal(self.thickness) / 2
+        half_th = Decimal(self.thickness) / Decimal("2")
 
         # corners of the rotated rectangle"
         p1 = (x1 + nx * half_th, y1 + ny * half_th)
@@ -225,7 +225,9 @@ class LineDrawObject(ColorMixin, DrawObject):
         return Size(coor.tr.x - coor.tl.x, coor.bl.y - coor.tl.y)
 
     def get_length(self) -> Decimal:
-        return Decimal(math.hypot(self.end.x - self.start.x, self.end.y - self.start.y))
+        return Decimal(
+            str(math.hypot(self.end.x - self.start.x, self.end.y - self.start.y))
+        )
 
 
 class StraightLineDrawObject(LineDrawObject):
@@ -235,7 +237,7 @@ class StraightLineDrawObject(LineDrawObject):
         type: LineOrientation,
         length: Scalar,
         start: Position = Position(0, 0),
-        thickness: Scalar = Decimal(0.1),
+        thickness: Scalar = Decimal("0.1"),
         **kwargs: Any,
     ) -> None:
         self.type = type
@@ -258,7 +260,7 @@ class RectangleDrawObject(ColorMixin, DrawObject):
         *,
         size: Size,
         padding: Paddings = Paddings(0, 0, 0, 0),
-        thickness: Scalar = Decimal(0.1),
+        thickness: Scalar = Decimal("0.1"),
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)

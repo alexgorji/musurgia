@@ -28,7 +28,9 @@ def create_page_rows(
 ) -> list["SVGPageRow"]:
     if page.get_rows():
         raise AttributeError("Page has already rows.")
-    row_height = Decimal(page.get_layout().get_effective_size().height / number_of_rows)
+    row_height = Decimal(page.get_layout().get_effective_size().height) / Decimal(
+        number_of_rows
+    )
     for i in range(number_of_rows):
         row_options = options.get(i + 1) if options else None
         paddings = Paddings()

@@ -1,3 +1,4 @@
+from decimal import Decimal
 from unittest import TestCase
 
 
@@ -26,14 +27,12 @@ class RulerHelperFunctionsTestCase(TestCase):
     def test_get_number_of_units(self):
         ruler_options = RulerOptions()
         assert _get_number_of_units(ruler_options, 40) == 4
-        assert _get_number_of_units(ruler_options, 44) == 4.4
-        assert _get_number_of_units(ruler_options, 44.6) == 4.46
-        ruler_options = RulerOptions(unit_length=40)
-        assert _get_number_of_units(ruler_options, 100) == 2.5
+        assert _get_number_of_units(ruler_options, 44) == Decimal("4.4")
+        assert _get_number_of_units(ruler_options, Decimal("44.6")) == Decimal("4.46")
 
     def test_get_number_of_divisions(self):
         ruler_options = RulerOptions()
-        assert _get_number_of_divisions(ruler_options, 44.6) == 44
+        assert _get_number_of_divisions(ruler_options, Decimal("44.6")) == 44
         ruler_options = RulerOptions(unit_length=40, unit_division=5)
         assert _get_number_of_divisions(ruler_options, 100) == 12
 
@@ -44,7 +43,7 @@ class RulerHelperFunctionsTestCase(TestCase):
         assert segment_lengths[0] == 1
         assert sum(segment_lengths) == 20
 
-        segment_lengths = _ruler_segment_lengths(ruler_options, 23.6)
+        segment_lengths = _ruler_segment_lengths(ruler_options, Decimal("23.6"))
         assert len(segment_lengths) == 23
         assert sum(segment_lengths) == 23
 

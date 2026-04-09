@@ -14,7 +14,7 @@ from musurgia.tests.graphics.test_utils import (
 
 class HorizontalSegmentedLineTestCase(TestCase):
     def setUp(self) -> None:
-        self.lengths = [1, 1, Decimal(3.4), Decimal(5.6)]
+        self.lengths = [1, 1, Decimal("3.4"), Decimal("5.6")]
         self.sl = SegmentedLine(
             type=LineOrientation.HORIZONTAL, segment_lengths=self.lengths
         )
@@ -211,7 +211,7 @@ class HorizontalSegmentedLineTestCase(TestCase):
 
 class VerticalSegmentedLineTestCase(TestCase):
     def setUp(self) -> None:
-        self.lengths = [1, 2, Decimal(3.4), Decimal(5.6)]
+        self.lengths = [1, 2, Decimal("3.4"), Decimal("5.6")]
         self.sl = SegmentedLine(
             type=LineOrientation.VERTICAL, segment_lengths=self.lengths
         )

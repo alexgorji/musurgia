@@ -54,7 +54,7 @@ class Page:
     def add_draw_object(self, position: Position, draw_object: DrawObject) -> None:
         self._positioned_draw_objects.append((position, draw_object))
 
-    def add_grid(self, thickness: Scalar = Decimal(0.1)) -> None:
+    def add_grid(self, thickness: Scalar = Decimal("0.1")) -> None:
         w, h = self.layout.get_size().width, self.layout.get_size().height
         number_of_horizontal_lines = int(h / 10) + 1
         number_of_vertical_lines = int(w / 10) + 1

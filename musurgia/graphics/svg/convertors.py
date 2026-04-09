@@ -50,10 +50,10 @@ class TextDrawObjectToSVGConvertor(DrawObjectConvertor[TextDrawObject]):
             svg.Text(
                 x=self.draw_object.padding.left
                 + self.position.x
-                - Decimal(ext.x_bearing),
+                - Decimal(str(ext.x_bearing)),
                 y=self.draw_object.padding.top
                 + self.position.y
-                - Decimal(ext.y_bearing),
+                - Decimal(str(ext.y_bearing)),
                 text=self.draw_object.text,
                 font_size=TextDrawObject.convert_font_size_to_mm(
                     self.draw_object.font_size
