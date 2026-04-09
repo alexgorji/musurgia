@@ -20,7 +20,7 @@ from musurgia.graphics.svg.paginator import (
     create_page_rows,
     get_row_content_positions,
 )
-from musurgia.tests.helpers.svg import SVG, SVGTestCase
+from musurgia.tests.helpers.svg import SVGTestCase
 
 this_path = Path(__file__)
 
@@ -165,6 +165,8 @@ class SVGPaginatorAsSVG(SVGTestCase):
         paginator = SVGPaginator([page])
         page = paginator.paginate(ruler)[0]
         assert isinstance(page.as_svg(), svg.SVG)
-        svg_path = SVG(page.as_svg().as_str()).write_to_path(
-            self.create_test_path(this_path, "", "svg")
-        )
+        # svg_path = SVG(page.as_svg().as_str()).write_to_path(
+        #     self.create_test_path(this_path, "", "svg")
+        # )
+
+        self.compare_page(page, "", this_path, height=210 * 2, width=297 * 2)
