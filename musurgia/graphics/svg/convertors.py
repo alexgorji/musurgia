@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from decimal import Decimal
-from typing import Any, Dict, Generic, TypeVar
+from typing import Any, Dict, Generic, TypeVar, cast
 import svg
 from musurgia.graphics.container import Container
 from musurgia.graphics.geometry import Position
@@ -66,14 +66,21 @@ class TextDrawObjectToSVGConvertor(DrawObjectConvertor[TextDrawObject]):
 
 class LineDrawObjectToSVGConvertor(DrawObjectConvertor[LineDrawObject]):
     def _convert(self) -> list[svg.Element]:
+        dash_array = self.draw_object._stroke_dasharray
         return [
-            svg.Line(
-                x1=self.draw_object.start.x + self.position.x,
-                y1=self.draw_object.start.y + self.position.y,
-                x2=self.draw_object.end.x + self.position.x,
-                y2=self.draw_object.end.y + self.position.y,
-                stroke=self.draw_object.color,
-                stroke_width=self.draw_object.thickness,
+            cast(
+                svg.Element,
+                svg.Line(
+                    x1=self.draw_object.start.x + self.position.x,
+                    y1=self.draw_object.start.y + self.position.y,
+                    x2=self.draw_object.end.x + self.position.x,
+                    y2=self.draw_object.end.y + self.position.y,
+                    stroke=self.draw_object.color,
+                    stroke_width=self.draw_object.thickness,
+                    stroke_dasharray=(
+                        [length for length in dash_array] if dash_array else None
+                    ),
+                ),
             )
         ]
 
@@ -81,19 +88,26 @@ class LineDrawObjectToSVGConvertor(DrawObjectConvertor[LineDrawObject]):
 class RectangleDrawObjectToSVGConvertor(DrawObjectConvertor[RectangleDrawObject]):
     def _convert(self) -> list[svg.Element]:
         th = self.draw_object.thickness
+        dash_array = self.draw_object._stroke_dasharray
         return [
-            svg.Rect(
-                x=float(self.position.x)
-                + float(self.draw_object.padding.left)
-                + float(th) / 2,
-                y=float(self.position.y)
-                + float(self.draw_object.padding.top)
-                + float(th) / 2,
-                width=self.draw_object.size.width - th,
-                height=self.draw_object.size.height - th,
-                stroke=self.draw_object.color,
-                fill="transparent",
-                stroke_width=self.draw_object.thickness,
+            cast(
+                svg.Element,
+                svg.Rect(
+                    x=float(self.position.x)
+                    + float(self.draw_object.padding.left)
+                    + float(th) / 2,
+                    y=float(self.position.y)
+                    + float(self.draw_object.padding.top)
+                    + float(th) / 2,
+                    width=self.draw_object.size.width - th,
+                    height=self.draw_object.size.height - th,
+                    stroke=self.draw_object.color,
+                    fill="transparent",
+                    stroke_width=self.draw_object.thickness,
+                    stroke_dasharray=(
+                        [length for length in dash_array] if dash_array else None
+                    ),
+                ),
             )
         ]
 

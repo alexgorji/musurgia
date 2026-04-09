@@ -153,12 +153,14 @@ class LineDrawObject(ColorMixin, DrawObject):
         start: Position = Position(0, 0),
         end: Position,
         thickness: Scalar = Decimal("0.1"),
+        stroke_dasharray: list[int] | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self._start = start
         self._end = end
         self._thickness = thickness
+        self._stroke_dasharray = stroke_dasharray
 
     @property
     def start(self) -> Position:
@@ -261,12 +263,14 @@ class RectangleDrawObject(ColorMixin, DrawObject):
         size: Size,
         padding: Paddings = Paddings(0, 0, 0, 0),
         thickness: Scalar = Decimal("0.1"),
+        stroke_dasharray: list[int] | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self._size = size
         self.padding = padding
         self._thickness = thickness
+        self._stroke_dasharray = stroke_dasharray
 
     @property
     def size(self) -> Size:
