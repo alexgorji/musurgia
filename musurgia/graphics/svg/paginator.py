@@ -5,8 +5,8 @@ from typing import Any, Mapping
 import svg
 
 from musurgia.graphics.container import Container
-from musurgia.graphics.drawobject import DrawObject
-from musurgia.graphics.geometry import Paddings, Position, Scalar, Size
+from musurgia.graphics.drawobject import DrawObject, StraightLineDrawObject
+from musurgia.graphics.geometry import LineOrientation, Paddings, Position, Scalar, Size
 from musurgia.graphics.page import PageLayout
 from musurgia.graphics.svg.convertors import SVGConverterRegistry
 
@@ -86,6 +86,7 @@ class SVGPage:
     def __init__(self, layout: PageLayout = PageLayout()) -> None:
         self._layout = layout
         self._rows: list[SVGPageRow] = []
+        self._grid: list[tuple[Position, DrawObject]] = []
 
     def get_layout(self) -> PageLayout:
         return self._layout
@@ -93,8 +94,34 @@ class SVGPage:
     def add_row(self, row: SVGPageRow) -> None:
         self._rows.append(row)
 
-    def add_grid(self) -> None:
-        raise NotImplementedError()
+    def add_grid(self, thickness: Scalar = Decimal("0.1")) -> None:
+        w, h = self._layout.get_size().width, self._layout.get_size().height
+        number_of_horizontal_lines = int(h / 10) + 1
+        number_of_vertical_lines = int(w / 10) + 1
+        for index in range(number_of_horizontal_lines):
+            self._grid.append(
+                (
+                    Position(0, index * 10),
+                    StraightLineDrawObject(
+                        type=LineOrientation.HORIZONTAL,
+                        length=w,
+                        thickness=thickness,
+                        color="green",
+                    ),
+                ),
+            )
+        for index in range(number_of_vertical_lines):
+            self._grid.append(
+                (
+                    Position(index * 10, 0),
+                    StraightLineDrawObject(
+                        type=LineOrientation.VERTICAL,
+                        length=h,
+                        thickness=thickness,
+                        color="green",
+                    ),
+                ),
+            )
 
     def get_rows(self) -> list[SVGPageRow]:
         return self._rows
@@ -127,6 +154,10 @@ class SVGPage:
                     elements=[group],
                 )
                 svg_object.elements.append(wrapper)
+        if self._grid:
+            grid_svg_group = convert_drawobjects_to_svg_group(self._grid)
+            svg_object.elements.append(grid_svg_group)
+
         return svg_object
 
 

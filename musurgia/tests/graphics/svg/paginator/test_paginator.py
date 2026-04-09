@@ -151,6 +151,7 @@ class SVGPaginatorAsSVG(SVGTestCase):
             },
         )
         page = SVGPage(layout=PageLayout(margins=Margins(20, 10, 10, 10)))
+        page.add_grid()
         create_page_rows(
             page,
             number_of_rows=4,
