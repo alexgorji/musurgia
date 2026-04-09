@@ -7,7 +7,7 @@ import svg
 from musurgia.graphics.container import Container
 from musurgia.graphics.drawobject import DrawObject, StraightLineDrawObject
 from musurgia.graphics.geometry import LineOrientation, Paddings, Position, Scalar, Size
-from musurgia.graphics.page import PageLayout
+from musurgia.graphics.page_layout import PageLayout
 from musurgia.graphics.svg.convertors import SVGConverterRegistry
 
 
@@ -68,6 +68,7 @@ class SVGPageRow:
         self._height = height
         self._paddings = paddings
         self._svg_group: svg.G | None = None
+        self._positioned_draw_objects: list[tuple[Position, DrawObject]] = []
 
     def get_height(self) -> Scalar:
         return self._height
@@ -81,6 +82,9 @@ class SVGPageRow:
     def get_svg_group(self) -> svg.G | None:
         return self._svg_group
 
+    def add_draw_object(self, position: Position, draw_object: DrawObject) -> None:
+        self._positioned_draw_objects.append((position, draw_object))
+
 
 class SVGPage:
     def __init__(self, layout: PageLayout = PageLayout()) -> None:
@@ -90,6 +94,18 @@ class SVGPage:
 
     def get_layout(self) -> PageLayout:
         return self._layout
+
+    def add_draw_object(
+        self, position: Position, draw_object: DrawObject, row_number: int = 0
+    ) -> None:
+        if not self._rows:
+            create_page_rows(self, 1)
+        try:
+            row = self.get_rows()[row_number - 1]
+        except IndexError:
+            raise AttributeError("Invalid row number")
+
+        row.add_draw_object(position, draw_object)
 
     def add_row(self, row: SVGPageRow) -> None:
         self._rows.append(row)
@@ -154,11 +170,18 @@ class SVGPage:
                     elements=[group],
                 )
                 svg_object.elements.append(wrapper)
+            else:
+                svg_object.elements.append(
+                    convert_drawobjects_to_svg_group(row._positioned_draw_objects)
+                )
         if self._grid:
             grid_svg_group = convert_drawobjects_to_svg_group(self._grid)
             svg_object.elements.append(grid_svg_group)
 
         return svg_object
+
+    def convert_to_svg_string(self) -> str:
+        return self.as_svg().as_str()
 
 
 class SVGPaginator:

@@ -1,11 +1,11 @@
+from decimal import Decimal
 from pathlib import Path
-
 import pytest
 
 from musurgia.graphics.geometry import Position
 from musurgia.graphics.geometry import LineOrientation
-from musurgia.graphics.page import Page
 from musurgia.graphics.ruler import Ruler
+from musurgia.graphics.svg.paginator import SVGPage
 from musurgia.tests.helpers.svg import SVGTestCase
 
 this_path = Path(__file__)
@@ -15,9 +15,8 @@ class HorizontalRulerRegressionTests(SVGTestCase):
 
     @pytest.mark.nonci
     def test_horizontal_ruler(self):
-        page = Page()
-        page.add_grid(thickness=0.05)
-        page.layout.orientation = "landscape"
+        page = SVGPage()
+        page.add_grid(thickness=Decimal("0.05"))
         hr = Ruler(
             type=LineOrientation.HORIZONTAL,
             length=60,

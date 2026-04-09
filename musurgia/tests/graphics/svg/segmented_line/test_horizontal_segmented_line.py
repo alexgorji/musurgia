@@ -4,9 +4,9 @@ import pytest
 
 from musurgia.graphics.geometry import Position, Scalar
 from musurgia.graphics.line_segment import Label
-from musurgia.graphics.page import Page
 from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.segmented_line import SegmentedLine
+from musurgia.graphics.svg.paginator import SVGPage
 from musurgia.tests.helpers.svg import SVGTestCase
 
 this_path = Path(__file__)
@@ -14,7 +14,7 @@ this_path = Path(__file__)
 
 class HorizontalSegmentedLineRegressionTests(SVGTestCase):
     def test_horizontal_segmented_line(self):
-        page = Page()
+        page = SVGPage()
         page.add_grid()
         lengths: list[Scalar] = [10, 20, 34, 56]
         sl = SegmentedLine(
@@ -35,7 +35,7 @@ class HorizontalSegmentedLineRegressionTests(SVGTestCase):
 
     @pytest.mark.nonci
     def test_labeled_horizontal_segmented_line(self):
-        page = Page()
+        page = SVGPage()
         page.add_grid()
         lengths: list[Scalar] = [10, 20, 34, 56]
         sl = SegmentedLine(

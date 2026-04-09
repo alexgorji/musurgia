@@ -6,7 +6,7 @@ import cairosvg
 import svg
 from PIL import Image
 
-from musurgia.graphics.page import Page
+from musurgia.graphics.svg.paginator import SVGPage
 
 # On mac python does not seem to find libcairo.2.dylib which is created when hombrew installs cairo.
 # A work around is to make a symlink to it: ln -s /opt/homebrew/lib/libcairo.2.dylib .
@@ -130,7 +130,7 @@ class SVGTestCase(unittest.TestCase):
 
     def compare_page(
         self,
-        page: Page,
+        page: SVGPage,
         post_fix: str,
         this_path: Path,
         width=None,
@@ -142,8 +142,8 @@ class SVGTestCase(unittest.TestCase):
         )
 
         png_path = self.create_test_path(this_path, post_fix, "png", "golden_pngs")
-        width = width or int(page.layout.get_size().width * 96 / Decimal(25.4))
-        height = height or int(page.layout.get_size().height * 96 / Decimal(25.4))
+        width = width or int(page.get_layout().get_size().width * 96 / Decimal(25.4))
+        height = height or int(page.get_layout().get_size().height * 96 / Decimal(25.4))
 
         self.compare_svg_to_png(
             svg_path,

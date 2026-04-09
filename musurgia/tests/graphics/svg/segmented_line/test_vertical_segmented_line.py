@@ -1,11 +1,11 @@
 from pathlib import Path
 
 import pytest
-from musurgia.graphics.geometry import Position
+from musurgia.graphics.geometry import Position, Scalar
 from musurgia.graphics.line_segment import Label
-from musurgia.graphics.page import Page
 from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.segmented_line import SegmentedLine
+from musurgia.graphics.svg.paginator import SVGPage
 from musurgia.tests.helpers.svg import SVGTestCase
 
 this_path = Path(__file__)
@@ -13,9 +13,9 @@ this_path = Path(__file__)
 
 class VerticalSegmentedLineRegressionTests(SVGTestCase):
     def test_vertical_segmented_line(self):
-        page = Page()
+        page = SVGPage()
         page.add_grid()
-        lengths: list[int | float] = [10, 20, 34, 56]
+        lengths: list[Scalar] = [10, 20, 34, 56]
         sl = SegmentedLine(
             type=LineOrientation.VERTICAL,
             segment_lengths=lengths,
@@ -33,9 +33,9 @@ class VerticalSegmentedLineRegressionTests(SVGTestCase):
 
     @pytest.mark.nonci
     def test_labeled_vertical_segmented_line(self):
-        page = Page()
+        page = SVGPage()
         page.add_grid()
-        lengths: list[int | float] = [10, 20, 34, 56]
+        lengths: list[Scalar] = [10, 20, 34, 56]
         sl = SegmentedLine(
             type=LineOrientation.VERTICAL,
             segment_lengths=lengths,

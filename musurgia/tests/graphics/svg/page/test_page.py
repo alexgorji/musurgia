@@ -10,8 +10,8 @@ from musurgia.graphics.drawobject import (
     TextDrawObject,
     StraightLineDrawObject,
 )
-from musurgia.graphics.page import Page
 from musurgia.graphics.geometry import LineOrientation
+from musurgia.graphics.svg.paginator import SVGPage
 from musurgia.tests.helpers.svg import SVGTestCase
 import xml.etree.ElementTree as ET
 
@@ -20,20 +20,20 @@ this_path = Path(__file__)
 
 class PageToSVGTestCase(TestCase):
     def test_empty_page_to_svg(self):
-        page = Page()
-        svg_xml = page.convert_to_svg_string()
+        page = SVGPage()
+        svg_xml = page.as_svg().as_str()
         root = ET.fromstring(svg_xml)
         assert root.attrib["width"] == "210mm"
         assert root.attrib["height"] == "297mm"
         assert root.attrib["viewBox"] == "0 0 210 297"
 
     def test_add_text_to_page(self):
-        page = Page()
+        page = SVGPage()
         page.add_draw_object(Position(0, 0), TextDrawObject(text="some text"))
         assert "some text" in page.convert_to_svg_string()
 
     def test_add_multiple_draw_objects_to_page(self):
-        page = Page()
+        page = SVGPage()
         page.add_draw_object(
             Position(0, 0),
             TextDrawObject(text="Hello", padding=Paddings(10, 0, 0, 10)),
@@ -51,17 +51,17 @@ class PageToSVGTestCase(TestCase):
 
 class PageToSVGRegressionTests(SVGTestCase):
     def test_empty_page(self):
-        page = Page()
+        page = SVGPage()
         self.compare_page(page, "empty_page", this_path)
 
     def test_empty_page_with_grid(self):
-        page = Page()
+        page = SVGPage()
         page.add_grid()
         self.compare_page(page, "empty_page_with_grid", this_path)
 
     @pytest.mark.nonci
     def test_add_text_draw_object_to_page(self):
-        page = Page()
+        page = SVGPage()
         t1 = TextDrawObject(
             text="The quick Brown fox Jumps over The lazy Dog",
             color="blue",
@@ -94,7 +94,7 @@ class PageToSVGRegressionTests(SVGTestCase):
         )
 
     def test_add_line_draw_object_to_page(self):
-        page = Page()
+        page = SVGPage()
 
         l1 = LineDrawObject(end=Position(30, 40), color="blue", thickness=2)
         l1.box.show = True
@@ -123,7 +123,7 @@ class PageToSVGRegressionTests(SVGTestCase):
         )
 
     def test_add_multiple_line_draw_objects_to_page(self):
-        page = Page()
+        page = SVGPage()
         draw_objects = [
             StraightLineDrawObject(
                 type=LineOrientation.HORIZONTAL,
@@ -177,7 +177,7 @@ class PageToSVGRegressionTests(SVGTestCase):
         parent_container = Container()
         parent_container.add_draw_object(Position(30, 30), container)
 
-        page = Page()
+        page = SVGPage()
         page.add_draw_object(Position(50, 50), parent_container)
 
         self.compare_page(
@@ -185,14 +185,14 @@ class PageToSVGRegressionTests(SVGTestCase):
         )
 
     def test_add_rectangle(self):
-        page = Page()
+        page = SVGPage()
         r = RectangleDrawObject(size=Size(30, 40), color="blue", thickness=1)
         page.add_draw_object(Position(10, 10), r)
 
         self.compare_page(page, "add_rectangle", this_path, width=210, height=297)
 
     def test_boxed_rectangle(self):
-        page = Page()
+        page = SVGPage()
         r1 = RectangleDrawObject(size=Size(30, 40), color="blue", thickness=5)
 
         r2 = RectangleDrawObject(
@@ -213,7 +213,7 @@ class PageToSVGRegressionTests(SVGTestCase):
 
     @pytest.mark.nonci
     def test_add_container(self):
-        page = Page()
+        page = SVGPage()
         container = Container()
 
         l1 = LineDrawObject(end=Position(20, 40), color="blue", thickness=2)
