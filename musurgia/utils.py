@@ -1,3 +1,4 @@
+from decimal import Decimal
 from fractions import Fraction
 from typing import Any, Iterator, Literal, Optional, Sequence
 
@@ -56,6 +57,10 @@ def convert_to_fraction_tuplet(
     if len(input) != 2:
         raise AttributeError
     return (convert_to_fraction(input[0]), convert_to_fraction(input[1]))
+
+
+def convert_fraction_to_decimal(value: Fraction) -> Decimal:
+    return Decimal(value.numerator) / Decimal(value.denominator)
 
 
 class Normalizer:

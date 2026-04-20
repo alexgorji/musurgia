@@ -8,6 +8,11 @@ testgraphics:
 	uv sync --group test
 	uv run pytest musurgia/tests/graphics -m "not wip"
 
+.PHONY: testtrees
+testtrees:
+	uv sync --group test
+	uv run pytest musurgia/tests/trees -m "not wip"
+
 .PHONY: typecheck
 typecheck:
 	uv run mypy musurgia

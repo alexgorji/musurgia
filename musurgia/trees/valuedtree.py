@@ -31,7 +31,7 @@ class ValuedTree(Tree[Any]):
         return super().get_children()
 
     @abstractmethod
-    def _set_value(self, val: ConvertibleToFraction) -> None:
+    def _set_value(self, value: ConvertibleToFraction) -> None:
         """_set_value must be defined."""
 
     @property

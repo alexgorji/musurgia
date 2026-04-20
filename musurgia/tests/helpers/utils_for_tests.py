@@ -220,7 +220,7 @@ class DemoValuedTree(ValuedTree):
 
 
 def create_test_valued_tree() -> DemoValuedTree:
-    vt = DemoValuedTree.create_tree_from_list(test_fractal_structur_list, "value")
+    vt = DemoValuedTree.create_tree_from_list(test_fractal_structur_list, ["value"])
     # print(vt.get_tree_representation(key=lambda node: node.get_value()))
 
     """└── 10
