@@ -89,6 +89,7 @@ class RectangleDrawObjectToSVGConvertor(DrawObjectConvertor[RectangleDrawObject]
     def _convert(self) -> list[svg.Element]:
         th = self.draw_object.thickness
         dash_array = self.draw_object._stroke_dasharray
+        fillcolor = self.draw_object._fillcolor
         return [
             cast(
                 svg.Element,
@@ -102,7 +103,7 @@ class RectangleDrawObjectToSVGConvertor(DrawObjectConvertor[RectangleDrawObject]
                     width=self.draw_object.size.width - th,
                     height=self.draw_object.size.height - th,
                     stroke=self.draw_object.color,
-                    fill="transparent",
+                    fill=fillcolor or "transparent",
                     stroke_width=self.draw_object.thickness,
                     stroke_dasharray=(
                         [length for length in dash_array] if dash_array else None

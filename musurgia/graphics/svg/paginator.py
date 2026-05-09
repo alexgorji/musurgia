@@ -5,7 +5,11 @@ from typing import Any, Mapping
 import svg
 
 from musurgia.graphics.container import Container
-from musurgia.graphics.drawobject import DrawObject, StraightLineDrawObject
+from musurgia.graphics.drawobject import (
+    DrawObject,
+    RectangleDrawObject,
+    StraightLineDrawObject,
+)
 from musurgia.graphics.geometry import LineOrientation, Paddings, Position, Scalar, Size
 from musurgia.graphics.page_layout import PageLayout
 from musurgia.graphics.svg.convertors import SVGConverterRegistry
@@ -91,6 +95,7 @@ class SVGPage:
         self._layout = layout
         self._rows: list[SVGPageRow] = []
         self._grid: list[tuple[Position, DrawObject]] = []
+        self._background: RectangleDrawObject | None = None
 
     def get_layout(self) -> PageLayout:
         return self._layout
@@ -109,6 +114,11 @@ class SVGPage:
 
     def add_row(self, row: SVGPageRow) -> None:
         self._rows.append(row)
+
+    def add_background(self, color="white"):
+        self._background = RectangleDrawObject(
+            size=self.get_layout().get_size(), fillcolor=color
+        )
 
     def add_grid(self, thickness: Scalar = Decimal("0.1")) -> None:
         w, h = self._layout.get_size().width, self._layout.get_size().height
@@ -160,7 +170,18 @@ class SVGPage:
             viewBox=svg.ViewBoxSpec(0, 0, w, h),
         )
         row_positions = get_row_content_positions(self)
+
         svg_object.elements = []
+
+        if self._background:
+            background_rectangle_svg_group = convert_drawobjects_to_svg_group(
+                [(Position(0, 0), self._background)]
+            )
+            svg_object.elements.append(background_rectangle_svg_group)
+
+        if self._grid:
+            grid_svg_group = convert_drawobjects_to_svg_group(self._grid)
+            svg_object.elements.append(grid_svg_group)
 
         for position, row in zip(row_positions, self.get_rows()):
             if group := row.get_svg_group():
@@ -174,9 +195,6 @@ class SVGPage:
                 svg_object.elements.append(
                     convert_drawobjects_to_svg_group(row._positioned_draw_objects)
                 )
-        if self._grid:
-            grid_svg_group = convert_drawobjects_to_svg_group(self._grid)
-            svg_object.elements.append(grid_svg_group)
 
         return svg_object
 
