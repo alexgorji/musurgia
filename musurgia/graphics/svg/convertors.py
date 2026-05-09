@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Any, Dict, Generic, TypeVar, cast
 import svg
 from musurgia.graphics.container import Container
-from musurgia.graphics.geometry import Position
+from musurgia.graphics.geometry import LineOrientation, Position
 from musurgia.graphics.drawobject import (
     DrawObject,
     OldStraightLineDrawObject,
@@ -12,6 +12,7 @@ from musurgia.graphics.drawobject import (
     TextDrawObject,
 )
 from musurgia.graphics.line_segment_old import OldLabel
+from musurgia.graphics.segmented_line import Label, StraightLine
 
 T = TypeVar("T", bound=DrawObject)
 
@@ -85,6 +86,32 @@ class LineDrawObjectToSVGConvertor(DrawObjectConvertor[LineDrawObject]):
         ]
 
 
+class StraightLineToSVGConvertor(DrawObjectConvertor[StraightLine]):
+    def _convert(self) -> list[svg.Element]:
+        # dash_array = self.draw_object._stroke_dasharray
+        start = Position(0, 0)
+        if self.draw_object.type == LineOrientation.HORIZONTAL:
+            end = Position(start.x + self.draw_object.length, start.y)
+        else:
+            end = Position(start.x, start.y + self.draw_object.length)
+        return [
+            cast(
+                svg.Element,
+                svg.Line(
+                    x1=start.x + self.position.x,
+                    y1=start.y + self.position.y,
+                    x2=end.x + self.position.x,
+                    y2=end.y + self.position.y,
+                    stroke=self.draw_object.color,
+                    stroke_width=self.draw_object.thickness,
+                    # stroke_dasharray=(
+                    #     [length for length in dash_array] if dash_array else None
+                    # ),
+                ),
+            )
+        ]
+
+
 class RectangleDrawObjectToSVGConvertor(DrawObjectConvertor[RectangleDrawObject]):
     def _convert(self) -> list[svg.Element]:
         th = self.draw_object.thickness
@@ -151,7 +178,9 @@ class SVGConverterRegistry:
 
 SVGConverterRegistry.register(LineDrawObject, LineDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(OldStraightLineDrawObject, LineDrawObjectToSVGConvertor)
+SVGConverterRegistry.register(StraightLine, StraightLineToSVGConvertor)
 SVGConverterRegistry.register(TextDrawObject, TextDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(OldLabel, TextDrawObjectToSVGConvertor)
+SVGConverterRegistry.register(Label, TextDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(RectangleDrawObject, RectangleDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(Container, ContainerToSVGConvertor)

@@ -3,6 +3,11 @@ test:
 	uv sync --group test
 	uv run pytest -m "not wip"
 
+.PHONY: test-only
+test-only:
+	uv sync --group test
+	uv run pytest -m "only"
+
 .PHONY: testgraphics
 testgraphics:
 	uv sync --group test

@@ -1,9 +1,10 @@
 import copy
 from dataclasses import is_dataclass
+from decimal import Decimal
 from typing import Any
 from collections.abc import Mapping
 
-from musurgia.graphics.geometry import Position
+from musurgia.graphics.geometry import Position, Scalar
 from musurgia.graphics.geometry import LineOrientation
 
 
@@ -52,3 +53,9 @@ def toggle_line_orientation(type: LineOrientation) -> LineOrientation:
 
 def toggle_position(position: Position) -> Position:
     return Position(position.y, position.x)
+
+
+def convert_to_scalar(value: Scalar | float) -> Scalar:
+    if isinstance(value, float):
+        return Decimal(value)
+    return value
