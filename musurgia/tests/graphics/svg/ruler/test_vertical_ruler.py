@@ -6,7 +6,7 @@ import pytest
 from musurgia.graphics.geometry import Position
 from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.page_layout import PageLayout
-from musurgia.graphics.ruler import Ruler
+from musurgia.graphics.ruler_old import Ruler
 from musurgia.graphics.svg.paginator import SVGPage
 from musurgia.tests.helpers.svg import SVGTestCase
 

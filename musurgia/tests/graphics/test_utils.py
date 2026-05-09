@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from musurgia.graphics.geometry import Position
 from musurgia.graphics.geometry import LineOrientation
-from musurgia.graphics.segmented_line import LineSegment, SegmentedLine
+from musurgia.graphics.segmented_line_old import OldLineSegment, OldSegmentedLine
 from musurgia.graphics.util import (
     override_options_mappings,
     toggle_line_orientation,
@@ -37,7 +37,7 @@ class OverrideOptionsMappings(TestCase):
         }
 
 
-def check_straight_line_alignment(segmented_line: SegmentedLine):
+def check_straight_line_alignment(segmented_line: OldSegmentedLine):
     positioned_line_segments = segmented_line.get_line_segments(positioned=True)
     first_positioned_line_segment = positioned_line_segments[0]
 
@@ -63,7 +63,7 @@ def check_straight_line_alignment(segmented_line: SegmentedLine):
             )
 
 
-def check_centered_markers(line_segment: LineSegment):
+def check_centered_markers(line_segment: OldLineSegment):
     straight_line_position = line_segment.get_straight_line(positioned=True)[0]
     positioned_start_marker, _ = line_segment.get_markers(positioned=True)
     positioned_start_marker_line = positioned_start_marker[1].get_line(positioned=True)
@@ -87,7 +87,7 @@ def check_centered_markers(line_segment: LineSegment):
     return True
 
 
-def check_all_straight_lines_centered(segmented_line: SegmentedLine):
+def check_all_straight_lines_centered(segmented_line: OldSegmentedLine):
     for ls in segmented_line.get_line_segments():
         assert check_centered_markers(ls)
     return True

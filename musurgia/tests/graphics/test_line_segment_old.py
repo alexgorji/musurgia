@@ -4,12 +4,12 @@ from unittest import TestCase
 
 from musurgia.graphics.geometry import Position, Size
 from musurgia.graphics.drawobject import (
-    StraightLineDrawObject,
+    OldStraightLineDrawObject,
 )
-from musurgia.graphics.line_segment import (
-    Label,
-    LineSegment,
-    Marker,
+from musurgia.graphics.line_segment_old import (
+    OldLabel,
+    OldLineSegment,
+    OldMarker,
     MarkerOptions,
 )
 from musurgia.graphics.geometry import LineOrientation
@@ -18,13 +18,16 @@ from musurgia.tests.graphics.test_utils import check_centered_markers
 
 class MarkerTestCase(TestCase):
     def test_type(self):
-        m = Marker(type=LineOrientation.VERTICAL, options={"length": 10})
+        m = OldMarker(type=LineOrientation.VERTICAL, options={"length": 10})
         assert m.get_type() == LineOrientation.VERTICAL.value
         assert m.get_length() == 10
 
     def test_labels(self):
-        labels = [Label(text="First Layer"), Label(text="Second Layer", offset=(0, 10))]
-        m = Marker(
+        labels = [
+            OldLabel(text="First Layer"),
+            OldLabel(text="Second Layer", offset=(0, 10)),
+        ]
+        m = OldMarker(
             type=LineOrientation.VERTICAL,
             options={
                 "length": 10,
@@ -38,25 +41,25 @@ class MarkerTestCase(TestCase):
         assert m.size.height == 10 + 10
 
     def test_get_line(self):
-        m = Marker(
+        m = OldMarker(
             type=LineOrientation.VERTICAL,
             options={
                 "length": 10,
                 "labels": [
-                    Label(text="First Layer"),
-                    Label(text="Second Layer", offset=(0, 10)),
+                    OldLabel(text="First Layer"),
+                    OldLabel(text="Second Layer", offset=(0, 10)),
                 ],
             },
         )
 
-        assert isinstance(m.get_line(), StraightLineDrawObject)
+        assert isinstance(m.get_line(), OldStraightLineDrawObject)
 
         p, line = m.get_line(positioned=True)
-        assert isinstance(line, StraightLineDrawObject)
+        assert isinstance(line, OldStraightLineDrawObject)
         assert p == Position(0, 10)
 
     def test_get_middle_of_line_coordinate(self):
-        m = Marker(
+        m = OldMarker(
             type=LineOrientation.VERTICAL,
             options={
                 "length": 10,
@@ -64,36 +67,36 @@ class MarkerTestCase(TestCase):
         )
         assert m.get_middle_of_line_coordinate() == 5
 
-        m = Marker(
+        m = OldMarker(
             type=LineOrientation.VERTICAL,
             options={
                 "length": 10,
                 "labels": [
-                    Label(text="First Layer", offset=(0, 0)),
+                    OldLabel(text="First Layer", offset=(0, 0)),
                 ],
             },
         )
         assert m.get_middle_of_line_coordinate() == 5
 
-        m = Marker(
+        m = OldMarker(
             type=LineOrientation.VERTICAL,
             options={
                 "length": 10,
                 "labels": [
-                    Label(text="First Layer", offset=(0, 10)),
-                    Label(text="Second Layer"),
+                    OldLabel(text="First Layer", offset=(0, 10)),
+                    OldLabel(text="Second Layer"),
                 ],
             },
         )
         assert m.get_middle_of_line_coordinate() == 15
-        m = Marker(
+        m = OldMarker(
             type=LineOrientation.VERTICAL,
             options={
                 "length": 10,
                 "labels": [
-                    Label(text="First Layer", offset=(0, 15)),
-                    Label(text="Second Layer", offset=(0, 10)),
-                    Label(text="Third Layer", offset=(0, 5)),
+                    OldLabel(text="First Layer", offset=(0, 15)),
+                    OldLabel(text="Second Layer", offset=(0, 10)),
+                    OldLabel(text="Third Layer", offset=(0, 5)),
                 ],
             },
         )
@@ -102,26 +105,26 @@ class MarkerTestCase(TestCase):
 
 class HorizontalLineSegmentTestCase(TestCase):
     def test_get_draw_objects(self):
-        hsl = LineSegment(
+        hsl = OldLineSegment(
             type=LineOrientation.HORIZONTAL, length=25, color="blue", thickness=1
         )
         assert len(hsl.get_draw_objects(positioned=True)) == 3
         assert len(hsl.get_draw_objects(positioned=True, recursive=True)) == 3
 
     def test_components(self):
-        hsl = LineSegment(
+        hsl = OldLineSegment(
             type=LineOrientation.HORIZONTAL,
             length=15,
         )
 
         start_marker, end_marker = hsl.get_markers()
-        assert isinstance(start_marker, Marker)
-        assert isinstance(end_marker, Marker)
+        assert isinstance(start_marker, OldMarker)
+        assert isinstance(end_marker, OldMarker)
         assert start_marker.get_type() == end_marker.get_type() == "vertical"
         assert start_marker.get_length() == MarkerOptions.length
         assert end_marker.get_length() == MarkerOptions.length
         straight_line = hsl.get_straight_line()
-        assert isinstance(straight_line, StraightLineDrawObject)
+        assert isinstance(straight_line, OldStraightLineDrawObject)
         assert straight_line.type.value == "horizontal"
         assert straight_line.get_length() == 15
         assert {do[1] for do in hsl.get_draw_objects(positioned=True)} == {
@@ -139,17 +142,17 @@ class HorizontalLineSegmentTestCase(TestCase):
                 assert p == Position(0, 3)
 
     def test_no_end_marker_components(self):
-        hsl = LineSegment(
+        hsl = OldLineSegment(
             type=LineOrientation.HORIZONTAL, length=15, no_end_marker=True
         )
 
         start_marker, end_marker = hsl.get_markers()
         assert end_marker is None
-        assert isinstance(start_marker, Marker)
+        assert isinstance(start_marker, OldMarker)
         assert start_marker.get_type() == "vertical"
         assert start_marker.get_length() == MarkerOptions.length
         straight_line = hsl.get_straight_line()
-        assert isinstance(straight_line, StraightLineDrawObject)
+        assert isinstance(straight_line, OldStraightLineDrawObject)
         assert straight_line.type.value == "horizontal"
         assert straight_line.get_length() == 15
         assert {do[1] for do in hsl.get_draw_objects(positioned=True)} == {
@@ -164,7 +167,7 @@ class HorizontalLineSegmentTestCase(TestCase):
                 assert p == Position(0, 3)
 
     def test_set_color(self):
-        hsl = LineSegment(
+        hsl = OldLineSegment(
             type=LineOrientation.HORIZONTAL,
             length=15,
             color="blue",
@@ -174,20 +177,20 @@ class HorizontalLineSegmentTestCase(TestCase):
         } == {"blue"}
 
     def test_set_labeled_color(self):
-        hsl = LineSegment(
+        hsl = OldLineSegment(
             type=LineOrientation.HORIZONTAL,
             length=15,
             color="blue",
             options={
                 "start_marker": {
                     "labels": [
-                        Label(text="label one"),
-                        Label(text="label two"),
+                        OldLabel(text="label one"),
+                        OldLabel(text="label two"),
                     ]
                 },
                 "end_marker": {
                     "labels": [
-                        Label(text="label three"),
+                        OldLabel(text="label three"),
                     ]
                 },
             },
@@ -198,26 +201,26 @@ class HorizontalLineSegmentTestCase(TestCase):
         } == {"blue", "black"}
 
         for do in hsl.get_draw_objects(recursive=True):
-            if isinstance(do, Label):
+            if isinstance(do, OldLabel):
                 do.set_color("blue")
         assert {
             o.color for _, o in hsl.get_draw_objects(positioned=True, recursive=True)
         } == {"blue"}
 
-        hsl = LineSegment(
+        hsl = OldLineSegment(
             type=LineOrientation.HORIZONTAL,
             length=15,
             color="blue",
             options={
                 "start_marker": {
                     "labels": [
-                        Label(text="red label"),
-                        Label(text="yellow label"),
+                        OldLabel(text="red label"),
+                        OldLabel(text="yellow label"),
                     ]
                 },
                 "end_marker": {
                     "labels": [
-                        Label(text="orange label"),
+                        OldLabel(text="orange label"),
                     ]
                 },
             },
@@ -225,20 +228,20 @@ class HorizontalLineSegmentTestCase(TestCase):
         assert {
             o.color for _, o in hsl.get_draw_objects(positioned=True, recursive=True)
         } == {"blue", "black"}
-        hsl = LineSegment(
+        hsl = OldLineSegment(
             type=LineOrientation.HORIZONTAL,
             length=15,
             color="blue",
             options={
                 "start_marker": {
                     "labels": [
-                        Label(text="red label", color="red"),
-                        Label(text="yellow label", color="yellow"),
+                        OldLabel(text="red label", color="red"),
+                        OldLabel(text="yellow label", color="yellow"),
                     ]
                 },
                 "end_marker": {
                     "labels": [
-                        Label(text="orange label", color="orange"),
+                        OldLabel(text="orange label", color="orange"),
                     ]
                 },
             },
@@ -248,21 +251,21 @@ class HorizontalLineSegmentTestCase(TestCase):
         } == {"blue", "red", "yellow", "orange"}
 
     def test_set_thickness(self):
-        hsl = LineSegment(
+        hsl = OldLineSegment(
             type=LineOrientation.HORIZONTAL,
             length=25,
             thickness=1,
             options={"straight_line": {"thickness": 2}},
         )
         for _, o in hsl.get_draw_objects(positioned=True, recursive=True):
-            if isinstance(o, StraightLineDrawObject):
+            if isinstance(o, OldStraightLineDrawObject):
                 if o.type.value == "horizontal":
                     assert o.thickness == 2
                 else:
                     assert o.thickness == 1
 
     def test_different_marker_sizes(self):
-        hsl = LineSegment(
+        hsl = OldLineSegment(
             type=LineOrientation.HORIZONTAL,
             length=10,
             options={"start_marker": {"length": 10}, "end_marker": {"length": 5}},
@@ -288,7 +291,7 @@ class HorizontalLineSegmentTestCase(TestCase):
             10 - Decimal(marker_thickness / 2), Decimal(2.5)
         )
 
-        hsl = LineSegment(
+        hsl = OldLineSegment(
             type=LineOrientation.HORIZONTAL,
             length=10,
             options={"start_marker": {"length": 5}, "end_marker": {"length": 10}},
@@ -315,14 +318,14 @@ class HorizontalLineSegmentTestCase(TestCase):
         )
 
     def test_size(self):
-        hsl = LineSegment(type=LineOrientation.HORIZONTAL, length=15)
+        hsl = OldLineSegment(type=LineOrientation.HORIZONTAL, length=15)
         assert hsl.size == Size(15, 6)
 
     def test_component_getters(self):
-        hsl = LineSegment(type=LineOrientation.HORIZONTAL, length=15)
+        hsl = OldLineSegment(type=LineOrientation.HORIZONTAL, length=15)
         assert hsl.get_straight_line(positioned=True)[0] == Position(0, 3)
         straight_line = hsl.get_straight_line(positioned=True)[1]
-        assert isinstance(straight_line, StraightLineDrawObject)
+        assert isinstance(straight_line, OldStraightLineDrawObject)
         assert straight_line == hsl.get_straight_line(positioned=False)
 
         positioned_start, positioned_end = hsl.get_markers(positioned=True)
@@ -339,11 +342,11 @@ class HorizontalLineSegmentTestCase(TestCase):
 
     def test_add_labels(self):
         labels = [
-            Label(text="first layer", offset=(0, 20)),
-            Label(text="Second layer", offset=(0, 10)),
+            OldLabel(text="first layer", offset=(0, 20)),
+            OldLabel(text="Second layer", offset=(0, 10)),
         ]
 
-        hsl = LineSegment(
+        hsl = OldLineSegment(
             type=LineOrientation.HORIZONTAL,
             length=10,
             options={"start_marker": {"labels": labels, "length": 30}},
@@ -358,26 +361,26 @@ class HorizontalLineSegmentTestCase(TestCase):
         check_centered_markers(hsl)
 
     def test_no_end_marker(self):
-        hsl = LineSegment(type=LineOrientation.HORIZONTAL, length=10)
+        hsl = OldLineSegment(type=LineOrientation.HORIZONTAL, length=10)
         for m in hsl.get_markers():
-            assert isinstance(m, Marker)
-            hsl = LineSegment(
+            assert isinstance(m, OldMarker)
+            hsl = OldLineSegment(
                 type=LineOrientation.HORIZONTAL, length=10, no_end_marker=True
             )
         s, e = hsl.get_markers()
-        assert isinstance(s, Marker)
+        assert isinstance(s, OldMarker)
         assert e is None
 
     def test_get_labels(self):
         start_labels = [
-            Label(text="first"),
-            Label(text="second"),
+            OldLabel(text="first"),
+            OldLabel(text="second"),
         ]
         end_labels = [
-            Label(text="third"),
+            OldLabel(text="third"),
         ]
 
-        hsl = LineSegment(
+        hsl = OldLineSegment(
             type=LineOrientation.HORIZONTAL,
             length=10,
             options={
@@ -387,7 +390,7 @@ class HorizontalLineSegmentTestCase(TestCase):
         )
         assert set(l.text for l in hsl.get_labels()) == {"first", "second", "third"}
 
-        hsl = LineSegment(
+        hsl = OldLineSegment(
             type=LineOrientation.HORIZONTAL,
             length=10,
             no_end_marker=True,
@@ -401,26 +404,26 @@ class HorizontalLineSegmentTestCase(TestCase):
 
 class VerticalLineSegmentTestCase(TestCase):
     def test_get_draw_objects(self):
-        vsl = LineSegment(
+        vsl = OldLineSegment(
             type=LineOrientation.VERTICAL, length=25, color="blue", thickness=1
         )
         assert len(vsl.get_draw_objects(positioned=True)) == 3
         assert len(vsl.get_draw_objects(positioned=True, recursive=True)) == 3
 
     def test_components(self):
-        vsl = LineSegment(
+        vsl = OldLineSegment(
             type=LineOrientation.VERTICAL,
             length=15,
         )
 
         start_marker, end_marker = vsl.get_markers()
-        assert isinstance(start_marker, Marker)
-        assert isinstance(end_marker, Marker)
+        assert isinstance(start_marker, OldMarker)
+        assert isinstance(end_marker, OldMarker)
         assert start_marker.get_type() == end_marker.get_type() == "horizontal"
         assert start_marker.get_length() == MarkerOptions.length
         assert end_marker.get_length() == MarkerOptions.length
         straight_line = vsl.get_straight_line()
-        assert isinstance(straight_line, StraightLineDrawObject)
+        assert isinstance(straight_line, OldStraightLineDrawObject)
         assert straight_line.type.value == "vertical"
         assert straight_line.get_length() == 15
         assert {do[1] for do in vsl.get_draw_objects(positioned=True)} == {
@@ -438,21 +441,21 @@ class VerticalLineSegmentTestCase(TestCase):
                 assert p == Position(3, 0)
 
     def test_set_thickness(self):
-        vsl = LineSegment(
+        vsl = OldLineSegment(
             type=LineOrientation.VERTICAL,
             length=25,
             thickness=1,
             options={"straight_line": {"thickness": 2}},
         )
         for _, o in vsl.get_draw_objects(positioned=True):
-            if isinstance(o, StraightLineDrawObject):
+            if isinstance(o, OldStraightLineDrawObject):
                 if o.type.value == "vertical":
                     assert o.thickness == 2
                 else:
                     assert o.thickness == 1
 
     def test_different_marker_sizes(self):
-        vsl = LineSegment(
+        vsl = OldLineSegment(
             type=LineOrientation.VERTICAL,
             length=10,
             options={"start_marker": {"length": 10}, "end_marker": {"length": 5}},
@@ -478,7 +481,7 @@ class VerticalLineSegmentTestCase(TestCase):
             Decimal(2.5), 10 - Decimal(marker_thickness / 2)
         )
 
-        vsl = LineSegment(
+        vsl = OldLineSegment(
             type=LineOrientation.VERTICAL,
             length=10,
             options={"start_marker": {"length": 5}, "end_marker": {"length": 10}},
@@ -505,10 +508,10 @@ class VerticalLineSegmentTestCase(TestCase):
         )
 
     def test_component_getters(self):
-        vsl = LineSegment(type=LineOrientation.VERTICAL, length=15)
+        vsl = OldLineSegment(type=LineOrientation.VERTICAL, length=15)
         assert vsl.get_straight_line(positioned=True)[0] == Position(3, 0)
         straight_line = vsl.get_straight_line(positioned=True)[1]
-        assert isinstance(straight_line, StraightLineDrawObject)
+        assert isinstance(straight_line, OldStraightLineDrawObject)
         assert straight_line == vsl.get_straight_line(positioned=False)
 
         positioned_start, positioned_end = vsl.get_markers(positioned=True)
@@ -526,16 +529,16 @@ class VerticalLineSegmentTestCase(TestCase):
             assert end.get_length() == 6
 
     def test_size(self):
-        vsl = LineSegment(type=LineOrientation.VERTICAL, length=15)
+        vsl = OldLineSegment(type=LineOrientation.VERTICAL, length=15)
         assert vsl.size == Size(6, 15)
 
     def test_add_labels(self):
         labels = [
-            Label(text="first layer", offset=(0, 20)),
-            Label(text="Second layer", offset=(0, 10)),
+            OldLabel(text="first layer", offset=(0, 20)),
+            OldLabel(text="Second layer", offset=(0, 10)),
         ]
 
-        vsl = LineSegment(
+        vsl = OldLineSegment(
             type=LineOrientation.VERTICAL,
             length=10,
             options={"start_marker": {"labels": labels, "length": 30}},

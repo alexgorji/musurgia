@@ -4,9 +4,9 @@ from typing import Any, Mapping
 
 
 from musurgia.graphics.container import Container
-from musurgia.graphics.line_segment import Label
+from musurgia.graphics.line_segment_old import OldLabel
 from musurgia.graphics.geometry import LineOrientation, Scalar
-from musurgia.graphics.segmented_line import SegmentedLine
+from musurgia.graphics.segmented_line_old import OldSegmentedLine
 from musurgia.graphics.util import overrides_data_class_options
 
 
@@ -79,7 +79,7 @@ def _create_segmented_line_options(
             }
             if index_of_unit % ruler_options.labels_interval == 0:
                 options[key]["start_marker"]["labels"] = [
-                    Label(
+                    OldLabel(
                         text=str(int(index_of_unit) + 1),
                         color=ruler_options.label.color,
                         font_size=ruler_options.label.font_size,
@@ -118,7 +118,7 @@ class Ruler(Container):
 
         segment_lengths = _ruler_segment_lengths(ruler_options, length)
 
-        self._segmented_line = SegmentedLine(
+        self._segmented_line = OldSegmentedLine(
             type=type,
             segment_lengths=segment_lengths,
             marker_length=ruler_options.unit_division_marker.length,

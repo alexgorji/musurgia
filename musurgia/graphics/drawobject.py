@@ -243,7 +243,7 @@ class LineDrawObject(ColorMixin, DrawObject):
         )
 
 
-class StraightLineDrawObject(LineDrawObject):
+class OldStraightLineDrawObject(LineDrawObject):
     def __init__(
         self,
         *,

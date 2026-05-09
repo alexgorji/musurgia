@@ -13,7 +13,7 @@ from musurgia.graphics.svg.convertors import SVGConverterRegistry
 from musurgia.graphics.drawobject import (
     LineDrawObject,
     RectangleDrawObject,
-    StraightLineDrawObject,
+    OldStraightLineDrawObject,
     TextDrawObject,
     create_measure_context,
 )
@@ -99,15 +99,15 @@ class ContainerTestCase(TestCase):
         container = Container()
         container.add_draw_object(
             Position(10, 10),
-            StraightLineDrawObject(type=LineOrientation.VERTICAL, length=5),
+            OldStraightLineDrawObject(type=LineOrientation.VERTICAL, length=5),
         )
         container.add_draw_object(
             Position(10, 15),
-            StraightLineDrawObject(type=LineOrientation.HORIZONTAL, length=20),
+            OldStraightLineDrawObject(type=LineOrientation.HORIZONTAL, length=20),
         )
         container.add_draw_object(
             Position(10, 30),
-            StraightLineDrawObject(type=LineOrientation.VERTICAL, length=5),
+            OldStraightLineDrawObject(type=LineOrientation.VERTICAL, length=5),
         )
 
         parent_container = Container()

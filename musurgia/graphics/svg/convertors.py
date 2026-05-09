@@ -6,12 +6,12 @@ from musurgia.graphics.container import Container
 from musurgia.graphics.geometry import Position
 from musurgia.graphics.drawobject import (
     DrawObject,
-    StraightLineDrawObject,
+    OldStraightLineDrawObject,
     LineDrawObject,
     RectangleDrawObject,
     TextDrawObject,
 )
-from musurgia.graphics.line_segment import Label
+from musurgia.graphics.line_segment_old import OldLabel
 
 T = TypeVar("T", bound=DrawObject)
 
@@ -150,8 +150,8 @@ class SVGConverterRegistry:
 
 
 SVGConverterRegistry.register(LineDrawObject, LineDrawObjectToSVGConvertor)
-SVGConverterRegistry.register(StraightLineDrawObject, LineDrawObjectToSVGConvertor)
+SVGConverterRegistry.register(OldStraightLineDrawObject, LineDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(TextDrawObject, TextDrawObjectToSVGConvertor)
-SVGConverterRegistry.register(Label, TextDrawObjectToSVGConvertor)
+SVGConverterRegistry.register(OldLabel, TextDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(RectangleDrawObject, RectangleDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(Container, ContainerToSVGConvertor)

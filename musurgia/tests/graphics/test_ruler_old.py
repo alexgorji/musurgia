@@ -3,7 +3,7 @@ from unittest import TestCase
 
 
 from musurgia.graphics.geometry import LineOrientation
-from musurgia.graphics.ruler import (
+from musurgia.graphics.ruler_old import (
     Ruler,
     RulerOptions,
     _create_segmented_line_options,
@@ -12,7 +12,7 @@ from musurgia.graphics.ruler import (
     _get_number_of_units,
     _ruler_segment_lengths,
 )
-from musurgia.graphics.segmented_line import SegmentedLine
+from musurgia.graphics.segmented_line_old import OldSegmentedLine
 
 
 class RulerHelperFunctionsTestCase(TestCase):
@@ -73,7 +73,7 @@ class RulerHelperFunctionsTestCase(TestCase):
 class HorizontalRulerTests(TestCase):
     def test_ruler_as_segmented_line(self):
         hr = Ruler(type=LineOrientation.HORIZONTAL, length=60)
-        assert isinstance(hr._segmented_line, SegmentedLine)
+        assert isinstance(hr._segmented_line, OldSegmentedLine)
         assert hr._segmented_line.get_length() == 60
         assert len(hr._segmented_line.get_line_segments()) == 60
         for sl in hr._segmented_line.get_line_segments()[:-1]:

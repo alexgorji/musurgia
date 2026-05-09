@@ -3,7 +3,7 @@ from decimal import Decimal
 from musurgia.graphics.container import Container
 from musurgia.graphics.geometry import Position, Scalar
 from musurgia.graphics.drawobject import (
-    StraightLineDrawObject,
+    OldStraightLineDrawObject,
     TextDrawObject,
 )
 
@@ -18,7 +18,7 @@ from musurgia.graphics.util import (
 )
 
 
-class Label(TextDrawObject):
+class OldLabel(TextDrawObject):
     def __init__(
         self,
         *,
@@ -45,7 +45,7 @@ class MarkerOptions:
     length: Scalar = Decimal("6.0")
     thickness: Scalar = Decimal("0.1")
     color: str = "black"
-    labels: list[Label] = field(default_factory=lambda: [])
+    labels: list[OldLabel] = field(default_factory=lambda: [])
 
 
 @dataclass
@@ -61,7 +61,7 @@ class LineSegmentOptions:
     straight_line: StraightLineOptions = field(default_factory=StraightLineOptions)
 
 
-class Marker(Container):
+class OldMarker(Container):
     def __init__(
         self,
         *,
@@ -73,16 +73,16 @@ class Marker(Container):
         self._options = MarkerOptions()
         if options:
             overrides_data_class_options(self._options, options)
-        self._line: StraightLineDrawObject
+        self._line: OldStraightLineDrawObject
         self._build()
 
     def _build(self) -> None:
         options = asdict(self._options)
-        labels = cast(list[Label], options.pop("labels"))
+        labels = cast(list[OldLabel], options.pop("labels"))
 
         labels.sort(key=lambda label: label.get_offset()[1], reverse=True)
 
-        self._line = StraightLineDrawObject(type=self.type, **options)
+        self._line = OldStraightLineDrawObject(type=self.type, **options)
 
         if labels:
             first_label = labels[0]
@@ -105,8 +105,8 @@ class Marker(Container):
                     position = toggle_position(position)
                 self.add_draw_object(position, label)
 
-    def get_labels(self) -> list[Label]:
-        return [do for do in self.get_draw_objects() if isinstance(do, Label)]
+    def get_labels(self) -> list[OldLabel]:
+        return [do for do in self.get_draw_objects() if isinstance(do, OldLabel)]
 
     def get_type(self) -> str:
         return self.type.value
@@ -121,21 +121,21 @@ class Marker(Container):
         return self._line.color
 
     @overload
-    def get_line(self) -> StraightLineDrawObject: ...
+    def get_line(self) -> OldStraightLineDrawObject: ...
 
     @overload
-    def get_line(self, *, positioned: Literal[False]) -> StraightLineDrawObject: ...
+    def get_line(self, *, positioned: Literal[False]) -> OldStraightLineDrawObject: ...
 
     @overload
     def get_line(
         self, *, positioned: Literal[True]
-    ) -> tuple[Position, StraightLineDrawObject]: ...
+    ) -> tuple[Position, OldStraightLineDrawObject]: ...
 
     def get_line(
         self, *, positioned: bool = False
-    ) -> StraightLineDrawObject | tuple[Position, StraightLineDrawObject]:
+    ) -> OldStraightLineDrawObject | tuple[Position, OldStraightLineDrawObject]:
         positioned_line = [
-            (p, cast(StraightLineDrawObject, o))
+            (p, cast(OldStraightLineDrawObject, o))
             for (p, o) in self.get_draw_objects(positioned=True)
             if o == self._line
         ][0]
@@ -151,7 +151,7 @@ class Marker(Container):
             return position.x + line.get_length() / 2
 
 
-class LineSegment(Container):
+class OldLineSegment(Container):
     def __init__(
         self,
         *,
@@ -182,9 +182,9 @@ class LineSegment(Container):
 
         if options:
             overrides_data_class_options(self._options, options)
-        self._straight_line: StraightLineDrawObject
-        self._start_marker: Marker
-        self._end_marker: Marker | None
+        self._straight_line: OldStraightLineDrawObject
+        self._start_marker: OldMarker
+        self._end_marker: OldMarker | None
 
         self._build()
 
@@ -246,20 +246,20 @@ class LineSegment(Container):
         return p
 
     def _build(self) -> None:
-        self._start_marker = Marker(
+        self._start_marker = OldMarker(
             type=toggle_line_orientation(self.type),
             options=asdict(self._options.start_marker),
         )
 
         if not self._no_end_marker:
-            self._end_marker = Marker(
+            self._end_marker = OldMarker(
                 type=toggle_line_orientation(self.type),
                 options=asdict(self._options.end_marker),
             )
         else:
             self._end_marker = None
 
-        self._straight_line = StraightLineDrawObject(
+        self._straight_line = OldStraightLineDrawObject(
             type=self.type, length=self._length, **asdict(self._options.straight_line)
         )
 
@@ -279,29 +279,29 @@ class LineSegment(Container):
         )
 
     @overload
-    def get_markers(self) -> tuple[Marker, Marker | None]: ...
+    def get_markers(self) -> tuple[OldMarker, OldMarker | None]: ...
 
     @overload
     def get_markers(
         self, positioned: Literal[False]
-    ) -> tuple[Marker, Marker | None]: ...
+    ) -> tuple[OldMarker, OldMarker | None]: ...
 
     @overload
     def get_markers(
         self, positioned: Literal[True]
-    ) -> tuple[tuple[Position, Marker], tuple[Position, Marker] | None]: ...
+    ) -> tuple[tuple[Position, OldMarker], tuple[Position, OldMarker] | None]: ...
 
     def get_markers(
         self, positioned: bool = False
     ) -> (
-        tuple[Marker, Marker | None]
-        | tuple[tuple[Position, Marker], tuple[Position, Marker] | None]
+        tuple[OldMarker, OldMarker | None]
+        | tuple[tuple[Position, OldMarker], tuple[Position, OldMarker] | None]
     ):
         if not positioned:
             return self._start_marker, self._end_marker
         else:
             positioned_start = [
-                (p, cast(Marker, o))
+                (p, cast(OldMarker, o))
                 for (p, o) in self.get_draw_objects(positioned=True)
                 if o == self._start_marker
             ][0]
@@ -309,14 +309,14 @@ class LineSegment(Container):
             positioned_end = None
             if self._end_marker:
                 positioned_end = [
-                    (p, cast(Marker, o))
+                    (p, cast(OldMarker, o))
                     for (p, o) in self.get_draw_objects(positioned=True)
                     if o == self._end_marker
                 ][0]
 
             return (positioned_start, positioned_end)
 
-    def get_labels(self) -> list[Label]:
+    def get_labels(self) -> list[OldLabel]:
         return [
             label
             for marker in self.get_markers()
@@ -327,20 +327,20 @@ class LineSegment(Container):
     @overload
     def get_straight_line(
         self, positioned: Literal[False] = False
-    ) -> StraightLineDrawObject: ...
+    ) -> OldStraightLineDrawObject: ...
 
     @overload
     def get_straight_line(
         self, positioned: Literal[True]
-    ) -> tuple[Position, StraightLineDrawObject]: ...
+    ) -> tuple[Position, OldStraightLineDrawObject]: ...
 
     def get_straight_line(
         self, positioned: bool = False
-    ) -> StraightLineDrawObject | tuple[Position, StraightLineDrawObject]:
+    ) -> OldStraightLineDrawObject | tuple[Position, OldStraightLineDrawObject]:
         if not positioned:
             return self._straight_line
         return [
-            (p, cast(StraightLineDrawObject, o))
+            (p, cast(OldStraightLineDrawObject, o))
             for (p, o) in self.get_draw_objects(positioned=True)
             if o == self._straight_line
         ][0]

@@ -1,10 +1,9 @@
 from pathlib import Path
 
-from musurgia.graphics.drawobject import StraightLineDrawObject
+from musurgia.graphics.drawobject import OldStraightLineDrawObject
 from musurgia.graphics.geometry import LineOrientation, Position
 from musurgia.graphics.svg.paginator import SVGPage
 from musurgia.tests.helpers.svg import SVGTestCase
-
 
 this_path = Path(__file__)
 
@@ -12,7 +11,7 @@ this_path = Path(__file__)
 class DashedLineTestCase(SVGTestCase):
     def test_dashed_lines(self):
         page = SVGPage()
-        hl = StraightLineDrawObject(
+        hl = OldStraightLineDrawObject(
             type=LineOrientation.HORIZONTAL,
             length=100,
             thickness=1,

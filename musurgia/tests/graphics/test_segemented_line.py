@@ -3,9 +3,9 @@ from unittest import TestCase
 
 from musurgia.graphics.geometry import Position
 from musurgia.graphics.drawobject import TextDrawObject
-from musurgia.graphics.line_segment import Label, Marker
+from musurgia.graphics.line_segment_old import OldLabel, OldMarker
 from musurgia.graphics.geometry import LineOrientation
-from musurgia.graphics.segmented_line import SegmentedLine
+from musurgia.graphics.segmented_line_old import OldSegmentedLine
 from musurgia.tests.graphics.test_utils import (
     check_all_straight_lines_centered,
     check_straight_line_alignment,
@@ -15,7 +15,7 @@ from musurgia.tests.graphics.test_utils import (
 class HorizontalSegmentedLineTestCase(TestCase):
     def setUp(self) -> None:
         self.lengths = [1, 1, Decimal("3.4"), Decimal("5.6")]
-        self.sl = SegmentedLine(
+        self.sl = OldSegmentedLine(
             type=LineOrientation.HORIZONTAL, segment_lengths=self.lengths
         )
 
@@ -44,7 +44,7 @@ class HorizontalSegmentedLineTestCase(TestCase):
         lss = self.sl.get_line_segments()
         for ls in lss:
             start, end = ls.get_markers()
-            assert isinstance(start, Marker)
+            assert isinstance(start, OldMarker)
             assert start.get_length() == 6
             assert start.get_color() == "black"
             assert start.show is True
@@ -52,12 +52,12 @@ class HorizontalSegmentedLineTestCase(TestCase):
             if ls != lss[-1]:
                 assert end is None
             else:
-                assert isinstance(end, Marker)
+                assert isinstance(end, OldMarker)
                 assert end.get_length() == 6
                 assert end.get_color() == "black"
 
         lengths: list[int | float] = [10, 20, 34, 56]
-        sl = SegmentedLine(
+        sl = OldSegmentedLine(
             type=LineOrientation.HORIZONTAL,
             segment_lengths=lengths,
             marker_length=10,
@@ -74,7 +74,7 @@ class HorizontalSegmentedLineTestCase(TestCase):
         assert end_marker.get_color() == "blue"
 
     def test_setting_default_marker_length(self):
-        sl = SegmentedLine(
+        sl = OldSegmentedLine(
             type=LineOrientation.HORIZONTAL,
             segment_lengths=self.lengths,
             marker_length=100,
@@ -87,12 +87,12 @@ class HorizontalSegmentedLineTestCase(TestCase):
 
     def test_aligned_segmented_lines(self):
         lengths = [1, 2, Decimal(3.4), Decimal(5.6)]
-        sl = SegmentedLine(type=LineOrientation.HORIZONTAL, segment_lengths=lengths)
+        sl = OldSegmentedLine(type=LineOrientation.HORIZONTAL, segment_lengths=lengths)
         check_straight_line_alignment(sl)
         check_all_straight_lines_centered(sl)
 
     def test_different_marker_lengths(self):
-        sl = SegmentedLine(
+        sl = OldSegmentedLine(
             type=LineOrientation.HORIZONTAL,
             segment_lengths=self.lengths,
             marker_length=100,
@@ -107,7 +107,7 @@ class HorizontalSegmentedLineTestCase(TestCase):
         check_straight_line_alignment(sl)
 
     def test_color(self):
-        sl = SegmentedLine(
+        sl = OldSegmentedLine(
             type=LineOrientation.HORIZONTAL, segment_lengths=self.lengths, color="blue"
         )
 
@@ -115,7 +115,7 @@ class HorizontalSegmentedLineTestCase(TestCase):
             "blue"
         }
 
-        sl = SegmentedLine(
+        sl = OldSegmentedLine(
             type=LineOrientation.HORIZONTAL,
             segment_lengths=self.lengths,
             color="blue",
@@ -129,7 +129,7 @@ class HorizontalSegmentedLineTestCase(TestCase):
                 assert sl.get_markers()[0].get_color() == "blue"
 
     def test_thickness(self):
-        sl = SegmentedLine(
+        sl = OldSegmentedLine(
             type=LineOrientation.HORIZONTAL, segment_lengths=self.lengths, thickness=5
         )
 
@@ -140,7 +140,7 @@ class HorizontalSegmentedLineTestCase(TestCase):
             if end:
                 assert end.get_thickness() == 5
 
-        sl = SegmentedLine(
+        sl = OldSegmentedLine(
             type=LineOrientation.HORIZONTAL,
             segment_lengths=self.lengths,
             thickness=5,
@@ -157,16 +157,16 @@ class HorizontalSegmentedLineTestCase(TestCase):
 
     def test_add_labels(self):
         labels_1 = [
-            Label(text="First first layer", offset=(0, 20)),
-            Label(text="First second layer", offset=(0, 10)),
+            OldLabel(text="First first layer", offset=(0, 20)),
+            OldLabel(text="First second layer", offset=(0, 10)),
         ]
         labels_2 = [
-            Label(text="Second first layer", offset=(0, 5)),
-            Label(text="Second second layer", offset=(0, 2)),
-            Label(text="Second third layer"),
+            OldLabel(text="Second first layer", offset=(0, 5)),
+            OldLabel(text="Second second layer", offset=(0, 2)),
+            OldLabel(text="Second third layer"),
         ]
 
-        sl = SegmentedLine(
+        sl = OldSegmentedLine(
             type=LineOrientation.HORIZONTAL,
             segment_lengths=self.lengths,
             thickness=5,
@@ -185,16 +185,16 @@ class HorizontalSegmentedLineTestCase(TestCase):
 
     def test_get_labels(self):
         labels_1 = [
-            Label(text="First first layer", offset=(0, 20)),
-            Label(text="First second layer", offset=(0, 10)),
+            OldLabel(text="First first layer", offset=(0, 20)),
+            OldLabel(text="First second layer", offset=(0, 10)),
         ]
         labels_2 = [
-            Label(text="Second first layer", offset=(0, 5)),
-            Label(text="Second second layer", offset=(0, 2)),
-            Label(text="Second third layer"),
+            OldLabel(text="Second first layer", offset=(0, 5)),
+            OldLabel(text="Second second layer", offset=(0, 2)),
+            OldLabel(text="Second third layer"),
         ]
 
-        sl = SegmentedLine(
+        sl = OldSegmentedLine(
             type=LineOrientation.HORIZONTAL,
             segment_lengths=self.lengths,
             thickness=5,
@@ -212,7 +212,7 @@ class HorizontalSegmentedLineTestCase(TestCase):
 class VerticalSegmentedLineTestCase(TestCase):
     def setUp(self) -> None:
         self.lengths = [1, 2, Decimal("3.4"), Decimal("5.6")]
-        self.sl = SegmentedLine(
+        self.sl = OldSegmentedLine(
             type=LineOrientation.VERTICAL, segment_lengths=self.lengths
         )
 
@@ -235,7 +235,7 @@ class VerticalSegmentedLineTestCase(TestCase):
         lss = self.sl.get_line_segments()
         for ls in lss:
             start, end = ls.get_markers()
-            assert isinstance(start, Marker)
+            assert isinstance(start, OldMarker)
             assert start.get_length() == 6
             assert start.get_color() == "black"
             assert start.show is True
@@ -243,12 +243,12 @@ class VerticalSegmentedLineTestCase(TestCase):
             if ls != lss[-1]:
                 assert end is None
             else:
-                assert isinstance(end, Marker)
+                assert isinstance(end, OldMarker)
                 assert end.get_length() == 6
                 assert end.get_color() == "black"
 
     def test_setting_default_marker_length(self):
-        sl = SegmentedLine(
+        sl = OldSegmentedLine(
             type=LineOrientation.VERTICAL,
             segment_lengths=self.lengths,
             marker_length=100,
@@ -261,13 +261,13 @@ class VerticalSegmentedLineTestCase(TestCase):
 
     def test_aligned_segmented_lines(self):
         lengths = [1, 2, Decimal(3.4), Decimal(5.6)]
-        sl = SegmentedLine(type=LineOrientation.VERTICAL, segment_lengths=lengths)
+        sl = OldSegmentedLine(type=LineOrientation.VERTICAL, segment_lengths=lengths)
 
         check_all_straight_lines_centered(sl)
         check_straight_line_alignment(sl)
 
     def test_different_marker_lengths(self):
-        sl = SegmentedLine(
+        sl = OldSegmentedLine(
             type=LineOrientation.VERTICAL,
             segment_lengths=self.lengths,
             marker_length=100,
@@ -284,16 +284,16 @@ class VerticalSegmentedLineTestCase(TestCase):
 
     def test_add_labels(self):
         labels_1 = [
-            Label(text="First first layer", offset=(0, 20)),
-            Label(text="First second layer", offset=(0, 10)),
+            OldLabel(text="First first layer", offset=(0, 20)),
+            OldLabel(text="First second layer", offset=(0, 10)),
         ]
         labels_2 = [
-            Label(text="Second first layer", offset=(0, 5)),
-            Label(text="Second second layer", offset=(0, 2)),
-            Label(text="Second third layer"),
+            OldLabel(text="Second first layer", offset=(0, 5)),
+            OldLabel(text="Second second layer", offset=(0, 2)),
+            OldLabel(text="Second third layer"),
         ]
 
-        sl = SegmentedLine(
+        sl = OldSegmentedLine(
             type=LineOrientation.VERTICAL,
             segment_lengths=self.lengths,
             thickness=5,

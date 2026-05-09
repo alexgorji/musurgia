@@ -12,7 +12,7 @@ from musurgia.graphics.geometry import (
     Size,
 )
 from musurgia.graphics.page_layout import PageLayout
-from musurgia.graphics.ruler import Ruler
+from musurgia.graphics.ruler_old import Ruler
 from musurgia.graphics.svg.paginator import (
     SVGPage,
     SVGPageRow,

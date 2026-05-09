@@ -1,6 +1,6 @@
 from pathlib import Path
 from musurgia.graphics.geometry import Position
-from musurgia.graphics.line_segment import LineSegment
+from musurgia.graphics.line_segment_old import OldLineSegment
 from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.svg.paginator import SVGPage
 from musurgia.tests.helpers.svg import SVGTestCase
@@ -12,7 +12,7 @@ class VerticalLineSegmentRegressionTests(SVGTestCase):
     def test_vertical_line_segment(self):
         page = SVGPage()
         page.add_grid()
-        vsl = LineSegment(
+        vsl = OldLineSegment(
             type=LineOrientation.VERTICAL, length=25, color="blue", thickness=1
         )
 

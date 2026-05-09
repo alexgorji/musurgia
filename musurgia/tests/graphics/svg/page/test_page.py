@@ -8,7 +8,7 @@ from musurgia.graphics.drawobject import (
     LineDrawObject,
     RectangleDrawObject,
     TextDrawObject,
-    StraightLineDrawObject,
+    OldStraightLineDrawObject,
 )
 from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.svg.paginator import SVGPage
@@ -100,13 +100,13 @@ class PageToSVGRegressionTests(SVGTestCase):
         l1.box.show = True
         page.add_draw_object(Position(30, 30), l1)
 
-        l2 = StraightLineDrawObject(
+        l2 = OldStraightLineDrawObject(
             type=LineOrientation.HORIZONTAL, length=20, color="gray", thickness=2
         )
         l2.box.show = True
         page.add_draw_object(Position(30, 100), l2)
 
-        l3 = StraightLineDrawObject(
+        l3 = OldStraightLineDrawObject(
             type=LineOrientation.VERTICAL, length=20, color="gray", thickness=2
         )
         l3.box.show = True
@@ -125,21 +125,21 @@ class PageToSVGRegressionTests(SVGTestCase):
     def test_add_multiple_line_draw_objects_to_page(self):
         page = SVGPage()
         draw_objects = [
-            StraightLineDrawObject(
+            OldStraightLineDrawObject(
                 type=LineOrientation.HORIZONTAL,
                 length=40,
                 start=Position(10, 30),
                 color="blue",
                 thickness=2,
             ),
-            StraightLineDrawObject(
+            OldStraightLineDrawObject(
                 type=LineOrientation.VERTICAL,
                 length=10,
                 start=Position(10, 25),
                 color="blue",
                 thickness=2,
             ),
-            StraightLineDrawObject(
+            OldStraightLineDrawObject(
                 type=LineOrientation.VERTICAL,
                 length=10,
                 start=Position(50, 25),
@@ -159,15 +159,15 @@ class PageToSVGRegressionTests(SVGTestCase):
         container = Container()
         container.add_draw_object(
             Position(10, 10),
-            StraightLineDrawObject(type=LineOrientation.VERTICAL, length=10),
+            OldStraightLineDrawObject(type=LineOrientation.VERTICAL, length=10),
         )
         container.add_draw_object(
             Position(10, 15),
-            StraightLineDrawObject(type=LineOrientation.HORIZONTAL, length=30),
+            OldStraightLineDrawObject(type=LineOrientation.HORIZONTAL, length=30),
         )
         container.add_draw_object(
             Position(40, 10),
-            StraightLineDrawObject(type=LineOrientation.VERTICAL, length=10),
+            OldStraightLineDrawObject(type=LineOrientation.VERTICAL, length=10),
         )
         for _, draw_object in container.get_draw_objects(positioned=True):
             if isinstance(draw_object, LineDrawObject):
