@@ -264,6 +264,7 @@ class RectangleDrawObject(ColorMixin, DrawObject):
         padding: Paddings = Paddings(0, 0, 0, 0),
         thickness: Scalar = Decimal("0.1"),
         stroke_dasharray: list[int] | None = None,
+        fillcolor: str | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -271,6 +272,7 @@ class RectangleDrawObject(ColorMixin, DrawObject):
         self.padding = padding
         self._thickness = thickness
         self._stroke_dasharray = stroke_dasharray
+        self._fillcolor = fillcolor
 
     @property
     def size(self) -> Size:
