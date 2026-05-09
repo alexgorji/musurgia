@@ -20,9 +20,18 @@ def create_measure_context() -> cairo.Context:  # type: ignore[type-arg]
 
 
 class DrawObjectBox:
-    def __init__(self, *, draw_object: "DrawObject", show: bool = False):
+    def __init__(
+        self,
+        *,
+        draw_object: "DrawObject",
+        color="green",
+        thickness=Decimal("0.5"),
+        show: bool = False,
+    ):
         self._draw_object = draw_object
         self._rectangle = None
+        self.color = color
+        self.thickness = thickness
         self.show = show
 
     @property
@@ -43,7 +52,9 @@ class DrawObjectBox:
         return Size(width, height)
 
     def get_rectangle(self) -> "RectangleDrawObject":
-        rectangle = RectangleDrawObject(size=self.size, color="green")
+        rectangle = RectangleDrawObject(
+            size=self.size, color=self.color, thickness=self.thickness
+        )
         return rectangle
 
 
