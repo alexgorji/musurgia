@@ -5,7 +5,7 @@ from enum import Enum
 Scalar = Decimal | int
 
 
-@dataclass(frozen=True)
+@dataclass
 class Size:
     width: Scalar
     height: Scalar
@@ -14,7 +14,7 @@ class Size:
         return (self.width, self.height)
 
 
-@dataclass(frozen=True)
+@dataclass
 class Margins:
     top: Scalar = Decimal(0)
     right: Scalar = Decimal(0)
@@ -25,7 +25,7 @@ class Margins:
         return (self.top, self.right, self.bottom, self.left)
 
 
-@dataclass(frozen=True)
+@dataclass
 class Paddings:
     top: Scalar = Decimal(0)
     right: Scalar = Decimal(0)
@@ -36,7 +36,7 @@ class Paddings:
         return (self.top, self.right, self.bottom, self.left)
 
 
-@dataclass(frozen=True)
+@dataclass
 class Position:
     x: Scalar
     y: Scalar
@@ -55,7 +55,7 @@ class Position:
         return (self.x, self.y)
 
 
-@dataclass(frozen=True)
+@dataclass
 class Coordinates:
     tl: Position
     tr: Position

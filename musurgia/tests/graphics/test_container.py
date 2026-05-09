@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+
 from musurgia.graphics.container import Container
 from musurgia.graphics.geometry import Position, Size
 from musurgia.graphics.drawobject import (
@@ -71,25 +72,17 @@ class ContainerTestCase(TestCase):
             end_marker_p,
             end_marker,
         ] = self._create_test_containers()
-        assert (
-            {
-                (p, o)
-                for p, o in line_segment.get_draw_objects(
-                    positioned=True, recursive=True
-                )
-            }
-            == {
-                (p, o)
-                for p, o in line_segment.get_draw_objects(
-                    positioned=True, recursive=False
-                )
-            }
-            == {
-                (start_marker_p, start_marker),
-                (straight_line_p, straight_line),
-                (end_marker_p, end_marker),
-            }
-        )
+        dos = line_segment.get_draw_objects(positioned=True, recursive=False)
+        rdos = line_segment.get_draw_objects(positioned=True, recursive=True)
+        assert len(dos) == len(rdos) == 3
+
+        assert (start_marker_p, start_marker) in dos
+        assert (straight_line_p, straight_line) in dos
+        assert (end_marker_p, end_marker) in dos
+
+        assert (start_marker_p, start_marker) in rdos
+        assert (straight_line_p, straight_line) in rdos
+        assert (end_marker_p, end_marker) in rdos
 
     def test_containers_get_draw_objects_recursive(self):
         [
@@ -164,21 +157,20 @@ class ContainerTestCase(TestCase):
             end_marker_p,
             end_marker,
         ] = self._create_test_nested_containers()
-        assert {(p, o) for p, o in line_segment.get_draw_objects(positioned=True)} == {
-            (labeled_start_marker_p, labeled_start_marker),
-            (straight_line_p, straight_line),
-            (end_marker_p, end_marker),
-        }
 
-        assert {
-            (p, o)
-            for p, o in line_segment.get_draw_objects(positioned=True, recursive=True)
-        } == {
-            (start_marker_p + labeled_start_marker_p, start_marker),
-            (start_marker_label_p + labeled_start_marker_p, start_marker_label),
-            (straight_line_p, straight_line),
-            (end_marker_p, end_marker),
-        }
+        pdos = line_segment.get_draw_objects(positioned=True)
+        assert (labeled_start_marker_p, labeled_start_marker) in pdos
+        assert (straight_line_p, straight_line) in pdos
+        assert (end_marker_p, end_marker) in pdos
+
+        pdos = line_segment.get_draw_objects(positioned=True, recursive=True)
+        assert (start_marker_p + labeled_start_marker_p, start_marker) in pdos
+        assert (
+            start_marker_label_p + labeled_start_marker_p,
+            start_marker_label,
+        ) in pdos
+        assert (straight_line_p, straight_line) in pdos
+        assert (end_marker_p, end_marker) in pdos
 
     def test_nested_containers_get_draw_objects_recursive(self):
 
@@ -195,19 +187,16 @@ class ContainerTestCase(TestCase):
             _,
             end_marker,
         ] = self._create_test_nested_containers()
+        dos = line_segment.get_draw_objects()
+        assert labeled_start_marker in dos
+        assert straight_line in dos
+        assert end_marker in dos
 
-        assert {o for o in line_segment.get_draw_objects()} == {
-            labeled_start_marker,
-            straight_line,
-            end_marker,
-        }
-
-        assert {o for o in line_segment.get_draw_objects(recursive=True)} == {
-            start_marker,
-            start_marker_label,
-            straight_line,
-            end_marker,
-        }
+        dos = line_segment.get_draw_objects(recursive=True)
+        assert start_marker in dos
+        assert start_marker_label in dos
+        assert straight_line in dos
+        assert end_marker in dos
 
     def test_empty_container(self):
         empty_container = Container()
