@@ -11,7 +11,6 @@ from musurgia.graphics.segmented_line import (
     SegmentedLine,
 )
 from musurgia.graphics.svg.paginator import SVGPage
-from musurgia.graphics.util import convert_to_scalar
 from musurgia.tests.helpers.svg import SVGTestCase
 
 path = Path(__file__)
@@ -26,11 +25,7 @@ def test_create_line_segment():
     assert ls.length == 20
     assert ls.color == sm.options.color == em.options.color == DEFAULT_COLOR
     assert ls.thickness == DEFAULT_THICKNESS
-    assert (
-        sm.options.thickness
-        == em.options.thickness
-        == convert_to_scalar(DEFAULT_THICKNESS / 2)
-    )
+    assert sm.options.thickness == em.options.thickness == DEFAULT_THICKNESS
     ls.build()
     assert ls.straight_line in ls.get_draw_objects()
     assert sm in ls.get_draw_objects()

@@ -2,6 +2,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 
+from musurgia.graphics.defaults import DEFAULT_THICKNESS
 from musurgia.graphics.geometry import Coordinates, LineOrientation, Position, Size
 from musurgia.graphics.drawobject import LineOptions, StraightLine
 from musurgia.graphics.svg.paginator import SVGPage
@@ -12,9 +13,12 @@ path = Path(__file__)
 
 def test_straight_line_get_bounding_box_coordinates():
     sl = StraightLine(type=LineOrientation.HORIZONTAL, length=10)
-    assert sl.size == Size(10, 2)
+    assert sl.size == Size(10, DEFAULT_THICKNESS)
     assert sl.get_bounding_box_coordinates() == Coordinates(
-        Position(0, 0), Position(10, 0), Position(10, 2), Position(0, 2)
+        Position(0, 0),
+        Position(10, 0),
+        Position(10, DEFAULT_THICKNESS),
+        Position(0, DEFAULT_THICKNESS),
     )
 
 

@@ -1,3 +1,4 @@
+from copy import deepcopy
 from decimal import Decimal
 from typing import cast
 
@@ -33,11 +34,11 @@ class Label(Text):
         self,
         *,
         text: str,
-        offset: Position = Position(0, 0),
+        offset: Position | None = None,
         options: TextOptions | None = None,
     ) -> None:
         super().__init__(text=text, options=options)
-        self.offset = offset
+        self.offset = offset or Position(0, 0)
 
 
 class Marker(Container):
@@ -153,9 +154,7 @@ class LineSegment(Container):
         self.start_marker = start_marker or Marker(
             type=toggle_line_orientation(type),
             length=DEFAULT_MARKER_LENGTH,
-            options=LineOptions(
-                color=options.color, thickness=convert_to_scalar(options.thickness / 2)
-            ),
+            options=deepcopy(options),
         )
         self.end_marker = end_marker
 
@@ -237,10 +236,7 @@ class LineSegment(Container):
         self.end_marker = marker or Marker(
             type=toggle_line_orientation(self.type),
             length=DEFAULT_MARKER_LENGTH,
-            options=LineOptions(
-                color=self.start_marker.options.color,
-                thickness=self.start_marker.options.thickness,
-            ),
+            options=deepcopy(self.start_marker.options),
         )
         return self.end_marker
 

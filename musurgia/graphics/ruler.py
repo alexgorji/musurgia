@@ -16,13 +16,13 @@ from musurgia.graphics.util import (
 @dataclass
 class UnitMarkerOptions:
     length: Scalar = Decimal("6.0")
-    options = LineOptions(thickness=convert_to_scalar(DEFAULT_THICKNESS / 2))
+    options = LineOptions()
 
 
 @dataclass
 class UnitDivisionMarkerOptions:
     length: Scalar = Decimal("3.0")
-    options = LineOptions(thickness=convert_to_scalar(DEFAULT_THICKNESS / 4))
+    options = LineOptions(thickness=convert_to_scalar(DEFAULT_THICKNESS / 2))
 
 
 @dataclass

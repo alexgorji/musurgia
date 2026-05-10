@@ -3,6 +3,7 @@ from decimal import Decimal
 from pathlib import Path
 
 
+from musurgia.graphics.defaults import DEFAULT_THICKNESS
 from musurgia.graphics.geometry import LineOrientation, Position
 from musurgia.graphics.ruler import (
     Ruler,
@@ -94,7 +95,7 @@ def test_partial_ruler_options():
             "font_family": "DejaVu Sans",
             "font_size": 10,
         },
-        "thickness": 2,
+        "thickness": DEFAULT_THICKNESS,
         "color": "red",
     }
 
