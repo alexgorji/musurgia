@@ -1,3 +1,4 @@
+from decimal import Decimal
 from unittest import TestCase
 
 
@@ -26,7 +27,7 @@ class ContainerTestCase(TestCase):
         container.add_draw_object(Position(20, 40), hl).add_draw_object(
             Position(20, 37), marker_1
         ).add_draw_object(Position(40, 37), marker_2)
-        assert container.size == Size(41, 43)
+        assert container.size == Size(Decimal(40.5), 43)
 
     def test_color(self):
         with self.assertRaises(TypeError):

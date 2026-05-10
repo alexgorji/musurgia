@@ -63,7 +63,7 @@ class PageToSVGRegressionTests(SVGTestCase):
 
     def test_add_line_draw_object_to_page(self):
         page = SVGPage()
-
+        page.add_background("white")
         l1 = LineDrawObject(end=Position(30, 40), color="blue", thickness=2)
         l1.box.show = True
         page.add_draw_object(Position(30, 30), l1)
