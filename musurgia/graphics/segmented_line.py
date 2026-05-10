@@ -141,26 +141,25 @@ class LineSegment(Container):
         *,
         type: LineOrientation,
         length: Scalar,
-        color: str = DEFAULT_COLOR,
-        thickness: Scalar = DEFAULT_THICKNESS,
         start_marker: Marker | None = None,
         end_marker: Marker | None = None,
+        options: LineOptions | None = None,
     ) -> None:
         super().__init__()
         self.type = type
-        self._color = color
-        self._thickness = thickness
+        options = options or LineOptions()
 
         self.straight_line = StraightLine(
             type=self.type,
             length=length,
-            options=LineOptions(color=color, thickness=thickness),
+            options=options,
         )
+
         self.start_marker = start_marker or Marker(
             type=toggle_line_orientation(type),
             length=DEFAULT_MARKER_LENGTH,
             options=LineOptions(
-                color=color, thickness=convert_to_scalar(DEFAULT_THICKNESS / 2)
+                color=options.color, thickness=convert_to_scalar(options.thickness / 2)
             ),
         )
         self.end_marker = end_marker
@@ -344,7 +343,9 @@ class SegmentedLine(Container):
         return [
             self.add_line_segment(
                 LineSegment(
-                    type=self.type, length=length, color=color, thickness=thickness
+                    type=self.type,
+                    length=length,
+                    options=LineOptions(color=color, thickness=thickness),
                 )
             )
             for length in lengths
