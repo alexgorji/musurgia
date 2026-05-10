@@ -24,8 +24,8 @@ class DrawObjectBox:
         self,
         *,
         draw_object: "DrawObject",
-        color="green",
-        thickness=Decimal("0.5"),
+        color: str = "green",
+        thickness: Scalar = Decimal("0.5"),
         show: bool = False,
     ):
         self._draw_object = draw_object

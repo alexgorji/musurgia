@@ -60,7 +60,7 @@ class StraightLine(DrawObject):
         self.color = color or DEFAULT_COLOR
         self.thickness = thickness or DEFAULT_THICKNESS
 
-    def get_bounding_box_coordinates(self):
+    def get_bounding_box_coordinates(self) -> Coordinates:
         xmin = 0
         xmax = self.length
         ymin = 0
@@ -319,7 +319,7 @@ class LineSegment(Container):
         return self._straight_line.color
 
     @color.setter
-    def color(self, value: str):
+    def color(self, value: str) -> None:
         self._straight_line.color = value
         self.start_marker.color = value
         if self.end_marker:
@@ -330,7 +330,7 @@ class LineSegment(Container):
         return self._straight_line.thickness
 
     @thickness.setter
-    def thickness(self, value: Scalar):
+    def thickness(self, value: Scalar) -> None:
         self._straight_line.thickness = value
 
 
@@ -345,7 +345,7 @@ class SegmentedLine(Container):
             for ls in line_segments:
                 self.add_line_segment(ls)
 
-    def build(self):
+    def build(self) -> None:
         if self.type == LineOrientation.HORIZONTAL:
             max_straight_line_fix_position = max(
                 [ls.get_straight_line_position().y for ls in self.get_line_segments()]

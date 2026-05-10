@@ -115,7 +115,7 @@ class SVGPage:
     def add_row(self, row: SVGPageRow) -> None:
         self._rows.append(row)
 
-    def add_background(self, color="white"):
+    def add_background(self, color: str = "white") -> None:
         self._background = RectangleDrawObject(
             size=self.get_layout().get_size(), fillcolor=color
         )
