@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import Any, cast
 
 from musurgia.graphics.geometry import (
@@ -249,7 +250,7 @@ class LineSegment(Container):
             p = toggle_position(p)
         return p
 
-    def _calculate_straight_line_position(self) -> Position:
+    def get_straight_line_position(self) -> Position:
         p = (
             Position(
                 0,
@@ -261,7 +262,7 @@ class LineSegment(Container):
             if self.end_marker
             else Position(0, self.start_marker.get_middle_of_line_coordinate())
         )
-        if self.type.value == "vertical":
+        if self.type == LineOrientation.VERTICAL:
             p = toggle_position(p)
         return p
 
@@ -278,7 +279,7 @@ class LineSegment(Container):
             )
 
         self.add_draw_object(
-            self._calculate_straight_line_position(),
+            self.get_straight_line_position(),
             self._straight_line,
         )
 
@@ -333,21 +334,66 @@ class LineSegment(Container):
         self._straight_line.thickness = value
 
 
-class SegmentedLine:
+class SegmentedLine(Container):
     def __init__(
-        self,
-        *,
-        type: LineOrientation,
+        self, *, type: LineOrientation, line_segments: list[LineSegment] | None = None
     ) -> None:
         super().__init__()
-        self._type = type
+        self.type = type
         self._line_segments: list[LineSegment] = []
+        if line_segments:
+            for ls in line_segments:
+                self.add_line_segment(ls)
 
-    def add_line_segment(self, line_segment: LineSegment):
-        if line_segment.type != self._type:
+    def build(self):
+        if self.type == LineOrientation.HORIZONTAL:
+            max_straight_line_fix_position = max(
+                [ls.get_straight_line_position().y for ls in self.get_line_segments()]
+            )
+            current_x = Decimal("0")
+            for ls in self.get_line_segments():
+                ls.build()
+                position = Position(
+                    current_x,
+                    max_straight_line_fix_position - ls.get_straight_line_position().y,
+                )
+                self.add_draw_object(position=position, draw_object=ls)
+                current_x += ls.length
+        else:
+            max_straight_line_fix_position = max(
+                [ls.get_straight_line_position().x for ls in self.get_line_segments()]
+            )
+            current_y = Decimal("0")
+            for ls in self.get_line_segments():
+                ls.build()
+                position = Position(
+                    max_straight_line_fix_position - ls.get_straight_line_position().x,
+                    current_y,
+                )
+                self.add_draw_object(position=position, draw_object=ls)
+                current_y += ls.length
+
+    def add_line_segment(self, line_segment: LineSegment) -> LineSegment:
+        if line_segment.type != self.type:
             raise TypeError("line orientation mismatch")
         self._line_segments.append(line_segment)
         return line_segment
+
+    def add_line_segments(
+        self,
+        *,
+        lengths: list[Scalar],
+        color: str = DEFAULT_COLOR,
+        thickness: Scalar = DEFAULT_THICKNESS,
+    ) -> list[LineSegment]:
+        return [
+            self.add_line_segment(
+                LineSegment(
+                    type=self.type, length=length, color=color, thickness=thickness
+                )
+            )
+            for length in lengths
+        ]
 
     def get_line_segments(self) -> list[LineSegment]:
         return self._line_segments
