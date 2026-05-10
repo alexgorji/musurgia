@@ -1,0 +1,52 @@
+from dataclasses import asdict
+from pathlib import Path
+
+import pytest
+
+from musurgia.graphics.geometry import Coordinates, LineOrientation, Position, Size
+from musurgia.graphics.drawobject import LineOptions, StraightLine
+from musurgia.graphics.svg.paginator import SVGPage
+from musurgia.tests.helpers.svg import SVGTestCase
+
+path = Path(__file__)
+
+
+def test_straight_line_get_bounding_box_coordinates():
+    sl = StraightLine(type=LineOrientation.HORIZONTAL, length=10)
+    assert sl.size == Size(10, 2)
+    assert sl.get_bounding_box_coordinates() == Coordinates(
+        Position(0, 0), Position(10, 0), Position(10, 2), Position(0, 2)
+    )
+
+
+@pytest.mark.only
+def test_straight_line_options():
+    sl = StraightLine(
+        type=LineOrientation.HORIZONTAL,
+        length=10,
+        options=LineOptions(color="red", stroke_dasharray=[5, 5]),
+    )
+    sl.options.thickness = 5
+
+    print(asdict(sl.options))
+    assert asdict(sl.options) == {
+        "color": "red",
+        "thickness": 5,
+        "stroke_dasharray": [5, 5],
+    }
+
+
+@pytest.mark.only
+class LineDraw(SVGTestCase):
+    def test_dashed_lines(self):
+        page = SVGPage()
+        hl = StraightLine(
+            type=LineOrientation.HORIZONTAL,
+            length=100,
+            options=LineOptions(color="red", thickness=1, stroke_dasharray=[5, 5]),
+        )
+        page.add_draw_object(Position(10, 10), hl)
+        page.add_background()
+        page.add_grid()
+
+        self.compare_page(page, "", path, width=297 * 2, height=210 * 2)

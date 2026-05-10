@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from decimal import Decimal
 import math
 from typing import Any
 import cairo
 
+from musurgia.graphics.defaults import DEFAULT_COLOR, DEFAULT_THICKNESS
 from musurgia.graphics.geometry import Coordinates, Paddings, Position, Scalar, Size
 from musurgia.graphics.geometry import LineOrientation
 
@@ -303,3 +305,46 @@ class RectangleDrawObject(ColorMixin, DrawObject):
             Position(self.size.width, self.size.height),
             Position(0, self.size.height),
         )
+
+
+@dataclass
+class LineOptions:
+    color: str = DEFAULT_COLOR
+    thickness: Scalar = DEFAULT_THICKNESS
+    stroke_dasharray: list[Scalar] | None = None
+
+
+class StraightLine(DrawObject):
+    def __init__(
+        self,
+        *,
+        type: LineOrientation,
+        length: Scalar,
+        options: LineOptions | None = None,
+    ) -> None:
+        super().__init__()
+        self.type = type
+        self.length = length
+        self.options = options or LineOptions()
+
+    def get_bounding_box_coordinates(self) -> Coordinates:
+        xmin = 0
+        xmax = self.length
+        ymin = 0
+        ymax = self.options.thickness
+
+        if self.type == LineOrientation.VERTICAL:
+            xmax = self.options.thickness
+            ymax = self.length
+
+        return Coordinates(
+            Position(xmin, ymin),
+            Position(xmax, ymin),
+            Position(xmax, ymax),
+            Position(xmin, ymax),
+        )
+
+    @property
+    def size(self) -> Size:
+        coor = self.get_bounding_box_coordinates()
+        return Size(coor.tr.x - coor.tl.x, coor.bl.y - coor.tl.y)

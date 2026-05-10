@@ -9,10 +9,11 @@ from musurgia.graphics.drawobject import (
     OldStraightLineDrawObject,
     LineDrawObject,
     RectangleDrawObject,
+    StraightLine,
     TextDrawObject,
 )
 from musurgia.graphics.line_segment_old import OldLabel
-from musurgia.graphics.segmented_line import Label, StraightLine
+from musurgia.graphics.segmented_line import Label
 
 T = TypeVar("T", bound=DrawObject)
 
@@ -88,7 +89,8 @@ class LineDrawObjectToSVGConvertor(DrawObjectConvertor[LineDrawObject]):
 
 class StraightLineToSVGConvertor(DrawObjectConvertor[StraightLine]):
     def _convert(self) -> list[svg.Element]:
-        # dash_array = self.draw_object._stroke_dasharray
+        dash_array = self.draw_object.options.stroke_dasharray
+
         start = Position(0, 0)
         if self.draw_object.type == LineOrientation.HORIZONTAL:
             end = Position(start.x + self.draw_object.length, start.y)
@@ -102,11 +104,11 @@ class StraightLineToSVGConvertor(DrawObjectConvertor[StraightLine]):
                     y1=start.y + self.position.y,
                     x2=end.x + self.position.x,
                     y2=end.y + self.position.y,
-                    stroke=self.draw_object.color,
-                    stroke_width=self.draw_object.thickness,
-                    # stroke_dasharray=(
-                    #     [length for length in dash_array] if dash_array else None
-                    # ),
+                    stroke=self.draw_object.options.color,
+                    stroke_width=self.draw_object.options.thickness,
+                    stroke_dasharray=(
+                        [float(x) for x in dash_array] if dash_array else None
+                    ),
                 ),
             )
         ]

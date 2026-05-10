@@ -1,9 +1,7 @@
 from pathlib import Path
 
 
-import pytest
-
-from musurgia.graphics.geometry import Coordinates, LineOrientation, Position, Size
+from musurgia.graphics.geometry import LineOrientation, Position
 
 from musurgia.graphics.segmented_line import (
     DEFAULT_COLOR,
@@ -11,22 +9,13 @@ from musurgia.graphics.segmented_line import (
     Label,
     LineSegment,
     SegmentedLine,
-    StraightLine,
 )
 from musurgia.graphics.svg.paginator import SVGPage
 from musurgia.graphics.util import convert_to_scalar
 from musurgia.tests.helpers.svg import SVGTestCase
 
 path = Path(__file__)
-pytestmark = pytest.mark.only
-
-
-def test_straight_line_get_bounding_box_coordinates():
-    sl = StraightLine(type=LineOrientation.HORIZONTAL, length=10)
-    assert sl.size == Size(10, 2)
-    assert sl.get_bounding_box_coordinates() == Coordinates(
-        Position(0, 0), Position(10, 0), Position(10, 2), Position(0, 2)
-    )
+# pytestmark = pytest.mark.only
 
 
 def test_create_line_segment():
@@ -35,11 +24,15 @@ def test_create_line_segment():
     em = ls.add_end_maker()
     sm = ls.start_marker
     assert ls.length == 20
-    assert ls.color == sm.color == em.color == DEFAULT_COLOR
+    assert ls.color == sm.options.color == em.options.color == DEFAULT_COLOR
     assert ls.thickness == DEFAULT_THICKNESS
-    assert sm.thickness == em.thickness == convert_to_scalar(DEFAULT_THICKNESS / 2)
+    assert (
+        sm.options.thickness
+        == em.options.thickness
+        == convert_to_scalar(DEFAULT_THICKNESS / 2)
+    )
     ls.build()
-    assert ls.get_straight_line() in ls.get_draw_objects()
+    assert ls.straight_line in ls.get_draw_objects()
     assert sm in ls.get_draw_objects()
     assert em in ls.get_draw_objects()
 

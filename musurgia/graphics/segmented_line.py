@@ -2,15 +2,13 @@ from decimal import Decimal
 from typing import Any, cast
 
 from musurgia.graphics.geometry import (
-    Coordinates,
     LineOrientation,
     Position,
     Scalar,
-    Size,
 )
 
 from musurgia.graphics.container import Container
-from musurgia.graphics.drawobject import DrawObject, TextDrawObject
+from musurgia.graphics.drawobject import LineOptions, StraightLine, TextDrawObject
 
 from musurgia.graphics.util import (
     convert_to_scalar,
@@ -18,9 +16,11 @@ from musurgia.graphics.util import (
     toggle_position,
 )
 
-DEFAULT_COLOR = "blue"
-DEFAULT_THICKNESS = 2
-DEFAULT_MARKER_LENGTH = 10
+from musurgia.graphics.defaults import (
+    DEFAULT_COLOR,
+    DEFAULT_THICKNESS,
+    DEFAULT_MARKER_LENGTH,
+)
 
 
 class Label(TextDrawObject):
@@ -45,44 +45,6 @@ class Label(TextDrawObject):
         return self._offset
 
 
-class StraightLine(DrawObject):
-    def __init__(
-        self,
-        *,
-        type: LineOrientation,
-        length: Scalar,
-        color: str | None = None,
-        thickness: Scalar | None = None,
-    ) -> None:
-        super().__init__()
-        self.type = type
-        self.length = length
-        self.color = color or DEFAULT_COLOR
-        self.thickness = thickness or DEFAULT_THICKNESS
-
-    def get_bounding_box_coordinates(self) -> Coordinates:
-        xmin = 0
-        xmax = self.length
-        ymin = 0
-        ymax = self.thickness
-
-        if self.type == LineOrientation.VERTICAL:
-            xmax = self.thickness
-            ymax = self.length
-
-        return Coordinates(
-            Position(xmin, ymin),
-            Position(xmax, ymin),
-            Position(xmax, ymax),
-            Position(xmin, ymax),
-        )
-
-    @property
-    def size(self) -> Size:
-        coor = self.get_bounding_box_coordinates()
-        return Size(coor.tr.x - coor.tl.x, coor.bl.y - coor.tl.y)
-
-
 class Marker(Container):
     def __init__(
         self,
@@ -90,15 +52,24 @@ class Marker(Container):
         type: LineOrientation,
         length: Scalar,
         labels: list[Label] | None = None,
-        color: str | None = None,
-        thickness: Scalar | None = None,
+        options: LineOptions | None = None,
     ) -> None:
         super().__init__()
         self.type = type
         self._labels = labels or []
         self._line = StraightLine(
-            type=self.type, length=length, color=color, thickness=thickness
+            type=self.type,
+            length=length,
+            options=options,
         )
+
+    @property
+    def options(self) -> LineOptions:
+        return self._line.options
+
+    @options.setter
+    def options(self, value: LineOptions) -> None:
+        self._line.options = value
 
     def get_line_position(self) -> Position:
         labels = self.get_labels()
@@ -143,27 +114,7 @@ class Marker(Container):
 
     def add_label(self, label: Label) -> Label:
         self._labels.append(label)
-        # if self.type == LineOrientation.VERTICAL:
-        #     self._labels.sort(key=lambda label: label.get_offset().y, reverse=True)
-        # else:
-        #     self._labels.sort(key=lambda label: label.get_offset().x, reverse=True)
         return label
-
-    @property
-    def color(self) -> str:
-        return self._line.color
-
-    @color.setter
-    def color(self, value: str) -> None:
-        self._line.color = value
-
-    @property
-    def thickness(self) -> Scalar:
-        return self._line.thickness
-
-    @thickness.setter
-    def thickness(self, value: Scalar) -> None:
-        self._line.thickness = value
 
     @property
     def length(self) -> Scalar:
@@ -190,8 +141,8 @@ class LineSegment(Container):
         *,
         type: LineOrientation,
         length: Scalar,
-        color: str | None = None,
-        thickness: Scalar | None = None,
+        color: str = DEFAULT_COLOR,
+        thickness: Scalar = DEFAULT_THICKNESS,
         start_marker: Marker | None = None,
         end_marker: Marker | None = None,
     ) -> None:
@@ -200,14 +151,17 @@ class LineSegment(Container):
         self._color = color
         self._thickness = thickness
 
-        self._straight_line = StraightLine(
-            type=self.type, length=length, color=color, thickness=thickness
+        self.straight_line = StraightLine(
+            type=self.type,
+            length=length,
+            options=LineOptions(color=color, thickness=thickness),
         )
         self.start_marker = start_marker or Marker(
             type=toggle_line_orientation(type),
             length=DEFAULT_MARKER_LENGTH,
-            color=self._color,
-            thickness=convert_to_scalar(DEFAULT_THICKNESS / 2),
+            options=LineOptions(
+                color=color, thickness=convert_to_scalar(DEFAULT_THICKNESS / 2)
+            ),
         )
         self.end_marker = end_marker
 
@@ -225,7 +179,7 @@ class LineSegment(Container):
                 )
             ),
         )
-        p = p + Position(convert_to_scalar(self.start_marker.thickness / 2), 0)
+        p = p + Position(convert_to_scalar(self.start_marker.options.thickness / 2), 0)
         if self.type.value == "vertical":
             p = toggle_position(p)
         return p
@@ -245,7 +199,9 @@ class LineSegment(Container):
             ),
         )
         if self.end_marker:
-            p = p - Position(convert_to_scalar(self.end_marker.thickness / 2), 0)
+            p = p - Position(
+                convert_to_scalar(self.end_marker.options.thickness / 2), 0
+            )
         if self.type.value == "vertical":
             p = toggle_position(p)
         return p
@@ -280,15 +236,17 @@ class LineSegment(Container):
 
         self.add_draw_object(
             self.get_straight_line_position(),
-            self._straight_line,
+            self.straight_line,
         )
 
     def add_end_maker(self, marker: Marker | None = None) -> Marker:
         self.end_marker = marker or Marker(
             type=toggle_line_orientation(self.type),
             length=DEFAULT_MARKER_LENGTH,
-            color=self._color,
-            thickness=convert_to_scalar(DEFAULT_THICKNESS / 2),
+            options=LineOptions(
+                color=self.start_marker.options.color,
+                thickness=self.start_marker.options.thickness,
+            ),
         )
         return self.end_marker
 
@@ -303,35 +261,32 @@ class LineSegment(Container):
             for label in marker.get_labels()
         ]
 
-    def get_straight_line(self) -> StraightLine:
-        return self._straight_line
-
     @property
     def length(self) -> Scalar:
-        return self._straight_line.length
+        return self.straight_line.length
 
     @length.setter
     def length(self, value: Scalar) -> None:
-        self._straight_line.length = value
+        self.straight_line.length = value
 
     @property
     def color(self) -> str:
-        return self._straight_line.color
+        return self.straight_line.options.color
 
     @color.setter
     def color(self, value: str) -> None:
-        self._straight_line.color = value
-        self.start_marker.color = value
+        self.straight_line.options.color = value
+        self.start_marker.options.color = value
         if self.end_marker:
-            self.end_marker.color = value
+            self.end_marker.options.color = value
 
     @property
     def thickness(self) -> Scalar:
-        return self._straight_line.thickness
+        return self.straight_line.options.thickness
 
     @thickness.setter
     def thickness(self, value: Scalar) -> None:
-        self._straight_line.thickness = value
+        self.straight_line.options.thickness = value
 
 
 class SegmentedLine(Container):
