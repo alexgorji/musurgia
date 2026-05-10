@@ -12,7 +12,7 @@ from musurgia.graphics.geometry import (
     Size,
 )
 from musurgia.graphics.page_layout import PageLayout
-from musurgia.graphics.ruler_old import Ruler
+from musurgia.graphics.ruler import Ruler
 from musurgia.graphics.svg.paginator import (
     SVGPage,
     SVGPageRow,
@@ -116,6 +116,7 @@ class SVGPaginatorTestCase(TestCase):
 
     def test_paginate(self):
         ruler = Ruler(type=LineOrientation.HORIZONTAL, length=4 * 205)
+        ruler.build()
         paginator = SVGPaginator()
         pages = paginator.paginate(ruler)
         assert len(pages) == 4
@@ -126,6 +127,7 @@ class SVGPaginatorTestCase(TestCase):
 
     def test_paginate_multiple_rows(self):
         ruler = Ruler(type=LineOrientation.HORIZONTAL, length=1000)
+        ruler.build()
         page = SVGPage(layout=PageLayout(margins=Margins(20, 10, 10, 10)))
         create_page_rows(
             page,
@@ -147,13 +149,12 @@ class SVGPaginatorAsSVG(SVGTestCase):
         ruler = Ruler(
             type=LineOrientation.HORIZONTAL,
             length=500,
-            color="blue",
-            options={
-                "label": {"color": "green"},
-            },
         )
+        ruler.options.label.color = "green"
+        ruler.build()
         page = SVGPage(layout=PageLayout(margins=Margins(20, 10, 10, 10)))
         page.add_grid()
+        page.add_background("white")
         create_page_rows(
             page,
             number_of_rows=4,
