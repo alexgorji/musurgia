@@ -10,9 +10,6 @@ from musurgia.graphics.ruler import (
     RulerOptions,
     UnitMarkerOptions,
     _get_division_length,
-    _get_number_of_divisions,
-    _get_number_of_units,
-    _ruler_segment_lengths,
 )
 from musurgia.graphics.segmented_line import SegmentedLine
 from musurgia.graphics.svg.paginator import SVGPage
@@ -32,51 +29,6 @@ def test_get_division_length():
     assert _get_division_length(ruler_options) == 5
     ruler_options = RulerOptions(unit_division=5, unit_length=20)
     assert _get_division_length(ruler_options) == 4
-
-
-def test_get_number_of_units():
-    ruler_options = RulerOptions()
-    assert _get_number_of_units(ruler_options, 40) == 4
-    assert _get_number_of_units(ruler_options, 44) == Decimal("4.4")
-    assert _get_number_of_units(ruler_options, Decimal("44.6")) == Decimal("4.46")
-
-
-def test_get_number_of_divisions():
-    ruler_options = RulerOptions()
-    assert _get_number_of_divisions(ruler_options, Decimal("44.6")) == 44
-    ruler_options = RulerOptions(unit_length=40, unit_division=5)
-    assert _get_number_of_divisions(ruler_options, 100) == 12
-
-
-def test_ruler_segment_lengths():
-    ruler_options = RulerOptions()
-    segment_lengths = _ruler_segment_lengths(ruler_options, 20)
-    assert len(segment_lengths) == 20
-    assert segment_lengths[0] == 1
-    assert sum(segment_lengths) == 20
-
-    segment_lengths = _ruler_segment_lengths(ruler_options, Decimal("23.6"))
-    assert len(segment_lengths) == 23
-    assert sum(segment_lengths) == 23
-
-    ruler_options = RulerOptions(unit_length=40, unit_division=5)
-    segment_lengths = _ruler_segment_lengths(ruler_options, 100)
-    assert len(segment_lengths) == 12
-    assert sum(segment_lengths) == 96
-
-
-# def test_create_segmented_line_options():
-#     ruler_options = RulerOptions()
-#     sl_options = _create_segmented_line_options(ruler_options, 20)
-#     assert len(sl_options) == 20
-#     for key, opt in sl_options.items():
-#         start_marker_options = opt.get("start_marker")
-#         assert start_marker_options
-#         if (key - 1) % ruler_options.unit_division == 0:
-#             assert start_marker_options["length"] == ruler_options.unit_marker.length
-#             assert (
-#                 start_marker_options["thickness"] == ruler_options.unit_marker.thickness
-#             )
 
 
 def test_partial_ruler_options():

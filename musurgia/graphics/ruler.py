@@ -51,22 +51,6 @@ def _get_division_length(ruler_options: RulerOptions) -> Decimal:
     return Decimal(ruler_options.unit_length) / Decimal(ruler_options.unit_division)
 
 
-def _get_number_of_units(ruler_options: RulerOptions, length: Scalar) -> Decimal:
-    return Decimal(length) / Decimal(ruler_options.unit_length)
-
-
-def _get_number_of_divisions(ruler_options: RulerOptions, length: Scalar) -> int:
-    return int(
-        _get_number_of_units(ruler_options, length) * ruler_options.unit_division
-    )
-
-
-def _ruler_segment_lengths(ruler_options: RulerOptions, length: Scalar) -> list[Scalar]:
-    number_of_divisions = _get_number_of_divisions(ruler_options, length)
-    division_length = _get_division_length(ruler_options)
-    return [division_length for _ in range(number_of_divisions)]
-
-
 class Ruler(Container):
     def __init__(
         self,
@@ -106,11 +90,11 @@ class Ruler(Container):
                     label = Label(text=str(unit_index + 1))
                     if self.type == LineOrientation.HORIZONTAL:
                         label.offset = Position(
-                            -convert_to_scalar(label.size.width / 2),
-                            label.size.height + 1,
+                            0,
+                            label.size.height,
                         )
                     else:
-                        label.offset = Position(label.size.width + 1, 0)
+                        label.offset = Position(label.size.width, 0)
                     start_marker.add_label(label)
                 else:
                     start_marker = Marker(
