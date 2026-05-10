@@ -20,7 +20,6 @@ from musurgia.graphics.util import (
 DEFAULT_COLOR = "blue"
 DEFAULT_THICKNESS = 2
 DEFAULT_MARKER_LENGTH = 10
-DEFAULT_MARKER_THICKNESS = 1
 
 
 class Label(TextDrawObject):
@@ -207,7 +206,7 @@ class LineSegment(Container):
             type=toggle_line_orientation(type),
             length=DEFAULT_MARKER_LENGTH,
             color=self._color,
-            thickness=DEFAULT_MARKER_THICKNESS,
+            thickness=convert_to_scalar(DEFAULT_THICKNESS / 2),
         )
         self.end_marker = end_marker
 
@@ -288,7 +287,7 @@ class LineSegment(Container):
             type=toggle_line_orientation(self.type),
             length=DEFAULT_MARKER_LENGTH,
             color=self._color,
-            thickness=DEFAULT_MARKER_THICKNESS,
+            thickness=convert_to_scalar(DEFAULT_THICKNESS / 2),
         )
         return self.end_marker
 

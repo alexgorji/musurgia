@@ -7,12 +7,12 @@ from musurgia.graphics.geometry import Coordinates, LineOrientation, Position, S
 from musurgia.graphics.segmented_line import (
     DEFAULT_COLOR,
     DEFAULT_THICKNESS,
-    DEFAULT_MARKER_THICKNESS,
     Label,
     LineSegment,
     StraightLine,
 )
 from musurgia.graphics.svg.paginator import SVGPage
+from musurgia.graphics.util import convert_to_scalar
 from musurgia.tests.helpers.svg import SVGTestCase
 
 path = Path(__file__)
@@ -35,7 +35,7 @@ def test_create_line_segment():
     assert ls.length == 20
     assert ls.color == sm.color == em.color == DEFAULT_COLOR
     assert ls.thickness == DEFAULT_THICKNESS
-    assert sm.thickness == em.thickness == DEFAULT_MARKER_THICKNESS
+    assert sm.thickness == em.thickness == convert_to_scalar(DEFAULT_THICKNESS / 2)
     ls.build()
     assert ls.get_straight_line() in ls.get_draw_objects()
     assert sm in ls.get_draw_objects()
