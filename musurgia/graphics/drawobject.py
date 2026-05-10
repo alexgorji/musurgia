@@ -239,30 +239,6 @@ class LineDrawObject(ColorMixin, DrawObject):
         )
 
 
-class OldStraightLineDrawObject(LineDrawObject):
-    def __init__(
-        self,
-        *,
-        type: LineOrientation,
-        length: Scalar,
-        start: Position = Position(0, 0),
-        thickness: Scalar = Decimal("0.1"),
-        **kwargs: Any,
-    ) -> None:
-        self.type = type
-        if type.value == "horizontal":
-            end = Position(start.x + length, start.y)
-        else:
-            end = Position(start.x, start.y + length)
-        super().__init__(
-            start=start,
-            end=end,
-            thickness=thickness,
-            **kwargs,
-        )
-        self.type = type
-
-
 class RectangleDrawObject(ColorMixin, DrawObject):
     def __init__(
         self,

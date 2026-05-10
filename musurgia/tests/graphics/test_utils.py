@@ -2,7 +2,6 @@ from unittest import TestCase
 
 from musurgia.graphics.geometry import Position
 from musurgia.graphics.geometry import LineOrientation
-from musurgia.graphics.segmented_line_old import OldLineSegment, OldSegmentedLine
 from musurgia.graphics.util import (
     override_options_mappings,
     toggle_line_orientation,
@@ -35,59 +34,3 @@ class OverrideOptionsMappings(TestCase):
             "start_marker": {"length": 20, "color": "blue"},
             "end_marker": {"length": 30, "color": "red"},
         }
-
-
-def check_straight_line_alignment(segmented_line: OldSegmentedLine):
-    positioned_line_segments = segmented_line.get_line_segments(positioned=True)
-    first_positioned_line_segment = positioned_line_segments[0]
-
-    if segmented_line.type.value == "horizontal":
-        first_straight_line_y = (
-            first_positioned_line_segment[1].get_straight_line(positioned=True)[0].y
-            + first_positioned_line_segment[0].y
-        )
-        for ls in positioned_line_segments[1:]:
-            assert (
-                ls[1].get_straight_line(positioned=True)[0].y + ls[0].y
-                == first_straight_line_y
-            )
-    else:
-        first_straight_line_x = (
-            first_positioned_line_segment[1].get_straight_line(positioned=True)[0].x
-            + first_positioned_line_segment[0].x
-        )
-        for ls in positioned_line_segments[1:]:
-            assert (
-                ls[1].get_straight_line(positioned=True)[0].x + ls[0].x
-                == first_straight_line_x
-            )
-
-
-def check_centered_markers(line_segment: OldLineSegment):
-    straight_line_position = line_segment.get_straight_line(positioned=True)[0]
-    positioned_start_marker, _ = line_segment.get_markers(positioned=True)
-    positioned_start_marker_line = positioned_start_marker[1].get_line(positioned=True)
-
-    if line_segment.type.value == "horizontal":
-        assert (
-            positioned_start_marker[0].y
-            + positioned_start_marker_line[0].y
-            + positioned_start_marker[1].get_length() / 2
-            == straight_line_position.y
-        )
-    elif line_segment.type.value == "vertical":
-        assert (
-            positioned_start_marker[0].x
-            + positioned_start_marker_line[0].x
-            + positioned_start_marker[1].get_length() / 2
-            == straight_line_position.x
-        )
-    else:
-        raise TypeError()
-    return True
-
-
-def check_all_straight_lines_centered(segmented_line: OldSegmentedLine):
-    for ls in segmented_line.get_line_segments():
-        assert check_centered_markers(ls)
-    return True

@@ -13,7 +13,7 @@ from musurgia.graphics.svg.convertors import SVGConverterRegistry
 from musurgia.graphics.drawobject import (
     LineDrawObject,
     RectangleDrawObject,
-    OldStraightLineDrawObject,
+    StraightLine,
     Text,
     create_measure_context,
 )
@@ -28,7 +28,7 @@ class ConvertTextDrawObjectToSVGTestCase(TestCase):
     def test_cairo_font_extents(self):
         ctx = create_measure_context()
         ctx.select_font_face("DejaVu Sans")
-        ctx.set_font_size(Text.convert_font_size_to_mm(12))
+        ctx.set_font_size(float(Text.convert_font_size_to_mm(12)))
         ext = ctx.text_extents("something")
         print(f"\nx_bearing: {ext.x_bearing}")
         assert (
@@ -97,15 +97,15 @@ class ContainerTestCase(TestCase):
         container = Container()
         container.add_draw_object(
             Position(10, 10),
-            OldStraightLineDrawObject(type=LineOrientation.VERTICAL, length=5),
+            StraightLine(type=LineOrientation.VERTICAL, length=5),
         )
         container.add_draw_object(
             Position(10, 15),
-            OldStraightLineDrawObject(type=LineOrientation.HORIZONTAL, length=20),
+            StraightLine(type=LineOrientation.HORIZONTAL, length=20),
         )
         container.add_draw_object(
             Position(10, 30),
-            OldStraightLineDrawObject(type=LineOrientation.VERTICAL, length=5),
+            StraightLine(type=LineOrientation.VERTICAL, length=5),
         )
 
         parent_container = Container()

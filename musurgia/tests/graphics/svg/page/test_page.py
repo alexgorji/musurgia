@@ -6,9 +6,10 @@ from musurgia.graphics.container import Container
 from musurgia.graphics.geometry import Paddings, Position, Size
 from musurgia.graphics.drawobject import (
     LineDrawObject,
+    LineOptions,
     RectangleDrawObject,
+    StraightLine,
     Text,
-    OldStraightLineDrawObject,
     TextOptions,
 )
 from musurgia.graphics.geometry import LineOrientation
@@ -67,14 +68,18 @@ class PageToSVGRegressionTests(SVGTestCase):
         l1.box.show = True
         page.add_draw_object(Position(30, 30), l1)
 
-        l2 = OldStraightLineDrawObject(
-            type=LineOrientation.HORIZONTAL, length=20, color="gray", thickness=2
+        l2 = StraightLine(
+            type=LineOrientation.HORIZONTAL,
+            length=20,
+            options=LineOptions(color="gray", thickness=2),
         )
         l2.box.show = True
         page.add_draw_object(Position(30, 100), l2)
 
-        l3 = OldStraightLineDrawObject(
-            type=LineOrientation.VERTICAL, length=20, color="gray", thickness=2
+        l3 = StraightLine(
+            type=LineOrientation.VERTICAL,
+            length=20,
+            options=LineOptions(color="gray", thickness=2),
         )
         l3.box.show = True
         page.add_draw_object(Position(30, 150), l3)
@@ -92,31 +97,25 @@ class PageToSVGRegressionTests(SVGTestCase):
     def test_add_multiple_line_draw_objects_to_page(self):
         page = SVGPage()
         draw_objects = [
-            OldStraightLineDrawObject(
+            StraightLine(
                 type=LineOrientation.HORIZONTAL,
                 length=40,
-                start=Position(10, 30),
-                color="blue",
-                thickness=2,
+                options=LineOptions(thickness=2),
             ),
-            OldStraightLineDrawObject(
+            StraightLine(
                 type=LineOrientation.VERTICAL,
                 length=10,
-                start=Position(10, 25),
-                color="blue",
-                thickness=2,
+                options=LineOptions(thickness=2),
             ),
-            OldStraightLineDrawObject(
+            StraightLine(
                 type=LineOrientation.VERTICAL,
                 length=10,
-                start=Position(50, 25),
-                color="blue",
-                thickness=2,
+                options=LineOptions(thickness=2),
             ),
         ]
-
-        for draw_object in draw_objects:
-            page.add_draw_object(Position(0, 0), draw_object)
+        positions = [Position(10, 30), Position(10, 25), Position(50, 25)]
+        for position, draw_object in zip(positions, draw_objects, strict=True):
+            page.add_draw_object(position, draw_object)
 
         self.compare_page(
             page, "add_multiple_line_draw_objects", this_path, width=210, height=297
@@ -126,15 +125,15 @@ class PageToSVGRegressionTests(SVGTestCase):
         container = Container()
         container.add_draw_object(
             Position(10, 10),
-            OldStraightLineDrawObject(type=LineOrientation.VERTICAL, length=10),
+            StraightLine(type=LineOrientation.VERTICAL, length=10),
         )
         container.add_draw_object(
             Position(10, 15),
-            OldStraightLineDrawObject(type=LineOrientation.HORIZONTAL, length=30),
+            StraightLine(type=LineOrientation.HORIZONTAL, length=30),
         )
         container.add_draw_object(
             Position(40, 10),
-            OldStraightLineDrawObject(type=LineOrientation.VERTICAL, length=10),
+            StraightLine(type=LineOrientation.VERTICAL, length=10),
         )
         for _, draw_object in container.get_draw_objects(positioned=True):
             if isinstance(draw_object, LineDrawObject):

@@ -7,8 +7,9 @@ import svg
 from musurgia.graphics.container import Container
 from musurgia.graphics.drawobject import (
     DrawObject,
+    LineOptions,
     RectangleDrawObject,
-    OldStraightLineDrawObject,
+    StraightLine,
 )
 from musurgia.graphics.geometry import LineOrientation, Paddings, Position, Scalar, Size
 from musurgia.graphics.page_layout import PageLayout
@@ -128,11 +129,10 @@ class SVGPage:
             self._grid.append(
                 (
                     Position(0, index * 10),
-                    OldStraightLineDrawObject(
+                    StraightLine(
                         type=LineOrientation.HORIZONTAL,
                         length=w,
-                        thickness=thickness,
-                        color="green",
+                        options=LineOptions(thickness=thickness, color="green"),
                     ),
                 ),
             )
@@ -140,11 +140,10 @@ class SVGPage:
             self._grid.append(
                 (
                     Position(index * 10, 0),
-                    OldStraightLineDrawObject(
+                    StraightLine(
                         type=LineOrientation.VERTICAL,
                         length=h,
-                        thickness=thickness,
-                        color="green",
+                        options=LineOptions(thickness=thickness, color="green"),
                     ),
                 ),
             )
