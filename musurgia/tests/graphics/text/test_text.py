@@ -1,6 +1,8 @@
 from dataclasses import asdict
 from pathlib import Path
 
+import pytest
+
 
 from musurgia.graphics.defaults import DEFAULT_COLOR
 from musurgia.graphics.drawobject import Text, TextOptions
@@ -29,6 +31,7 @@ def test_size():
     assert size == size2, f"Repeated measurement must be identical for {t.text}"
 
 
+@pytest.mark.nonci
 class TextDraw(SVGTestCase):
     def test_text_draw(self):
 

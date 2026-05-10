@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 
 from musurgia.graphics.geometry import LineOrientation, Position
 
@@ -72,6 +74,7 @@ def test_segmented_line_segmented_lines_factory():
     assert ls1.color == DEFAULT_COLOR
 
 
+@pytest.mark.nonci
 class LineSegmentDraw(SVGTestCase):
     def test_draw_line_segment_horizontal(self):
         ls = LineSegment(type=LineOrientation.HORIZONTAL, length=20)
@@ -104,6 +107,7 @@ class LineSegmentDraw(SVGTestCase):
         )
 
 
+@pytest.mark.nonci
 class SegmentedLineDraw(SVGTestCase):
     def test_draw_segment_line_horizontal(self):
         sl = SegmentedLine(type=LineOrientation.HORIZONTAL)

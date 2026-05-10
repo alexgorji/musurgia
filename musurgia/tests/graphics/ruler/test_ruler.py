@@ -2,6 +2,8 @@ from dataclasses import asdict
 from decimal import Decimal
 from pathlib import Path
 
+import pytest
+
 
 from musurgia.graphics.defaults import DEFAULT_THICKNESS
 from musurgia.graphics.geometry import LineOrientation, Position
@@ -73,6 +75,7 @@ def test_ruler_as_segmented_line():
     assert hr.get_draw_objects() == [hr.as_segmented_line()]
 
 
+@pytest.mark.nonci
 class RulerDraw(SVGTestCase):
     def test_horizontal_ruler(self):
         page = SVGPage()
