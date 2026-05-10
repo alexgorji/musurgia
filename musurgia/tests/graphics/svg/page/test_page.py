@@ -5,7 +5,7 @@ import pytest
 from musurgia.graphics.container import Container
 from musurgia.graphics.geometry import Paddings, Position, Size
 from musurgia.graphics.drawobject import (
-    LineDrawObject,
+    Line,
     LineOptions,
     RectangleDrawObject,
     StraightLine,
@@ -64,7 +64,7 @@ class PageToSVGRegressionTests(SVGTestCase):
     def test_add_line_draw_object_to_page(self):
         page = SVGPage()
         page.add_background("white")
-        l1 = LineDrawObject(end=Position(30, 40), color="blue", thickness=2)
+        l1 = Line(end=Position(30, 40), options=LineOptions(color="blue", thickness=2))
         l1.box.show = True
         page.add_draw_object(Position(30, 30), l1)
 
@@ -84,8 +84,10 @@ class PageToSVGRegressionTests(SVGTestCase):
         l3.box.show = True
         page.add_draw_object(Position(30, 150), l3)
 
-        l4 = LineDrawObject(
-            start=Position(0, 40), end=Position(30, 0), color="orange", thickness=2
+        l4 = Line(
+            start=Position(0, 40),
+            end=Position(30, 0),
+            options=LineOptions(color="orange", thickness=2),
         )
         l4.box.show = True
         page.add_draw_object(Position(130, 30), l4)
@@ -136,7 +138,7 @@ class PageToSVGRegressionTests(SVGTestCase):
             StraightLine(type=LineOrientation.VERTICAL, length=10),
         )
         for _, draw_object in container.get_draw_objects(positioned=True):
-            if isinstance(draw_object, LineDrawObject):
+            if isinstance(draw_object, Line):
                 draw_object.set_color("blue")
                 draw_object.set_thickness(1)
 
@@ -182,9 +184,11 @@ class PageToSVGRegressionTests(SVGTestCase):
         page = SVGPage()
         container = Container()
 
-        l1 = LineDrawObject(end=Position(20, 40), color="blue", thickness=2)
-        l2 = LineDrawObject(
-            start=Position(0, 40), end=Position(20, 0), color="orange", thickness=2
+        l1 = Line(end=Position(20, 40), options=LineOptions(color="blue", thickness=2))
+        l2 = Line(
+            start=Position(0, 40),
+            end=Position(20, 0),
+            options=LineOptions(color="orange", thickness=2),
         )
 
         r1 = RectangleDrawObject(

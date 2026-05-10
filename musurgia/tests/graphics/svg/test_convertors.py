@@ -11,7 +11,7 @@ from musurgia.graphics.svg.convertors import SVGConverterRegistry
 
 
 from musurgia.graphics.drawobject import (
-    LineDrawObject,
+    Line,
     RectangleDrawObject,
     StraightLine,
     Text,
@@ -69,9 +69,7 @@ class ConvertDrawObjectToSVGElementTestCase(TestCase):
         )
 
         assert isinstance(
-            SVGConverterRegistry.convert(
-                Position(0, 0), LineDrawObject(end=Position(30, 40))
-            )[0],
+            SVGConverterRegistry.convert(Position(0, 0), Line(end=Position(30, 40)))[0],
             svg.Element,
         )
 
@@ -85,7 +83,7 @@ class ConvertDrawObjectToSVGElementTestCase(TestCase):
 
 class ConvertBoxToSVG(TestCase):
     def test_box_is_converted(self):
-        line = LineDrawObject(end=Position(30, 40))
+        line = Line(end=Position(30, 40))
         assert len(SVGConverterRegistry.convert(Position(0, 0), line)) == 1
 
         line.box.show = True

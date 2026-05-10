@@ -6,7 +6,7 @@ from musurgia.graphics.container import Container
 from musurgia.graphics.geometry import LineOrientation, Position
 from musurgia.graphics.drawobject import (
     DrawObject,
-    LineDrawObject,
+    Line,
     RectangleDrawObject,
     StraightLine,
     Text,
@@ -64,9 +64,9 @@ class TextDrawObjectToSVGConvertor(DrawObjectConvertor[Text]):
         ]
 
 
-class LineDrawObjectToSVGConvertor(DrawObjectConvertor[LineDrawObject]):
+class LineDrawObjectToSVGConvertor(DrawObjectConvertor[Line]):
     def _convert(self) -> list[svg.Element]:
-        dash_array = self.draw_object._stroke_dasharray
+        dash_array = self.draw_object.options.stroke_dasharray
         return [
             cast(
                 svg.Element,
@@ -75,8 +75,8 @@ class LineDrawObjectToSVGConvertor(DrawObjectConvertor[LineDrawObject]):
                     y1=self.draw_object.start.y + self.position.y,
                     x2=self.draw_object.end.x + self.position.x,
                     y2=self.draw_object.end.y + self.position.y,
-                    stroke=self.draw_object.color,
-                    stroke_width=self.draw_object.thickness,
+                    stroke=self.draw_object.options.color,
+                    stroke_width=self.draw_object.options.thickness,
                     stroke_dasharray=(
                         [length for length in dash_array] if dash_array else None
                     ),
@@ -176,7 +176,7 @@ class SVGConverterRegistry:
         return converted
 
 
-SVGConverterRegistry.register(LineDrawObject, LineDrawObjectToSVGConvertor)
+SVGConverterRegistry.register(Line, LineDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(StraightLine, StraightLineToSVGConvertor)
 SVGConverterRegistry.register(Text, TextDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(Label, TextDrawObjectToSVGConvertor)

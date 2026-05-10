@@ -161,36 +161,19 @@ class LineOptions:
     stroke_dasharray: list[Scalar] | None = None
 
 
-class LineDrawObject(ColorMixin, DrawObject):
+class Line(DrawObject):
     def __init__(
         self,
         *,
         start: Position = Position(0, 0),
         end: Position,
-        thickness: Scalar = Decimal("0.1"),
-        stroke_dasharray: list[int] | None = None,
+        options: LineOptions | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
-        self._start = start
-        self._end = end
-        self._thickness = thickness
-        self._stroke_dasharray = stroke_dasharray
-
-    @property
-    def start(self) -> Position:
-        return self._start
-
-    @property
-    def end(self) -> Position:
-        return self._end
-
-    @property
-    def thickness(self) -> Scalar:
-        return self._thickness
-
-    def set_thickness(self, val: Scalar) -> None:
-        self._thickness = val
+        self.start = start
+        self.end = end
+        self.options = options or LineOptions()
 
     def get_bounding_box_coordinates(self) -> Coordinates:
         x1, y1 = self.start.x, self.start.y
@@ -213,7 +196,7 @@ class LineDrawObject(ColorMixin, DrawObject):
         nx = -uy
         ny = ux
 
-        half_th = Decimal(self.thickness) / Decimal("2")
+        half_th = convert_to_scalar(self.options.thickness / 2)
 
         # corners of the rotated rectangle"
         p1 = (x1 + nx * half_th, y1 + ny * half_th)
@@ -262,7 +245,7 @@ class StraightLine(DrawObject):
 
     def get_bounding_box_coordinates(self) -> Coordinates:
         if self.type == LineOrientation.HORIZONTAL:
-            xmin = 0
+            xmin = convert_to_scalar(0)
             xmax = self.length
             ymin = -convert_to_scalar(self.options.thickness / 2)
             ymax = convert_to_scalar(self.options.thickness / 2)
@@ -270,7 +253,7 @@ class StraightLine(DrawObject):
         else:
             xmin = -convert_to_scalar(self.options.thickness / 2)
             xmax = convert_to_scalar(self.options.thickness / 2)
-            ymin = 0
+            ymin = convert_to_scalar(0)
             ymax = self.length
 
         return Coordinates(
