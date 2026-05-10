@@ -37,10 +37,7 @@ class Label(Text):
         options: TextOptions | None = None,
     ) -> None:
         super().__init__(text=text, options=options)
-        self._offset = offset
-
-    def get_offset(self) -> Position:
-        return self._offset
+        self.offset = offset
 
 
 class Marker(Container):
@@ -74,9 +71,9 @@ class Marker(Container):
         if labels:
             first_label = cast(Label, self.get_first_label())
             if self.type == LineOrientation.HORIZONTAL:
-                line_position = Position(first_label.get_offset().x, 0)
+                line_position = Position(first_label.offset.x, 0)
             else:
-                line_position = Position(0, first_label.get_offset().y)
+                line_position = Position(0, first_label.offset.y)
         else:
             line_position = Position(0, 0)
         return line_position
@@ -90,13 +87,13 @@ class Marker(Container):
 
                 if self.type == LineOrientation.HORIZONTAL:
                     position = Position(
-                        first_label.get_offset().x - label.get_offset().x,
-                        label.get_offset().y,
+                        first_label.offset.x - label.offset.x,
+                        label.offset.y,
                     )
                 else:
                     position = Position(
-                        label.get_offset().x,
-                        first_label.get_offset().y - label.get_offset().y,
+                        label.offset.x,
+                        first_label.offset.y - label.offset.y,
                     )
                 self.add_draw_object(position, label)
 
@@ -104,8 +101,8 @@ class Marker(Container):
         if not self.get_labels():
             return None
         if self.type == LineOrientation.HORIZONTAL:
-            return max(self.get_labels(), key=lambda label: label.get_offset().x)
-        return max(self.get_labels(), key=lambda label: label.get_offset().y)
+            return max(self.get_labels(), key=lambda label: label.offset.x)
+        return max(self.get_labels(), key=lambda label: label.offset.y)
 
     def get_labels(self) -> list[Label]:
         return self._labels
@@ -348,6 +345,9 @@ class SegmentedLine(Container):
             )
             for length in lengths
         ]
+
+    def remove_line_segments(self) -> None:
+        self._line_segments = []
 
     def get_line_segments(self) -> list[LineSegment]:
         return self._line_segments

@@ -1,7 +1,6 @@
 from dataclasses import asdict
 from pathlib import Path
 
-import pytest
 
 from musurgia.graphics.geometry import Coordinates, LineOrientation, Position, Size
 from musurgia.graphics.drawobject import LineOptions, StraightLine
@@ -19,7 +18,6 @@ def test_straight_line_get_bounding_box_coordinates():
     )
 
 
-@pytest.mark.only
 def test_straight_line_options():
     sl = StraightLine(
         type=LineOrientation.HORIZONTAL,
@@ -28,7 +26,6 @@ def test_straight_line_options():
     )
     sl.options.thickness = 5
 
-    print(asdict(sl.options))
     assert asdict(sl.options) == {
         "color": "red",
         "thickness": 5,
@@ -36,7 +33,6 @@ def test_straight_line_options():
     }
 
 
-@pytest.mark.only
 class LineDraw(SVGTestCase):
     def test_dashed_lines(self):
         page = SVGPage()
