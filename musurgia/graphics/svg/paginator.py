@@ -8,7 +8,8 @@ from musurgia.graphics.container import Container
 from musurgia.graphics.drawobject import (
     DrawObject,
     LineOptions,
-    RectangleDrawObject,
+    Rectangle,
+    RectangleOptions,
     StraightLine,
 )
 from musurgia.graphics.geometry import LineOrientation, Paddings, Position, Scalar, Size
@@ -96,7 +97,7 @@ class SVGPage:
         self._layout = layout
         self._rows: list[SVGPageRow] = []
         self._grid: list[tuple[Position, DrawObject]] = []
-        self._background: RectangleDrawObject | None = None
+        self._background: Rectangle | None = None
 
     def get_layout(self) -> PageLayout:
         return self._layout
@@ -117,8 +118,9 @@ class SVGPage:
         self._rows.append(row)
 
     def add_background(self, color: str = "white") -> None:
-        self._background = RectangleDrawObject(
-            size=self.get_layout().get_size(), fillcolor=color
+        self._background = Rectangle(
+            size=self.get_layout().get_size(),
+            options=RectangleOptions(fillcolor=color, color="white"),
         )
 
     def add_grid(self, thickness: Scalar = Decimal("0.1")) -> None:

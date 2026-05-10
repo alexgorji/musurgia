@@ -17,9 +17,38 @@ def create_measure_context() -> cairo.Context:  # type: ignore[type-arg]
     return cairo.Context(surface)
 
 
-# -----------------------------
-# Value objects (dataclasses)
-# -----------------------------
+@dataclass
+class ColorMixin:
+    color: str = DEFAULT_COLOR
+
+
+@dataclass
+class ThicknessMixin:
+    thickness: Scalar = DEFAULT_THICKNESS
+
+
+@dataclass
+class LineOptions(ColorMixin, ThicknessMixin):
+    stroke_dasharray: list[Scalar] | None = None
+
+
+@dataclass
+class TextOptions(ColorMixin):
+    font_family: str = "DejaVu Sans"
+    font_size: Scalar = 12
+
+
+@dataclass
+class RectangleOptions(ColorMixin, ThicknessMixin):
+    stroke_dasharray: list[Scalar] | None = None
+    fillcolor: str | None = None
+
+
+@dataclass
+class DrawObjectBoxOptions(RectangleOptions):
+    color: str = "green"
+    thickness: Scalar = Decimal("0.5")
+    fillcolor: None = None
 
 
 class DrawObjectBox:
@@ -27,14 +56,12 @@ class DrawObjectBox:
         self,
         *,
         draw_object: "DrawObject",
-        color: str = "green",
-        thickness: Scalar = Decimal("0.5"),
         show: bool = False,
+        options: DrawObjectBoxOptions | None = None,
     ):
         self._draw_object = draw_object
         self._rectangle = None
-        self.color = color
-        self.thickness = thickness
+        self.options = options or DrawObjectBoxOptions()
         self.show = show
 
     @property
@@ -54,10 +81,8 @@ class DrawObjectBox:
 
         return Size(width, height)
 
-    def get_rectangle(self) -> "RectangleDrawObject":
-        rectangle = RectangleDrawObject(
-            size=self.size, color=self.color, thickness=self.thickness
-        )
+    def get_rectangle(self) -> "Rectangle":
+        rectangle = Rectangle(size=self.size, options=self.options)
         return rectangle
 
 
@@ -85,32 +110,9 @@ class DrawObject(ABC):
         pass
 
 
-class ColorMixin:
-    def __init__(self, *, color: str = "black", **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self._color = color
-
-    @property
-    def color(self) -> str:
-        return self._color
-
-    def set_color(self, val: str) -> None:
-        self._color = val
-
-    def get_color(self) -> str:
-        return self._color
-
-
 # -----------------------------
 # Draw objects
 # -----------------------------
-
-
-@dataclass
-class TextOptions:
-    font_family: str = "DejaVu Sans"
-    font_size: Scalar = 12
-    color: str = DEFAULT_COLOR
 
 
 class Text(DrawObject):
@@ -152,13 +154,6 @@ class Text(DrawObject):
             Position(self.size.width, self.size.height),
             Position(0, self.size.height),
         )
-
-
-@dataclass
-class LineOptions:
-    color: str = DEFAULT_COLOR
-    thickness: Scalar = DEFAULT_THICKNESS
-    stroke_dasharray: list[Scalar] | None = None
 
 
 class Line(DrawObject):
@@ -269,34 +264,23 @@ class StraightLine(DrawObject):
         return Size(coor.tr.x - coor.tl.x, coor.bl.y - coor.tl.y)
 
 
-class RectangleDrawObject(ColorMixin, DrawObject):
+class Rectangle(DrawObject):
     def __init__(
         self,
         *,
         size: Size,
-        padding: Paddings = Paddings(0, 0, 0, 0),
-        thickness: Scalar = Decimal("0.1"),
-        stroke_dasharray: list[int] | None = None,
-        fillcolor: str | None = None,
+        padding: Paddings | None = None,
+        options: RectangleOptions | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self._size = size
-        self.padding = padding
-        self._thickness = thickness
-        self._stroke_dasharray = stroke_dasharray
-        self._fillcolor = fillcolor
+        self.padding = padding or Paddings(0, 0, 0, 0)
+        self.options = options or RectangleOptions()
 
     @property
     def size(self) -> Size:
         return self._size
-
-    @property
-    def thickness(self) -> Scalar:
-        return self._thickness
-
-    def set_thickness(self, val: Scalar) -> None:
-        self._thickness = val
 
     def get_bounding_box_coordinates(self) -> Coordinates:
         return Coordinates(

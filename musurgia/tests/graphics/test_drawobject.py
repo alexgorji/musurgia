@@ -3,7 +3,7 @@ from unittest import TestCase
 from musurgia.graphics.geometry import Position, Size
 from musurgia.graphics.drawobject import (
     Line,
-    RectangleDrawObject,
+    Rectangle,
 )
 
 
@@ -38,11 +38,8 @@ class LineTestCase(TestCase):
 
 class RectangleTestCase(TestCase):
     def test_size(self):
-        r = RectangleDrawObject(size=Size(30, 40))
+        r = Rectangle(size=Size(30, 40))
         assert r.size == Size(30, 40)
-
-    def test_color(self):
-        assert RectangleDrawObject(size=Size(10, 20), color="blue").color == "blue"
 
 
 class DrawObjectBoxTestCase(TestCase):
@@ -52,5 +49,5 @@ class DrawObjectBoxTestCase(TestCase):
             end=Position(40, 60),
         )
         box_rectangle = line.box.get_rectangle()
-        assert isinstance(box_rectangle, RectangleDrawObject)
+        assert isinstance(box_rectangle, Rectangle)
         assert box_rectangle.size == line.box.size

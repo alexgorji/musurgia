@@ -7,7 +7,8 @@ from musurgia.graphics.geometry import Paddings, Position, Size
 from musurgia.graphics.drawobject import (
     Line,
     LineOptions,
-    RectangleDrawObject,
+    Rectangle,
+    RectangleOptions,
     StraightLine,
     Text,
     TextOptions,
@@ -139,8 +140,8 @@ class PageToSVGRegressionTests(SVGTestCase):
         )
         for _, draw_object in container.get_draw_objects(positioned=True):
             if isinstance(draw_object, Line):
-                draw_object.set_color("blue")
-                draw_object.set_thickness(1)
+                draw_object.options.color = "blue"
+                draw_object.options.thickness = 1
 
         parent_container = Container()
         parent_container.add_draw_object(Position(30, 30), container)
@@ -154,19 +155,22 @@ class PageToSVGRegressionTests(SVGTestCase):
 
     def test_add_rectangle(self):
         page = SVGPage()
-        r = RectangleDrawObject(size=Size(30, 40), color="blue", thickness=1)
+        r = Rectangle(
+            size=Size(30, 40), options=RectangleOptions(color="blue", thickness=1)
+        )
         page.add_draw_object(Position(10, 10), r)
 
         self.compare_page(page, "add_rectangle", this_path, width=210, height=297)
 
     def test_boxed_rectangle(self):
         page = SVGPage()
-        r1 = RectangleDrawObject(size=Size(30, 40), color="blue", thickness=5)
+        r1 = Rectangle(
+            size=Size(30, 40), options=RectangleOptions(color="blue", thickness=5)
+        )
 
-        r2 = RectangleDrawObject(
+        r2 = Rectangle(
             size=Size(30, 40),
-            color="blue",
-            thickness=1,
+            options=RectangleOptions(color="blue", thickness=1),
             padding=Paddings(10, 20, 30, 40),
         )
         r1.box.show = True
@@ -191,10 +195,9 @@ class PageToSVGRegressionTests(SVGTestCase):
             options=LineOptions(color="orange", thickness=2),
         )
 
-        r1 = RectangleDrawObject(
+        r1 = Rectangle(
             size=Size(30, 40),
-            color="blue",
-            thickness=1,
+            options=RectangleOptions(color="blue", thickness=1),
             padding=Paddings(2, 4, 6, 8),
         )
 

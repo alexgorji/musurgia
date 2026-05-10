@@ -12,7 +12,7 @@ from musurgia.graphics.svg.convertors import SVGConverterRegistry
 
 from musurgia.graphics.drawobject import (
     Line,
-    RectangleDrawObject,
+    Rectangle,
     StraightLine,
     Text,
     create_measure_context,
@@ -74,9 +74,9 @@ class ConvertDrawObjectToSVGElementTestCase(TestCase):
         )
 
         assert isinstance(
-            SVGConverterRegistry.convert(
-                Position(0, 0), RectangleDrawObject(size=Size(20, 40))
-            )[0],
+            SVGConverterRegistry.convert(Position(0, 0), Rectangle(size=Size(20, 40)))[
+                0
+            ],
             svg.Element,
         )
 

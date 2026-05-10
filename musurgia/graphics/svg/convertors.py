@@ -7,7 +7,7 @@ from musurgia.graphics.geometry import LineOrientation, Position
 from musurgia.graphics.drawobject import (
     DrawObject,
     Line,
-    RectangleDrawObject,
+    Rectangle,
     StraightLine,
     Text,
 )
@@ -112,11 +112,11 @@ class StraightLineToSVGConvertor(DrawObjectConvertor[StraightLine]):
         ]
 
 
-class RectangleDrawObjectToSVGConvertor(DrawObjectConvertor[RectangleDrawObject]):
+class RectangleDrawObjectToSVGConvertor(DrawObjectConvertor[Rectangle]):
     def _convert(self) -> list[svg.Element]:
-        th = self.draw_object.thickness
-        dash_array = self.draw_object._stroke_dasharray
-        fillcolor = self.draw_object._fillcolor
+        th = self.draw_object.options.thickness
+        dash_array = self.draw_object.options.stroke_dasharray
+        fillcolor = self.draw_object.options.fillcolor
         return [
             cast(
                 svg.Element,
@@ -129,9 +129,9 @@ class RectangleDrawObjectToSVGConvertor(DrawObjectConvertor[RectangleDrawObject]
                     + float(th) / 2,
                     width=self.draw_object.size.width - th,
                     height=self.draw_object.size.height - th,
-                    stroke=self.draw_object.color,
+                    stroke=self.draw_object.options.color,
                     fill=fillcolor or "transparent",
-                    stroke_width=self.draw_object.thickness,
+                    stroke_width=th,
                     stroke_dasharray=(
                         [length for length in dash_array] if dash_array else None
                     ),
@@ -180,5 +180,5 @@ SVGConverterRegistry.register(Line, LineDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(StraightLine, StraightLineToSVGConvertor)
 SVGConverterRegistry.register(Text, TextDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(Label, TextDrawObjectToSVGConvertor)
-SVGConverterRegistry.register(RectangleDrawObject, RectangleDrawObjectToSVGConvertor)
+SVGConverterRegistry.register(Rectangle, RectangleDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(Container, ContainerToSVGConvertor)
