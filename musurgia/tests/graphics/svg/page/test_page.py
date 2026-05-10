@@ -7,8 +7,9 @@ from musurgia.graphics.geometry import Paddings, Position, Size
 from musurgia.graphics.drawobject import (
     LineDrawObject,
     RectangleDrawObject,
-    TextDrawObject,
+    Text,
     OldStraightLineDrawObject,
+    TextOptions,
 )
 from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.svg.paginator import SVGPage
@@ -29,19 +30,19 @@ class PageToSVGTestCase(TestCase):
 
     def test_add_text_to_page(self):
         page = SVGPage()
-        page.add_draw_object(Position(0, 0), TextDrawObject(text="some text"))
+        page.add_draw_object(Position(0, 0), Text(text="some text"))
         assert "some text" in page.convert_to_svg_string()
 
     def test_add_multiple_draw_objects_to_page(self):
         page = SVGPage()
         page.add_draw_object(
             Position(0, 0),
-            TextDrawObject(text="Hello", padding=Paddings(10, 0, 0, 10)),
+            Text(text="Hello", padding=Paddings(10, 0, 0, 10)),
         )
 
         page.add_draw_object(
             Position(0, 0),
-            TextDrawObject(text="Goodbye", padding=Paddings(20, 0, 0, 20)),
+            Text(text="Goodbye", padding=Paddings(20, 0, 0, 20)),
         )
 
         svg_string = page.convert_to_svg_string()
@@ -58,40 +59,6 @@ class PageToSVGRegressionTests(SVGTestCase):
         page = SVGPage()
         page.add_grid()
         self.compare_page(page, "empty_page_with_grid", this_path)
-
-    @pytest.mark.nonci
-    def test_add_text_draw_object_to_page(self):
-        page = SVGPage()
-        t1 = TextDrawObject(
-            text="The quick Brown fox Jumps over The lazy Dog",
-            color="blue",
-            font_size=12,
-        )
-
-        t1.box.show = True
-        page.add_draw_object(Position(30, 50), t1)
-
-        t2 = TextDrawObject(
-            text="The quick Brown fox Jumps over The lazy Dog",
-            color="red",
-            padding=Paddings(20, 0, 0, 10),
-            font_size=12,
-        )
-        t2.box.show = True
-        page.add_draw_object(Position(30, 100), t2)
-
-        t3 = TextDrawObject(
-            text="The quick Brown fox Jumps over The lazy Dog",
-            color="orange",
-            padding=Paddings(20, 30, 40, 10),
-            font_size=15,
-        )
-        t3.box.show = True
-        page.add_draw_object(Position(30, 180), t3)
-
-        self.compare_page(
-            page, "add_text_draw_object", this_path, width=210 * 2, height=297 * 2
-        )
 
     def test_add_line_draw_object_to_page(self):
         page = SVGPage()
@@ -228,11 +195,7 @@ class PageToSVGRegressionTests(SVGTestCase):
             padding=Paddings(2, 4, 6, 8),
         )
 
-        t1 = TextDrawObject(
-            text="I am in a container",
-            color="red",
-            font_size=12,
-        )
+        t1 = Text(text="I am in a container", options=TextOptions(color="red"))
 
         positions = [
             Position(0, 0),

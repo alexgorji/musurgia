@@ -5,7 +5,7 @@ from musurgia.graphics.container import Container
 from musurgia.graphics.geometry import Position, Size
 from musurgia.graphics.drawobject import (
     OldStraightLineDrawObject,
-    TextDrawObject,
+    Text,
 )
 from musurgia.graphics.geometry import LineOrientation
 
@@ -105,7 +105,7 @@ class ContainerTestCase(TestCase):
         start_marker = OldStraightLineDrawObject(
             type=LineOrientation.VERTICAL, length=6, thickness=1
         )
-        start_marker_label = TextDrawObject(text="label")
+        start_marker_label = Text(text="label")
         start_marker_p = Position(0, 10)
         start_marker_label_p = Position(0, 0)
 

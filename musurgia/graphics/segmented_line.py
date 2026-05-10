@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Any, cast
+from typing import cast
 
 from musurgia.graphics.geometry import (
     LineOrientation,
@@ -8,7 +8,12 @@ from musurgia.graphics.geometry import (
 )
 
 from musurgia.graphics.container import Container
-from musurgia.graphics.drawobject import LineOptions, StraightLine, TextDrawObject
+from musurgia.graphics.drawobject import (
+    LineOptions,
+    StraightLine,
+    Text,
+    TextOptions,
+)
 
 from musurgia.graphics.util import (
     convert_to_scalar,
@@ -23,22 +28,15 @@ from musurgia.graphics.defaults import (
 )
 
 
-class Label(TextDrawObject):
+class Label(Text):
     def __init__(
         self,
         *,
         text: str,
         offset: Position = Position(0, 0),
-        font_family: str = "DejaVu Sans",
-        font_size: Scalar = 12,
-        **kwargs: Any,
+        options: TextOptions | None = None,
     ) -> None:
-        super().__init__(
-            text=text,
-            font_family=font_family,
-            font_size=font_size,
-            **kwargs,
-        )
+        super().__init__(text=text, options=options)
         self._offset = offset
 
     def get_offset(self) -> Position:

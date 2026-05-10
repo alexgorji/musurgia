@@ -10,7 +10,7 @@ from musurgia.graphics.drawobject import (
     LineDrawObject,
     RectangleDrawObject,
     StraightLine,
-    TextDrawObject,
+    Text,
 )
 from musurgia.graphics.line_segment_old import OldLabel
 from musurgia.graphics.segmented_line import Label
@@ -44,7 +44,7 @@ class DrawObjectConvertor(ABC, Generic[T]):
         return converted
 
 
-class TextDrawObjectToSVGConvertor(DrawObjectConvertor[TextDrawObject]):
+class TextDrawObjectToSVGConvertor(DrawObjectConvertor[Text]):
 
     def _convert(self) -> list[svg.Element]:
         ext = self.draw_object.get_text_extents()
@@ -57,11 +57,11 @@ class TextDrawObjectToSVGConvertor(DrawObjectConvertor[TextDrawObject]):
                 + self.position.y
                 - Decimal(str(ext.y_bearing)),
                 text=self.draw_object.text,
-                font_size=TextDrawObject.convert_font_size_to_mm(
-                    self.draw_object.font_size
+                font_size=Text.convert_font_size_to_mm(
+                    self.draw_object.options.font_size
                 ),
-                font_family=self.draw_object.font_family,
-                fill=self.draw_object.color,
+                font_family=self.draw_object.options.font_family,
+                fill=self.draw_object.options.color,
             )
         ]
 
@@ -181,7 +181,7 @@ class SVGConverterRegistry:
 SVGConverterRegistry.register(LineDrawObject, LineDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(OldStraightLineDrawObject, LineDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(StraightLine, StraightLineToSVGConvertor)
-SVGConverterRegistry.register(TextDrawObject, TextDrawObjectToSVGConvertor)
+SVGConverterRegistry.register(Text, TextDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(OldLabel, TextDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(Label, TextDrawObjectToSVGConvertor)
 SVGConverterRegistry.register(RectangleDrawObject, RectangleDrawObjectToSVGConvertor)

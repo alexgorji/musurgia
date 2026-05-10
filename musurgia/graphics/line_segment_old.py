@@ -1,10 +1,12 @@
 from decimal import Decimal
 
 from musurgia.graphics.container import Container
+from musurgia.graphics.defaults import DEFAULT_COLOR
 from musurgia.graphics.geometry import Position, Scalar
 from musurgia.graphics.drawobject import (
     OldStraightLineDrawObject,
-    TextDrawObject,
+    Text,
+    TextOptions,
 )
 
 from dataclasses import dataclass, field, asdict, fields
@@ -18,7 +20,7 @@ from musurgia.graphics.util import (
 )
 
 
-class OldLabel(TextDrawObject):
+class OldLabel(Text):
     def __init__(
         self,
         *,
@@ -26,13 +28,13 @@ class OldLabel(TextDrawObject):
         offset: tuple[Scalar, Scalar] = (0, 0),
         font_family: str = "DejaVu Sans",
         font_size: Scalar = 12,
-        **kwargs: Any,
+        color: str = DEFAULT_COLOR,
     ) -> None:
         super().__init__(
             text=text,
-            font_family=font_family,
-            font_size=font_size,
-            **kwargs,
+            options=TextOptions(
+                font_family=font_family, font_size=font_size, color=color
+            ),
         )
         self._offset = offset
 

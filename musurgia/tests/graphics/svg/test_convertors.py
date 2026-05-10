@@ -14,7 +14,7 @@ from musurgia.graphics.drawobject import (
     LineDrawObject,
     RectangleDrawObject,
     OldStraightLineDrawObject,
-    TextDrawObject,
+    Text,
     create_measure_context,
 )
 from musurgia.graphics.svg.convertors import (
@@ -28,7 +28,7 @@ class ConvertTextDrawObjectToSVGTestCase(TestCase):
     def test_cairo_font_extents(self):
         ctx = create_measure_context()
         ctx.select_font_face("DejaVu Sans")
-        ctx.set_font_size(TextDrawObject.convert_font_size_to_mm(12))
+        ctx.set_font_size(Text.convert_font_size_to_mm(12))
         ext = ctx.text_extents("something")
         print(f"\nx_bearing: {ext.x_bearing}")
         assert (
@@ -46,7 +46,7 @@ class ConvertTextDrawObjectToSVGTestCase(TestCase):
 
     @pytest.mark.nonci
     def test_convertor(self):
-        draw_object = TextDrawObject(text="something")
+        draw_object = Text(text="something")
         svg_str = (
             TextDrawObjectToSVGConvertor(Position(0, 0), draw_object)
             .convert()[0]
@@ -55,18 +55,16 @@ class ConvertTextDrawObjectToSVGTestCase(TestCase):
         root = ET.fromstring(svg_str)
         assert round(float(root.attrib["x"]), 4) == -0.2294
         assert round(float(root.attrib["y"]), 4) == 3.2163
-        assert root.attrib["font-family"] == draw_object.font_family
+        assert root.attrib["font-family"] == draw_object.options.font_family
         assert round(float(root.attrib["font-size"]), 4) == 4.2333
 
-        assert root.attrib["fill"] == draw_object.color
+        assert root.attrib["fill"] == draw_object.options.color
 
 
 class ConvertDrawObjectToSVGElementTestCase(TestCase):
     def test_converts_to_element(self):
         assert isinstance(
-            SVGConverterRegistry.convert(
-                Position(0, 0), TextDrawObject(text="something")
-            )[0],
+            SVGConverterRegistry.convert(Position(0, 0), Text(text="something"))[0],
             svg.Element,
         )
 

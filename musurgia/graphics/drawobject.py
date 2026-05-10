@@ -103,38 +103,32 @@ class ColorMixin:
 # -----------------------------
 # Draw objects
 # -----------------------------
-class TextDrawObject(ColorMixin, DrawObject):
+
+
+@dataclass
+class TextOptions:
+    font_family: str = "DejaVu Sans"
+    font_size: Scalar = 12
+    color: str = DEFAULT_COLOR
+
+
+class Text(DrawObject):
     def __init__(
         self,
         *,
         text: str,
         padding: Paddings = Paddings(),
-        font_family: str = "DejaVu Sans",
-        font_size: Scalar = 12,
+        options: TextOptions | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
-        self._text = text
+        self.text = text
         self.padding = padding
-
-        self._font_family = font_family
-        self._font_size = font_size
+        self.options: TextOptions = options or TextOptions()
 
     @staticmethod
     def convert_font_size_to_mm(font_size: Scalar) -> Decimal:
         return font_size * Decimal("25.4") / Decimal("72")
-
-    @property
-    def text(self) -> str:
-        return self._text
-
-    @property
-    def font_family(self) -> str:
-        return self._font_family
-
-    @property
-    def font_size(self) -> Scalar:
-        return self._font_size
 
     @property
     def size(self) -> Size:
@@ -144,8 +138,8 @@ class TextDrawObject(ColorMixin, DrawObject):
     def get_text_extents(self) -> cairo.TextExtents:
         ctx = create_measure_context()
         ctx.save()
-        ctx.select_font_face(self.font_family)
-        ctx.set_font_size(float(self.convert_font_size_to_mm(self.font_size)))
+        ctx.select_font_face(self.options.font_family)
+        ctx.set_font_size(float(self.convert_font_size_to_mm(self.options.font_size)))
         ext = ctx.text_extents(self.text)
         ctx.restore()
         return ext

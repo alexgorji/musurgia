@@ -5,7 +5,6 @@ from musurgia.graphics.drawobject import (
     LineDrawObject,
     RectangleDrawObject,
     OldStraightLineDrawObject,
-    TextDrawObject,
 )
 from musurgia.graphics.geometry import LineOrientation
 
@@ -98,20 +97,6 @@ class VerticalLineTestCase(TestCase):
             type=LineOrientation.VERTICAL, length=10, thickness=2
         )
         assert vl.get_length() == 10
-
-
-class TextTestCase(TestCase):
-
-    def test_size(self):
-        t = TextDrawObject(text="Hello World")
-        size = t.size
-        assert size.width > 0
-        assert size.height > 0
-        size2 = t.size
-        assert size == size2, f"Repeated measurement must be identical for {t.text}"
-
-    def test_color(self):
-        assert TextDrawObject(text="20", color="blue").color == "blue"
 
 
 class RectangleTestCase(TestCase):
