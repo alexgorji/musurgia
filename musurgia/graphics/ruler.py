@@ -103,7 +103,12 @@ class Ruler(Container):
                         options=self.options.unit_division_marker.options,
                     )
                 ls = LineSegment(
-                    type=self.type, length=division_length, start_marker=start_marker
+                    type=self.type,
+                    length=division_length,
+                    start_marker=start_marker,
+                    options=LineOptions(
+                        thickness=self.options.thickness, color=self.options.color
+                    ),
                 )
 
                 unit.add_line_segment(ls)

@@ -80,7 +80,7 @@ class RulerDraw(SVGTestCase):
         hr = Ruler(
             type=LineOrientation.HORIZONTAL,
             length=60,
-            options=RulerOptions(thickness=2, unit_length=20),
+            options=RulerOptions(unit_length=20),
         )
         hr.options.color = "red"
         hr.options.label.color = "green"
@@ -89,25 +89,21 @@ class RulerDraw(SVGTestCase):
         page.add_grid()
         page.add_draw_object(Position(10, 10), hr)
 
-        self.compare_page(page, "", this_path, height=210 * 2, width=297 * 2)
+        self.compare_page(page, "horizontal", this_path, height=210 * 2, width=297 * 2)
 
+    def test_vertical_ruler(self):
+        page = SVGPage()
+        page.add_grid(thickness=Decimal("0.05"))
+        vr = Ruler(
+            type=LineOrientation.VERTICAL,
+            length=60,
+            options=RulerOptions(unit_length=20),
+        )
+        vr.options.color = "red"
+        vr.options.label.color = "green"
+        vr.build()
+        page.add_background("white")
+        page.add_grid()
+        page.add_draw_object(Position(10, 10), vr)
 
-#     def test_vertical_ruler(self):
-#         page = SVGPage(layout=PageLayout(orientation="landscape"))
-#         page.add_grid(thickness=Decimal("0.05"))
-#         vr = Ruler(
-#             type=LineOrientation.VERTICAL,
-#             length=60,
-#             options={
-#                 "thickness": 1,
-#                 "unit_length": 20,
-#                 "unit_division": 5,
-#                 "label": {"color": "green"},
-#             },
-#         )
-#         vr.options.color = "red"
-#         vr.options.lable.color = "green"
-
-#         page.add_draw_object(Position(10, 10), hr)
-
-#         self.compare_page(page, "vertical", this_path, height=210 * 2, width=297 * 2)
+        self.compare_page(page, "vertical", this_path, height=210 * 2, width=297 * 2)
