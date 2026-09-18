@@ -104,7 +104,7 @@ class SVGPage:
 
     def add_draw_object(
         self, position: Position, draw_object: DrawObject, row_number: int = 0
-    ) -> None:
+    ) -> "SVGPage":
         if not self._rows:
             create_page_rows(self, 1)
         try:
@@ -113,17 +113,20 @@ class SVGPage:
             raise AttributeError("Invalid row number")
 
         row.add_draw_object(position, draw_object)
+        return self
 
-    def add_row(self, row: SVGPageRow) -> None:
+    def add_row(self, row: SVGPageRow) -> "SVGPage":
         self._rows.append(row)
+        return self
 
-    def add_background(self, color: str = "white") -> None:
+    def add_background(self, color: str = "white") -> "SVGPage":
         self._background = Rectangle(
             size=self.get_layout().get_size(),
             options=RectangleOptions(fillcolor=color, color="white"),
         )
+        return self
 
-    def add_grid(self, thickness: Scalar = Decimal("0.1")) -> None:
+    def add_grid(self, thickness: Scalar = Decimal("0.1")) -> "SVGPage":
         w, h = self._layout.get_size().width, self._layout.get_size().height
         number_of_horizontal_lines = int(h / 10) + 1
         number_of_vertical_lines = int(w / 10) + 1
@@ -149,6 +152,7 @@ class SVGPage:
                     ),
                 ),
             )
+        return self
 
     def get_rows(self) -> list[SVGPageRow]:
         return self._rows
