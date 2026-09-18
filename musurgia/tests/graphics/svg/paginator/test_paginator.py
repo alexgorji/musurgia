@@ -169,9 +169,64 @@ class SVGPaginatorAsSVG(SVGTestCase):
         assert isinstance(page.as_svg(), svg.SVG)
         self.compare_page(
             page,
-            "",
+            "one_page",
             this_path,
             height=210 * 2,
             width=297 * 2,
             tolerance=set_ci_tolerance(0.7),
         )
+
+    def test_multiple_pages(self):
+        ruler = Ruler(type=LineOrientation.HORIZONTAL, length=4 * 190)
+        ruler.build()
+        page = (
+            SVGPage(layout=PageLayout(margins=Margins(20, 10, 10, 10)))
+            .add_grid()
+            .add_background("white")
+        )
+
+        paginator = SVGPaginator([page])
+        pages = paginator.paginate(ruler)
+        assert len(pages) == 4
+        for index, page in enumerate(pages):
+
+            self.compare_page(
+                page,
+                f"multiple_pages_{index + 1}",
+                this_path,
+                height=210 * 2,
+                width=297 * 2,
+                tolerance=set_ci_tolerance(0.1),
+            )
+
+    def test_multiple_pages_and_rows(self):
+        ruler = Ruler(type=LineOrientation.HORIZONTAL, length=8 * 170)
+        ruler.build()
+        page = (
+            SVGPage(layout=PageLayout(margins=Margins(20, 10, 10, 10)))
+            .add_grid()
+            .add_background("white")
+        )
+        create_page_rows(
+            page,
+            number_of_rows=4,
+            options={
+                1: {"paddings": Paddings(0, 10, 10, 10)},
+                2: {"paddings": Paddings(0, 10, 10, 10)},
+                3: {"paddings": Paddings(0, 10, 10, 10)},
+                4: {"paddings": Paddings(0, 10, 10, 10)},
+            },
+        )
+
+        paginator = SVGPaginator([page])
+        pages = paginator.paginate(ruler)
+
+        for index, page in enumerate(pages):
+            self.compare_page(
+                page,
+                f"multiple_pages_and_rows_{index + 1}",
+                this_path,
+                height=210 * 2,
+                width=297 * 2,
+                tolerance=set_ci_tolerance(0.4),
+            )
