@@ -1,13 +1,12 @@
 from dataclasses import asdict
 from pathlib import Path
 
-import pytest
-
 
 from musurgia.graphics.defaults import DEFAULT_COLOR
 from musurgia.graphics.drawobject import Text, TextOptions
 from musurgia.graphics.geometry import Paddings, Position
 from musurgia.graphics.svg.paginator import SVGPage
+from musurgia.tests.test_utils import set_ci_tolerance
 from musurgia.tests.helpers.svg import SVGTestCase
 
 path = Path(__file__)
@@ -31,7 +30,6 @@ def test_size():
     assert size == size2, f"Repeated measurement must be identical for {t.text}"
 
 
-@pytest.mark.nonci
 class TextDraw(SVGTestCase):
     def test_text_draw(self):
 
@@ -63,5 +61,10 @@ class TextDraw(SVGTestCase):
         page.add_grid()
 
         self.compare_page(
-            page, "add_text_draw_object", path, width=210 * 2, height=297 * 2
+            page,
+            "add_text_draw_object",
+            path,
+            width=210 * 2,
+            height=297 * 2,
+            tolerance=set_ci_tolerance(0.6),
         )

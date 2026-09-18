@@ -15,6 +15,7 @@ from musurgia.graphics.drawobject import (
 )
 from musurgia.graphics.geometry import LineOrientation
 from musurgia.graphics.svg.paginator import SVGPage
+from musurgia.tests.test_utils import set_ci_tolerance
 from musurgia.tests.helpers.svg import SVGTestCase
 import xml.etree.ElementTree as ET
 
@@ -183,7 +184,6 @@ class PageToSVGRegressionTests(SVGTestCase):
             page, "boxed_rectangle", this_path, width=210 * 2, height=297 * 2
         )
 
-    @pytest.mark.nonci
     def test_add_container(self):
         page = SVGPage()
         container = Container()
@@ -217,5 +217,10 @@ class PageToSVGRegressionTests(SVGTestCase):
         page.add_draw_object(Position(10, 10), container)
 
         self.compare_page(
-            page, "add_container", this_path, width=210 * 2, height=297 * 2
+            page,
+            "add_container",
+            this_path,
+            width=210 * 2,
+            height=297 * 2,
+            tolerance=set_ci_tolerance(0.03),
         )

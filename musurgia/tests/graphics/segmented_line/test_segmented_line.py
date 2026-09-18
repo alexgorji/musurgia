@@ -1,8 +1,5 @@
 from pathlib import Path
 
-import pytest
-
-
 from musurgia.graphics.geometry import LineOrientation, Position
 
 from musurgia.graphics.segmented_line import (
@@ -13,6 +10,7 @@ from musurgia.graphics.segmented_line import (
     SegmentedLine,
 )
 from musurgia.graphics.svg.paginator import SVGPage
+from musurgia.tests.test_utils import set_ci_tolerance
 from musurgia.tests.helpers.svg import SVGTestCase
 
 path = Path(__file__)
@@ -74,7 +72,6 @@ def test_segmented_line_segmented_lines_factory():
     assert ls1.color == DEFAULT_COLOR
 
 
-@pytest.mark.nonci
 class LineSegmentDraw(SVGTestCase):
     def test_draw_line_segment_horizontal(self):
         ls = LineSegment(type=LineOrientation.HORIZONTAL, length=20)
@@ -88,7 +85,12 @@ class LineSegmentDraw(SVGTestCase):
         page.add_draw_object(Position(10, 10), ls)
 
         self.compare_page(
-            page, "line_segmented_horizontal", path, width=210 * 2, height=297 * 2
+            page,
+            "line_segmented_horizontal",
+            path,
+            width=210 * 2,
+            height=297 * 2,
+            tolerance=set_ci_tolerance(0.03),
         )
 
     def test_draw_line_segment_vertical(self):
@@ -103,11 +105,15 @@ class LineSegmentDraw(SVGTestCase):
         page.add_draw_object(Position(10, 10), ls)
 
         self.compare_page(
-            page, "line_segmented_vertical", path, width=210 * 2, height=297 * 2
+            page,
+            "line_segmented_vertical",
+            path,
+            width=210 * 2,
+            height=297 * 2,
+            tolerance=set_ci_tolerance(0.03),
         )
 
 
-@pytest.mark.nonci
 class SegmentedLineDraw(SVGTestCase):
     def test_draw_segment_line_horizontal(self):
         sl = SegmentedLine(type=LineOrientation.HORIZONTAL)
@@ -125,7 +131,14 @@ class SegmentedLineDraw(SVGTestCase):
         page.add_background("white")
         page.add_draw_object(Position(10, 10), sl)
 
-        self.compare_page(page, "horizontal", path, width=210 * 2, height=297 * 2)
+        self.compare_page(
+            page,
+            "horizontal",
+            path,
+            width=210 * 2,
+            height=297 * 2,
+            tolerance=set_ci_tolerance(0.03),
+        )
 
     def test_draw_segment_line_vertical(self):
         sl = SegmentedLine(type=LineOrientation.VERTICAL)
@@ -143,4 +156,11 @@ class SegmentedLineDraw(SVGTestCase):
         page.add_background("white")
         page.add_draw_object(Position(10, 10), sl)
 
-        self.compare_page(page, "vertical", path, width=210 * 2, height=297 * 2)
+        self.compare_page(
+            page,
+            "vertical",
+            path,
+            width=210 * 2,
+            height=297 * 2,
+            tolerance=set_ci_tolerance(0.03),
+        )

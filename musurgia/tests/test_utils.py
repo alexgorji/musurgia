@@ -1,6 +1,7 @@
 from fractions import Fraction
 import math
 from unittest import TestCase
+import os
 
 from musicscore.util import xToD
 
@@ -81,3 +82,7 @@ class RelativeValueGeneratorTestCase(TestCase):
         self.assertListEqual(
             self._get_proportions(relative_values), self.rvr.proportions
         )
+
+
+def set_ci_tolerance(ci_tolerance, default_tolerance=0):
+    return ci_tolerance if os.getenv("CI") else default_tolerance

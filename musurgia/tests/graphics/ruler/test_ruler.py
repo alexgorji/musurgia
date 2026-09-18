@@ -2,8 +2,6 @@ from dataclasses import asdict
 from decimal import Decimal
 from pathlib import Path
 
-import pytest
-
 
 from musurgia.graphics.defaults import DEFAULT_THICKNESS
 from musurgia.graphics.geometry import LineOrientation, Position
@@ -15,6 +13,7 @@ from musurgia.graphics.ruler import (
 )
 from musurgia.graphics.segmented_line import SegmentedLine
 from musurgia.graphics.svg.paginator import SVGPage
+from musurgia.tests.test_utils import set_ci_tolerance
 from musurgia.tests.helpers.svg import SVGTestCase
 
 this_path = Path(__file__)
@@ -75,7 +74,6 @@ def test_ruler_as_segmented_line():
     assert hr.get_draw_objects() == [hr.as_segmented_line()]
 
 
-@pytest.mark.nonci
 class RulerDraw(SVGTestCase):
     def test_horizontal_ruler(self):
         page = SVGPage()
@@ -92,7 +90,14 @@ class RulerDraw(SVGTestCase):
         page.add_grid()
         page.add_draw_object(Position(10, 10), hr)
 
-        self.compare_page(page, "horizontal", this_path, height=210 * 2, width=297 * 2)
+        self.compare_page(
+            page,
+            "horizontal",
+            this_path,
+            height=210 * 2,
+            width=297 * 2,
+            tolerance=set_ci_tolerance(0.03),
+        )
 
     def test_vertical_ruler(self):
         page = SVGPage()
@@ -109,4 +114,11 @@ class RulerDraw(SVGTestCase):
         page.add_grid()
         page.add_draw_object(Position(10, 10), vr)
 
-        self.compare_page(page, "vertical", this_path, height=210 * 2, width=297 * 2)
+        self.compare_page(
+            page,
+            "vertical",
+            this_path,
+            height=210 * 2,
+            width=297 * 2,
+            tolerance=set_ci_tolerance(0.04),
+        )

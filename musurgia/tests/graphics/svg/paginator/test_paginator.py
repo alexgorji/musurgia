@@ -1,7 +1,6 @@
 from decimal import Decimal
 from pathlib import Path
 from unittest import TestCase
-import pytest
 import svg
 
 from musurgia.graphics.geometry import (
@@ -21,6 +20,7 @@ from musurgia.graphics.svg.paginator import (
     create_page_rows,
     get_row_content_positions,
 )
+from musurgia.tests.test_utils import set_ci_tolerance
 from musurgia.tests.helpers.svg import SVGTestCase
 
 this_path = Path(__file__)
@@ -143,7 +143,6 @@ class SVGPaginatorTestCase(TestCase):
         assert len(pages) == 2
 
 
-@pytest.mark.nonci
 class SVGPaginatorAsSVG(SVGTestCase):
     def test_page_as_svg_group(self):
         ruler = Ruler(
@@ -168,4 +167,11 @@ class SVGPaginatorAsSVG(SVGTestCase):
         paginator = SVGPaginator([page])
         page = paginator.paginate(ruler)[0]
         assert isinstance(page.as_svg(), svg.SVG)
-        self.compare_page(page, "", this_path, height=210 * 2, width=297 * 2)
+        self.compare_page(
+            page,
+            "",
+            this_path,
+            height=210 * 2,
+            width=297 * 2,
+            tolerance=set_ci_tolerance(0.7),
+        )
