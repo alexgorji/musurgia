@@ -54,7 +54,7 @@ class MagicRandom:
         self._previous_elements: list[Any] = []
 
         self.pool = pool
-        self.periodicity = periodicity  # type: ignore
+        self.periodicity = periodicity
         self.forbidden_list = forbidden_list if forbidden_list is not None else []
         self.seed = seed
 

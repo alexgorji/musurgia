@@ -230,54 +230,54 @@ class ReadonlyDuration:
 
 
 class Duration(ReadonlyDuration):
-    @ReadonlyDuration.clock.setter  # type: ignore[attr-defined, misc]
-    def clock(self, val: Clock) -> None:
+    @ReadonlyDuration.clock.setter  # type: ignore[attr-defined, untyped-decorator]
+    def clock(self, value: Clock) -> None:
         check_type(
-            val, Clock, class_name=self.__class__.__name__, property_name="clock"
+            value, Clock, class_name=self.__class__.__name__, property_name="clock"
         )
-        self._clock = val
+        self._clock = value
         self._hours, self._minutes, self._seconds = [
             Fraction(time) for time in self.clock.get_values()
         ]
 
-    def add_seconds(self, val: ConvertibleToFraction) -> None:
-        super()._add_seconds(val)
+    def add_seconds(self, value: ConvertibleToFraction) -> None:
+        super()._add_seconds(value)
 
-    def add_hours(self, val: ConvertibleToFraction) -> None:
-        super()._add_hours(val)
+    def add_hours(self, value: ConvertibleToFraction) -> None:
+        super()._add_hours(value)
 
-    def add_minutes(self, val: ConvertibleToFraction) -> None:
-        super()._add_minutes(val)
+    def add_minutes(self, value: ConvertibleToFraction) -> None:
+        super()._add_minutes(value)
 
-    @ReadonlyDuration.seconds.setter  # type: ignore[attr-defined, misc]
-    def seconds(self, val: ConvertibleToFraction) -> None:
+    @ReadonlyDuration.seconds.setter  # type: ignore[attr-defined, untyped-decorator]
+    def seconds(self, value: ConvertibleToFraction) -> None:
         check_type(
-            val,
+            value,
             "ConvertibleToFraction",
             class_name=self.__class__.__name__,
             property_name="seconds",
         )
-        self._set_clock(hours=self._hours, minutes=self._minutes, seconds=val)
+        self._set_clock(hours=self._hours, minutes=self._minutes, seconds=value)
 
-    @ReadonlyDuration.minutes.setter  # type: ignore[attr-defined, misc]
-    def minutes(self, val: ConvertibleToFraction) -> None:
+    @ReadonlyDuration.minutes.setter  # type: ignore[attr-defined, untyped-decorator]
+    def minutes(self, value: ConvertibleToFraction) -> None:
         check_type(
-            val,
+            value,
             "ConvertibleToFraction",
             class_name=self.__class__.__name__,
             property_name="minutes",
         )
-        self._set_clock(self._hours, val, self._seconds)
+        self._set_clock(self._hours, value, self._seconds)
 
-    @ReadonlyDuration.hours.setter  # type: ignore[attr-defined, misc]
-    def hours(self, val: ConvertibleToFraction) -> None:
+    @ReadonlyDuration.hours.setter  # type: ignore[attr-defined, untyped-decorator]
+    def hours(self, value: ConvertibleToFraction) -> None:
         check_type(
-            val,
+            value,
             "ConvertibleToFraction",
             class_name=self.__class__.__name__,
             property_name="hours",
         )
-        self._set_clock(val, self._minutes, self._seconds)
+        self._set_clock(value, self._minutes, self._seconds)
 
 
 def convert_duration_to_quarter_duration_value(

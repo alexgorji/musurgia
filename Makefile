@@ -13,17 +13,14 @@ testgraphics:
 	uv sync --group test
 	uv run pytest musurgia/tests/graphics -m "not wip"
 
-.PHONY: typecheck
-typecheck:
-	uv run mypy musurgia
+.PHONY: type-check
+type-check:
+	uv run mypy musurgia --strict
 
-.PHONY: typecheck-trees
-typecheck-trees:
-	uv run mypy --strict musurgia/trees --follow-imports skip
 
 .PHONY: pre-push-hook
 pre-push-hook:
-	uv run mypy --strict musurgia/graphics
+	$(MAKE) type-check
 	uv sync --group test
 	uv run pytest -m "not wip"
 

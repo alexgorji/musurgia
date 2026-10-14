@@ -26,11 +26,11 @@ class ArithmeticProgression:
         self._correction_factor: Optional[Fraction] = None
         self._correct_s: bool
 
-        self.a1 = a1  # type: ignore
-        self.an = an  # type: ignore
-        self.n = n  # type: ignore
-        self.d = d  # type: ignore
-        self.s = s  # type: ignore
+        self.a1 = a1
+        self.an = an
+        self.n = n
+        self.d = d
+        self.s = s
         self.correct_s = correct_s
 
     # private methods
