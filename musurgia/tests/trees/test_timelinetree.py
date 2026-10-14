@@ -52,7 +52,7 @@ class TimeLineTreeTestCase(TestCase):
         tlt.add_child(TimelineTree(TimelineDuration(1)))
         with self.assertRaises(WrongTreeValueError) as err:
             tlt.check_tree_values()
-        expected = "Children of ValuedTree node of position 0 with value 2 have wrong values [Fraction(3, 2), Fraction(1, 2), Fraction(1, 1)] (sum=3)"
+        expected = "Children of valuetree node of position 0 with value 2 have wrong values [Fraction(3, 2), Fraction(1, 2), Fraction(1, 1)] (sum=3)"
         self.assertEqual(str(err.exception), expected)
 
     def test_timeline_get_value(self):

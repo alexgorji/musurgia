@@ -17,9 +17,14 @@ testgraphics:
 typecheck:
 	uv run mypy musurgia
 
+.PHONY: typecheck-trees
+typecheck-trees:
+	uv run mypy --strict musurgia/trees --follow-imports skip
+
 .PHONY: pre-push-hook
 pre-push-hook:
 	uv run mypy --strict musurgia/graphics
 	uv sync --group test
 	uv run pytest -m "not wip"
+
 

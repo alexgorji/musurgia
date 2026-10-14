@@ -4,19 +4,19 @@ from fractions import Fraction
 import warnings
 
 from musurgia.tests.helpers.utils_for_tests import (
-    DemoValuedTree,
+    Demovaluetree,
     create_test_valued_tree,
 )
 from musurgia.utils import flatten
 
 
-class ValuedTreeChangeValueTestCase(TestCase):
+class valuetreeChangeValueTestCase(TestCase):
     def setUp(self) -> None:
-        self.vt = DemoValuedTree(value=10)
+        self.vt = Demovaluetree(value=10)
 
     def _add_layer(self, number_of_layers=1):
         for value in [5, Fraction(5, 3), Fraction(10, 3)]:
-            self.vt.add_child(DemoValuedTree(value=value))
+            self.vt.add_child(Demovaluetree(value=value))
         if number_of_layers == 2:
             list_of_values = [
                 [Fraction(5, 6), Fraction(5, 3), Fraction(5, 2)],
@@ -25,7 +25,7 @@ class ValuedTreeChangeValueTestCase(TestCase):
             ]
             for child, values in zip(self.vt.get_children(), list_of_values):
                 for v in values:
-                    child.add_child(DemoValuedTree(value=v))
+                    child.add_child(Demovaluetree(value=v))
 
     def test_change_root_value_without_children(self):
         self.vt.update_value(15)
@@ -76,7 +76,7 @@ class ValuedTreeChangeValueTestCase(TestCase):
         first_child = self.vt.get_children()[0]
         values = [Fraction(5, 6), Fraction(5, 3), Fraction(5, 2)]
         for v in values:
-            first_child.add_child(DemoValuedTree(v))
+            first_child.add_child(Demovaluetree(v))
         list_of_values = [
             [Fraction(5, 18), Fraction(5, 12), Fraction(5, 36)],
             [Fraction(5, 18), Fraction(5, 9), Fraction(5, 6)],
@@ -84,7 +84,7 @@ class ValuedTreeChangeValueTestCase(TestCase):
         ]
         for child, values in zip(first_child.get_children(), list_of_values):
             for v in values:
-                child.add_child(DemoValuedTree(v))
+                child.add_child(Demovaluetree(v))
 
         expected = """└── 0: 10.0
     ├── 1: 5.0
@@ -138,14 +138,14 @@ class ValuedTreeChangeValueTestCase(TestCase):
         self.vt.check_tree_values()
 
     def test_update_child_check_root(self):
-        vt = DemoValuedTree(60)
+        vt = Demovaluetree(60)
         for d in [20, 10, 30]:
-            vt.add_child(DemoValuedTree(d))
+            vt.add_child(Demovaluetree(d))
         for list_of_d, child in zip(
             [[10, 2, 3, 5], [], [5, 20, 3, 2]], vt.get_children()
         ):
             for d in list_of_d:
-                child.add_child(DemoValuedTree(d))
+                child.add_child(Demovaluetree(d))
         expected = """└── 60.0
     ├── 20.0
     │   ├── 10.0
@@ -195,18 +195,18 @@ class ValuedTreeChangeValueTestCase(TestCase):
 
 class WrongValueErrorTest(TestCase):
     def test_less_child_values(self):
-        vt = DemoValuedTree(10)
-        vt.add_child(DemoValuedTree(4))
-        vt.add_child(DemoValuedTree(4))
+        vt = Demovaluetree(10)
+        vt.add_child(Demovaluetree(4))
+        vt.add_child(Demovaluetree(4))
         with warnings.catch_warnings(record=True) as w:
             vt.get_children()
             assert len(w) == 1
 
     def test_greate_child_values(self):
-        vt = DemoValuedTree(10)
-        vt.add_child(DemoValuedTree(4))
-        vt.add_child(DemoValuedTree(4))
-        vt.add_child(DemoValuedTree(4))
+        vt = Demovaluetree(10)
+        vt.add_child(Demovaluetree(4))
+        vt.add_child(Demovaluetree(4))
+        vt.add_child(Demovaluetree(4))
         with warnings.catch_warnings(record=True) as w:
             vt.get_children()
             assert len(w) == 1

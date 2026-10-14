@@ -6,10 +6,10 @@ from typing import Any, TypeVar, Union
 from musurgia.musurgia_exceptions import WrongTreeValueError, WrongTreeValueWarning
 from musurgia.musurgia_types import ConvertibleToFraction
 
-T = TypeVar("T", bound="ValuedTree")
+T = TypeVar("T", bound="ValueTree")
 
 
-class ValuedTree(Tree[Any]):
+class ValueTree(Tree[Any]):
     def _change_children_value(self, factor: Union[int, float, Fraction]) -> None:
         for child in self._get_children():
             child._set_value(child.get_value() * factor)
@@ -24,7 +24,7 @@ class ValuedTree(Tree[Any]):
     ) -> None:
         if sum(children_values) != self.get_value():
             raise WrongTreeValueError(
-                f"Children of ValuedTree node of position {self.get_position_in_tree()} with value {self.get_value()} have wrong values {children_values} (sum={sum(children_values)})"
+                f"Children of valuetree node of position {self.get_position_in_tree()} with value {self.get_value()} have wrong values {children_values} (sum={sum(children_values)})"
             )
 
     def _get_children(self: T) -> list[T]:

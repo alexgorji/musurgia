@@ -9,7 +9,7 @@ from musurgia.timing.duration import (
     ReadonlyDuration,
     convert_duration_to_quarter_duration_value,
 )
-from musurgia.trees.valuedtree import ValuedTree
+from musurgia.trees.valuetree import ValueTree
 from musurgia.musurgia_types import ConvertibleToFraction, MusurgiaTypeError, check_type
 
 __all__ = ["TimelineDuration", "TimelineTree"]
@@ -52,7 +52,7 @@ class TimelineDuration(ReadonlyDuration):
         return self._metronome
 
 
-class TimelineTree(ValuedTree):
+class TimelineTree(ValueTree):
     def __init__(
         self,
         duration: Union[TimelineDuration, ConvertibleToFraction],

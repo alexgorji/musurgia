@@ -8,8 +8,7 @@ from musurgia.trees.musicaltree import (
     TreeChordFactory,
 )
 from musurgia.trees.timelinetree import TimelineDuration, TimelineTree
-from musurgia.trees.valuedtree import ValuedTree
-
+from musurgia.trees.valuetree import ValueTree
 
 __all__ = [
     "create_test_valued_tree",
@@ -201,13 +200,13 @@ def create_test_timeline_tree():
     return tlt
 
 
-class DemoValuedTree(ValuedTree):
+class Demovaluetree(ValueTree):
     def __init__(self, value, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._value = value
 
     def _check_child_to_be_added(self, child):
-        if not isinstance(child, ValuedTree):
+        if not isinstance(child, ValueTree):
             raise TypeError
         else:
             return True
@@ -219,8 +218,8 @@ class DemoValuedTree(ValuedTree):
         return Fraction(self._value)
 
 
-def create_test_valued_tree() -> DemoValuedTree:
-    vt = DemoValuedTree.create_tree_from_list(test_fractal_structur_list, "value")
+def create_test_valued_tree() -> Demovaluetree:
+    vt = Demovaluetree.create_tree_from_list(test_fractal_structur_list, "value")
     # print(vt.get_tree_representation(key=lambda node: node.get_value()))
 
     """└── 10

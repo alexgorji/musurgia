@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from musurgia.trees.graphictree import (
     GraphicTree,
-    ValuedTreeNodeSegment,
+    valuetreeNodeSegment,
     GraphicChildrenSegmentedLine,
 )
 from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
@@ -33,7 +33,7 @@ class GraphicTreeTest(TestCase):
             assert gnode.get_segment().length == float(fnode.get_value() * self.gt.unit)
 
     def test_set_node_value(self):
-        seg = ValuedTreeNodeSegment(node_value=10)
+        seg = valuetreeNodeSegment(node_value=10)
         assert seg.length == 10
         assert seg.get_node_value() == 10
         seg.set_node_value(20)
@@ -49,7 +49,7 @@ class GraphicTreeTest(TestCase):
     def test_node_segment(self):
         assert self.gt.get_segment().unit == 1
         segment = self.gt.get_segment()
-        assert isinstance(segment, ValuedTreeNodeSegment)
+        assert isinstance(segment, valuetreeNodeSegment)
         assert segment.length == self.vt.get_value()
         with self.assertRaises(AttributeError):
             segment.length = 10
@@ -63,7 +63,7 @@ class GraphicTreeTest(TestCase):
 
         segment.start_mark_line.add_text_label("something")
         copied_segment = copy.deepcopy(segment)
-        assert isinstance(copied_segment, ValuedTreeNodeSegment)
+        assert isinstance(copied_segment, valuetreeNodeSegment)
         assert copied_segment.unit == segment.unit
         assert copied_segment.length == self.vt.get_value() * 10
         assert copied_segment.start_mark_line.show

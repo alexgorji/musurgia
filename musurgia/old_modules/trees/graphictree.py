@@ -6,13 +6,12 @@ from verysimpletree.tree import Tree, T
 from musurgia.musurgia_exceptions import SegmentedLineSegmentHasMarginsError
 from musurgia.pdf import DrawObjectRow, Pdf, DrawObjectColumn, HorizontalLineSegment
 from musurgia.pdf.line import LineSegment
-from musurgia.trees.valuedtree import ValuedTree
+from musurgia.trees.valuetree import ValueTree
+
+__all__ = ["valuetreeNodeSegment", "GraphicChildrenSegmentedLine", "GraphicTree"]
 
 
-__all__ = ["ValuedTreeNodeSegment", "GraphicChildrenSegmentedLine", "GraphicTree"]
-
-
-class ValuedTreeNodeSegment(HorizontalLineSegment):
+class valuetreeNodeSegment(HorizontalLineSegment):
     def __init__(
         self, node_value: float, unit: int = 1, *args: Any, **kwargs: Any
     ) -> None:
@@ -89,7 +88,7 @@ class GraphicChildrenSegmentedLine(DrawObjectRow):
 class GraphicTree(Tree[Any]):
     def __init__(
         self,
-        valued_tree: ValuedTree,
+        valued_tree: ValueTree,
         distance: Union[int, float] = 5,
         unit: int = 1,
         mark_line_length: Union[int, float] = 6,
@@ -98,7 +97,7 @@ class GraphicTree(Tree[Any]):
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
-        self._valued_tree: ValuedTree = valued_tree
+        self._valued_tree: ValueTree = valued_tree
         self._distance: Union[int, float]
         self._unit: int
         self._mark_line_length: Union[int, float]
@@ -109,7 +108,7 @@ class GraphicTree(Tree[Any]):
         self.mark_line_length = mark_line_length
         self.shrink_factor = shrink_factor
 
-        self._segment: ValuedTreeNodeSegment
+        self._segment: valuetreeNodeSegment
         self._graphic: DrawObjectColumn
         self._populate_tree()
 
@@ -130,7 +129,7 @@ class GraphicTree(Tree[Any]):
             self._graphic.add_draw_object(second_row)
 
     def _populate_tree(self) -> None:
-        self._segment = ValuedTreeNodeSegment(
+        self._segment = valuetreeNodeSegment(
             node_value=float(self.get_valued_tree().get_value()), unit=self.unit
         )
         self._segment.start_mark_line.length = self.mark_line_length
@@ -227,10 +226,10 @@ class GraphicTree(Tree[Any]):
         children = self.get_layer(layer_number)
         return GraphicChildrenSegmentedLine(graphic_children=children)
 
-    def get_segment(self) -> ValuedTreeNodeSegment:
+    def get_segment(self) -> valuetreeNodeSegment:
         return self._segment
 
-    def get_valued_tree(self) -> ValuedTree:
+    def get_valued_tree(self) -> ValueTree:
         return self._valued_tree
 
     def get_graphic(self) -> DrawObjectColumn:
