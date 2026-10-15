@@ -74,7 +74,7 @@ def test_ruler_as_segmented_line():
     assert hr.get_draw_objects() == [hr.as_segmented_line()]
 
 
-class RulerDraw(SVGTestCase):
+class RulerDrawTestCase(SVGTestCase):
     def test_horizontal_ruler(self):
         page = SVGPage()
         page.add_grid(thickness=Decimal("0.05"))

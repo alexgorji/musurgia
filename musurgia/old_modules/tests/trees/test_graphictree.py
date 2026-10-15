@@ -12,7 +12,7 @@ from musurgia.pdf import DrawObjectColumn, DrawObjectRow, Pdf, draw_ruler, TextL
 from musurgia.pdf.ruler import HorizontalRuler
 from room_composition.desk_composition_tools.folder_composition_tools_musurgia.musurgia.musurgia.tests.helpers.utils_for_tests import (
     PdfTestCase,
-    create_test_valued_tree,
+    create_test_value_tree,
     add_node_infos_to_graphic,
 )
 
@@ -21,7 +21,7 @@ path = Path(__file__)
 
 class GraphicTreeTest(TestCase):
     def setUp(self):
-        self.vt = create_test_valued_tree()
+        self.vt = create_test_value_tree()
         # print(self.vt.get_tree_representation(key=lambda node: f"{node.get_position_in_tree()}: {node.get_duration().seconds}"))
         self.gt = GraphicTree(self.vt)
 
@@ -136,7 +136,7 @@ class GraphicTreeTest(TestCase):
 
 class TestGraphicTreeDraw(PdfTestCase):
     def setUp(self):
-        self.vt = create_test_valued_tree()
+        self.vt = create_test_value_tree()
         self.gt = GraphicTree(self.vt)
         self.pdf = Pdf(orientation="l")
         add_node_infos_to_graphic(self.vt, self.gt)
@@ -200,7 +200,7 @@ class TestGraphicTreeDraw(PdfTestCase):
 
 class TestGraphicChildrenSegmentedLine(TestCase):
     def setUp(self):
-        self.vt = create_test_valued_tree()
+        self.vt = create_test_value_tree()
         self.gt = GraphicTree(self.vt)
 
     def test_check_segment_margins(self):
@@ -219,7 +219,7 @@ class TestGraphicChildrenSegmentedLine(TestCase):
 
 class TestCreatLayerGraphic(PdfTestCase):
     def setUp(self):
-        self.vt = create_test_valued_tree()
+        self.vt = create_test_value_tree()
         self.pdf = Pdf(orientation="l")
 
     def test_create_layer_graphic(self):

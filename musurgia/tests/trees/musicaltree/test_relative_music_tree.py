@@ -1,15 +1,13 @@
-from itertools import cycle
 from pathlib import Path
 import timeit
 from unittest import TestCase
-from musicscore.layout import StaffLayout
 from musurgia.musurgia_exceptions import (
     RelativeTreeChordFactoryHasNoMidiValueRangeError,
 )
 from musurgia.tests.helpers import (
     XMLTestCase,
     create_test_fractal_relative_musical_tree,
-    test_fractal_structur_list,
+    test_fractal_structure_list,
 )
 
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
@@ -42,7 +40,7 @@ class RelativeValueGeneratorTestCase(TestCase):
 class RelativeMusicalTreeTestCase(XMLTestCase):
     def setUp(self):
         self.mt = RelativeMusicTree.create_tree_from_list(
-            test_fractal_structur_list, "duration"
+            test_fractal_structure_list, "duration"
         )
         self.mt.get_chord_factory().show_metronome = True
         self.mt.get_chord_factory().midi_value_range = (60, 84)

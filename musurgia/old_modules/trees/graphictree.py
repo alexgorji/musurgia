@@ -88,7 +88,7 @@ class GraphicChildrenSegmentedLine(DrawObjectRow):
 class GraphicTree(Tree[Any]):
     def __init__(
         self,
-        valued_tree: ValueTree,
+        value_tree: ValueTree,
         distance: Union[int, float] = 5,
         unit: int = 1,
         mark_line_length: Union[int, float] = 6,
@@ -97,7 +97,7 @@ class GraphicTree(Tree[Any]):
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
-        self._valued_tree: ValueTree = valued_tree
+        self._value_tree: ValueTree = value_tree
         self._distance: Union[int, float]
         self._unit: int
         self._mark_line_length: Union[int, float]
@@ -130,11 +130,11 @@ class GraphicTree(Tree[Any]):
 
     def _populate_tree(self) -> None:
         self._segment = valuetreeNodeSegment(
-            node_value=float(self.get_valued_tree().get_value()), unit=self.unit
+            node_value=float(self.get_value_tree().get_value()), unit=self.unit
         )
         self._segment.start_mark_line.length = self.mark_line_length
         self._segment.end_mark_line.length = self.mark_line_length
-        for ch in self.get_valued_tree().get_children():
+        for ch in self.get_value_tree().get_children():
             self.add_child(
                 GraphicTree(
                     ch,
@@ -229,8 +229,8 @@ class GraphicTree(Tree[Any]):
     def get_segment(self) -> valuetreeNodeSegment:
         return self._segment
 
-    def get_valued_tree(self) -> ValueTree:
-        return self._valued_tree
+    def get_value_tree(self) -> ValueTree:
+        return self._value_tree
 
     def get_graphic(self) -> DrawObjectColumn:
         for node in self.traverse():

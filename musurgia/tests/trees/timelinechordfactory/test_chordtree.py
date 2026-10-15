@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from musicscore.score import Score
 
-from musurgia.tests.helpers import XMLTestCase, create_test_valued_tree
+from musurgia.tests.helpers import XMLTestCase, create_test_value_tree
 
 from musurgia.trees.timelinetree import (
     SimpleTimelineChordFactory,
@@ -44,7 +44,7 @@ path = Path(__file__)
 
 class TimeLineTreeToScoreTestCase(XMLTestCase):
     def setUp(self):
-        self.vt = create_test_valued_tree()
+        self.vt = create_test_value_tree()
         self.tmt = TimelineTree.create_tree_from_list(
             tree_list_representation=self.vt.get_list_representation(
                 key=lambda node: node.get_value()
@@ -68,5 +68,5 @@ class TimeLineTreeToScoreTestCase(XMLTestCase):
         self.score.set_possible_subdivisions([2, 3, 4, 5, 6, 7, 8])
         self.score.get_quantized = True
         self.score.finalize()
-        with self.file_path(path, "valued_layers_to_score") as xml_path:
+        with self.file_path(path, "value_layers_to_score") as xml_path:
             self.score.export_xml(xml_path)

@@ -11,14 +11,14 @@ from musurgia.trees.timelinetree import TimelineDuration, TimelineTree
 from musurgia.trees.valuetree import ValueTree
 
 __all__ = [
-    "create_test_valued_tree",
+    "create_test_value_tree",
     "create_test_fractal_musical_tree",
     "create_test_fractal_relative_musical_tree",
     "create_test_fractal_timeline_tree",
-    "test_fractal_structur_list",
+    "test_fractal_structure_list",
 ]
 
-test_fractal_structur_list = [
+test_fractal_structure_list = [
     Fraction(10, 1),
     [
         Fraction(3, 1),
@@ -168,11 +168,13 @@ def create_test_fractal_musical_tree():
 
 class FractalMusicalTreeChordFactory(TreeChordFactory):
     def update_chord_fractal_order(self):
-        self._chord.add_words(
-            str(self.get_musical_tree_node().get_fractal_order()),
-            placement="below",
-            relative_y=-10,
-        )
+        node = self.get_musical_tree_node()
+        if isinstance(node, FractalMusicalTree):
+            self._chord.add_words(
+                str(node.get_fractal_order()),
+                placement="below",
+                relative_y=-10,
+            )
 
 
 def create_test_fractal_relative_musical_tree():
@@ -200,7 +202,7 @@ def create_test_timeline_tree():
     return tlt
 
 
-class Demovaluetree(ValueTree):
+class DemoValueTree(ValueTree):
     def __init__(self, value, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._value = value
@@ -218,8 +220,8 @@ class Demovaluetree(ValueTree):
         return Fraction(self._value)
 
 
-def create_test_valued_tree() -> Demovaluetree:
-    vt = Demovaluetree.create_tree_from_list(test_fractal_structur_list, "value")
+def create_test_value_tree() -> DemoValueTree:
+    vt = DemoValueTree.create_tree_from_list(test_fractal_structure_list, ["value"])
     # print(vt.get_tree_representation(key=lambda node: node.get_value()))
 
     """└── 10

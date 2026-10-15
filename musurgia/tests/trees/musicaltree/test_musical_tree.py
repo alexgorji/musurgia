@@ -2,7 +2,7 @@ from pathlib import Path
 
 from musurgia.tests.helpers import (
     XMLTestCase,
-    test_fractal_structur_list,
+    test_fractal_structure_list,
 )
 
 from musurgia.trees.musicaltree import (
@@ -16,7 +16,7 @@ path = Path(__file__)
 class TestMusicalTree(XMLTestCase):
     def setUp(self):
         self.mt = MusicalTree.create_tree_from_list(
-            test_fractal_structur_list, "duration"
+            test_fractal_structure_list, "duration"
         )
         self.mt.get_chord_factory().show_metronome = True
 
@@ -31,7 +31,7 @@ class TestMusicalTree(XMLTestCase):
 class TestTreeMidiGenerator(XMLTestCase):
     def setUp(self):
         self.mt = MusicalTree.create_tree_from_list(
-            test_fractal_structur_list, "duration"
+            test_fractal_structure_list, "duration"
         )
         self.mt.get_chord_factory().show_metronome = True
 
