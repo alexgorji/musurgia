@@ -1,6 +1,5 @@
 from pathlib import Path
 from unittest import TestCase
-import pytest
 
 from musurgia.graphics.container import Container
 from musurgia.graphics.geometry import Paddings, Position, Size
@@ -23,7 +22,7 @@ this_path = Path(__file__)
 
 
 class PageToSVGTestCase(TestCase):
-    def test_empty_page_to_svg(self):
+    def test_empty_page_to_svg(self) -> None:
         page = SVGPage()
         svg_xml = page.as_svg().as_str()
         root = ET.fromstring(svg_xml)
@@ -31,12 +30,12 @@ class PageToSVGTestCase(TestCase):
         assert root.attrib["height"] == "297mm"
         assert root.attrib["viewBox"] == "0 0 210 297"
 
-    def test_add_text_to_page(self):
+    def test_add_text_to_page(self) -> None:
         page = SVGPage()
         page.add_draw_object(Position(0, 0), Text(text="some text"))
         assert "some text" in page.convert_to_svg_string()
 
-    def test_add_multiple_draw_objects_to_page(self):
+    def test_add_multiple_draw_objects_to_page(self) -> None:
         page = SVGPage()
         page.add_draw_object(
             Position(0, 0),
@@ -54,16 +53,16 @@ class PageToSVGTestCase(TestCase):
 
 
 class PageToSVGRegressionTests(SVGTestCase):
-    def test_empty_page(self):
+    def test_empty_page(self) -> None:
         page = SVGPage()
         self.compare_page(page, "empty_page", this_path)
 
-    def test_empty_page_with_grid(self):
+    def test_empty_page_with_grid(self) -> None:
         page = SVGPage()
         page.add_grid()
         self.compare_page(page, "empty_page_with_grid", this_path)
 
-    def test_add_line_draw_object_to_page(self):
+    def test_add_line_draw_object_to_page(self) -> None:
         page = SVGPage()
         page.add_background("white")
         l1 = Line(end=Position(30, 40), options=LineOptions(color="blue", thickness=2))
@@ -98,7 +97,7 @@ class PageToSVGRegressionTests(SVGTestCase):
             page, "add_line_draw_objects", this_path, width=210, height=297
         )
 
-    def test_add_multiple_line_draw_objects_to_page(self):
+    def test_add_multiple_line_draw_objects_to_page(self) -> None:
         page = SVGPage()
         draw_objects = [
             StraightLine(
@@ -125,7 +124,7 @@ class PageToSVGRegressionTests(SVGTestCase):
             page, "add_multiple_line_draw_objects", this_path, width=210, height=297
         )
 
-    def test_add_nested_container_to_page(self):
+    def test_add_nested_container_to_page(self) -> None:
         container = Container()
         container.add_draw_object(
             Position(10, 10),
@@ -154,7 +153,7 @@ class PageToSVGRegressionTests(SVGTestCase):
             page, "add_nested_container", this_path, width=210, height=297
         )
 
-    def test_add_rectangle(self):
+    def test_add_rectangle(self) -> None:
         page = SVGPage()
         r = Rectangle(
             size=Size(30, 40), options=RectangleOptions(color="blue", thickness=1)
@@ -163,7 +162,7 @@ class PageToSVGRegressionTests(SVGTestCase):
 
         self.compare_page(page, "add_rectangle", this_path, width=210, height=297)
 
-    def test_boxed_rectangle(self):
+    def test_boxed_rectangle(self) -> None:
         page = SVGPage()
         r1 = Rectangle(
             size=Size(30, 40), options=RectangleOptions(color="blue", thickness=5)
@@ -184,7 +183,7 @@ class PageToSVGRegressionTests(SVGTestCase):
             page, "boxed_rectangle", this_path, width=210 * 2, height=297 * 2
         )
 
-    def test_add_container(self):
+    def test_add_container(self) -> None:
         page = SVGPage()
         container = Container()
 

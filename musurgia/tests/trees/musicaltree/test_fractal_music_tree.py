@@ -10,10 +10,10 @@ path = Path(__file__)
 
 
 class TestSimpleFractalMusicalTree(XMLTestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.ft = create_test_fractal_musical_tree()
 
-    def test_midi_values(self):
+    def test_midi_values(self) -> None:
         expected = """└── [72]
     ├── [72]
     │   ├── [72]
@@ -63,7 +63,7 @@ class TestSimpleFractalMusicalTree(XMLTestCase):
             expected,
         )
 
-    def test_create_chord(self):
+    def test_create_chord(self) -> None:
         count = 0
         for node in self.ft.traverse():
             count += 1
@@ -74,7 +74,7 @@ class TestSimpleFractalMusicalTree(XMLTestCase):
 
         self.assertEqual(count, 41)
 
-    def test_simple_fractal_musical_tree_first_layer(self):
+    def test_simple_fractal_musical_tree_first_layer(self) -> None:
         score = Score()
         part = score.add_part("part-1")
         for node in self.ft.get_layer(1):
@@ -83,7 +83,7 @@ class TestSimpleFractalMusicalTree(XMLTestCase):
         with self.file_path(path, "simple_first_layer") as xml_path:
             score.export_xml(xml_path)
 
-    def test_simple_fractal_musical_tree(self):
+    def test_simple_fractal_musical_tree(self) -> None:
         score = self.ft.export_score()
         score.get_quantized = True
         with self.file_path(path, "simple") as xml_path:

@@ -1,7 +1,8 @@
 from pathlib import Path
+from pytest import Config
 
 
-def pytest_configure(config):
+def pytest_configure(config: Config) -> None:
     import os
 
     fonts_dir = Path(__file__).parent / "fonts"

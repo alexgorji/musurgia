@@ -4,7 +4,7 @@ from musurgia.trees.fractaltimelinetree import PermutationIndexCalculator
 
 
 class TestPermutationMatrixIndexCalculator(TestCase):
-    def test_calculate_permutation_matrix_index(self):
+    def test_calculate_permutation_matrix_index(self) -> None:
         """
         pos_indices = {
             'root': (1, 1),

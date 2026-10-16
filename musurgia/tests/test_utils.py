@@ -1,37 +1,38 @@
 from fractions import Fraction
 import math
+from typing import cast
 from unittest import TestCase
 import os
 
-from musicscore.util import xToD
+from musicscore.util import xToD  # pyright: ignore[reportUnknownVariableType]
 
 from musurgia.utils import Normalizer, RelativeValueGenerator
 
 
 class NormalizeTestCase(TestCase):
-    def test_normalize_value_to_itself(self):
+    def test_normalize_value_to_itself(self) -> None:
         normalize = Normalizer(normalization_range=(1, 5), input_value_range=(1, 5))
         for x in [1, 3, 5]:
             self.assertEqual(normalize.get_normalized_value(x), x)
 
-    def test_normalize_value_to_itself_out_of_range(self):
+    def test_normalize_value_to_itself_out_of_range(self) -> None:
         normalize = Normalizer(normalization_range=(1, 5), input_value_range=(1, 5))
         for x in [-2, 0, 1, 5, 7]:
             self.assertEqual(normalize.get_normalized_value(x), x)
 
-    def test_normalize_value(self):
+    def test_normalize_value(self) -> None:
         normalize = Normalizer(normalization_range=(0, 1), input_value_range=(0, 10))
         for x in [0, 3, 5, 8, 10]:
             self.assertEqual(normalize.get_normalized_value(x), Fraction(x, 10))
 
-    def test_normalize_value_out_of_range(self):
+    def test_normalize_value_out_of_range(self) -> None:
         normalize = Normalizer(normalization_range=(0, 1), input_value_range=(0, 10))
         for x in [-3, -2, 0, 10, 13, 15]:
             self.assertEqual(normalize.get_normalized_value(x), Fraction(x, 10))
 
 
 class RelativeValueGeneratorTestCase(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.rvr = RelativeValueGenerator(
             value_range=(1, 10),
             value_grid=None,
@@ -39,8 +40,8 @@ class RelativeValueGeneratorTestCase(TestCase):
             proportions=[2, 4, 3, 2],
         )
 
-    def _get_directions(self, input_list):
-        directions = []
+    def _get_directions(self, input_list: list[Fraction]) -> list[int]:
+        directions: list[int] = []
         for index, x in enumerate(input_list[1:]):
             previous = input_list[index]
             if x > previous:
@@ -48,11 +49,11 @@ class RelativeValueGeneratorTestCase(TestCase):
             elif x < previous:
                 directions.append(-1)
             else:
-                directions.appedn(0)
+                directions.append(0)
         return directions
 
-    def _get_proportions(self, input_list):
-        intervals = xToD(input_list)
+    def _get_proportions(self, input_list: list[Fraction]) -> list[float]:
+        intervals = cast(list[int], xToD(input_list))
         factor = math.lcm(*[x.denominator for x in intervals])
         non_fraction_intervals = [factor * interval for interval in intervals]
         integer_intervals = [x.numerator for x in non_fraction_intervals]
@@ -60,7 +61,7 @@ class RelativeValueGeneratorTestCase(TestCase):
         gcd = math.gcd(*integer_intervals)
         return [abs(x / gcd) for x in integer_intervals]
 
-    def test_init(self):
+    def test_init(self) -> None:
         self.assertEqual(self.rvr.value_range, (1, 10))
         self.assertIsNone(self.rvr.value_grid)
         self.assertEqual(self.rvr.directions, [-1, -1, 1, 1])
@@ -84,5 +85,5 @@ class RelativeValueGeneratorTestCase(TestCase):
         )
 
 
-def set_ci_tolerance(ci_tolerance, default_tolerance=0):
+def set_ci_tolerance(ci_tolerance: float, default_tolerance: float = 0.0) -> float:
     return ci_tolerance if os.getenv("CI") else default_tolerance

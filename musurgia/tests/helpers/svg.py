@@ -1,4 +1,5 @@
 from decimal import Decimal
+from typing import Literal
 import unittest
 from pathlib import Path
 
@@ -13,11 +14,11 @@ from musurgia.graphics.svg.paginator import SVGPage
 
 
 class SVG:
-    def __init__(self, data: svg.SVG | str, *args, **kwargs):
+    def __init__(self, data: svg.SVG | str, *args: str, **kwargs: str):
         super().__init__(*args, **kwargs)
         self.data = data
 
-    def write_to_path(self, path):
+    def write_to_path(self, path: Path) -> Path:
         print(path)
         with open(path, "w") as file:
             file.write(self.data if isinstance(self.data, str) else self.data.as_str())
@@ -25,8 +26,7 @@ class SVG:
 
 
 class SVGTestCase(unittest.TestCase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    pass
 
     @staticmethod
     def create_test_path(
@@ -47,12 +47,12 @@ class SVGTestCase(unittest.TestCase):
         self,
         svg_path: Path,
         png_path: Path,
-        width=int(210 * 96 / 25.4),
-        height=int(297 * 96 / 25.4),
-        tolerance=0.0,
-    ):
+        width: int = int(210 * 96 / 25.4),
+        height: int = int(297 * 96 / 25.4),
+        tolerance: float = 0.0,
+    ) -> Literal[True]:
         rendered_png_path = svg_path.with_suffix(".rendered.png")
-        cairosvg.svg2png(
+        cairosvg.svg2png(  # pyright: ignore[reportUnknownMemberType]
             url=str(svg_path),
             write_to=str(rendered_png_path),
             output_width=width,
@@ -62,8 +62,8 @@ class SVGTestCase(unittest.TestCase):
         img1 = Image.open(rendered_png_path).convert("RGBA")
         img2 = Image.open(png_path).convert("RGBA")
 
-        img1 = img1.resize((width, height))
-        img2 = img2.resize((width, height))
+        img1 = img1.resize((width, height))  # pyright: ignore[reportUnknownMemberType]
+        img2 = img2.resize((width, height))  # pyright: ignore[reportUnknownMemberType]
 
         percentage_diff, images_are_same, tolerance = self.compare_images(
             img1, img2, tolerance=tolerance
@@ -78,7 +78,9 @@ class SVGTestCase(unittest.TestCase):
             {percentage_diff:05.3f}% exceeds the tolerance of {tolerance:05.3f}%."""
         )
 
-    def compare_images(self, im1: Image.Image, im2: Image.Image, tolerance=0.002):
+    def compare_images(
+        self, im1: Image.Image, im2: Image.Image, tolerance: float = 0.002
+    ) -> tuple[float, bool, float]:
         """
         https://rowannicholls.github.io/python/image_analysis/comparing_two_images.html
 
@@ -103,16 +105,17 @@ class SVGTestCase(unittest.TestCase):
         if im1.size != im2.size:
             raise Exception(f"Different sizes of images: {im1.size} != {im2.size}")
 
-        # Pixel-by-pixel comparison
-        pairs = zip(im1.get_flattened_data(), im2.get_flattened_data())
-        # If the image is greyscale
-        if len(im1.getbands()) == 1:
-            # Total difference
-            diff = sum(abs(pixel1 - pixel2) for pixel1, pixel2 in pairs)
-        # If the image is RGB
-        else:
-            # Total difference
-            diff = sum(abs(c1 - c2) for p1, p2 in pairs for c1, c2 in zip(p1, p2))
+        channels1 = (
+            channel
+            for pixel in im1.get_flattened_data()
+            for channel in (pixel if isinstance(pixel, tuple) else (pixel,))
+        )
+        channels2 = (
+            channel
+            for pixel in im2.get_flattened_data()
+            for channel in (pixel if isinstance(pixel, tuple) else (pixel,))
+        )
+        diff = sum(abs(c1 - c2) for c1, c2 in zip(channels1, channels2))
 
         # Total number of colour components
         N = im1.size[0] * im1.size[1] * len(im1.getbands())
@@ -133,10 +136,10 @@ class SVGTestCase(unittest.TestCase):
         page: SVGPage,
         post_fix: str,
         this_path: Path,
-        width=None,
-        height=None,
-        tolerance=0.0,
-    ):
+        width: int | None = None,
+        height: int | None = None,
+        tolerance: float = 0.0,
+    ) -> None:
         svg_path = SVG(page.convert_to_svg_string()).write_to_path(
             self.create_test_path(this_path, post_fix, "svg")
         )

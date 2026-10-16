@@ -9,7 +9,7 @@ from musurgia.trees.timelinetree import TimelineDuration
 
 
 class TestFractalTreePOM(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.ft = FractalTimelineTree(
             duration=TimelineDuration(10),
             proportions=(1, 2, 3),
@@ -17,7 +17,7 @@ class TestFractalTreePOM(TestCase):
             permutation_index=(1, 1),
         )
 
-    def test_set_get_pom(self):
+    def test_set_get_pom(self) -> None:
         self.ft.main_permutation_order = (3, 1, 4, 2)
         assert self.ft.get_permutation_order_matrix().matrix_data == [
             [(3, 1, 4, 2), (4, 3, 2, 1), (2, 4, 1, 3), (1, 2, 3, 4)],
@@ -29,18 +29,20 @@ class TestFractalTreePOM(TestCase):
             FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
         )
         with self.assertRaises(FractalTimelineTreeHasChildrenError):
-            self.ft.main_permutation_order = "something"
+            self.ft.main_permutation_order = "something"  # type: ignore
 
-    def test_add_child_with_main_permutation_order_exception(self):
+    def test_add_child_with_main_permutation_order_exception(self) -> None:
         self.ft.add_child(
             FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
         )
         with self.assertRaises(
             FractalTimelineTreeNoneRootCannotSetMainPermutationOrderError
         ):
-            self.ft.get_children()[0].main_permutation_order = "something"
+            self.ft.get_children()[0].main_permutation_order = "something"  # type: ignore
 
-    def test_add_layer_and_permutation_order_matrices_and_permutation_order(self):
+    def test_add_layer_and_permutation_order_matrices_and_permutation_order(
+        self,
+    ) -> None:
         """
         [[(3, 1, 2), (2, 3, 1), (1, 2, 3)],
          [(1, 2, 3), (3, 1, 2), (2, 3, 1)],

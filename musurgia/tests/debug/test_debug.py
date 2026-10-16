@@ -10,7 +10,7 @@ from musurgia.trees.timelinetree import TimelineDuration
 
 
 class FractalRelativeMusicTreeTestCase(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         duration = TimelineDuration(minutes=3)
         duration.metronome = Metronome(80)
         main_permutation_order = [3, 1, 4, 5, 2]
@@ -25,7 +25,7 @@ class FractalRelativeMusicTreeTestCase(TestCase):
         tgf.get_children()[0].get_chord_factory().show_metronome = True
         self.tgf = tgf
 
-    def test_directions_root(self):
+    def test_directions_root(self) -> None:
         self.tgf.add_layer()
         factory = self.tgf.get_chord_factory()
         factory.direction_iterator.main_direction_cell = [1, 1]
@@ -70,7 +70,7 @@ class FractalRelativeMusicTreeTestCase(TestCase):
             expected,
         )
 
-    def test_directions_child(self):
+    def test_directions_child(self) -> None:
         # quantize_layer(section_1.get_layer(2))
 
         child = self.tgf.get_children()[0]

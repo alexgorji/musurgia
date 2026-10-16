@@ -2,9 +2,11 @@ from pathlib import Path
 
 from musurgia.graphics.geometry import LineOrientation, Position
 
-from musurgia.graphics.segmented_line import (
+from musurgia.graphics.defaults import (
     DEFAULT_COLOR,
     DEFAULT_THICKNESS,
+)
+from musurgia.graphics.segmented_line import (
     Label,
     LineSegment,
     SegmentedLine,
@@ -17,7 +19,7 @@ path = Path(__file__)
 # pytestmark = pytest.mark.only
 
 
-def test_create_line_segment():
+def test_create_line_segment() -> None:
     ls = LineSegment(type=LineOrientation.HORIZONTAL, length=20)
     assert ls.end_marker is None
     em = ls.add_end_maker()
@@ -32,7 +34,7 @@ def test_create_line_segment():
     assert em in ls.get_draw_objects()
 
 
-def test_add_lable_to_marker():
+def test_add_lable_to_marker() -> None:
     ls = LineSegment(type=LineOrientation.HORIZONTAL, length=20)
     l1 = ls.start_marker.add_label(Label(text="first"))
     l2 = ls.start_marker.add_label(Label(text="second", offset=Position(2, 10)))
@@ -42,7 +44,7 @@ def test_add_lable_to_marker():
     assert l2 in ls.start_marker.get_draw_objects()
 
 
-def test_segmented_line_create():
+def test_segmented_line_create() -> None:
     ls1 = LineSegment(type=LineOrientation.HORIZONTAL, length=20)
     sl = SegmentedLine(
         type=LineOrientation.HORIZONTAL,
@@ -58,7 +60,7 @@ def test_segmented_line_create():
     assert ls1 in sl.get_draw_objects()
 
 
-def test_segmented_line_segmented_lines_factory():
+def test_segmented_line_segmented_lines_factory() -> None:
     ls1 = LineSegment(type=LineOrientation.HORIZONTAL, length=20)
     sl = SegmentedLine(
         type=LineOrientation.HORIZONTAL,
@@ -73,7 +75,7 @@ def test_segmented_line_segmented_lines_factory():
 
 
 class LineSegmentDraw(SVGTestCase):
-    def test_draw_line_segment_horizontal(self):
+    def test_draw_line_segment_horizontal(self) -> None:
         ls = LineSegment(type=LineOrientation.HORIZONTAL, length=20)
         ls.start_marker.add_label(Label(text="first"))
         ls.start_marker.add_label(Label(text="second", offset=Position(2, 10)))
@@ -93,7 +95,7 @@ class LineSegmentDraw(SVGTestCase):
             tolerance=set_ci_tolerance(0.03),
         )
 
-    def test_draw_line_segment_vertical(self):
+    def test_draw_line_segment_vertical(self) -> None:
         ls = LineSegment(type=LineOrientation.VERTICAL, length=20)
         ls.start_marker.add_label(Label(text="first"))
         ls.start_marker.add_label(Label(text="second", offset=Position(10, 2)))
@@ -115,7 +117,7 @@ class LineSegmentDraw(SVGTestCase):
 
 
 class SegmentedLineDraw(SVGTestCase):
-    def test_draw_segment_line_horizontal(self):
+    def test_draw_segment_line_horizontal(self) -> None:
         sl = SegmentedLine(type=LineOrientation.HORIZONTAL)
         lss = sl.add_line_segments(lengths=[5, 10, 15])
         texts = ["one", "two", "tree"]
@@ -140,7 +142,7 @@ class SegmentedLineDraw(SVGTestCase):
             tolerance=set_ci_tolerance(0.03),
         )
 
-    def test_draw_segment_line_vertical(self):
+    def test_draw_segment_line_vertical(self) -> None:
         sl = SegmentedLine(type=LineOrientation.VERTICAL)
         lss = sl.add_line_segments(lengths=[5, 10, 15])
         texts = ["one", "two", "tree"]

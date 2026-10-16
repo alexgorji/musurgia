@@ -5,7 +5,7 @@ from musurgia.musurgia_exceptions import PermutationIndexCalculaterNoParentIndex
 
 
 class TestFtUnit(TestCase):
-    def test_get_index_error(self):
+    def test_get_index_error(self) -> None:
         pic = PermutationIndexCalculator(size=10)
         with self.assertRaises(PermutationIndexCalculaterNoParentIndexError):
             pic.get_index(1)

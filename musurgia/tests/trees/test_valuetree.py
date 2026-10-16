@@ -14,8 +14,8 @@ class valuetreeChangeValueTestCase(TestCase):
     def setUp(self) -> None:
         self.vt = DemoValueTree(value=10)
 
-    def _add_layer(self, number_of_layers=1):
-        for value in [5, Fraction(5, 3), Fraction(10, 3)]:
+    def _add_layer(self, number_of_layers: int = 1) -> None:
+        for value in [Fraction(5, 1), Fraction(5, 3), Fraction(10, 3)]:
             self.vt.add_child(DemoValueTree(value=value))
         if number_of_layers == 2:
             list_of_values = [
@@ -27,12 +27,12 @@ class valuetreeChangeValueTestCase(TestCase):
                 for v in values:
                     child.add_child(DemoValueTree(value=v))
 
-    def test_change_root_value_without_children(self):
+    def test_change_root_value_without_children(self) -> None:
         self.vt.update_value(15)
         self.assertEqual(15, self.vt.get_value())
         self.vt.check_tree_values()
 
-    def test_change_root_value_with_children(self):
+    def test_change_root_value_with_children(self) -> None:
         self._add_layer()
         self.vt.update_value(15)
         self.assertEqual(15, self.vt.get_value())
@@ -45,7 +45,7 @@ class valuetreeChangeValueTestCase(TestCase):
         )
         self.vt.check_tree_values()
 
-    def test_change_leaf_value(self):
+    def test_change_leaf_value(self) -> None:
         self._add_layer()
         self.vt.get_children()[0].update_value(10)
         self.assertEqual(15, self.vt.get_value())
@@ -56,7 +56,7 @@ class valuetreeChangeValueTestCase(TestCase):
         )
         self.vt.check_tree_values()
 
-    def test_two_layers_change_child_value(self):
+    def test_two_layers_change_child_value(self) -> None:
         self._add_layer(2)
         self.vt.get_children()[0].update_value(10)
         assert self.vt.get_value() == 15
@@ -68,8 +68,8 @@ class valuetreeChangeValueTestCase(TestCase):
         )
         self.vt.check_tree_values()
 
-    def test_with_remove(self):
-        def node_info(node):
+    def test_with_remove(self) -> None:
+        def node_info(node: DemoValueTree) -> str:
             return f"{node.get_position_in_tree()}: {round(float(node.get_value()), 2)}"
 
         self._add_layer()
@@ -137,7 +137,7 @@ class valuetreeChangeValueTestCase(TestCase):
         assert self.vt.get_tree_representation(node_info) == expected
         self.vt.check_tree_values()
 
-    def test_update_child_check_root(self):
+    def test_update_child_check_root(self) -> None:
         vt = DemoValueTree(60)
         for d in [20, 10, 30]:
             vt.add_child(DemoValueTree(d))
@@ -184,7 +184,7 @@ class valuetreeChangeValueTestCase(TestCase):
             == expected
         )
 
-    def test_update_child_of_util_value_tree(self):
+    def test_update_child_of_util_value_tree(self) -> None:
         vt = create_test_value_tree()
         child = vt.get_children()[-1]
         assert child.get_value() == 2
@@ -194,7 +194,7 @@ class valuetreeChangeValueTestCase(TestCase):
 
 
 class WrongValueErrorTest(TestCase):
-    def test_less_child_values(self):
+    def test_less_child_values(self) -> None:
         vt = DemoValueTree(10)
         vt.add_child(DemoValueTree(4))
         vt.add_child(DemoValueTree(4))
@@ -202,7 +202,7 @@ class WrongValueErrorTest(TestCase):
             vt.get_children()
             assert len(w) == 1
 
-    def test_greate_child_values(self):
+    def test_greate_child_values(self) -> None:
         vt = DemoValueTree(10)
         vt.add_child(DemoValueTree(4))
         vt.add_child(DemoValueTree(4))

@@ -2,13 +2,13 @@ from unittest import TestCase
 
 from fractions import Fraction
 
-from musicscore.util import dToX, xToD
+from musicscore.util import dToX, xToD  # pyright: ignore[reportUnknownVariableType]
 
 from musurgia.quantize import get_quantized_values, find_best_quantized_values
 
 
 class Test(TestCase):
-    def test_1(self):
+    def test_1(self) -> None:
         input = [0.2, 0.333, 0.6, 0.99, 0.1, 0.5]
         example = get_quantized_values(input, 0.6)
         result = [
@@ -21,7 +21,7 @@ class Test(TestCase):
         ]
         self.assertEqual(result, example)
 
-    def test_2(self):
+    def test_2(self) -> None:
         midis = [60, 61.5, 58.5, 56.5, 63]
         intervals = xToD(midis)
         quantized_intervals = get_quantized_values(intervals, 1)
@@ -31,7 +31,7 @@ class Test(TestCase):
         result = [60, 61, 58, 57, 63]
         self.assertEqual(result, quantized_midis)
 
-    def test_find_best_unit_without_check_sum(self):
+    def test_find_best_unit_without_check_sum(self) -> None:
         values = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
         units = [0.5, 0.7, 0.2]
         actual = find_best_quantized_values(
@@ -48,7 +48,7 @@ class Test(TestCase):
         ]
         self.assertEqual(expected, actual)
 
-    def test_find_best_unit_with_check_sum(self):
+    def test_find_best_unit_with_check_sum(self) -> None:
         values = [Fraction(1, 7), Fraction(3, 7), Fraction(5, 7)]
         units = [Fraction(1, 2), Fraction(1, 7), Fraction(1, 5)]
         actual = find_best_quantized_values(
@@ -58,7 +58,7 @@ class Test(TestCase):
 
         self.assertEqual(expected, actual)
 
-    def test_find_best_unit_with_check_sum_2(self):
+    def test_find_best_unit_with_check_sum_2(self) -> None:
         values = [1, 2, 3, 4, 5]
         units = [Fraction(1, 2), Fraction(1, 7), Fraction(1, 5)]
         actual = find_best_quantized_values(

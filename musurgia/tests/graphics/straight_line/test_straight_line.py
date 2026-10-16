@@ -12,7 +12,7 @@ from musurgia.tests.helpers.svg import SVGTestCase
 path = Path(__file__)
 
 
-def test_straight_line_get_bounding_box_coordinates():
+def test_straight_line_get_bounding_box_coordinates() -> None:
     sl = StraightLine(type=LineOrientation.HORIZONTAL, length=10)
     assert sl.size == Size(10, DEFAULT_THICKNESS)
     assert sl.get_bounding_box_coordinates() == Coordinates(
@@ -23,7 +23,7 @@ def test_straight_line_get_bounding_box_coordinates():
     )
 
 
-def test_straight_line_options():
+def test_straight_line_options() -> None:
     sl = StraightLine(
         type=LineOrientation.HORIZONTAL,
         length=10,
@@ -39,7 +39,7 @@ def test_straight_line_options():
 
 
 class LineDraw(SVGTestCase):
-    def test_dashed_lines(self):
+    def test_dashed_lines(self) -> None:
         page = SVGPage()
         hl = StraightLine(
             type=LineOrientation.HORIZONTAL,

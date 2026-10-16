@@ -1,6 +1,9 @@
 from fractions import Fraction
 from pathlib import Path
+from typing import Any, cast
 
+
+from musurgia.musurgia_types import ConvertibleToFraction
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.trees.musicaltree import (
     FractalMusicalTree,
@@ -18,8 +21,8 @@ __all__ = [
     "test_fractal_structure_list",
 ]
 
-test_fractal_structure_list = [
-    Fraction(10, 1),
+test_fractal_structure_list: list[list[Any]] = [
+    [Fraction(10, 1)],
     [
         Fraction(3, 1),
         [Fraction(3, 5)],
@@ -81,19 +84,19 @@ test_fractal_structure_list = [
 ]
 
 
-def create_test_path(path, test_name):
+def create_test_path(path: Path, test_name: str) -> Path:
     return path.parent.joinpath(f"{path.stem}_{test_name}")
 
 
-def fractal_node_info(node):
+def fractal_node_info(node: FractalMusicalTree) -> str:
     return f"{node.get_fractal_order()}: {node.get_permutation_index()}: {round(float(node.get_value()), 2)}"
 
 
-def fractal_node_info_with_permutation_order(node):
+def fractal_node_info_with_permutation_order(node: FractalMusicalTree) -> str:
     return f"{node.get_fractal_order()}: {node.get_permutation_index()}: {node.get_permutation_order()}: {round(float(node.get_value()), 2)}"
 
 
-def create_test_fractal_timeline_tree():
+def create_test_fractal_timeline_tree() -> FractalTimelineTree:
     ft = FractalTimelineTree(
         duration=TimelineDuration(10),
         proportions=(1, 2, 3, 4),
@@ -107,7 +110,7 @@ def create_test_fractal_timeline_tree():
     return ft
 
 
-def create_test_fractal_musical_tree():
+def create_test_fractal_musical_tree() -> FractalMusicalTree:
     ft = FractalMusicalTree(
         duration=TimelineDuration(10),
         proportions=(1, 2, 3, 4),
@@ -122,7 +125,7 @@ def create_test_fractal_musical_tree():
 
 
 class FractalMusicalTreeChordFactory(TreeChordFactory):
-    def update_chord_fractal_order(self):
+    def update_chord_fractal_order(self) -> None:
         node = self.get_musical_tree_node()
         if isinstance(node, FractalMusicalTree):
             self._chord.add_words(
@@ -132,7 +135,7 @@ class FractalMusicalTreeChordFactory(TreeChordFactory):
             )
 
 
-def create_test_fractal_relative_musical_tree():
+def create_test_fractal_relative_musical_tree() -> FractalRelativeMusicTree:
     ft = FractalRelativeMusicTree(
         duration=TimelineDuration(10),
         proportions=(1, 2, 3, 4),
@@ -147,7 +150,7 @@ def create_test_fractal_relative_musical_tree():
     return ft
 
 
-def create_test_timeline_tree():
+def create_test_timeline_tree() -> TimelineTree:
     tlt = TimelineTree(duration=TimelineDuration(60))
     for d in [20, 10, 30]:
         tlt.add_child(TimelineTree(TimelineDuration(d)))
@@ -158,25 +161,28 @@ def create_test_timeline_tree():
 
 
 class DemoValueTree(ValueTree):
-    def __init__(self, value, *args, **kwargs):
+    def __init__(self, value: ConvertibleToFraction, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._value = value
 
-    def _check_child_to_be_added(self, child):
+    def _check_child_to_be_added(self, child: object) -> bool:
         if not isinstance(child, ValueTree):
             raise TypeError
         else:
             return True
 
-    def _set_value(self, value):
+    def _set_value(self, value: ConvertibleToFraction) -> None:
         self._value = Fraction(value)
 
-    def get_value(self):
+    def get_value(self) -> Fraction:
         return Fraction(self._value)
 
 
 def create_test_value_tree() -> DemoValueTree:
-    vt = DemoValueTree.create_tree_from_list(test_fractal_structure_list, ["value"])
+    vt = cast(
+        DemoValueTree,
+        DemoValueTree.create_tree_from_list(test_fractal_structure_list, ["value"]),
+    )
     # print(vt.get_tree_representation(key=lambda node: node.get_value()))
 
     """└── 10
@@ -224,27 +230,27 @@ def create_test_value_tree() -> DemoValueTree:
     return vt
 
 
-def add_node_infos_to_graphic(vt, gt):
-    for gn, vn in zip(gt.traverse(), vt.traverse()):
-        value_label = gn.get_segment().start_mark_line.add_text_label(
-            round(float(vn.get_value()), 1), font_size=8, bottom_margin=1
-        )
+# def add_node_infos_to_graphic(vt: ValueTree, gt) -> None:
+#     for gn, vn in zip(gt.traverse(), vt.traverse()):
+#         value_label = gn.get_segment().start_mark_line.add_text_label(
+#             round(float(vn.get_value()), 1), font_size=8, bottom_margin=1
+#         )
 
-        position_in_tree_label = gn.get_segment().start_mark_line.add_text_label(
-            f"{vn.get_position_in_tree()}", font_size=8, placement="below", top_margin=1
-        )
-        if gn.get_distance() == 3:
-            if vn.up.up.get_position_in_tree() == "4":
-                if gn.up.get_children().index(gn) % 4 == 1:
-                    position_in_tree_label.top_margin = 3
-                    value_label.bottom_margin = 4
-                elif gn.up.get_children().index(gn) % 4 == 2:
-                    position_in_tree_label.top_margin = 5
-                    value_label.bottom_margin = 7
-                elif gn.up.get_children().index(gn) % 4 == 3:
-                    position_in_tree_label.top_margin = 7
-                    value_label.bottom_margin = 10
-            else:
-                if gn.up.get_children().index(gn) % 2 == 1:
-                    position_in_tree_label.top_margin = 3
-                    value_label.bottom_margin = 4
+#         position_in_tree_label = gn.get_segment().start_mark_line.add_text_label(
+#             f"{vn.get_position_in_tree()}", font_size=8, placement="below", top_margin=1
+#         )
+#         if gn.get_distance() == 3:
+#             if vn.up.up.get_position_in_tree() == "4":
+#                 if gn.up.get_children().index(gn) % 4 == 1:
+#                     position_in_tree_label.top_margin = 3
+#                     value_label.bottom_margin = 4
+#                 elif gn.up.get_children().index(gn) % 4 == 2:
+#                     position_in_tree_label.top_margin = 5
+#                     value_label.bottom_margin = 7
+#                 elif gn.up.get_children().index(gn) % 4 == 3:
+#                     position_in_tree_label.top_margin = 7
+#                     value_label.bottom_margin = 10
+#             else:
+#                 if gn.up.get_children().index(gn) % 2 == 1:
+#                     position_in_tree_label.top_margin = 3
+#                     value_label.bottom_margin = 4

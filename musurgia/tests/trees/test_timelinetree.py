@@ -8,19 +8,19 @@ from musurgia.trees.timelinetree import TimelineDuration, TimelineTree
 
 
 class TimelineDurationTestCase(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.tld = TimelineDuration(4)
         return super().setUp()
 
-    def test_set_quarter_duration_error(self):
+    def test_set_quarter_duration_error(self) -> None:
         with self.assertRaises(AttributeError):
             self.tld.quarter_duration = QuarterDuration(4)
 
-    def test_get_quarter_duration(self):
+    def test_get_quarter_duration(self) -> None:
         self.assertEqual(self.tld.metronome.per_minute, 60)
         self.assertEqual(self.tld.get_quarter_duration(), QuarterDuration(4))
 
-    def test_update_quarter_duration(self):
+    def test_update_quarter_duration(self) -> None:
         self.assertEqual(self.tld.get_quarter_duration(), 4)
         self.tld.metronome = Metronome(120)
         self.assertEqual(self.tld.get_quarter_duration(), 8)
@@ -31,11 +31,11 @@ class TimelineDurationTestCase(TestCase):
 
 
 class TimeLineTreeTestCase(TestCase):
-    def test_create_timeline_tree_root(self):
+    def test_create_timeline_tree_root(self) -> None:
         tlt = TimelineTree(TimelineDuration(2))
         self.assertEqual(tlt.get_duration().calculate_in_seconds(), 2)
 
-    def test_add_child_to_timeline(self):
+    def test_add_child_to_timeline(self) -> None:
         root_duration = TimelineDuration(2)
         child_durations = [TimelineDuration(1.5), TimelineDuration(0.5)]
         tlt = TimelineTree(root_duration)
@@ -44,7 +44,7 @@ class TimeLineTreeTestCase(TestCase):
             [ch.get_duration() for ch in tlt.get_children()], child_durations
         )
 
-    def test_check_timeline_durations(self):
+    def test_check_timeline_durations(self) -> None:
         tlt = TimelineTree(TimelineDuration(2))
         tlt.add_child(TimelineTree(TimelineDuration(1.5)))
         tlt.add_child(TimelineTree(TimelineDuration(0.5)))
@@ -55,7 +55,7 @@ class TimeLineTreeTestCase(TestCase):
         expected = "Children of valuetree node of position 0 with value 2 have wrong values [Fraction(3, 2), Fraction(1, 2), Fraction(1, 1)] (sum=3)"
         self.assertEqual(str(err.exception), expected)
 
-    def test_timeline_get_value(self):
+    def test_timeline_get_value(self) -> None:
         tlt = create_test_timeline_tree()
         self.assertEqual(tlt.get_value(), 60)
         expected = """└── 60.0
@@ -76,23 +76,23 @@ class TimeLineTreeTestCase(TestCase):
             expected,
         )
 
-    def test_timeline_update_duration(self):
+    def test_timeline_update_duration(self) -> None:
         tlt = create_test_timeline_tree()
         one_child = tlt.get_children()[0].get_children()[0]
         self.assertEqual(one_child.get_value(), 10)
         self.assertEqual(one_child.get_duration(), 10)
 
         with self.assertRaises(AttributeError):
-            one_child.value = 15
+            one_child.value = 15  # type: ignore
 
         with self.assertRaises(AttributeError):
-            one_child.duration.value = 15
+            one_child.duration.value = 15  # type: ignore
 
         with self.assertRaises(AttributeError):
-            one_child.duration.seconds = 15
+            one_child.duration.seconds = 15  # type: ignore
 
         with self.assertRaises(AttributeError):
-            one_child.duration = TimelineDuration(15)
+            one_child.duration = TimelineDuration(15)  # type: ignore
 
         one_child.update_duration(15)
         self.assertEqual(one_child.get_value(), 15)
@@ -140,7 +140,7 @@ class TimeLineTreeTestCase(TestCase):
 
         tlt.check_tree_values()
 
-    def test_timeline_tree_get_and_update_metronome(self):
+    def test_timeline_tree_get_and_update_metronome(self) -> None:
         tlt = create_test_timeline_tree()
         for node in tlt.traverse():
             self.assertEqual(node.get_metronome().per_minute, 60)
@@ -149,7 +149,7 @@ class TimeLineTreeTestCase(TestCase):
         for node in tlt.traverse():
             self.assertEqual(node.get_metronome().per_minute, 82)
 
-    def test_timeline_tree_metronome_of_children(self):
+    def test_timeline_tree_metronome_of_children(self) -> None:
         duration = TimelineDuration(10)
         duration.metronome = Metronome(80)
         tlt = TimelineTree(duration=duration)

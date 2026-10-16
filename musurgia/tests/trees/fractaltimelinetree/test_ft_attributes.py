@@ -9,18 +9,18 @@ from musurgia.trees.timelinetree import TimelineDuration
 
 
 class TestFractalTreeInit(TestCase):
-    def test_init(self):
+    def test_init(self) -> None:
         with self.assertRaises(TypeError):
-            FractalTimelineTree()
+            FractalTimelineTree()  # type: ignore
         with self.assertRaises(TypeError):
-            FractalTimelineTree(duration=TimelineDuration(10))
+            FractalTimelineTree(duration=TimelineDuration(10))  # type: ignore
         with self.assertRaises(TypeError):
             FractalTimelineTree(proportions=(1, 2, 3))
         ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
         with self.assertRaises(FractalTimelineTreeSetMainPermutationOrderFirstError):
             ft.get_permutation_order_matrix()
 
-    def test_init_creates_matrix(self):
+    def test_init_creates_matrix(self) -> None:
         ft = FractalTimelineTree(
             duration=TimelineDuration(10),
             proportions=(1, 2, 3),

@@ -14,7 +14,7 @@ from musurgia.musurgia_types import (
 
 
 class TestCreateErrorMessage(TestCase):
-    def test_check_create_message_errors(self):
+    def test_check_create_message_errors(self) -> None:
         with self.assertRaises(AttributeError):
             create_error_message(v=3, t=list, function_name="function_name")
         with self.assertRaises(AttributeError):
@@ -95,7 +95,7 @@ class TestCreateErrorMessage(TestCase):
         with self.assertRaises(AttributeError):
             create_error_message()
 
-    def test_check_create_message(self):
+    def test_check_create_message(self) -> None:
         assert (
             create_error_message(v=3, t=list) == "Value 3 must be of type list not int"
         )
@@ -135,7 +135,7 @@ class TestCreateErrorMessage(TestCase):
 
 
 class TestCheckTypeFunction(TestCase):
-    def test_matrix_data(self):
+    def test_matrix_data(self) -> None:
         assert check_type([], "MatrixData")
         assert check_type([[1, 2, 3]], "MatrixData")
         assert check_type([[1, 2, 3], [4, 5, 6]], "MatrixData")
@@ -147,7 +147,7 @@ class TestCheckTypeFunction(TestCase):
         with self.assertRaises(MusurgiaTypeError):
             check_type([[1, 2, 3], [1, 2]], "MatrixData")
 
-    def test_matrix_index(self):
+    def test_matrix_index(self) -> None:
         # wrong type
         with self.assertRaises(TypeError):
             check_type([1, 2], "MatrixIndex")
@@ -161,7 +161,7 @@ class TestCheckTypeFunction(TestCase):
         with self.assertRaises(TypeError):
             check_type((1,), "MatrixIndex")
 
-    def test_non_negative_integer(self):
+    def test_non_negative_integer(self) -> None:
         assert check_type(2, "NonNegativeInteger")
         assert check_type(0, "NonNegativeInteger")
 
@@ -171,7 +171,7 @@ class TestCheckTypeFunction(TestCase):
         with self.assertRaises(MusurgiaTypeError):
             check_type(1.2, "NonNegativeInteger")
 
-    def test_permutation_order(self):
+    def test_permutation_order(self) -> None:
         assert check_type((2, 3, 1), "PermutationOrder")
 
         with self.assertRaises(MusurgiaTypeError):
@@ -185,7 +185,7 @@ class TestCheckTypeFunction(TestCase):
         with self.assertRaises(MusurgiaTypeError):
             assert check_type((1, 3, 4, 2, 4), "PermutationOrder")
 
-    def test_positive_integer(self):
+    def test_positive_integer(self) -> None:
         assert check_type(2, "PositiveInteger")
 
         with self.assertRaises(MusurgiaTypeError):
@@ -200,28 +200,28 @@ class TestCheckTypeFunction(TestCase):
         with self.assertRaises(MusurgiaTypeError):
             check_type(1.2, "PositiveInteger")
 
-    def test_matrix_transpose_type(self):
+    def test_matrix_transpose_type(self) -> None:
         assert check_type("regular", "MatrixTransposeMode")
         assert check_type("diagonal", "MatrixTransposeMode")
         with self.assertRaises(MusurgiaTypeError):
             assert check_type("wrong", "MatrixTransposeMode")
 
-    def test_fractal_tree_reduce_children_mode(self):
+    def test_fractal_tree_reduce_children_mode(self) -> None:
         assert check_type("sieve", "FractalTreeReduceChildrenMode")
         with self.assertRaises(MusurgiaTypeError):
             assert check_type("wrong", "FractalTreeReduceChildrenMode")
 
-    def test_convertible_to_fraction_type(self):
+    def test_convertible_to_fraction_type(self) -> None:
         assert check_type(1, "ConvertibleToFraction")
         with self.assertRaises(MusurgiaTypeError):
             assert check_type("wrong", "ConvertibleToFraction")
 
-    def test_convert_to_fraction(self):
+    def test_convert_to_fraction(self) -> None:
         assert convert_to_fraction(1) == Fraction(1, 1)
         assert convert_to_fraction(1.5) == Fraction(3, 2)
         assert convert_to_fraction(Fraction(3, 4)) == Fraction(3, 4)
 
-    def test_convertible_to_float(self):
+    def test_convertible_to_float(self) -> None:
         assert check_type(1, "ConvertibleToFloat")
         assert check_type(1 / 10, "ConvertibleToFloat")
         assert check_type("1.6", "ConvertibleToFloat")
@@ -229,24 +229,24 @@ class TestCheckTypeFunction(TestCase):
         with self.assertRaises(MusurgiaTypeError):
             assert check_type("wrong", "ConvertibleToFloat")
 
-    def test_check_label_placement_type(self):
+    def test_check_label_placement_type(self) -> None:
         assert check_type("above", "LabelPlacement")
         with self.assertRaises(MusurgiaTypeError):
             assert check_type("wrong", "LabelPlacement")
 
-    def test_check_pdf_unit_type(self):
+    def test_check_pdf_unit_type(self) -> None:
         assert check_type("pt", "PdfUnitType")
         with self.assertRaises(MusurgiaTypeError):
             assert check_type("wrong", "PdfUnitType")
 
-    def test_check_position_type(self):
+    def test_check_position_type(self) -> None:
         assert check_type("x", "PositionType")
         with self.assertRaises(MusurgiaTypeError):
             assert check_type("wrong", "PositionType")
 
 
 class TestCheckValues(TestCase):
-    def test_matrix_index(self):
+    def test_matrix_index(self) -> None:
         # wrong index
         with self.assertRaises(ValueError):
             check_matrix_index_values(
@@ -261,7 +261,7 @@ class TestCheckValues(TestCase):
             index=(2, 3), number_of_rows=3, number_of_columns=4
         )
 
-    def test_permutation_order(self):
+    def test_permutation_order(self) -> None:
         assert check_permutation_order_values((4, 3, 1, 2), size=4)
         with self.assertRaises(ValueError):
             assert check_permutation_order_values((4, 3, 1, 2), size=5)
@@ -270,7 +270,7 @@ class TestCheckValues(TestCase):
 
 
 class TestLiteralCheckGenerator(TestCase):
-    def test_literal_check(self):
+    def test_literal_check(self) -> None:
         checker = LiteralCheckGenerator(
             HorizontalVertical, "HorizontalVertical"
         ).generate_checker()
@@ -281,7 +281,7 @@ class TestLiteralCheckGenerator(TestCase):
 
 
 class TestBuiltInTypeChecker(TestCase):
-    def test_builtin_checker(self):
+    def test_builtin_checker(self) -> None:
         check_type(v=True, t=bool)
         with self.assertRaises(MusurgiaTypeError):
             check_type(v=True, t=int)

@@ -23,7 +23,7 @@ this_path = Path(__file__)
 # helper functions
 
 
-def test_get_division_length():
+def test_get_division_length() -> None:
     ruler_options = RulerOptions()
     assert _get_division_length(ruler_options) == 1
     ruler_options = RulerOptions(unit_division=2)
@@ -32,7 +32,7 @@ def test_get_division_length():
     assert _get_division_length(ruler_options) == 4
 
 
-def test_partial_ruler_options():
+def test_partial_ruler_options() -> None:
     ruler_options = RulerOptions(color="red", unit_marker=UnitMarkerOptions(length=10))
     ruler_options.unit_marker.length = 1
 
@@ -56,7 +56,7 @@ def test_partial_ruler_options():
 # ruler
 
 
-def test_ruler_units():
+def test_ruler_units() -> None:
     hr = Ruler(type=LineOrientation.HORIZONTAL, length=60)
     units = hr.get_units()
     assert len(units) == 6
@@ -66,7 +66,7 @@ def test_ruler_units():
     assert units[0].get_line_segments()[0].length == 1
 
 
-def test_ruler_as_segmented_line():
+def test_ruler_as_segmented_line() -> None:
     hr = Ruler(type=LineOrientation.HORIZONTAL, length=60)
     assert isinstance(hr.as_segmented_line(), SegmentedLine)
     assert hr.as_segmented_line().get_length() == 60
@@ -75,7 +75,7 @@ def test_ruler_as_segmented_line():
 
 
 class RulerDrawTestCase(SVGTestCase):
-    def test_horizontal_ruler(self):
+    def test_horizontal_ruler(self) -> None:
         page = SVGPage()
         page.add_grid(thickness=Decimal("0.05"))
         hr = Ruler(
@@ -99,7 +99,7 @@ class RulerDrawTestCase(SVGTestCase):
             tolerance=set_ci_tolerance(0.03),
         )
 
-    def test_vertical_ruler(self):
+    def test_vertical_ruler(self) -> None:
         page = SVGPage()
         page.add_grid(thickness=Decimal("0.05"))
         vr = Ruler(

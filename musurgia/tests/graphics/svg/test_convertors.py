@@ -25,7 +25,7 @@ from musurgia.graphics.geometry import LineOrientation
 
 class ConvertTextDrawObjectToSVGTestCase(TestCase):
     @pytest.mark.nonci
-    def test_cairo_font_extents(self):
+    def test_cairo_font_extents(self) -> None:
         ctx = create_measure_context()
         ctx.select_font_face("DejaVu Sans")
         ctx.set_font_size(float(Text.convert_font_size_to_mm(12)))
@@ -35,7 +35,7 @@ class ConvertTextDrawObjectToSVGTestCase(TestCase):
             ext.x_bearing != 0.0
         ), "cairo is using fallback font — fontconfig not applied"
 
-    def test_dejavu_font_resolves_to_repo_font(self):
+    def test_dejavu_font_resolves_to_repo_font(self) -> None:
         fonts_dir = Path(__file__).parent / "fonts"
         result = subprocess.run(
             ["fc-match", "--format=%{file}", "DejaVu Sans"],
@@ -45,7 +45,7 @@ class ConvertTextDrawObjectToSVGTestCase(TestCase):
         assert result.stdout.strip() == str(fonts_dir / "DejaVuSans.ttf")
 
     @pytest.mark.nonci
-    def test_convertor(self):
+    def test_convertor(self) -> None:
         draw_object = Text(text="something")
         svg_str = (
             TextDrawObjectToSVGConvertor(Position(0, 0), draw_object)
@@ -62,7 +62,7 @@ class ConvertTextDrawObjectToSVGTestCase(TestCase):
 
 
 class ConvertDrawObjectToSVGElementTestCase(TestCase):
-    def test_converts_to_element(self):
+    def test_converts_to_element(self) -> None:
         assert isinstance(
             SVGConverterRegistry.convert(Position(0, 0), Text(text="something"))[0],
             svg.Element,
@@ -82,7 +82,7 @@ class ConvertDrawObjectToSVGElementTestCase(TestCase):
 
 
 class ConvertBoxToSVG(TestCase):
-    def test_box_is_converted(self):
+    def test_box_is_converted(self) -> None:
         line = Line(end=Position(30, 40))
         assert len(SVGConverterRegistry.convert(Position(0, 0), line)) == 1
 
@@ -91,7 +91,7 @@ class ConvertBoxToSVG(TestCase):
 
 
 class ContainerTestCase(TestCase):
-    def test_elements(self):
+    def test_elements(self) -> None:
         container = Container()
         container.add_draw_object(
             Position(10, 10),

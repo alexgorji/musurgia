@@ -5,7 +5,7 @@ from musurgia.trees.timelinetree import TimelineDuration
 
 
 class TestFtMergeChildren(TestCase):
-    def test_one_layer(self):
+    def test_one_layer(self) -> None:
         ft = FractalTimelineTree(
             proportions=(1, 2, 3, 4, 5),
             main_permutation_order=(3, 5, 1, 2, 4),
@@ -23,7 +23,7 @@ class TestFtMergeChildren(TestCase):
             ft.get_leaves(key=lambda leaf: round(float(leaf.get_value()), 2)),
         )
 
-    def test_two_layers(self):
+    def test_two_layers(self) -> None:
         ft = FractalTimelineTree(
             proportions=(1, 2, 3, 4, 5),
             main_permutation_order=(3, 5, 1, 2, 4),

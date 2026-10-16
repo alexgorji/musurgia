@@ -6,7 +6,7 @@ from musurgia.musurgia_exceptions import DAndSError
 
 
 class TestArithmeticProgression(TestCase):
-    def test_a1(self):
+    def test_a1(self) -> None:
         arith = ArithmeticProgression(n=3, an=15, d=4)
         assert arith.a1 == Fraction(7, 1)
         assert list(arith) == [Fraction(7, 1), Fraction(11, 1), Fraction(15, 1)]
@@ -15,7 +15,7 @@ class TestArithmeticProgression(TestCase):
         assert arith.a1 == Fraction(7, 1)
         assert list(arith) == [Fraction(7, 1), Fraction(11, 1), Fraction(15, 1)]
 
-    def test_an(self):
+    def test_an(self) -> None:
         arith = ArithmeticProgression(n=3, a1=7, d=4)
         assert arith.an == Fraction(15, 1)
         assert list(arith) == [Fraction(7, 1), Fraction(11, 1), Fraction(15, 1)]
@@ -24,7 +24,7 @@ class TestArithmeticProgression(TestCase):
         assert arith.an == Fraction(15, 1)
         assert list(arith) == [Fraction(7, 1), Fraction(11, 1), Fraction(15, 1)]
 
-    def test_correct_s(self):
+    def test_correct_s(self) -> None:
         arith = ArithmeticProgression(a1=3, an=6, s=21)
         assert arith.get_parameters_dict() == {
             "a1": Fraction(3, 1),
@@ -55,7 +55,7 @@ class TestArithmeticProgression(TestCase):
         ]
         assert sum(result) == Fraction(21, 1)
 
-    def test_d(self):
+    def test_d(self) -> None:
         arith = ArithmeticProgression(a1=7, an=15, s=33)
         assert arith.d == Fraction(4, 1)
         assert list(arith) == [Fraction(7, 1), Fraction(11, 1), Fraction(15, 1)]
@@ -76,7 +76,7 @@ class TestArithmeticProgression(TestCase):
         with self.assertRaises(DAndSError):
             arith.d = 2
 
-    def test_n(self):
+    def test_n(self) -> None:
         arith = ArithmeticProgression(an=15, a1=7, d=4)
         assert arith.n == 3
         assert list(arith) == [Fraction(7, 1), Fraction(11, 1), Fraction(15, 1)]
@@ -89,9 +89,9 @@ class TestArithmeticProgression(TestCase):
         assert arith.d == 0
 
         with self.assertRaises(AttributeError):
-            ArithmeticProgression(a1=15, n=1.4, an=30)
+            ArithmeticProgression(a1=15, n=1.4, an=30)  # type: ignore
 
-    def test_s(self):
+    def test_s(self) -> None:
         arith = ArithmeticProgression(a1=7, an=15, d=4)
         assert arith.s == Fraction(33, 1)
         assert list(arith) == [Fraction(7, 1), Fraction(11, 1), Fraction(15, 1)]
@@ -112,7 +112,7 @@ class TestArithmeticProgression(TestCase):
         with self.assertRaises(DAndSError):
             arith.s = 30
 
-    def test_get_current_index(self):
+    def test_get_current_index(self) -> None:
         arith = ArithmeticProgression(a1=1, d=2, n=3)
         with self.assertRaises(AttributeError):
             assert arith.get_current_index() is None
@@ -126,7 +126,7 @@ class TestArithmeticProgression(TestCase):
             next(arith)
         assert arith.get_current_index() == 2
 
-    def test_get_dict(self):
+    def test_get_dict(self) -> None:
         assert ArithmeticProgression(n=15, a1=1, d=2).get_parameters_dict() == {
             "a1": Fraction(1, 1),
             "an": Fraction(29, 1),
@@ -135,7 +135,7 @@ class TestArithmeticProgression(TestCase):
             "s": Fraction(225, 1),
         }
 
-    def test_check_args_error(self):
+    def test_check_args_error(self) -> None:
         with self.assertRaises(AttributeError):
             ArithmeticProgression(n=15, a1=1).__next__()
 

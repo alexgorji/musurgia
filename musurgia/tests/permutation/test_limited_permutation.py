@@ -4,18 +4,18 @@ from musurgia.permutation.limited_permutation import LimitedPermutationOrders
 
 
 class TestLimitedPermutationOrders(unittest.TestCase):
-    def test_init_errors(self):
+    def test_init_errors(self) -> None:
         with self.assertRaises(TypeError):
-            LimitedPermutationOrders(main_permutation_order=[3])
+            LimitedPermutationOrders(main_permutation_order=[3])  # type: ignore
 
         LimitedPermutationOrders(main_permutation_order=(3, 1, 2))
 
-    def test_set_errors(self):
+    def test_set_errors(self) -> None:
         lt = LimitedPermutationOrders(main_permutation_order=(3, 1, 2))
         with self.assertRaises(TypeError):
-            lt.main_permutation_order = [3, 1, 2]
+            lt.main_permutation_order = [3, 1, 2]  # type: ignore
 
-    def test_get_permutation_orders(self):
+    def test_get_permutation_orders(self) -> None:
         lt = LimitedPermutationOrders(main_permutation_order=(3, 1, 4, 2))
         assert lt.get_permutation_orders() == [
             [(3, 1, 4, 2), (4, 3, 2, 1), (2, 4, 1, 3), (1, 2, 3, 4)],

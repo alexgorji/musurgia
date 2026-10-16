@@ -18,11 +18,11 @@ class Test(TestCase):
             permutation_index=(1, 1),
         )
 
-    def test_change_root_value_without_children(self):
+    def test_change_root_value_without_children(self) -> None:
         self.ft.update_value(15)
         self.assertEqual(15, self.ft.get_value())
 
-    def test_change_root_value_with_children(self):
+    def test_change_root_value_with_children(self) -> None:
         self.ft.add_layer()
         self.ft.update_value(15)
         self.assertEqual(15, self.ft.get_value())
@@ -34,7 +34,7 @@ class Test(TestCase):
             [child.get_value() for child in self.ft.get_children()],
         )
 
-    def test_change_leaf_value(self):
+    def test_change_leaf_value(self) -> None:
         self.ft.add_layer()
         self.ft.get_children()[0].update_value(10)
         self.assertEqual(15, self.ft.get_value())
@@ -44,7 +44,7 @@ class Test(TestCase):
             [child.get_value() for child in self.ft.get_children()],
         )
 
-    def test_two_layers_change_child_value(self):
+    def test_two_layers_change_child_value(self) -> None:
         self.ft.add_layer()
         self.ft.add_layer()
         self.ft.get_children()[0].update_value(10)
@@ -56,7 +56,7 @@ class Test(TestCase):
             sum(flatten(self.ft.get_layer(2, key=lambda node: node.get_value()))) == 15
         )
 
-    def test_with_remove(self):
+    def test_with_remove(self) -> None:
         self.ft.add_layer()
         first_child = self.ft.get_children()[0]
         first_child.add_layer()

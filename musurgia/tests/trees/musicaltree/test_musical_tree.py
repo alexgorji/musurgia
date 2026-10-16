@@ -111,13 +111,13 @@ class TestTreeFactoryContracts(TestCase):
 
 
 class TestMusicalTree(XMLTestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.mt = MusicalTree.create_tree_from_list(
-            test_fractal_structure_list, "duration"
+            test_fractal_structure_list, ["duration"]
         )
         self.mt.get_chord_factory().show_metronome = True
 
-    def test_musical_tree_root_chord(self):
+    def test_musical_tree_root_chord(self) -> None:
         chord = self.mt.get_chord_factory().create_chord()
         self.assertEqual(
             chord.quarter_duration, self.mt.get_duration().get_quarter_duration()
@@ -126,13 +126,13 @@ class TestMusicalTree(XMLTestCase):
 
 
 class TestTreeMidiGenerator(XMLTestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.mt = MusicalTree.create_tree_from_list(
-            test_fractal_structure_list, "duration"
+            test_fractal_structure_list, ["duration"]
         )
         self.mt.get_chord_factory().show_metronome = True
 
-    def test_random_midis(self):
+    def test_random_midis(self) -> None:
         MagicRandomTreeMidiGenerator(
             self.mt, pool=list(range(60, 85)), seed=10, periodicity=7
         ).set_musical_tree_midis()

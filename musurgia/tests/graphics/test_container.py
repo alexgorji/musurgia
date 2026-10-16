@@ -13,7 +13,7 @@ from musurgia.graphics.geometry import LineOrientation
 
 
 class ContainerTestCase(TestCase):
-    def test_size(self):
+    def test_size(self) -> None:
         hl = StraightLine(
             type=LineOrientation.HORIZONTAL, length=20, options=LineOptions(thickness=1)
         )
@@ -29,11 +29,21 @@ class ContainerTestCase(TestCase):
         ).add_draw_object(Position(40, 37), marker_2)
         assert container.size == Size(Decimal(40.5), 43)
 
-    def test_color(self):
+    def test_color(self) -> None:
         with self.assertRaises(TypeError):
-            Container(color="blue")
+            Container(color="blue")  # type: ignore
 
-    def _create_test_containers(self):
+    def _create_test_containers(
+        self,
+    ) -> tuple[
+        Container,
+        Position,
+        StraightLine,
+        Position,
+        StraightLine,
+        Position,
+        StraightLine,
+    ]:
         start_marker = StraightLine(
             type=LineOrientation.VERTICAL, length=6, options=LineOptions(thickness=1)
         )
@@ -54,7 +64,7 @@ class ContainerTestCase(TestCase):
             straight_line_p, straight_line
         ).add_draw_object(end_marker_p, end_marker)
 
-        return [
+        return (
             line_segment,
             start_marker_p,
             start_marker,
@@ -62,9 +72,9 @@ class ContainerTestCase(TestCase):
             straight_line,
             end_marker_p,
             end_marker,
-        ]
+        )
 
-    def test_containers_get_positioned_draw_objects_recursive(self):
+    def test_containers_get_positioned_draw_objects_recursive(self) -> None:
         [
             line_segment,
             start_marker_p,
@@ -86,7 +96,7 @@ class ContainerTestCase(TestCase):
         assert (straight_line_p, straight_line) in rdos
         assert (end_marker_p, end_marker) in rdos
 
-    def test_containers_get_draw_objects_recursive(self):
+    def test_containers_get_draw_objects_recursive(self) -> None:
         [
             line_segment,
             _,
@@ -103,7 +113,19 @@ class ContainerTestCase(TestCase):
             == [start_marker, straight_line, end_marker]
         )
 
-    def _create_test_nested_containers(self):
+    def _create_test_nested_containers(self) -> tuple[
+        Container,
+        Position,
+        Container,
+        Position,
+        StraightLine,
+        Position,
+        StraightLine,
+        Position,
+        Text,
+        Position,
+        StraightLine,
+    ]:
         start_marker = StraightLine(
             type=LineOrientation.VERTICAL, length=6, options=LineOptions(thickness=1)
         )
@@ -131,7 +153,7 @@ class ContainerTestCase(TestCase):
         line_segment.add_draw_object(straight_line_p, straight_line).add_draw_object(
             end_marker_p, end_marker
         )
-        return [
+        return (
             line_segment,
             labeled_start_marker_p,
             labeled_start_marker,
@@ -143,9 +165,9 @@ class ContainerTestCase(TestCase):
             start_marker_label,
             end_marker_p,
             end_marker,
-        ]
+        )
 
-    def test_nested_containers_get_positioned_draw_objects_recursive(self):
+    def test_nested_containers_get_positioned_draw_objects_recursive(self) -> None:
         [
             line_segment,
             labeled_start_marker_p,
@@ -174,7 +196,7 @@ class ContainerTestCase(TestCase):
         assert (straight_line_p, straight_line) in pdos
         assert (end_marker_p, end_marker) in pdos
 
-    def test_nested_containers_get_draw_objects_recursive(self):
+    def test_nested_containers_get_draw_objects_recursive(self) -> None:
 
         [
             line_segment,
@@ -200,7 +222,7 @@ class ContainerTestCase(TestCase):
         assert straight_line in dos
         assert end_marker in dos
 
-    def test_empty_container(self):
+    def test_empty_container(self) -> None:
         empty_container = Container()
         assert empty_container.get_draw_objects() == []
         assert empty_container.get_draw_objects(positioned=True) == []

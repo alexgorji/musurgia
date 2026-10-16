@@ -19,7 +19,7 @@ class TestSimpleFractalTreeChordFactory(TestCase):
     def setUp(self) -> None:
         self.ft = create_test_fractal_timeline_tree()
 
-    def test_node(self):
+    def test_node(self) -> None:
         sftchf = SimpleFractalTreeChordFactory(timline_node=self.ft)
         assert sftchf._timeline_node == self.ft
         chord = sftchf.create_chord()
@@ -34,7 +34,7 @@ class TestFtToScore(XMLTestCase):
         self.ft = create_test_fractal_timeline_tree()
         self.score = Score()
 
-    def test_fractal_timeline_tree_durations(self):
+    def test_fractal_timeline_tree_durations(self) -> None:
         expected = """└── 10
     ├── 3
     │   ├── 3/5
@@ -132,7 +132,7 @@ class TestFtToScore(XMLTestCase):
             expected,
         )
 
-    def test_fractal_timeline_tree_layers_to_score_simple(self):
+    def test_fractal_timeline_tree_layers_to_score_simple(self) -> None:
         _show_metronome = True
         for layer_number in range(self.ft.get_number_of_layers() + 1):
             part = self.score.add_part(f"part-{layer_number + 1}")

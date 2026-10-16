@@ -2,13 +2,13 @@ from unittest import TestCase
 
 from musurgia.matrix.matrix import (
     Matrix,
-    MatrixIsEmptyError,
     SquareMatrix,
     PermutationOrderMatrix,
     PermutationOrderMatrixGenerator,
     MatrixIndexController,
 )
 from musurgia.musurgia_exceptions import (
+    MatrixIsEmptyError,
     MatrixIndexOutOfRangeError,
     MatrixIndexEndOfRowError,
     MatrixIndexEndOfMatrixError,
@@ -20,7 +20,7 @@ from musurgia.permutation.permutation import permute
 
 
 class TestMatrix(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.mat = Matrix([[1, 2, 3], [4, 5, 6]])
         self.big_mat = Matrix(
             [
@@ -32,19 +32,19 @@ class TestMatrix(TestCase):
             ]
         )
 
-    def test_matrix(self):
+    def test_matrix(self) -> None:
         assert Matrix(None).matrix_data == []
         m = [[1, 2, 3], [4, 5, 6]]
         mat = Matrix(m)
         assert mat.matrix_data == m
         with self.assertRaises(TypeError):
-            mat.matrix_data = [1, 2, 3]
+            mat.matrix_data = [1, 2, 3]  # type: ignore
 
-    def test_add_row(self):
+    def test_add_row(self) -> None:
         mat = Matrix()
         # wrong type
         with self.assertRaises(TypeError):
-            mat.add_row(1)
+            mat.add_row(1)  # type: ignore
         # adding two rows
         row_1 = [1, 2, 3]
         mat.add_row(row_1)
@@ -58,13 +58,13 @@ class TestMatrix(TestCase):
         with self.assertRaises(ValueError):
             mat.add_row([1, 2])
 
-    def test_remove_row(self):
+    def test_remove_row(self) -> None:
         with self.assertRaises(MatrixIsEmptyError):
             Matrix().remove_row(1)
         with self.assertRaises(TypeError):
             self.mat.remove_row(0)
         with self.assertRaises(TypeError):
-            self.mat.remove_row(1.2)
+            self.mat.remove_row(1.2)  # type: ignore
         with self.assertRaises(TypeError):
             self.mat.remove_row(-1)
         with self.assertRaises(ValueError):
@@ -78,13 +78,13 @@ class TestMatrix(TestCase):
         assert self.mat.get_row_size() == 0
         assert self.mat.get_column_size() == 0
 
-    def test_get_row_size(self):
+    def test_get_row_size(self) -> None:
         assert self.mat.get_row_size() == 3
 
-    def test_get_column_size(self):
+    def test_get_column_size(self) -> None:
         assert self.mat.get_column_size() == 2
 
-    def test_get_row(self):
+    def test_get_row(self) -> None:
         with self.assertRaises(MatrixIsEmptyError):
             Matrix().get_row(1)
         assert self.mat.get_row(1) == [1, 2, 3]
@@ -94,7 +94,7 @@ class TestMatrix(TestCase):
         with self.assertRaises(ValueError):
             self.mat.get_row(3)
 
-    def test_get_column(self):
+    def test_get_column(self) -> None:
         with self.assertRaises(MatrixIsEmptyError):
             Matrix().get_column(1)
         assert self.mat.get_column(1) == [1, 4]
@@ -105,11 +105,11 @@ class TestMatrix(TestCase):
         with self.assertRaises(ValueError):
             self.mat.get_column(4)
 
-    def test_get_element(self):
+    def test_get_element(self) -> None:
         with self.assertRaises(MatrixIsEmptyError):
             Matrix().get_element((1, 1))
         with self.assertRaises(TypeError):
-            self.mat.get_element(1)
+            self.mat.get_element(1)  # type: ignore
         with self.assertRaises(ValueError):
             self.mat.get_element((3, 3))
         assert self.mat.get_element((1, 2)) == 2
@@ -120,7 +120,7 @@ class TestMatrix(TestCase):
         with self.assertRaises(MatrixIndexOutOfRangeError):
             self.mat.get_element((20, 30))
 
-    def test_transpose(self):
+    def test_transpose(self) -> None:
         expected = [
             [(1, 1), (2, 1), (3, 1), (4, 1), (5, 1)],
             [(1, 2), (2, 2), (3, 2), (4, 2), (5, 2)],
@@ -129,7 +129,7 @@ class TestMatrix(TestCase):
         ]
         self.assertEqual(expected, self.big_mat.get_transposed_matrix().matrix_data)
 
-    def test_transpose_regular(self):
+    def test_transpose_regular(self) -> None:
         expected = [
             [(1, 1), (2, 1), (3, 1), (4, 1), (5, 1)],
             [(1, 2), (2, 2), (3, 2), (4, 2), (5, 2)],
@@ -141,7 +141,7 @@ class TestMatrix(TestCase):
             expected, self.big_mat.get_transposed_matrix(mode="regular").matrix_data
         )
 
-    def test_transpose_diagonal(self):
+    def test_transpose_diagonal(self) -> None:
         expected = [
             [(1, 1), (2, 2), (3, 3), (4, 4), (5, 1)],
             [(1, 2), (2, 3), (3, 4), (4, 1), (5, 2)],
@@ -152,7 +152,7 @@ class TestMatrix(TestCase):
             self.big_mat.get_transposed_matrix(mode="diagonal").matrix_data == expected
         )
 
-    def test_permute_matrix_data(self):
+    def test_permute_matrix_data(self) -> None:
         permutation_order = (3, 1, 2, 5, 4)
         expected = [
             [(3, 1), (3, 2), (3, 3), (3, 4)],
@@ -174,26 +174,26 @@ class TestMatrix(TestCase):
 
 
 class TestSquareMatrix(TestCase):
-    def test_init_errors(self):
+    def test_init_errors(self) -> None:
         with self.assertRaises(TypeError):
-            SquareMatrix()
+            SquareMatrix()  # type: ignore
         with self.assertRaises(SquareMatrixDataError):
             SquareMatrix(matrix_data=[])
         with self.assertRaises(SquareMatrixDataError):
             SquareMatrix(matrix_data=[[1, 2, 3]])
 
-    def test_get_size(self):
+    def test_get_size(self) -> None:
         assert (
             SquareMatrix(matrix_data=[[1, 2, 3], [4, 5, 6], [7, 8, 9]]).get_size() == 3
         )
 
 
 class TestGeneratePermutationOrderMatrix(TestCase):
-    def test_wrong_size(self):
+    def test_wrong_size(self) -> None:
         with self.assertRaises(TypeError):
-            PermutationOrderMatrixGenerator(main_permutation_order=[1, 2])
+            PermutationOrderMatrixGenerator(main_permutation_order=[1, 2])  # type: ignore
 
-    def test_generation(self):
+    def test_generation(self) -> None:
         assert PermutationOrderMatrixGenerator(
             main_permutation_order=(2, 1)
         ).generate_permutation_order_matrix().matrix_data == [
@@ -222,7 +222,7 @@ class TestGeneratePermutationOrderMatrix(TestCase):
 
 
 class TestPermutationOrderMatrix(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.pom = PermutationOrderMatrixGenerator(
             main_permutation_order=(3, 1, 2)
         ).generate_permutation_order_matrix()
@@ -232,9 +232,9 @@ class TestPermutationOrderMatrix(TestCase):
          [(2, 3, 1), (1, 2, 3), (3, 1, 2)]]
         """
 
-    def test_init_errors(self):
+    def test_init_errors(self) -> None:
         with self.assertRaises(TypeError):
-            PermutationOrderMatrix()
+            PermutationOrderMatrix()  # type: ignore
         with self.assertRaises(SquareMatrixDataError):
             PermutationOrderMatrix(matrix_data=[])
         # wrong type
@@ -254,7 +254,7 @@ class TestPermutationOrderMatrix(TestCase):
 
 
 class TestMatrixIndexController(TestCase):
-    def test_get_next(self):
+    def test_get_next(self) -> None:
         with self.assertRaises(MatrixIndexOutOfRangeError):
             MatrixIndexController(
                 number_of_columns=3, number_of_rows=5, first_index=(4, 7)
@@ -287,7 +287,7 @@ class TestMatrixIndexController(TestCase):
         controller.reset()
         assert next(controller) == (1, 2)
 
-    def test_iterate(self):
+    def test_iterate(self) -> None:
         controller = MatrixIndexController(3, 4)
         assert [_ for _ in controller] == [
             (1, 1),
@@ -304,7 +304,7 @@ class TestMatrixIndexController(TestCase):
             (3, 4),
         ]
 
-    def test_convert_flatten_index_to_index_horizontal(self):
+    def test_convert_flatten_index_to_index_horizontal(self) -> None:
         controller = MatrixIndexController(3, 4)
         indices = [
             controller._convert_flatten_index_to_index(flatten_index)
@@ -327,7 +327,7 @@ class TestMatrixIndexController(TestCase):
         with self.assertRaises(MatrixIndexEndOfMatrixError):
             controller._convert_flatten_index_to_index(12)
 
-    def test_convert_flatten_index_to_index_diagonal(self):
+    def test_convert_flatten_index_to_index_diagonal(self) -> None:
         controller = MatrixIndexController(3, 4, reading_direction="diagonal")
         indices = [
             controller._convert_flatten_index_to_index(flatten_index)
@@ -350,7 +350,7 @@ class TestMatrixIndexController(TestCase):
         with self.assertRaises(MatrixIndexEndOfMatrixError):
             controller._convert_flatten_index_to_index(12)
 
-    def test_convert_flatten_index_to_index_vertical(self):
+    def test_convert_flatten_index_to_index_vertical(self) -> None:
         controller = MatrixIndexController(3, 4, reading_direction="vertical")
         indices = [
             controller._convert_flatten_index_to_index(flatten_index)
@@ -373,7 +373,7 @@ class TestMatrixIndexController(TestCase):
         with self.assertRaises(MatrixIndexEndOfMatrixError):
             controller._convert_flatten_index_to_index(12)
 
-    def test_convert_index_to_flatten_index(self):
+    def test_convert_index_to_flatten_index(self) -> None:
         controller = MatrixIndexController(3, 4)
         for flatten_index in range(0, 12):
             assert (
@@ -401,7 +401,7 @@ class TestMatrixIndexController(TestCase):
                 == flatten_index
             )
 
-    def test_get_next_flatten_index(self):
+    def test_get_next_flatten_index(self) -> None:
         controller = MatrixIndexController(3, 4)
         for x in range(0, 12):
             assert controller.get_next_flatten_index() == x
@@ -420,7 +420,7 @@ class TestMatrixIndexController(TestCase):
             assert controller.get_next_flatten_index() == x
             next(controller)
 
-    def test_reading_direction(self):
+    def test_reading_direction(self) -> None:
         controller = MatrixIndexController(2, 3)
         assert controller.reading_direction == "horizontal"
         controller.reading_direction = "diagonal"

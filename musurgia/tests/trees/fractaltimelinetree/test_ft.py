@@ -18,7 +18,7 @@ class TestFt(TestCase):
     def setUp(self) -> None:
         self.ft = create_test_fractal_timeline_tree()
 
-    def test_get_fractal_order(self):
+    def test_get_fractal_order(self) -> None:
         expected = """└── 0
     ├── 3
     │   ├── 2
@@ -66,19 +66,19 @@ class TestFt(TestCase):
             expected,
         )
 
-    def test_add_wrong_child(self):
+    def test_add_wrong_child(self) -> None:
         ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
         with self.assertRaises(TypeError):
-            ft.add_child("something")
+            ft.add_child("something")  # type: ignore
 
-    def test_non_root_main_permutation_order(self):
+    def test_non_root_main_permutation_order(self) -> None:
         ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
         assert ft.main_permutation_order is None
         assert self.ft.main_permutation_order == (3, 1, 4, 2)
         for node in self.ft.traverse():
             assert node.main_permutation_order == self.ft.main_permutation_order
 
-    def test_calculate_permutation_index_error(self):
+    def test_calculate_permutation_index_error(self) -> None:
         ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
         with self.assertRaises(FractalTimelineTreePermutationIndexError):
             ft.calculate_permutation_index()
@@ -91,7 +91,7 @@ class TestFt(TestCase):
         with self.assertRaises(FractalTimelineTreeHasChildrenError):
             ft.main_permutation_order = (3, 1, 2)
 
-    def test_generate_children_wrong_size(self):
+    def test_generate_children_wrong_size(self) -> None:
         ft = FractalTimelineTree(
             duration=TimelineDuration(10),
             proportions=(1, 2, 3),
@@ -103,14 +103,14 @@ class TestFt(TestCase):
         with self.assertRaises(ValueError):
             ft.generate_children(-1)
         with self.assertRaises(TypeError):
-            ft.generate_children("string")
+            ft.generate_children("string")  # type: ignore
 
-    def test_get_children_fractal_orders_error(self):
+    def test_get_children_fractal_orders_error(self) -> None:
         ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
         with self.assertRaises(FractalTimelineTreeSetMainPermutationOrderFirstError):
             ft.get_children_fractal_orders()
 
-    def test_merge_reduce_error(self):
+    def test_merge_reduce_error(self) -> None:
         ft = FractalTimelineTree(
             duration=TimelineDuration(10),
             proportions=(1, 2, 3),
@@ -138,7 +138,7 @@ class TestFt(TestCase):
         ft.reduce_children_by_size(2, mode="merge", merge_index=2)
         assert len(ft.get_children()) == 2
 
-    def test_split_iter(self):
+    def test_split_iter(self) -> None:
         ft = FractalTimelineTree(
             duration=TimelineDuration(10),
             proportions=(1, 2, 3),
@@ -148,16 +148,16 @@ class TestFt(TestCase):
         ft.split([1, 3, 1])
         assert len(ft.get_children()) == 3
 
-    def test_split_error(self):
+    def test_split_error(self) -> None:
         with self.assertRaises(FractalTimelineTreeHasChildrenError):
             self.ft.split(1, 2, 3)
 
-    def test_calculate_permutation_index(self):
+    def test_calculate_permutation_index(self) -> None:
         ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
         with self.assertRaises(FractalTimelineTreePermutationIndexError):
             ft.calculate_permutation_index()
 
-    def test_get_children_with_and_without_warning(self):
+    def test_get_children_with_and_without_warning(self) -> None:
         ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3))
         ft.add_child(
             FractalTimelineTree(duration=TimelineDuration(5), proportions=(1, 2, 3))

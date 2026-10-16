@@ -8,7 +8,7 @@ this_path = Path(__file__)
 
 
 class GraphicPageTestCase(TestCase):
-    def test_page_layout_size(self):
+    def test_page_layout_size(self) -> None:
         page = SVGPage()
         assert page.get_layout().size == "A4"
         assert page.get_layout().orientation == "portrait"

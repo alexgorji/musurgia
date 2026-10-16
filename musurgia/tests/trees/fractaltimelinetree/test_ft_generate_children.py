@@ -16,19 +16,19 @@ class TestGenerateChildrenReduce(TestCase):
             permutation_index=(1, 1),
         )
 
-    def test_number_of_children_0(self):
+    def test_number_of_children_0(self) -> None:
         self.ft.generate_children(number_of_children=0)
         assert self.ft.get_leaves(key=lambda leaf: leaf.get_fractal_order()) == [0]
 
-    def test_number_of_children_1(self):
+    def test_number_of_children_1(self) -> None:
         self.ft.generate_children(number_of_children=1)
         assert self.ft.get_leaves(key=lambda leaf: leaf.get_fractal_order()) == [3]
 
-    def test_number_of_children_2(self):
+    def test_number_of_children_2(self) -> None:
         self.ft.generate_children(number_of_children=2)
         assert self.ft.get_leaves(key=lambda leaf: leaf.get_fractal_order()) == [3, 2]
 
-    def test_number_of_children_3(self):
+    def test_number_of_children_3(self) -> None:
         self.ft.generate_children(number_of_children=3)
         assert self.ft.get_leaves(key=lambda leaf: leaf.get_fractal_order()) == [
             3,
@@ -36,12 +36,12 @@ class TestGenerateChildrenReduce(TestCase):
             2,
         ]
 
-    def test_with_children_error(self):
+    def test_with_children_error(self) -> None:
         self.ft.generate_children(number_of_children=3)
         with self.assertRaises(ValueError):
             self.ft.generate_children(number_of_children=1)
 
-    def test_tuple_number_of_children_1(self):
+    def test_tuple_number_of_children_1(self) -> None:
         self.ft.generate_children(number_of_children=(1, 1, 1))
         assert self.ft.get_leaves(key=lambda leaf: leaf.get_fractal_order()) == [
             [3],
@@ -49,7 +49,7 @@ class TestGenerateChildrenReduce(TestCase):
             [3],
         ]
 
-    def test_tuple_number_of_children_2(self):
+    def test_tuple_number_of_children_2(self) -> None:
         self.ft.generate_children(number_of_children=(2, 2, 2))
         assert self.ft.get_leaves(key=lambda leaf: leaf.get_fractal_order()) == [
             [2, 3],
@@ -57,7 +57,7 @@ class TestGenerateChildrenReduce(TestCase):
             [2, 3],
         ]
 
-    def test_tuple_number_of_children_3(self):
+    def test_tuple_number_of_children_3(self) -> None:
         self.ft.generate_children(number_of_children=(3, 3, 3))
         assert self.ft.get_leaves(key=lambda leaf: leaf.get_fractal_order()) == [
             [1, 2, 3],
@@ -65,7 +65,7 @@ class TestGenerateChildrenReduce(TestCase):
             [2, 3, 1],
         ]
 
-    def test_tuple_number_of_children_mixed_1_to_3(self):
+    def test_tuple_number_of_children_mixed_1_to_3(self) -> None:
         self.ft.generate_children(number_of_children=(1, 2, 3))
         # print(self.ft.get_tree_representation(node_info_with_permutation_order))
         assert (
@@ -83,7 +83,7 @@ class TestGenerateChildrenReduce(TestCase):
 """
         )
 
-    def test_tuple_number_of_children_mixed_0_to_2(self):
+    def test_tuple_number_of_children_mixed_0_to_2(self) -> None:
         self.ft.generate_children(number_of_children=(0, 1, 2))
         # print(self.ft.get_tree_representation(node_info_with_permutation_order))
         assert (
@@ -98,7 +98,7 @@ class TestGenerateChildrenReduce(TestCase):
 """
         )
 
-    def test_tuple_number_of_children_mixed_tuples(self):
+    def test_tuple_number_of_children_mixed_tuples(self) -> None:
         self.ft.generate_children(number_of_children=(1, (1, 2, 3), 3))
         # print(self.ft.get_tree_representation(node_info_with_permutation_order))
         assert (
@@ -123,7 +123,7 @@ class TestGenerateChildrenReduce(TestCase):
 """
         )
 
-    def test_tuple_number_of_children_mixed_tuples_2(self):
+    def test_tuple_number_of_children_mixed_tuples_2(self) -> None:
         self.ft.generate_children(number_of_children=((1, 3), 2, (1, (1, 3), 3)))
         # print(self.ft.get_tree_representation(node_info_with_permutation_order))
         assert (
@@ -156,7 +156,7 @@ class TestGenerateChildrenReduce(TestCase):
 """
         )
 
-    def test_tuple_number_of_children_mixed_tuples_2_forwards(self):
+    def test_tuple_number_of_children_mixed_tuples_2_forwards(self) -> None:
         self.ft.generate_children(
             number_of_children=((1, 3), 2, (1, (1, 3), 3)), reduce_mode="forwards"
         )
@@ -191,7 +191,7 @@ class TestGenerateChildrenReduce(TestCase):
 """
         )
 
-    def test_tuple_number_of_children_mixed_tuples_2_sieve(self):
+    def test_tuple_number_of_children_mixed_tuples_2_sieve(self) -> None:
         self.ft.generate_children(
             number_of_children=((1, 3), 2, (1, (1, 3), 3)), reduce_mode="sieve"
         )
@@ -226,7 +226,7 @@ class TestGenerateChildrenReduce(TestCase):
 """
         )
 
-    def test_tuple_number_of_children_mixed_tuples_2_merge(self):
+    def test_tuple_number_of_children_mixed_tuples_2_merge(self) -> None:
         self.ft.generate_children(
             number_of_children=((1, 3), 2, (1, (1, 3), 3)),
             reduce_mode="merge",

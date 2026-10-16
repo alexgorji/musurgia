@@ -12,7 +12,7 @@ from musurgia.tests.helpers.svg import SVGTestCase
 path = Path(__file__)
 
 
-def test_text_options():
+def test_text_options() -> None:
     l1 = Text(text="test text", options=TextOptions(font_size=15))
     assert asdict(l1.options) == {
         "font_family": "DejaVu Sans",
@@ -21,7 +21,7 @@ def test_text_options():
     }
 
 
-def test_size():
+def test_size() -> None:
     t = Text(text="Hello World")
     size = t.size
     assert size.width > 0
@@ -31,7 +31,7 @@ def test_size():
 
 
 class TextDraw(SVGTestCase):
-    def test_text_draw(self):
+    def test_text_draw(self) -> None:
 
         page = SVGPage()
         t1 = Text(

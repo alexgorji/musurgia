@@ -8,7 +8,7 @@ from musurgia.permutation.permutation import (
 
 
 class TestPermutation(TestCase):
-    def test_simple_permute(self):
+    def test_simple_permute(self) -> None:
         # wrong lengths
         with self.assertRaises(TypeError):
             permute([10, 20, 30, 40], (3, 2, 4))
@@ -26,9 +26,9 @@ class TestPermutation(TestCase):
 
         assert permute([10, 20, 30, 40], (3, 2, 4, 1)) == [30, 20, 40, 10]
 
-    def test_get_self_permutation_2d(self):
+    def test_get_self_permutation_2d(self) -> None:
         with self.assertRaises(TypeError):
-            get_self_permutation_2d([4, 2, 3, 1])
+            get_self_permutation_2d([4, 2, 3, 1])  # type: ignore
 
         assert get_self_permutation_2d((3, 1, 2)) == [(3, 1, 2), (2, 3, 1), (1, 2, 3)]
 
@@ -50,9 +50,9 @@ class TestPermutation(TestCase):
             (1, 2, 3, 4),
         ]
 
-    def test_get_self_permutation_3d(self):
+    def test_get_self_permutation_3d(self) -> None:
         with self.assertRaises(TypeError):
-            get_self_permutation_3d([4, 2, 3, 1])
+            get_self_permutation_3d([4, 2, 3, 1])  # type: ignore
 
     assert get_self_permutation_3d((3, 1, 2)) == [
         [(3, 1, 2), (2, 3, 1), (1, 2, 3)],

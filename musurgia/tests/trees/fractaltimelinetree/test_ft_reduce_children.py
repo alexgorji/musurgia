@@ -6,7 +6,7 @@ from musurgia.utils import flatten
 
 
 class TestFractalTreeReduceChildrenByCondition(TestCase):
-    def test_reduce_first_layer(self):
+    def test_reduce_first_layer(self) -> None:
         ft = FractalTimelineTree(
             proportions=(1, 2, 3),
             main_permutation_order=(3, 1, 2),
@@ -28,7 +28,7 @@ class TestFractalTreeReduceChildrenByCondition(TestCase):
             3,
         ]
 
-    def test_value(self):
+    def test_value(self) -> None:
         ft = FractalTimelineTree(
             proportions=[1, 2, 3, 4, 5, 6],
             main_permutation_order=(4, 1, 5, 3, 6, 2),
@@ -46,7 +46,7 @@ class TestFractalTreeReduceChildrenByCondition(TestCase):
 
 
 class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.ft = FractalTimelineTree(
             proportions=(1, 2, 3, 4),
             main_permutation_order=(3, 1, 4, 2),
@@ -81,7 +81,7 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
                 └── 1:(2, 4): 0.4
         """
 
-    def test_reduce_backward(self):
+    def test_reduce_backward(self) -> None:
         self.ft.reduce_children_by_size(size=3)
         for child in self.ft.get_children():
             child.reduce_children_by_size(size=3)
@@ -104,7 +104,7 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
 """
         )
 
-    def test_reduce_forwards(self):
+    def test_reduce_forwards(self) -> None:
         self.ft.reduce_children_by_size(size=3, mode="forwards")
         for child in self.ft.get_children():
             child.reduce_children_by_size(size=3, mode="forwards")
@@ -127,7 +127,7 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
 """
         )
 
-    def test_reduce_sieve(self):
+    def test_reduce_sieve(self) -> None:
         self.ft.reduce_children_by_size(size=3, mode="sieve")
         for child in self.ft.get_children():
             child.reduce_children_by_size(size=3, mode="sieve")
@@ -151,7 +151,7 @@ class TestFractalTreeReduceChildrenByNumberOfChildren(TestCase):
 """
         )
 
-    def test_merge(self):
+    def test_merge(self) -> None:
         ft_1 = FractalTimelineTree(
             proportions=(1, 2, 3, 4),
             main_permutation_order=(3, 1, 4, 2),

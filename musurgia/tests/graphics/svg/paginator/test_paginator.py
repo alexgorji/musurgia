@@ -27,7 +27,7 @@ this_path = Path(__file__)
 
 
 class SVGPaginatorTestCase(TestCase):
-    def test_svg_page_with_one_row(self):
+    def test_svg_page_with_one_row(self) -> None:
         page = SVGPage()
         page_size = page.get_layout().get_size()
         row = SVGPageRow(
@@ -41,7 +41,7 @@ class SVGPaginatorTestCase(TestCase):
             page_size.width - r - l, row.get_height() - t - b
         )
 
-    def test_svg_page_create_rows(self):
+    def test_svg_page_create_rows(self) -> None:
         page = SVGPage()
         rows = create_page_rows(
             page,
@@ -55,7 +55,7 @@ class SVGPaginatorTestCase(TestCase):
         assert page.get_rows() == rows
         assert len(page.get_rows()) == 3
 
-    def test_svg_page_multiple_rows(self):
+    def test_svg_page_multiple_rows(self) -> None:
         page = SVGPage(layout=PageLayout(margins=Margins(20, 10, 10, 10)))
         create_page_rows(
             page,
@@ -80,7 +80,7 @@ class SVGPaginatorTestCase(TestCase):
             == page.get_layout().get_effective_size().height
         )
 
-    def test_get_row_content_positions(self):
+    def test_get_row_content_positions(self) -> None:
         page = SVGPage(layout=PageLayout(margins=Margins(20, 10, 10, 10)))
         row_height = Decimal(page.get_layout().get_effective_size().height / 3)
 
@@ -97,14 +97,14 @@ class SVGPaginatorTestCase(TestCase):
             Position(20, 20 + row_height * 2),
         ]
 
-    def test_make_clip_path(self):
+    def test_make_clip_path(self) -> None:
         clip_path = SVGPaginator.make_clip_path(Size(100, 200), "clip_path")
         assert (
             clip_path.as_str()
             == '<clipPath id="clip_path"><rect x="0" y="0" width="100" height="200"/></clipPath>'
         )
 
-    def test_get_clipped_svg_group(self):
+    def test_get_clipped_svg_group(self) -> None:
         ruler = Ruler(type=LineOrientation.HORIZONTAL, length=1000)
 
         clipped_ruler_svg_group = SVGPaginator.get_clipped_svg_group(
@@ -114,7 +114,7 @@ class SVGPaginatorTestCase(TestCase):
         )
         assert isinstance(clipped_ruler_svg_group, svg.G)
 
-    def test_paginate(self):
+    def test_paginate(self) -> None:
         ruler = Ruler(type=LineOrientation.HORIZONTAL, length=4 * 205)
         ruler.build()
         paginator = SVGPaginator()
@@ -125,7 +125,7 @@ class SVGPaginatorTestCase(TestCase):
             assert len(p.get_rows()) == 1
             assert isinstance(p.get_rows()[0].get_svg_group(), svg.G)
 
-    def test_paginate_multiple_rows(self):
+    def test_paginate_multiple_rows(self) -> None:
         ruler = Ruler(type=LineOrientation.HORIZONTAL, length=1000)
         ruler.build()
         page = SVGPage(layout=PageLayout(margins=Margins(20, 10, 10, 10)))
@@ -144,7 +144,7 @@ class SVGPaginatorTestCase(TestCase):
 
 
 class SVGPaginatorAsSVG(SVGTestCase):
-    def test_page_as_svg_group(self):
+    def test_page_as_svg_group(self) -> None:
         ruler = Ruler(
             type=LineOrientation.HORIZONTAL,
             length=500,
@@ -176,7 +176,7 @@ class SVGPaginatorAsSVG(SVGTestCase):
             tolerance=set_ci_tolerance(0.7),
         )
 
-    def test_multiple_pages(self):
+    def test_multiple_pages(self) -> None:
         ruler = Ruler(type=LineOrientation.HORIZONTAL, length=4 * 190)
         ruler.build()
         page = (
@@ -199,7 +199,7 @@ class SVGPaginatorAsSVG(SVGTestCase):
                 tolerance=set_ci_tolerance(0.1),
             )
 
-    def test_multiple_pages_and_rows(self):
+    def test_multiple_pages_and_rows(self) -> None:
         ruler = Ruler(type=LineOrientation.HORIZONTAL, length=8 * 170)
         ruler.build()
         page = (

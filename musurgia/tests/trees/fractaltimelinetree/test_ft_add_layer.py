@@ -8,7 +8,7 @@ path = os.path.abspath(__file__).split(".")[0]
 
 
 class TestAddLayer(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.ft = FractalTimelineTree(
             duration=TimelineDuration(10),
             proportions=(1, 2, 3),
@@ -16,7 +16,7 @@ class TestAddLayer(TestCase):
             permutation_index=(1, 1),
         )
 
-    def test_two_layers(self):
+    def test_two_layers(self) -> None:
         self.ft.add_layer()
         self.ft.add_layer()
         self.assertEqual(self.ft.get_number_of_layers(), 2)
@@ -29,7 +29,7 @@ class TestAddLayer(TestCase):
             self.ft.get_leaves(key=lambda node: round(float(node.get_value()), 2)),
         )
 
-    def test_with_condition(self):
+    def test_with_condition(self) -> None:
         self.ft.add_layer()
         self.ft.add_layer()
         self.ft.add_layer(
@@ -41,7 +41,7 @@ class TestAddLayer(TestCase):
             self.ft.get_leaves(key=lambda node: node.get_fractal_order()),
         )
 
-    def test_child_add_layer(self):
+    def test_child_add_layer(self) -> None:
         self.ft.add_layer()
         self.ft.get_children()[0].add_layer()
         expected = [[0.83, 1.67, 2.5], 1.67, 3.33]
@@ -50,7 +50,7 @@ class TestAddLayer(TestCase):
             self.ft.get_leaves(key=lambda leaf: round(float(leaf.get_value()), 2)),
         )
 
-    def test_complex_layers(self):
+    def test_complex_layers(self) -> None:
         self.ft.add_layer()
         self.ft.add_layer(lambda n: True if n.get_fractal_order() > 1 else False)
         self.ft.add_layer(lambda n: True if n.get_fractal_order() > 1 else False)

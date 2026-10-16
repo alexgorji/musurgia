@@ -1,7 +1,7 @@
 from musurgia.trees.timelinetree import TimelineDuration, TimelineTree
 import itertools
 from fractions import Fraction
-from typing import Union, Optional, List, Callable, Any, cast, Sequence, TypeVar
+from typing import Optional, List, Callable, Any, cast, Sequence, TypeVar
 
 
 from musurgia.arithmeticprogression import ArithmeticProgression
@@ -30,6 +30,8 @@ from musurgia.musurgia_types import (
     create_error_message,
 )
 from musurgia.permutation.permutation import permute
+
+type ChildrenStructure = int | tuple[ChildrenStructure, ...]
 
 __all__ = ["FractalTimelineTree"]
 
@@ -130,7 +132,7 @@ class FractalTimelineTree(TimelineTree):
         self._fractal_order: int = 0
         self._children_fractal_values: list[Fraction]
         self._children_permutation_order_matrices = None
-        self._permutation_order: tuple[int, int]
+        self._permutation_order: tuple[int, ...]
 
         self.proportions = proportions
         self.main_permutation_order = main_permutation_order
@@ -314,7 +316,7 @@ class FractalTimelineTree(TimelineTree):
 
     def generate_children(
         self,
-        number_of_children: Union[int, tuple[int, ...], tuple[tuple[int, ...], ...]],
+        number_of_children: ChildrenStructure,
         reduce_mode: FractalTreeReduceChildrenMode = "backwards",
         merge_index: int = 0,
     ) -> None:
@@ -473,7 +475,7 @@ class FractalTimelineTree(TimelineTree):
     #                 output.append(child.get_layer(layer - 1, key))
     #         return output
 
-    def get_permutation_order(self) -> tuple[int, int]:
+    def get_permutation_order(self) -> tuple[int, ...]:
         try:
             return self._permutation_order
         except AttributeError:

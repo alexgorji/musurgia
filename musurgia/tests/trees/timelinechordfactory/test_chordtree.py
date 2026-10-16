@@ -1,7 +1,10 @@
+from fractions import Fraction
 from pathlib import Path
+from typing import Any
 from unittest import TestCase
 
 from musicscore.score import Score
+from verysimpletree.tree import Tree
 
 from musurgia.tests.helpers import XMLTestCase, create_test_value_tree
 
@@ -13,29 +16,29 @@ from musurgia.trees.timelinetree import (
 from musicscore.chord import Chord
 from musicscore.metronome import Metronome
 
+from musurgia.trees.valuetree import ValueTree
+
 
 class TimelineChordTreeTestCase(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.tlt = TimelineTree(duration=TimelineDuration(4))
         self.chf = SimpleTimelineChordFactory(self.tlt, show_metronome=True)
 
-    def test_tree_chord(self):
+    def test_tree_chord(self) -> None:
         ch = self.chf.create_chord()
-        self.assertTrue(isinstance(ch, Chord))
         with self.assertRaises(AttributeError):
             self.chf.chord = Chord(60, 2)
         self.assertEqual(ch.metronome.per_minute, 60)
         self.assertEqual(ch.quarter_duration, self.tlt.get_value())
         self.assertEqual(ch.midis[0].value, 72)
 
-    def test_update_quarter_duration(self):
+    def test_update_quarter_duration(self) -> None:
         self.assertEqual(self.tlt.get_duration().get_quarter_duration(), 4)
         self.tlt.get_duration().metronome = Metronome(120)
         self.assertEqual(self.chf.create_chord().quarter_duration, 8)
         self.tlt.update_duration(5)
         self.assertEqual(self.chf.create_chord().quarter_duration, 10)
         self.tlt.get_duration().metronome = Metronome(120, 2)
-        self.tlt.metronome = Metronome(120, 2)
         self.assertEqual(self.chf.create_chord().quarter_duration, 20)
 
 
@@ -43,17 +46,20 @@ path = Path(__file__)
 
 
 class TimeLineTreeToScoreTestCase(XMLTestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.vt = create_test_value_tree()
+
+        def node_value(node: Tree[Any]) -> Fraction:
+            assert isinstance(node, ValueTree)
+            return node.get_value()
+
         self.tmt = TimelineTree.create_tree_from_list(
-            tree_list_representation=self.vt.get_list_representation(
-                key=lambda node: node.get_value()
-            ),
-            represented_attribute_names="duration",
+            tree_list_representation=self.vt.get_list_representation(key=node_value),
+            represented_attribute_names=["duration"],
         )
         self.score = Score()
 
-    def test_timeline_tree_layers_to_score(self):
+    def test_timeline_tree_layers_to_score(self) -> None:
         _show_metronome = True
         for layer_number in range(self.tmt.get_number_of_layers() + 1):
             part = self.score.add_part(f"part-{layer_number + 1}")

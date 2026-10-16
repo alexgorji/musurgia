@@ -9,7 +9,7 @@ this_path = Path(__file__)
 
 
 class DashedRectangleTestCase(SVGTestCase):
-    def test_dashed_rectangle(self):
+    def test_dashed_rectangle(self) -> None:
         page = SVGPage()
         r = Rectangle(
             size=Size(50, 50),

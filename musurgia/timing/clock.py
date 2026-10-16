@@ -10,6 +10,7 @@ from musurgia.musurgia_exceptions import (
 )
 from musurgia.musurgia_types import (
     check_type,
+    convert_to_fraction,
     create_error_message,
     ClockMode,
     ConvertibleToFraction,
@@ -21,7 +22,7 @@ class Clock:
         self,
         hours: int = 0,
         minutes: int = 0,
-        seconds: Fraction = Fraction(0),
+        seconds: ConvertibleToFraction = Fraction(0),
         *args: Any,
         **kwargs: Any,
     ) -> None:
@@ -91,7 +92,7 @@ class Clock:
                 property_name="seconds",
             )
             raise ClockWrongSecondsValueError(msg)
-        self._seconds = Fraction(val)
+        self._seconds = convert_to_fraction(val)
 
     def get_values(self) -> tuple[int, int, Fraction]:
         return self.hours, self.minutes, self.seconds
