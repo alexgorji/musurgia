@@ -85,51 +85,6 @@ def create_test_path(path, test_name):
     return path.parent.joinpath(f"{path.stem}_{test_name}")
 
 
-class FilePath:
-    def __init__(self, unittest, parent_path, name, extension):
-        self._unittest = None
-        self._parent_path = None
-        # self._name = None
-        # self._extension = None
-
-        self.unittest = unittest
-        self.parent_path = parent_path
-        self.name = name
-        self.extension = extension
-        self.out_path = None
-
-    @property
-    def unittest(self):
-        return self._unittest
-
-    @unittest.setter
-    def unittest(self, val):
-        # if not isinstance(val, PdfTestCase):
-        #     raise TypeError(f"unittest.value must be of type {type(PdfTestCase)} not{type(val)}")
-        self._unittest = val
-
-    @property
-    def parent_path(self):
-        return self._parent_path
-
-    @parent_path.setter
-    def parent_path(self, val):
-        if not isinstance(val, Path):
-            raise TypeError(
-                f"parent_path.value must be of type {type(Path)} not{type(val)}"
-            )
-        self._parent_path = val
-
-    def __enter__(self):
-        self.out_path = create_test_path(
-            self.parent_path, self.name + "." + self.extension
-        )
-        return self.out_path
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.unittest.assertCompareFiles(self.out_path)
-
-
 def fractal_node_info(node):
     return f"{node.get_fractal_order()}: {node.get_permutation_index()}: {round(float(node.get_value()), 2)}"
 
