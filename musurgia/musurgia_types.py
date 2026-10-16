@@ -1,6 +1,6 @@
 from enum import Enum
 from fractions import Fraction
-from typing import Any, Optional, Union, Literal, Callable, cast, get_args
+from typing import Any, Optional, Union, Literal, Callable, Sequence, cast, get_args
 
 from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError
 
@@ -265,6 +265,10 @@ def convert_to_fraction(value: ConvertibleToFraction) -> Fraction:
         return value
     else:
         return Fraction(value)
+
+
+def convert_to_fraction_list(input: Sequence[ConvertibleToFraction]) -> list[Fraction]:
+    return [convert_to_fraction(x) for x in input]
 
 
 ConvertibleToFloat = Union[float, int, Fraction, str]

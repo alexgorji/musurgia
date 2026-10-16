@@ -2,6 +2,7 @@ from fractions import Fraction
 from typing import Any, Iterator, Literal, Optional, Sequence
 
 from musurgia.musurgia_types import ConvertibleToFraction, convert_to_fraction
+from musurgia.musurgia_types import convert_to_fraction_list as convert_to_fraction_list
 from musurgia.quantize import get_quantized_positions
 
 
@@ -44,10 +45,6 @@ def flatten(input: list[Any]) -> list[Any]:
         else:
             output.append(item)
     return output
-
-
-def convert_to_fraction_list(input: Sequence[ConvertibleToFraction]) -> list[Fraction]:
-    return [convert_to_fraction(x) for x in input]
 
 
 def convert_to_fraction_tuplet(

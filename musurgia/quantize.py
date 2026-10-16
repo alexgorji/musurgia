@@ -1,9 +1,13 @@
 from math import floor, ceil
 
 from fractions import Fraction
-from typing import Literal
+from typing import Literal, Sequence
 
-from musurgia.musurgia_types import ConvertibleToFraction, convert_to_fraction
+from musurgia.musurgia_types import (
+    ConvertibleToFraction,
+    convert_to_fraction,
+    convert_to_fraction_list,
+)
 
 
 def _find_nearest_quantized_value(
@@ -59,18 +63,21 @@ def get_quantized_positions(
 
 
 def get_quantized_values(
-    values: list[Fraction], grid_size: ConvertibleToFraction
+    values: Sequence[ConvertibleToFraction], grid_size: ConvertibleToFraction
 ) -> list[Fraction]:
     # print("vals", vals)
+    values = convert_to_fraction_list(values)
+    grid_size = convert_to_fraction(grid_size)
+
     def _get_positions() -> list[Fraction]:
-        positions = [Fraction(0)]
+        positions: list[Fraction] = [Fraction(0)]
         for val in values:
             positions.append(positions[-1] + val)
         return positions
 
     positions = _get_positions()
     quantized_positions = get_quantized_positions(positions, grid_size)
-    quantized_vals = []
+    quantized_vals: list[Fraction] = []
     for index in range(len(values)):
         quantized_val = Fraction(
             quantized_positions[index + 1] - quantized_positions[index]
@@ -81,12 +88,14 @@ def get_quantized_values(
 
 
 def find_best_quantized_values(
-    values: list[Fraction],
-    list_of_grids: list[ConvertibleToFraction],
+    values: Sequence[ConvertibleToFraction],
+    list_of_grids: Sequence[ConvertibleToFraction],
     check_sum: bool = True,
 ) -> list[Fraction]:
+    values = convert_to_fraction_list(values)
+    list_of_grids = convert_to_fraction_list(list_of_grids)
     if check_sum:
-        new_value_grids = []
+        new_value_grids: list[Fraction] = []
         for grid in list_of_grids:
             if sum(values) % grid == 0:
                 new_value_grids.append(grid)
