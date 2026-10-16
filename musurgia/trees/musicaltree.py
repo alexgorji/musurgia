@@ -234,6 +234,12 @@ class MusicalTree(TimelineTree):
         self.set_tree_chord_factory_class(self.DEFAULT_TREE_CHORD_FACTORY)
 
     def set_tree_chord_factory_class(self, value: type[TreeChordFactory]) -> None:
+        """Replace the factory with the default factory type or one of its subclasses."""
+        if not issubclass(value, self.DEFAULT_TREE_CHORD_FACTORY):
+            raise TypeError(
+                f"{type(self).__name__} requires a subclass of "
+                f"{self.DEFAULT_TREE_CHORD_FACTORY.__name__}, got {value.__name__}"
+            )
         self._tree_chord_factory = value(musical_tree_node=self)
 
     def get_chord_factory(self) -> TreeChordFactory:
@@ -262,6 +268,12 @@ class FractalMusicalTree(FractalTimelineTree, MusicalTree):
 
 class RelativeMusicTree(MusicalTree):
     DEFAULT_TREE_CHORD_FACTORY: Type[TreeChordFactory] = RelativeTreeChordFactory
+
+    def get_chord_factory(self) -> RelativeTreeChordFactory:
+        factory = super().get_chord_factory()
+        if not isinstance(factory, RelativeTreeChordFactory):
+            raise TypeError("RelativeMusicTree requires a RelativeTreeChordFactory")
+        return factory
 
 
 class FractalDirectionIterator:
@@ -340,6 +352,40 @@ class FractalRelativeTreeChordFactory(RelativeTreeChordFactory):
             fractal_node=cast(FractalRelativeMusicTree, self.get_musical_tree_node()),
         )
 
+    @property
+    def direction_iterator(self) -> FractalDirectionIterator:
+        if self._direction_iterator is None:
+            node = self.get_musical_tree_node()
+            if not isinstance(node, FractalRelativeMusicTree):
+                raise TypeError(
+                    "FractalRelativeTreeChordFactory requires a FractalRelativeMusicTree"
+                )
+            self._direction_iterator = FractalDirectionIterator(
+                main_direction_cell=None, fractal_node=node
+            )
+        if not isinstance(self._direction_iterator, FractalDirectionIterator):
+            raise TypeError(
+                "FractalRelativeTreeChordFactory requires a FractalDirectionIterator"
+            )
+        return self._direction_iterator
+
+    @direction_iterator.setter
+    def direction_iterator(self, value: Optional[Iterator[DirectionValue]]) -> None:
+        """Accept a fractal iterator, or None to reset to inherited directions."""
+        if value is not None and not isinstance(value, FractalDirectionIterator):
+            raise TypeError(
+                "FractalRelativeTreeChordFactory requires a FractalDirectionIterator"
+            )
+        self._direction_iterator = value
+
 
 class FractalRelativeMusicTree(FractalMusicalTree, RelativeMusicTree):
     DEFAULT_TREE_CHORD_FACTORY = FractalRelativeTreeChordFactory
+
+    def get_chord_factory(self) -> FractalRelativeTreeChordFactory:
+        factory = super().get_chord_factory()
+        if not isinstance(factory, FractalRelativeTreeChordFactory):
+            raise TypeError(
+                "FractalRelativeMusicTree requires a FractalRelativeTreeChordFactory"
+            )
+        return factory

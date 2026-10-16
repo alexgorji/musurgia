@@ -27,8 +27,9 @@ class FractalRelativeMusicTreeTestCase(TestCase):
 
     def test_directions_root(self):
         self.tgf.add_layer()
-        self.tgf.get_chord_factory().direction_iterator.main_direction_cell = [1, 1]
-        self.tgf.get_chord_factory().midi_value_range = (60, 84)
+        factory = self.tgf.get_chord_factory()
+        factory.direction_iterator.main_direction_cell = [1, 1]
+        factory.midi_value_range = (60, 84)
         RelativeTreeMidiGenerator(musical_tree_node=self.tgf).set_musical_tree_midis()
         expected = """└── 72
     ├── 60.0
@@ -74,8 +75,9 @@ class FractalRelativeMusicTreeTestCase(TestCase):
 
         child = self.tgf.get_children()[0]
         child.add_layer()
-        child.get_chord_factory().midi_value_range = (62, 79)
-        child.get_chord_factory().direction_iterator.main_direction_cell = [1, 1]
+        factory = child.get_chord_factory()
+        factory.midi_value_range = (62, 79)
+        factory.direction_iterator.main_direction_cell = [1, 1]
         RelativeTreeMidiGenerator(musical_tree_node=child).set_musical_tree_midis()
 
         # print(
