@@ -36,9 +36,9 @@ class SVGPaginatorTestCase(TestCase):
         )
         page.add_row(row)
         assert page.get_rows() == [row]
-        t, r, b, l = row.get_paddings().to_values()
+        top, right, bottom, left = row.get_paddings().to_values()
         assert page.get_row_effective_size(1) == Size(
-            page_size.width - r - l, row.get_height() - t - b
+            page_size.width - right - left, row.get_height() - top - bottom
         )
 
     def test_svg_page_create_rows(self) -> None:
@@ -70,10 +70,10 @@ class SVGPaginatorTestCase(TestCase):
 
         for i, row in enumerate(page.get_rows()):
             assert row.get_height() == row_height
-            t, r, b, l = row.get_paddings().to_values()
+            top, right, bottom, left = row.get_paddings().to_values()
             assert page.get_row_effective_size(i + 1) == Size(
-                page.get_layout().get_effective_size().width - r - l,
-                row.get_height() - t - b,
+                page.get_layout().get_effective_size().width - right - left,
+                row.get_height() - top - bottom,
             )
         assert (
             sum([r.get_height() for r in page.get_rows()])
@@ -189,7 +189,6 @@ class SVGPaginatorAsSVG(SVGTestCase):
         pages = paginator.paginate(ruler)
         assert len(pages) == 4
         for index, page in enumerate(pages):
-
             self.compare_page(
                 page,
                 f"multiple_pages_{index + 1}",

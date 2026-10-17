@@ -55,12 +55,12 @@ class TestFractalTreePOM(TestCase):
         ]
         assert self.ft.get_permutation_order() == (3, 1, 2)
         self.ft.add_layer()
-        assert [l.get_permutation_index() for l in self.ft.iterate_leaves()] == [
+        assert [leaf.get_permutation_index() for leaf in self.ft.iterate_leaves()] == [
             (2, 1),
             (2, 2),
             (2, 3),
         ]
-        assert [l.get_permutation_order() for l in self.ft.iterate_leaves()] == [
+        assert [leaf.get_permutation_order() for leaf in self.ft.iterate_leaves()] == [
             (1, 2, 3),
             (3, 1, 2),
             (2, 3, 1),

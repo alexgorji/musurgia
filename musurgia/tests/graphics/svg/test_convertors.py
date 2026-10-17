@@ -31,9 +31,9 @@ class ConvertTextDrawObjectToSVGTestCase(TestCase):
         ctx.set_font_size(float(Text.convert_font_size_to_mm(12)))
         ext = ctx.text_extents("something")
         print(f"\nx_bearing: {ext.x_bearing}")
-        assert (
-            ext.x_bearing != 0.0
-        ), "cairo is using fallback font — fontconfig not applied"
+        assert ext.x_bearing != 0.0, (
+            "cairo is using fallback font — fontconfig not applied"
+        )
 
     def test_dejavu_font_resolves_to_repo_font(self) -> None:
         fonts_dir = Path(__file__).parent / "fonts"

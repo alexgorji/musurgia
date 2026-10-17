@@ -54,11 +54,11 @@ def create_page_rows(
 
 def get_row_content_positions(page: "SVGPage") -> list[Position]:
     positions = []
-    t, _, _, l = page.get_layout().margins.to_values()
-    y = t
+    top, _, _, left = page.get_layout().margins.to_values()
+    y = top
     for row in page.get_rows():
         positions.append(
-            Position(l + row.get_paddings().left, y + row.get_paddings().top)
+            Position(left + row.get_paddings().left, y + row.get_paddings().top)
         )
         y += row.get_height()
 
@@ -159,9 +159,10 @@ class SVGPage:
 
     def get_row_effective_size(self, row_number: int) -> Size:
         row = self.get_rows()[row_number - 1]
-        t, r, b, l = row.get_paddings().to_values()
+        top, right, bottom, left = row.get_paddings().to_values()
         return Size(
-            self._layout.get_effective_size().width - r - l, row.get_height() - t - b
+            self._layout.get_effective_size().width - right - left,
+            row.get_height() - top - bottom,
         )
 
     def copy(self) -> "SVGPage":

@@ -13,7 +13,6 @@ from musurgia.tests.helpers import (
 from musurgia.trees.fractaltimelinetree import FractalTimelineTree
 from musurgia.trees.musicaltree import (
     FractalDirectionIterator,
-    FractalMusicalTree,
     FractalRelativeMusicTree,
     RelativeMusicTree,
     RelativeTreeChordFactory,

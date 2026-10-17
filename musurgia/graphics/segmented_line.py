@@ -85,7 +85,6 @@ class Marker(Container):
         if labels:
             first_label = cast(Label, self.get_first_label())
             for label in labels:
-
                 if self.type == LineOrientation.HORIZONTAL:
                     position = Position(
                         first_label.offset.x - label.offset.x,

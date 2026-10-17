@@ -30,7 +30,7 @@ MUSURGIA_TYPES = [
     "PageOrientation",
     "MarginType",
     "ClockMode",
-    "MidiValue" "DirectionValue",
+    "MidiValueDirectionValue",
     "MidiValueMicroTone",
 ]
 

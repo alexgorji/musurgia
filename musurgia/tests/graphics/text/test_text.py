@@ -32,7 +32,6 @@ def test_size() -> None:
 
 class TextDraw(SVGTestCase):
     def test_text_draw(self) -> None:
-
         page = SVGPage()
         t1 = Text(
             text="The quick Brown fox Jumps over The lazy Dog",

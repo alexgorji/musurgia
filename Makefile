@@ -17,9 +17,19 @@ testgraphics:
 type-check:
 	uv run mypy musurgia --strict
 
+.PHONY: lint
+lint:
+	uv run ruff format --check .
+	uv run ruff check .
+
+.PHONY: ruff
+ruff:
+	uv run ruff format
+	uv run ruff check --fix
 
 .PHONY: pre-push-hook
 pre-push-hook:
+	$(MAKE) lint
 	$(MAKE) type-check
 	uv sync --group test
 	uv run pytest -m "not wip"

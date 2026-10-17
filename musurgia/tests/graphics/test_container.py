@@ -113,7 +113,9 @@ class ContainerTestCase(TestCase):
             == [start_marker, straight_line, end_marker]
         )
 
-    def _create_test_nested_containers(self) -> tuple[
+    def _create_test_nested_containers(
+        self,
+    ) -> tuple[
         Container,
         Position,
         Container,
@@ -197,7 +199,6 @@ class ContainerTestCase(TestCase):
         assert (end_marker_p, end_marker) in pdos
 
     def test_nested_containers_get_draw_objects_recursive(self) -> None:
-
         [
             line_segment,
             _,

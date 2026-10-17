@@ -553,7 +553,7 @@ class FractalTimelineTree(TimelineTree):
             nodes[0].update_value(new_value)
 
         iter_children = iter(children)
-        chunks = [list(itertools.islice(iter_children, l)) for l in lengths]
+        chunks = [list(itertools.islice(iter_children, length)) for length in lengths]
 
         for chunk in chunks:
             _merge(chunk)

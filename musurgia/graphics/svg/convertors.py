@@ -43,7 +43,6 @@ class DrawObjectConvertor(ABC, Generic[T]):
 
 
 class TextDrawObjectToSVGConvertor(DrawObjectConvertor[Text]):
-
     def _convert(self) -> list[svg.Element]:
         ext = self.draw_object.get_text_extents()
         return [

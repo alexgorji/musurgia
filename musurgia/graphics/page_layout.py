@@ -4,7 +4,6 @@ from typing import Dict, Literal
 
 from musurgia.graphics.geometry import Margins, Size
 
-
 type PageSize = Literal["A3", "A4", "A5"]
 type PageOrientation = Literal["portrait", "landscape"]
 
@@ -31,8 +30,8 @@ class PageLayout:
         return size
 
     def get_effective_size(self) -> Size:
-        t, r, b, l = self.margins.to_values()
+        top, right, bottom, left = self.margins.to_values()
         return Size(
-            self.get_size().width - r - l,
-            self.get_size().height - b - t,
+            self.get_size().width - right - left,
+            self.get_size().height - bottom - top,
         )

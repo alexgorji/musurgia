@@ -8,7 +8,6 @@ from musurgia.graphics.drawobject import (
 
 
 class LineTestCase(TestCase):
-
     def test_size(self) -> None:
         l1 = Line(start=Position(0, 40), end=Position(30, 0))
         self.assertAlmostEqual(l1.size.width, 30, delta=0.5)
