@@ -298,26 +298,26 @@ wheels = [
 
 [[package]]
 name = "musicscore"
-version = "2.6.0"
+version = "2.6.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "musicxml" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/03/b5/fe647e722a53095eef3c5d1404580b0876bd3b1702fa2988525323e945a3/musicscore-2.6.0.tar.gz", hash = "sha256:8fce9db1fa62aec137b5879f4c4ba22de223c722c2f1ce560ac806f205b9e597", size = 649136, upload-time = "2025-02-11T06:56:38.689Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4a/4d/c72a75c8ffe7b9202c6d49f5031cc6e84c7d5d0b344b55035053996277dc/musicscore-2.6.1.tar.gz", hash = "sha256:e7d8c928a0e2091521d60b731032a190d934b42d66f22b83d8a9f1e7ec45c39f", size = 648495, upload-time = "2026-10-17T14:02:20.129Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/28/58/fb6aa6839405ce10950f4bda06026c7f0a4c5837a4d467cea23b002efb8e/musicscore-2.6.0-py3-none-any.whl", hash = "sha256:e35f7b91ad26490ad7d848754a7958636455da69ff4c8696866ab4861bde0312", size = 817469, upload-time = "2025-02-11T06:56:35.575Z" },
+    { url = "https://files.pythonhosted.org/packages/21/e5/7b156cc69f7a84736a2c2025f3086f2681c6ed542d830a4416efc1f0732a/musicscore-2.6.1-py3-none-any.whl", hash = "sha256:0c45f586a710ef7ae235a3e62de70f8ce8d795bb1437ccf185e9c695d0a42ccd", size = 817764, upload-time = "2026-10-17T14:02:18.517Z" },
 ]
 
 [[package]]
 name = "musicxml"
-version = "1.6.1"
+version = "1.6.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "verysimpletree" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bf/89/bff27f31165a2b1ebdbf87b519666302bff26bdffa47393363e923c058bb/musicxml-1.6.1.tar.gz", hash = "sha256:a90e5ef8512c40af9f65ab8d0627afa19ef4a26aac97052287a6f0b2f9db7ae9", size = 873137, upload-time = "2024-12-24T09:37:16.389Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/25/30/1897db717f3103e4d8af0bba4752f94859fa53ff5ffac0631c81f25f95ca/musicxml-1.6.3.tar.gz", hash = "sha256:ead1ab039429dd67666c6f7a416ef009fa3a168bbfab98cdf400b581c311cf90", size = 872990, upload-time = "2026-10-17T13:56:09.521Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f2/70/b0eb5a86e2ecc91456bb863880e47a3e539e3f515d4c9b4b3c884e5510db/musicxml-1.6.1-py3-none-any.whl", hash = "sha256:43ad9607453a0e91585b6c18a45dd1ba9681e1317b5133e34b5195f18d513d5a", size = 978149, upload-time = "2024-12-24T09:37:13.714Z" },
+    { url = "https://files.pythonhosted.org/packages/8b/29/070cb56c294c8e40622ecddfe31ad7d936456cc61271d26f83fb8879f4f0/musicxml-1.6.3-py3-none-any.whl", hash = "sha256:c6a66e591b4219c51d6a27f69759f0531aaa952eea1b337bc5247970d6d84819", size = 978406, upload-time = "2026-10-17T13:56:07.78Z" },
 ]
 
 [[package]]
@@ -328,6 +328,7 @@ dependencies = [
     { name = "musicscore" },
     { name = "pycairo" },
     { name = "svg-py" },
+    { name = "verysimpletree" },
 ]
 
 [package.dev-dependencies]
@@ -346,6 +347,7 @@ requires-dist = [
     { name = "musicscore", specifier = ">=2.6.0" },
     { name = "pycairo", specifier = ">=1.29.0" },
     { name = "svg-py", specifier = ">=1.10.0" },
+    { name = "verysimpletree", specifier = ">=2.0.1" },
 ]
 
 [package.metadata.requires-dev]
@@ -631,11 +633,11 @@ wheels = [
 
 [[package]]
 name = "verysimpletree"
-version = "1.2.1"
+version = "2.0.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/9c/20/a45a7e9beba4ecc9b1f3a5c7a7cea96780e483a52846d9b0ea0f86e0c34a/verysimpletree-1.2.1.tar.gz", hash = "sha256:7c00da22b427f7d6a1a03053b660cada1a0750d823f6fd08f7308c312187aa1f", size = 9909, upload-time = "2024-12-31T13:28:53.015Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fc/89/d0c9edb37df8fee46109c619f83ef6248ff3c167c0c795ff7f43ea7f1e86/verysimpletree-2.0.2.tar.gz", hash = "sha256:763e32cb17b01b4a363d0d065d0f628a01ecffc4e799e43d9d6c80cf8067b2be", size = 14793, upload-time = "2026-10-17T15:51:32.749Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5f/e7/00d75a4c266b83e0a2ac4d2747edd0e281cf8627027b3bffb4467d1ab49b/verysimpletree-1.2.1-py3-none-any.whl", hash = "sha256:993e63df314a69de0a138cc5a3d7610cf2af8cfae082f8348a2673fe7b85a9b8", size = 10863, upload-time = "2024-12-31T13:28:50.758Z" },
+    { url = "https://files.pythonhosted.org/packages/3f/26/3f5e5d4da436b98dd6b025bcb5e706f3dee585e064ebb7e8e9f96f3c7990/verysimpletree-2.0.2-py3-none-any.whl", hash = "sha256:88abb72319936c7ca213a589380f0a6a9b0535c42dbb7dc2196396ed8ceec1e3", size = 15386, upload-time = "2026-10-17T15:51:31.883Z" },
 ]
 
 [[package]]
