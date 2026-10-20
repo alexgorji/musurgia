@@ -1,6 +1,5 @@
 from fractions import Fraction
-from typing import Any, Union, cast
-from verysimpletree.tree import T
+from typing import Any, Self
 from musicscore.metronome import Metronome
 from musicscore.quarterduration import QuarterDuration
 
@@ -55,7 +54,7 @@ class TimelineDuration(ReadonlyDuration):
 class TimelineTree(ValueTree):
     def __init__(
         self,
-        duration: Union[TimelineDuration, ConvertibleToFraction],
+        duration: TimelineDuration | ConvertibleToFraction,
         *args: Any,
         **kwargs: Any,
     ):
@@ -71,12 +70,6 @@ class TimelineTree(ValueTree):
         self._duration: TimelineDuration = duration
 
     # private methods
-    def _check_child_to_be_added(self, child: "TimelineTree") -> bool:
-        if not isinstance(child, TimelineTree):
-            raise TypeError(
-                f"Wrong child type. Child must be of type FractalTree not {type(child)}"
-            )
-        return True
 
     def _set_value(self, value: ConvertibleToFraction) -> None:
         if not isinstance(value, Fraction):
@@ -87,10 +80,10 @@ class TimelineTree(ValueTree):
     def duration(self) -> None:
         raise AttributeError("Use get_duration() instead.")
 
-    def add_child(self, child: T) -> T:
+    def add_child(self, child: Self) -> Self:
         added_child = super().add_child(child)
         added_child.get_duration().metronome = self.get_duration().metronome
-        return cast(T, added_child)
+        return added_child
 
     def get_duration(self) -> TimelineDuration:
         return self._duration
@@ -102,7 +95,7 @@ class TimelineTree(ValueTree):
         return self.get_duration().calculate_in_seconds()
 
     def update_duration(
-        self, duration: Union[TimelineDuration, ConvertibleToFraction]
+        self, duration: TimelineDuration | ConvertibleToFraction
     ) -> None:
         if isinstance(duration, TimelineDuration):
             self._duration = duration
@@ -119,7 +112,7 @@ class TimelineTree(ValueTree):
             new_value = Fraction(duration)
         self.update_value(new_value)
 
-    def update_metronome(self, value: Union[Metronome, int]) -> None:
+    def update_metronome(self, value: Metronome | int) -> None:
         if not isinstance(value, Metronome):
             value = Metronome(value)
         for node in self.traverse():

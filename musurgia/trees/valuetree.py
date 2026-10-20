@@ -1,23 +1,20 @@
 from abc import abstractmethod
 from fractions import Fraction
 import warnings
-from verysimpletree.tree import Tree
-from typing import Any, TypeVar, Union
+from verysimpletree import HomogeneousTree
+from typing import Self, Sequence
 from musurgia.musurgia_exceptions import WrongTreeValueError, WrongTreeValueWarning
 from musurgia.musurgia_types import ConvertibleToFraction
 
-T = TypeVar("T", bound="ValueTree")
 
-
-class ValueTree(Tree[Any]):
-    def _change_children_value(self, factor: Union[int, float, Fraction]) -> None:
+class ValueTree(HomogeneousTree):
+    def _change_children_value(self, factor: int | float | Fraction) -> None:
         for child in self._get_children():
             child._set_value(child.get_value() * factor)
             child._change_children_value(factor)
 
     def _check_tree_children(self) -> None:
-        _children = super().get_children()
-        self._check_tree_children_values([ch.get_value() for ch in _children])
+        self._check_tree_children_values([ch.get_value() for ch in self.get_children()])
 
     def _check_tree_children_values(
         self, children_values: list[ConvertibleToFraction]
@@ -27,8 +24,8 @@ class ValueTree(Tree[Any]):
                 f"Children of valuetree node of position {self.get_position_in_tree()} with value {self.get_value()} have wrong values {children_values} (sum={sum(children_values)})"
             )
 
-    def _get_children(self: T) -> list[T]:
-        return super().get_children()
+    def _get_children(self) -> list[Self]:
+        return self._children
 
     @abstractmethod
     def _set_value(self, value: ConvertibleToFraction) -> None:
@@ -58,7 +55,7 @@ class ValueTree(Tree[Any]):
 
         self._change_children_value(factor)
 
-    def get_children(self: T) -> list[T]:
+    def get_children(self) -> Sequence[Self]:
         children = self._get_children()
         if not self.is_leaf:
             try:

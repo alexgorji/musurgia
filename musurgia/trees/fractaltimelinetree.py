@@ -1,7 +1,7 @@
 from musurgia.trees.timelinetree import TimelineDuration, TimelineTree
 import itertools
 from fractions import Fraction
-from typing import Optional, List, Callable, Any, cast, Sequence, TypeVar
+from typing import List, Callable, Any, cast, Sequence, TypeVar
 
 
 from musurgia.arithmeticprogression import ArithmeticProgression
@@ -46,13 +46,13 @@ class PermutationIndexCalculator:
     def __init__(
         self,
         size: PositiveInteger,
-        parent_index: Optional[MatrixIndex] = None,
+        parent_index: MatrixIndex | None = None,
         *args: Any,
         **kwargs: Any,
     ):
         super().__init__(*args, **kwargs)
         self._size: PositiveInteger
-        self._parent_index: Optional[MatrixIndex] = None
+        self._parent_index: MatrixIndex | None = None
 
         self.size = size
         self.parent_index = parent_index
@@ -72,11 +72,11 @@ class PermutationIndexCalculator:
         self._size = value
 
     @property
-    def parent_index(self) -> Optional[MatrixIndex]:
+    def parent_index(self) -> MatrixIndex | None:
         return self._parent_index
 
     @parent_index.setter
-    def parent_index(self, value: Optional[MatrixIndex]) -> None:
+    def parent_index(self, value: MatrixIndex | None) -> None:
         if value is not None:
             check_type(
                 value,
@@ -115,18 +115,18 @@ class FractalTimelineTree(TimelineTree):
     def __init__(
         self,
         proportions: Sequence[ConvertibleToFraction],
-        main_permutation_order: Optional[PermutationOrder] = None,
-        permutation_index: Optional[MatrixIndex] = None,
+        main_permutation_order: PermutationOrder | None = None,
+        permutation_index: MatrixIndex | None = None,
         fertile: bool = True,
         *args: Any,
         **kwargs: Any,
     ):
         super().__init__(*args, **kwargs)
-        self._permutation_order_matrix: Optional[PermutationOrderMatrix] = None
+        self._permutation_order_matrix: PermutationOrderMatrix | None = None
         self._value: Fraction
         self._proportions: Sequence[ConvertibleToFraction] = []
-        self._main_permutation_order: Optional[PermutationOrder] = None
-        self._permutation_index: Optional[MatrixIndex] = None
+        self._main_permutation_order: PermutationOrder | None = None
+        self._permutation_index: MatrixIndex | None = None
         self._fertile: bool
 
         self._fractal_order: int = 0
@@ -207,14 +207,14 @@ class FractalTimelineTree(TimelineTree):
         self._fertile = val
 
     @property
-    def main_permutation_order(self) -> Optional[PermutationOrder]:
+    def main_permutation_order(self) -> PermutationOrder | None:
         if self.is_root:
             return self._main_permutation_order
         else:
             return cast(FractalTimelineTree, self.get_root()).main_permutation_order
 
     @main_permutation_order.setter
-    def main_permutation_order(self, value: Optional[PermutationOrder]) -> None:
+    def main_permutation_order(self, value: PermutationOrder | None) -> None:
         if self._get_children():
             raise FractalTimelineTreeHasChildrenError
         if value is not None:
@@ -250,7 +250,7 @@ class FractalTimelineTree(TimelineTree):
 
     # public methods
     def add_layer(
-        self, *conditions: Optional[Callable[["FractalTimelineTree"], bool]]
+        self, *conditions: Callable[["FractalTimelineTree"], bool] | None
     ) -> None:
         """
         >>> ft = FractalTimelineTree(duration=TimelineDuration(10), proportions=(1, 2, 3), main_permutation_order=(3, 1, 2), permutation_index=(1, 1))
@@ -484,7 +484,7 @@ class FractalTimelineTree(TimelineTree):
             )
             return self._permutation_order
 
-    def get_permutation_index(self) -> Optional[MatrixIndex]:
+    def get_permutation_index(self) -> MatrixIndex | None:
         return self._permutation_index
 
     def get_permutation_order_matrix(self) -> PermutationOrderMatrix:
@@ -582,7 +582,7 @@ class FractalTimelineTree(TimelineTree):
         self,
         size: int,
         mode: FractalTreeReduceChildrenMode = "backwards",
-        merge_index: Optional[int] = None,
+        merge_index: int | None = None,
     ) -> None:
         check_type(
             mode,
@@ -631,7 +631,7 @@ class FractalTimelineTree(TimelineTree):
                 merge_lengths = self._get_merge_lengths(size, merge_index)
                 self.merge_children(*merge_lengths)
 
-    def set_permutation_index(self, index: Optional[MatrixIndex]) -> None:
+    def set_permutation_index(self, index: MatrixIndex | None) -> None:
         if index is not None:
             check_type(
                 index,

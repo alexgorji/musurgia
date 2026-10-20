@@ -1,5 +1,5 @@
 from fractions import Fraction
-from typing import Any, Optional, Union, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from musicscore import QuarterDuration, Metronome
 from musurgia.musurgia_types import ConvertibleToFraction, check_type, ClockMode
@@ -7,7 +7,7 @@ from musurgia.timing.clock import Clock
 
 T = TypeVar("T", bound="ReadonlyDuration")
 
-ConvertibleToDuration = Union["ReadonlyDuration", ConvertibleToFraction]
+type ConvertibleToDuration = ReadonlyDuration | ConvertibleToFraction
 
 
 def _convert_other_to_fraction(other: ConvertibleToDuration) -> Fraction:
@@ -125,7 +125,7 @@ class ReadonlyDuration:
         return Fraction(self.seconds, 3600) + Fraction(self.minutes, 60) + self.hours
 
     def get_clock_as_string(
-        self, mode: ClockMode = "hms", round_: Optional[int] = None
+        self, mode: ClockMode = "hms", round_: int | None = None
     ) -> str:
         return self.clock.get_as_string(mode, round_)
 
@@ -183,7 +183,7 @@ class ReadonlyDuration:
     def __pos__(self: T) -> T:
         return self.__class__(self.calculate_in_seconds().__pos__())
 
-    def __pow__(self: T, power: Union[int, float]) -> T:
+    def __pow__(self: T, power: int | float) -> T:
         return self.__class__(pow(self.calculate_in_seconds(), power))
 
     def __radd__(self: T, other: ConvertibleToDuration) -> T:
@@ -206,7 +206,7 @@ class ReadonlyDuration:
             self.calculate_in_seconds().__rmul__(_convert_other_to_fraction(other))
         )
 
-    def __round__(self: T, n: Optional[int] = None) -> T:
+    def __round__(self: T, n: int | None = None) -> T:
         return self.__class__(float(self.calculate_in_seconds()).__round__(n))
 
     # def __rpow__(self, other):
@@ -281,7 +281,7 @@ class Duration(ReadonlyDuration):
 
 
 def convert_duration_to_quarter_duration_value(
-    metronome: Union[Metronome, int], duration: Union[Duration, float, int, Fraction]
+    metronome: Metronome | int, duration: Duration | float | int | Fraction
 ) -> Fraction:
     if isinstance(duration, Duration):
         seconds = duration.calculate_in_seconds()
@@ -297,8 +297,8 @@ def convert_duration_to_quarter_duration_value(
 
 
 def convert_quarter_duration_to_duration_value(
-    metronome: Union[Metronome, int],
-    quarter_duration: Union[QuarterDuration, float, int, Fraction],
+    metronome: Metronome | int,
+    quarter_duration: QuarterDuration | float | int | Fraction,
 ) -> Fraction:
     if not isinstance(quarter_duration, QuarterDuration):
         quarter_duration = QuarterDuration(quarter_duration)

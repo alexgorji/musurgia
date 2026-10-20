@@ -1,5 +1,5 @@
 from fractions import Fraction
-from typing import Any, Optional
+from typing import Any
 
 from musurgia.musurgia_exceptions import (
     ClockWrongSecondsTypeError,
@@ -102,9 +102,7 @@ class Clock:
     ) -> None:
         self.hours, self.minutes, self.seconds = hours, minutes, Fraction(seconds)
 
-    def get_as_string(
-        self, mode: ClockMode = "hms", round_: Optional[int] = None
-    ) -> str:
+    def get_as_string(self, mode: ClockMode = "hms", round_: int | None = None) -> str:
         check_type(
             mode,
             "ClockMode",

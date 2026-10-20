@@ -1,5 +1,5 @@
 from fractions import Fraction
-from typing import Any, Iterator, Literal, Optional, Sequence
+from typing import Any, Iterator, Literal, Sequence
 
 from musurgia.musurgia_types import ConvertibleToFraction, convert_to_fraction
 from musurgia.musurgia_types import convert_to_fraction_list as convert_to_fraction_list
@@ -113,9 +113,9 @@ class RelativeValueGenerator:
     def __init__(
         self,
         value_range: tuple[ConvertibleToFraction, ConvertibleToFraction],
-        directions: list[DirectionValueType],
-        proportions: list[ConvertibleToFraction],
-        value_grid: Optional[ConvertibleToFraction] = None,
+        directions: Sequence[DirectionValueType],
+        proportions: Sequence[ConvertibleToFraction],
+        value_grid: ConvertibleToFraction | None = None,
         include_last_midi_in_range: bool = False,
         *args: Any,
         **kwargs: Any,
@@ -125,9 +125,9 @@ class RelativeValueGenerator:
         self._value_range: tuple[ConvertibleToFraction, ConvertibleToFraction] = (
             convert_to_fraction_tuplet(value_range)
         )
-        self._directions: list[DirectionValueType] = directions
+        self._directions = directions
         self._proportions: list[Fraction] = convert_to_fraction_list(proportions)
-        self._value_grid: Optional[ConvertibleToFraction] = (
+        self._value_grid: ConvertibleToFraction | None = (
             None if not value_grid else convert_to_fraction(value_grid)
         )
         self._include_last_midi_in_range: bool = include_last_midi_in_range
@@ -183,7 +183,7 @@ class RelativeValueGenerator:
         self._calculate_result_values()
 
     @property
-    def directions(self) -> list[DirectionValueType]:
+    def directions(self) -> Sequence[DirectionValueType]:
         return self._directions
 
     @directions.setter
@@ -204,11 +204,11 @@ class RelativeValueGenerator:
         self._calculate_result_values()
 
     @property
-    def value_grid(self) -> Optional[ConvertibleToFraction]:
+    def value_grid(self) -> ConvertibleToFraction | None:
         return self._value_grid
 
     @value_grid.setter
-    def value_grid(self, value: Optional[ConvertibleToFraction]) -> None:
+    def value_grid(self, value: ConvertibleToFraction | None) -> None:
         self._value_grid = value
         self._calculate_result_values()
 

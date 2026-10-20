@@ -15,7 +15,7 @@ testgraphics:
 
 .PHONY: type-check
 type-check:
-	uv run mypy musurgia --strict
+	uv run --group test mypy musurgia --strict
 
 .PHONY: lint
 lint:

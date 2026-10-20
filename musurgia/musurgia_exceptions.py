@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 
 # arithmetic progression
@@ -126,7 +126,7 @@ class FractalTimelineTreeSetMainPermutationOrderFirstError(
 ):
     msg = "set root's main_permutation_order first"
 
-    def __init__(self, msg: Optional[str] = None):
+    def __init__(self, msg: str | None = None):
         if msg is None:
             msg = self.msg
         super().__init__(msg)
@@ -288,7 +288,7 @@ class RelativeTreeChordFactoryHasNoMidiValueRangeError(
 ):
     msg = "Set RelativeTreeChordFactory.midi_value_range before using RelativeTreeMidiGenerator"
 
-    def __init__(self, msg: Optional[str] = None):
+    def __init__(self, msg: str | None = None):
         if msg is None:
             msg = self.msg
         super().__init__(msg)

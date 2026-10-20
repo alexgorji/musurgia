@@ -1,4 +1,4 @@
-from typing import Optional, Any, TypeVar
+from typing import Any, TypeVar
 
 from musurgia.musurgia_exceptions import (
     MatrixIsEmptyError,
@@ -31,7 +31,7 @@ class SimpleMatrix:
     """
 
     def __init__(
-        self, matrix_data: Optional[MatrixData] = None, *args: Any, **kwargs: Any
+        self, matrix_data: MatrixData | None = None, *args: Any, **kwargs: Any
     ) -> None:
         self._matrix_data: MatrixData = []
         if matrix_data is None:
@@ -393,7 +393,7 @@ class MatrixIndexController:
         self.reset()
 
     @property
-    def first_index(self) -> Optional[MatrixIndex]:
+    def first_index(self) -> MatrixIndex | None:
         return self._first_index
 
     @first_index.setter

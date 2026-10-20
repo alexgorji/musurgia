@@ -1,4 +1,4 @@
-from typing import Optional, Any, Iterator, Union, TypeVar
+from typing import Any, Iterator, TypeVar
 
 from musurgia.musurgia_types import NonNegativeInteger, check_type
 
@@ -39,17 +39,17 @@ class MagicRandom:
     def __init__(
         self,
         pool: list[Any],
-        periodicity: Optional[NonNegativeInteger] = None,
-        forbidden_list: Optional[list[Any]] = None,
-        seed: Optional[Union[int, str, bytes, bytearray]] = None,
+        periodicity: NonNegativeInteger | None = None,
+        forbidden_list: list[Any] | None = None,
+        seed: int | str | bytes | bytearray | None = None,
         *args: Any,
         **kwargs: Any,
     ):
         super().__init__(*args, **kwargs)
         self._pool: list[Any] = []
-        self._periodicity: Optional[NonNegativeInteger] = None
+        self._periodicity: NonNegativeInteger | None = None
         self._forbidden_list: list[Any] = []
-        self._seed: Optional[Union[int, str, bytes, bytearray]] = None
+        self._seed: int | str | bytes | bytearray | None = None
         self._counter = 0
         self._previous_elements: list[Any] = []
 
@@ -116,7 +116,7 @@ class MagicRandom:
         return self._forbidden_list
 
     @forbidden_list.setter
-    def forbidden_list(self, values: Optional[list[Any]]) -> None:
+    def forbidden_list(self, values: list[Any] | None) -> None:
         if not values:
             self._forbidden_list = []
         else:
@@ -156,7 +156,7 @@ class MagicRandom:
             return self._periodicity
 
     @periodicity.setter
-    def periodicity(self, value: Optional[NonNegativeInteger]) -> None:
+    def periodicity(self, value: NonNegativeInteger | None) -> None:
         if value is None:
             self._periodicity = None
         else:
@@ -188,7 +188,7 @@ class MagicRandom:
         self._pool = list(dict.fromkeys(values))
 
     @property
-    def seed(self) -> Optional[Union[int, str, bytes, bytearray]]:
+    def seed(self) -> int | str | bytes | bytearray | None:
         """
         Set and get ``seed.a`` value of python random function which is used to randomly choose an element.
 
@@ -204,7 +204,7 @@ class MagicRandom:
         return self._seed
 
     @seed.setter
-    def seed(self, value: Optional[Union[int, str, bytes, bytearray]]) -> None:
+    def seed(self, value: int | str | bytes | bytearray | None) -> None:
         self._seed = value
         self.current_random.seed(value)
 

@@ -8,7 +8,7 @@ dependencies = [
     "musicscore>=2.6.0",
     "pycairo>=1.29.0",
     "svg-py>=1.10.0",
-    "verysimpletree>=2.0.1",
+    "verysimpletree>=2.1.4",
 ]
 
 [dependency-groups]

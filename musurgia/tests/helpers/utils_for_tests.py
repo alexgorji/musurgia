@@ -1,6 +1,6 @@
 from fractions import Fraction
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 
 from musurgia.musurgia_types import ConvertibleToFraction
@@ -88,11 +88,11 @@ def create_test_path(path: Path, test_name: str) -> Path:
     return path.parent.joinpath(f"{path.stem}_{test_name}")
 
 
-def fractal_node_info(node: FractalMusicalTree) -> str:
+def fractal_node_info(node: FractalTimelineTree) -> str:
     return f"{node.get_fractal_order()}: {node.get_permutation_index()}: {round(float(node.get_value()), 2)}"
 
 
-def fractal_node_info_with_permutation_order(node: FractalMusicalTree) -> str:
+def fractal_node_info_with_permutation_order(node: FractalTimelineTree) -> str:
     return f"{node.get_fractal_order()}: {node.get_permutation_index()}: {node.get_permutation_order()}: {round(float(node.get_value()), 2)}"
 
 
@@ -179,10 +179,8 @@ class DemoValueTree(ValueTree):
 
 
 def create_test_value_tree() -> DemoValueTree:
-    vt = cast(
-        DemoValueTree,
-        DemoValueTree.create_tree_from_list(test_fractal_structure_list, ["value"]),
-    )
+    vt = DemoValueTree.create_tree_from_list(test_fractal_structure_list, ["value"])
+
     # print(vt.get_tree_representation(key=lambda node: node.get_value()))
 
     """└── 10

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from fractions import Fraction
-from typing import Any, Iterator, Literal, Union
+from typing import Any, Iterator, Literal
 
 from musicscore.midi import Midi
 from musurgia.magicrandom import MagicRandom
@@ -17,7 +17,7 @@ class MidiGenerator(ABC):
 
 
 class OneMidiGenerator(MidiGenerator):
-    def __init__(self, midi_value: Union[float, int], *args: Any, **kwargs: Any):
+    def __init__(self, midi_value: float | int, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self._midi_value = midi_value
 

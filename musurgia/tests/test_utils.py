@@ -1,6 +1,6 @@
 from fractions import Fraction
 import math
-from typing import cast
+from typing import Sequence, cast
 from unittest import TestCase
 import os
 
@@ -40,8 +40,8 @@ class RelativeValueGeneratorTestCase(TestCase):
             proportions=[2, 4, 3, 2],
         )
 
-    def _get_directions(self, input_list: list[Fraction]) -> list[int]:
-        directions: list[int] = []
+    def _get_directions(self, input_list: list[Fraction]) -> Sequence[int]:
+        directions = []
         for index, x in enumerate(input_list[1:]):
             previous = input_list[index]
             if x > previous:
@@ -77,7 +77,9 @@ class RelativeValueGeneratorTestCase(TestCase):
                 Fraction(17, 2),
             ],
         )
-        self.assertListEqual(self._get_directions(relative_values), self.rvr.directions)
+        self.assertSequenceEqual(
+            self._get_directions(relative_values), self.rvr.directions
+        )
         self.assertEqual(min(relative_values), self.rvr.value_range[0])
         self.assertEqual(max(relative_values), self.rvr.value_range[1])
         self.assertListEqual(

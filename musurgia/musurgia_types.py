@@ -1,6 +1,6 @@
 from enum import Enum
 from fractions import Fraction
-from typing import Any, Optional, Union, Literal, Callable, Sequence, cast, get_args
+from typing import Any, Literal, Callable, Sequence, cast, get_args
 
 from musurgia.musurgia_exceptions import MatrixIndexOutOfRangeError
 
@@ -83,15 +83,15 @@ class LiteralCheckGenerator:
 
 
 def create_error_message(
-    v: Optional[Any] = None,
-    t: Optional[Union[type, str]] = None,
-    function_name: Optional[str] = None,
-    class_name: Optional[str] = None,
-    method_name: Optional[str] = None,
-    argument_name: Optional[str] = None,
-    property_name: Optional[str] = None,
-    class_attribute_name: Optional[str] = None,
-    message: Optional[str] = None,
+    v: Any | None = None,
+    t: type | str | None = None,
+    function_name: str | None = None,
+    class_name: str | None = None,
+    method_name: str | None = None,
+    argument_name: str | None = None,
+    property_name: str | None = None,
+    class_attribute_name: str | None = None,
+    message: str | None = None,
 ) -> str:
     if not message and not (v or t):
         raise AttributeError("if no message provided v and t must be set")
@@ -196,15 +196,15 @@ class MusurgiaTypeError(TypeError):
 
     def __init__(
         self,
-        v: Optional[Any] = None,
-        t: Optional[Union[type, str]] = None,
-        function_name: Optional[str] = None,
-        class_name: Optional[str] = None,
-        method_name: Optional[str] = None,
-        argument_name: Optional[str] = None,
-        property_name: Optional[str] = None,
-        class_attribute_name: Optional[str] = None,
-        message: Optional[str] = None,
+        v: Any | None = None,
+        t: type | str | None = None,
+        function_name: str | None = None,
+        class_name: str | None = None,
+        method_name: str | None = None,
+        argument_name: str | None = None,
+        property_name: str | None = None,
+        class_attribute_name: str | None = None,
+        message: str | None = None,
     ):
         msg = create_error_message(
             v,
@@ -247,7 +247,7 @@ def check_positive_integer_type(value: PositiveInteger) -> bool:
     return True
 
 
-ConvertibleToFraction = Union[float, int, Fraction]
+ConvertibleToFraction = float | int | Fraction
 
 
 def check_convertible_to_fraction_type(value: ConvertibleToFraction) -> bool:
@@ -271,7 +271,7 @@ def convert_to_fraction_list(input: Sequence[ConvertibleToFraction]) -> list[Fra
     return [convert_to_fraction(x) for x in input]
 
 
-ConvertibleToFloat = Union[float, int, Fraction, str]
+ConvertibleToFloat = float | int | Fraction | str
 
 
 def check_convertible_to_float_type(value: ConvertibleToFloat) -> bool:
@@ -442,7 +442,7 @@ ClockMode = Literal["hms", "ms", "msreduced"]
 check_clock_mode_type = LiteralCheckGenerator(ClockMode, "ClockMode").generate_checker()
 
 
-MidiValue = Union[int, float]
+MidiValue = int | float
 check_midi_value_type = LiteralCheckGenerator(MidiValue, "MidiValue").generate_checker()
 
 
@@ -485,13 +485,13 @@ def get_check_musurgia_type(musurgia_type: MusurgiaType) -> Callable[[Any], bool
 
 def check_type(
     v: Any,
-    t: Union[type, str],
-    function_name: Optional[str] = None,
-    class_name: Optional[str] = None,
-    method_name: Optional[str] = None,
-    argument_name: Optional[str] = None,
-    property_name: Optional[str] = None,
-    class_attribute_name: Optional[str] = None,
+    t: type | str,
+    function_name: str | None = None,
+    class_name: str | None = None,
+    method_name: str | None = None,
+    argument_name: str | None = None,
+    property_name: str | None = None,
+    class_attribute_name: str | None = None,
 ) -> bool:
     """
     :param v: ``value`` to be checked.
@@ -506,7 +506,7 @@ def check_type(
     :raise: :obj:`MusurgiaTypeError`
     """
 
-    def _create_error(message: Optional[str] = None) -> MusurgiaTypeError:
+    def _create_error(message: str | None = None) -> MusurgiaTypeError:
         if not message:
             return MusurgiaTypeError(
                 v,

@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from copy import deepcopy
 from itertools import cycle
-from typing import Any, Iterator, Optional, Type, TypeVar, cast
+from typing import Any, Generic, Iterator, Sequence, Type, TypeVar, cast
 
 from musicscore.midi import Midi
 from musicscore.score import Score
@@ -75,20 +75,23 @@ class TreeChordFactory(AbstractChordFactory):
         return new_instance
 
 
-class TreeMidiGenerator:
-    def __init__(self, musical_tree_node: "MusicalTree", *args: Any, **kwargs: Any):
+NodeT = TypeVar("NodeT", bound="MusicalTree")
+
+
+class TreeMidiGenerator(Generic[NodeT]):
+    def __init__(self, musical_tree_node: NodeT, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        self._musical_tree_node: "MusicalTree" = musical_tree_node
+        self._musical_tree_node: NodeT = musical_tree_node
 
     @abstractmethod
     def set_musical_tree_midis(self) -> None:
         pass
 
-    def get_musical_tree_node(self) -> "MusicalTree":
+    def get_musical_tree_node(self) -> NodeT:
         return self._musical_tree_node
 
 
-class MagicRandomTreeMidiGenerator(TreeMidiGenerator, MagicRandom):
+class MagicRandomTreeMidiGenerator(TreeMidiGenerator["MusicalTree"], MagicRandom):
     def set_musical_tree_midis(self) -> None:
         for node in self._musical_tree_node.traverse():
             node.get_chord_factory().midis = next(self)
@@ -97,16 +100,16 @@ class MagicRandomTreeMidiGenerator(TreeMidiGenerator, MagicRandom):
 class RelativeTreeChordFactory(TreeChordFactory):
     def __init__(
         self,
-        midi_value_range: Optional[tuple[MidiValue, MidiValue]] = None,
+        midi_value_range: tuple[MidiValue, MidiValue] | None = None,
         micro_tone: MidiValueMicroTone = MidiValueMicroTone.HALF,
-        direction_iterator: Optional[Iterator[DirectionValue]] = None,
+        direction_iterator: Iterator[DirectionValue] | None = None,
         *args: Any,
         **kwargs: Any,
     ):
         super().__init__(*args, **kwargs)
-        self._midi_value_range: Optional[tuple[MidiValue, MidiValue]]
+        self._midi_value_range: tuple[MidiValue, MidiValue] | None
         self._micro_tone: MidiValueMicroTone
-        self._direction_iterator: Optional[Iterator[DirectionValue]]
+        self._direction_iterator: Iterator[DirectionValue] | None
         self._include_last_midi_in_range: bool = False
 
         self.midi_value_range = midi_value_range
@@ -130,21 +133,21 @@ class RelativeTreeChordFactory(TreeChordFactory):
         self._micro_tone = value
 
     @property
-    def midi_value_range(self) -> Optional[tuple[MidiValue, MidiValue]]:
+    def midi_value_range(self) -> tuple[MidiValue, MidiValue] | None:
         return self._midi_value_range
 
     @midi_value_range.setter
-    def midi_value_range(self, value: Optional[tuple[MidiValue, MidiValue]]) -> None:
+    def midi_value_range(self, value: tuple[MidiValue, MidiValue] | None) -> None:
         self._midi_value_range = value
 
     @property
-    def direction_iterator(self) -> Optional[Iterator[DirectionValue]]:
+    def direction_iterator(self) -> Iterator[DirectionValue] | None:
         if not self._direction_iterator:
             self._direction_iterator = cycle([1, -1])
         return self._direction_iterator
 
     @direction_iterator.setter
-    def direction_iterator(self, value: Optional[Iterator[DirectionValue]]) -> None:
+    def direction_iterator(self, value: Iterator[DirectionValue] | None) -> None:
         self._direction_iterator = value
 
     def create_copy(
@@ -164,29 +167,17 @@ class RelativeTreeChordFactory(TreeChordFactory):
         return new_instance
 
 
-class RelativeTreeMidiGenerator(TreeMidiGenerator):
+class RelativeTreeMidiGenerator(TreeMidiGenerator["RelativeMusicTree"]):
     def set_musical_tree_midis(self) -> None:
-        if not isinstance(
-            self.get_musical_tree_node().get_chord_factory(), RelativeTreeChordFactory
-        ):
-            raise TypeError
-
-        if not cast(
-            RelativeTreeChordFactory, self.get_musical_tree_node().get_chord_factory()
-        ).midi_value_range:
+        if not self.get_musical_tree_node().get_chord_factory().midi_value_range:
             children_ranges = [
-                cast(
-                    RelativeTreeChordFactory, child.get_chord_factory()
-                ).midi_value_range
+                child.get_chord_factory().midi_value_range
                 for child in self.get_musical_tree_node().get_children()
             ]
             if not children_ranges or None in children_ranges:
                 raise RelativeTreeChordFactoryHasNoMidiValueRangeError()
             else:
-                cast(
-                    RelativeTreeChordFactory,
-                    self.get_musical_tree_node().get_chord_factory(),
-                ).midi_value_range = (
+                self.get_musical_tree_node().get_chord_factory().midi_value_range = (
                     0,
                     0,
                 )
@@ -194,12 +185,17 @@ class RelativeTreeMidiGenerator(TreeMidiGenerator):
         for node in self.get_musical_tree_node().traverse():
             if not node.is_leaf:
                 node_chord_factory = node.get_chord_factory()
+
                 children = node.get_children()
                 proportions = [ch.get_value() for ch in children]
+                if not node_chord_factory.direction_iterator:
+                    raise ValueError
                 directions = [
                     next(node_chord_factory.direction_iterator)
                     for _ in range(len(proportions))
                 ]
+                if not node_chord_factory.midi_value_range:
+                    raise ValueError
                 children_midi_value_ranges = list(
                     RelativeValueGenerator(
                         value_range=node_chord_factory.midi_value_range,
@@ -219,8 +215,10 @@ class RelativeTreeMidiGenerator(TreeMidiGenerator):
                             min_midi,
                             max_midi,
                         )
-
-                    min_midi, _ = child.get_chord_factory().midi_value_range
+                    midi_range = child.get_chord_factory().midi_value_range
+                    if not midi_range:
+                        raise ValueError
+                    min_midi, _ = midi_range
 
                     children[index].get_chord_factory().midis = [Midi(min_midi)]
 
@@ -281,31 +279,29 @@ class FractalDirectionIterator:
 
     def __init__(
         self,
-        main_direction_cell: Optional[list[DirectionValue]],
+        main_direction_cell: Sequence[DirectionValue] | None,
         fractal_node: "FractalRelativeMusicTree",
         *args: Any,
         **kwargs: Any,
     ):
         super().__init__(*args, **kwargs)
         self._fractal_node: FractalRelativeMusicTree = fractal_node
-        self._main_direction_cell: Optional[list[DirectionValue]] = main_direction_cell
+        self._main_direction_cell: Sequence[DirectionValue] | None = main_direction_cell
         self._iter_index = -1
 
     @property
-    def main_direction_cell(self) -> Optional[list[DirectionValue]]:
+    def main_direction_cell(self) -> Sequence[DirectionValue] | None:
         if self._main_direction_cell is None:
             if self._fractal_node.up is None:
                 return self.DEFAULT_MAIN_DIRECTION_CELL
             else:
-                return cast(
-                    Optional[list[DirectionValue]],
-                    self._fractal_node.up.get_chord_factory().direction_iterator.main_direction_cell,
-                )
+                return self._fractal_node.up.get_chord_factory().direction_iterator.main_direction_cell
+
         else:
             return self._main_direction_cell
 
     @main_direction_cell.setter
-    def main_direction_cell(self, value: Optional[list[DirectionValue]]) -> None:
+    def main_direction_cell(self, value: list[DirectionValue] | None) -> None:
         self._main_direction_cell = value
 
     def reset(self) -> None:
@@ -342,7 +338,7 @@ class FractalDirectionIterator:
 class FractalRelativeTreeChordFactory(RelativeTreeChordFactory):
     def __init__(
         self,
-        main_direction_cell: Optional[list[DirectionValue]] = None,
+        main_direction_cell: Sequence[DirectionValue] | None = None,
         *args: Any,
         **kwargs: Any,
     ):
@@ -370,7 +366,7 @@ class FractalRelativeTreeChordFactory(RelativeTreeChordFactory):
         return self._direction_iterator
 
     @direction_iterator.setter
-    def direction_iterator(self, value: Optional[Iterator[DirectionValue]]) -> None:
+    def direction_iterator(self, value: Iterator[DirectionValue] | None) -> None:
         """Accept a fractal iterator, or None to reset to inherited directions."""
         if value is not None and not isinstance(value, FractalDirectionIterator):
             raise TypeError(
