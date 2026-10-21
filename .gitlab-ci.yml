@@ -1,29 +1,98 @@
-stages:
-  - typecheck
-  - test
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_TAG'
+    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH'
 
-.default-python:
+stages:
+  - check
+  - test
+  - build
+  - publish
+
+variables:
+  PYTHON_VERSION: '3.12'
+  UV_VERSION: '0.13.1'
+  UV_CACHE_DIR: '$CI_PROJECT_DIR/.uv-cache'
+  UV_LINK_MODE: 'copy'
+  UV_PYTHON_DOWNLOADS: 'never'
+
+.uv-job:
+  image: 'python:${PYTHON_VERSION}-slim'
   before_script:
     - apt-get update
     - apt-get install -y build-essential libcairo2-dev pkg-config libffi-dev
-    - pip install uv
-    - uv sync --group test
+    - python -m pip install --disable-pip-version-check "uv==$UV_VERSION"
+
+  cache:
+    key:
+      prefix: 'uv-${UV_VERSION}-python-${PYTHON_VERSION}'
+      files:
+        - uv.lock
+    paths:
+      - .uv-cache/
+  rules:
+    - when: on_success
+
+lint:
+  extends: .uv-job
+  stage: check
+  script:
+    - uv sync --locked --python "$PYTHON_VERSION"
+    - uv run --no-sync --python "$PYTHON_VERSION" ruff check .
+    - uv run --no-sync --python "$PYTHON_VERSION" ruff format --check .
 
 mypy:
-  stage: typecheck
-  image: python:3.12
-  extends: .default-python
+  extends: .uv-job
+  stage: check
   script:
-    - uv run mypy musurgia
+    - uv run --locked --python "$PYTHON_VERSION" mypy musurgia --strict
 
 test:
+  extends: .uv-job
   stage: test
-  extends: .default-python
   parallel:
     matrix:
       - PYTHON_VERSION: ['3.11', '3.12', '3.13', '3.14']
-  image: python:${PYTHON_VERSION}
   script:
-    - python --version
-    - echo "Running pytest with marker filter"
-    - uv run pytest -m "not nonci and not wip"
+    - uv run --locked --python "$PYTHON_VERSION" python --version
+    - uv run --no-sync --python "$PYTHON_VERSION" pytest -m "not nonci and not wip" --junitxml=junit.xml
+  artifacts:
+    when: always
+    reports:
+      junit: junit.xml
+    expire_in: 1 week
+
+build:
+  extends: .uv-job
+  stage: build
+  script:
+    - uv lock --check --python "$PYTHON_VERSION"
+    - uv build --no-sources --python "$PYTHON_VERSION"
+  artifacts:
+    paths:
+      - dist/*.whl
+      - dist/*.tar.gz
+    expire_in: 1 week
+
+publish-pypi:
+  extends: .uv-job
+  stage: publish
+  needs:
+    - job: build
+      artifacts: true
+  cache: []
+  script:
+    - PACKAGE_VERSION="$(uv version --short)"
+    - TAG_VERSION="${CI_COMMIT_TAG#v}"
+    - |
+      if [ "$TAG_VERSION" != "$PACKAGE_VERSION" ]; then
+        echo "Release tag $CI_COMMIT_TAG does not match package version $PACKAGE_VERSION." >&2
+        exit 1
+      fi
+    - ': "${UV_PUBLISH_TOKEN:?Configure a masked PyPI API token in GitLab CI/CD variables}"'
+    - uv publish dist/*
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/'
