@@ -1,10 +1,15 @@
 from decimal import Decimal
+from fractions import Fraction
+
+from verysimpletree import HomogeneousTree
+
 
 from musurgia.graphics.container import Container
 from musurgia.graphics.geometry import LineOrientation, Position, Scalar
-from musurgia.graphics.segmented_line import LineSegment, SegmentedLine
+from musurgia.graphics.segmented_line import Label, LineSegment, SegmentedLine
 from musurgia.trees.valuetree import ValueTree
 from musurgia.utils import dToX
+from typing import TypedDict
 
 
 def _convert_layer_node_values_to_scaled_decimal(
@@ -17,61 +22,119 @@ def _convert_layer_node_values_to_scaled_decimal(
     return [end - start for start, end in zip(positions, positions[1:])]
 
 
-def _convert_layer_to_segmented_line(
-    nodes: list[ValueTree], scale: Scalar
-) -> SegmentedLine:
-    lengths = _convert_layer_node_values_to_scaled_decimal(nodes, scale)
-    sl = SegmentedLine(
-        type=LineOrientation.HORIZONTAL,
-        line_segments=[
-            LineSegment(type=LineOrientation.HORIZONTAL, length=length)
-            for length in lengths
-        ],
-    )
-    sl.get_line_segments()[-1].add_end_maker()
-    return sl
+class TreeGraphicOptions(TypedDict):
+    scale: Scalar
+    distance_between_layers: Scalar
+    largest_marker_size: Scalar
+    marker_length_shrinking_factor: Scalar
 
 
-class ValueTreeGraphic:
+class TreeGraphicOptionsPatch(TypedDict, total=False):
+    scale: Scalar
+    distance_between_layers: Scalar
+    largest_marker_size: Scalar
+    marker_length_shrinking_factor: Scalar
+
+
+DEFAULT_TREE_GRAPHIC_OPTIONS: TreeGraphicOptions = {
+    "scale": 10,
+    "distance_between_layers": 10,
+    "largest_marker_size": 10,
+    "marker_length_shrinking_factor": Decimal("0.7"),
+}
+
+
+class ValueTreeGraphic(HomogeneousTree):
     def __init__(
         self,
-        tree: ValueTree,
-        scale: Scalar = 1,
-        distance_between_layers: Scalar = 10,
-        *args: str,
+        value_tree_node: ValueTree,
+        *,
+        options: TreeGraphicOptionsPatch | None = None,
         **kwarg: str,
     ) -> None:
-        self._tree = tree
-        self._scale = scale
-        self.distance_between_layers = distance_between_layers
-        self._layers: list[SegmentedLine] = self._create_layers()
+        super().__init__(**kwarg)
+        self._value_tree_node = value_tree_node
+        self._line_segment: LineSegment | None = None
+        self._options: TreeGraphicOptions | None = None
+        self.options = options
+        self._populate()
         self._is_built = False
-        super().__init__(*args, **kwarg)
 
     @property
-    def scale(self) -> Scalar:
-        return self._scale
+    def options(self) -> TreeGraphicOptions:
+        if self.is_root:
+            if not self._options:
+                self._options = DEFAULT_TREE_GRAPHIC_OPTIONS.copy()
+            return self._options
+        return self.get_root().options
 
-    @property
-    def tree(self) -> ValueTree:
-        return self._tree
+    @options.setter
+    def options(self, value: TreeGraphicOptionsPatch | None) -> None:
+        if value and not self.is_root:
+            raise ValueError("Only root accepts options.")
+        self._options = DEFAULT_TREE_GRAPHIC_OPTIONS.copy()
+        if value:
+            self._options.update(value)
 
-    def _create_layers(self) -> list[SegmentedLine]:
-        layers = [
-            self.tree.get_layer(n + 1) for n in range(self.tree.get_number_of_layers())
-        ]
-        return [_convert_layer_to_segmented_line(layer, self.scale) for layer in layers]
+    def _populate(self) -> None:
+        for v_node in self.get_value_tree_node().get_children():
+            self.add_child(ValueTreeGraphic(v_node))
+        if self.get_value_tree_node().is_root:
+            for layer in self.get_layers()[:-1]:
+                for node in layer:
+                    if node.is_leaf:
+                        node.add_child(ValueTreeGraphic(node.get_value_tree_node()))
+
+            marker_lengths = {Fraction(0): self.options["largest_marker_size"]}
+
+            for index, layer in enumerate(self.get_layers()):
+                lengths = _convert_layer_node_values_to_scaled_decimal(
+                    [node.get_value_tree_node() for node in layer],
+                    self.options["scale"],
+                )
+                positions = dToX(lengths)[:-1]
+                for node, length, position in zip(
+                    layer, lengths, positions, strict=True
+                ):
+                    if position not in marker_lengths.keys():
+                        marker_lengths[position] = self.options[
+                            "largest_marker_size"
+                        ] * self.options["marker_length_shrinking_factor"] ** (
+                            index - 1
+                        )
+                    node._line_segment = LineSegment(
+                        type=LineOrientation.HORIZONTAL, length=length
+                    )
+                    node._line_segment.start_marker.length = marker_lengths[position]
+                    if node == layer[-1]:
+                        end_marker = node._line_segment.add_end_maker()
+                        end_marker.length = self.options["largest_marker_size"]
+
+    def add_label(self, label: Label) -> None:
+        self.get_line_segment().start_marker.add_label(label)
+
+    def get_line_segment(self) -> LineSegment:
+        if self._line_segment is None:
+            raise RuntimeError("This graphic node has no line segment.")
+
+        return self._line_segment
+
+    def get_value_tree_node(self) -> ValueTree:
+        return self._value_tree_node
 
     def build(self) -> Container:
         if self._is_built:
             raise RuntimeError("This graphic has already been built.")
-        for layer in self._layers:
-            layer.build()
         container = Container()
-        for index, layer in enumerate(self._layers):
+        for index, layer in enumerate(self.get_layers()[1:]):
+            sl = SegmentedLine(
+                type=LineOrientation.HORIZONTAL,
+                line_segments=[node.get_line_segment() for node in layer],
+            )
+            sl.build()
             container.add_draw_object(
-                position=Position(0, index * self.distance_between_layers),
-                draw_object=layer,
+                position=Position(0, index * self.options["distance_between_layers"]),
+                draw_object=sl,
             )
         self._is_built = True
         return container
