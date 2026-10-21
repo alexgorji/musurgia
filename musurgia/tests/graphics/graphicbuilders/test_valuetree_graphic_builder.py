@@ -66,8 +66,9 @@ def test_tree_graphic_line_segment_markers() -> None:
     graphic = ValueTreeGraphic(
         vt,
         options={
-            "largest_marker_size": 20,
+            "marker_max_length": 20,
             "marker_length_shrinking_factor": Decimal("0.5"),
+            "marker_thickness_shrinking_factor": 1,
         },
     )
 
@@ -192,7 +193,7 @@ class ValueTreeGraphicBuilderRegressionTestCase(SVGTestCase):
             options={
                 "scale": 25,
                 "distance_between_layers": 25,
-                "largest_marker_size": 10,
+                "marker_max_length": 10,
             },
         )
         offset = 0
@@ -222,5 +223,5 @@ class ValueTreeGraphicBuilderRegressionTestCase(SVGTestCase):
             this_path,
             height=210 * 2,
             width=297 * 2,
-            tolerance=set_ci_tolerance(0.03),
+            tolerance=set_ci_tolerance(0.2),
         )

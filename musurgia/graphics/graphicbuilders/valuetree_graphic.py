@@ -25,22 +25,28 @@ def _convert_layer_node_values_to_scaled_decimal(
 class TreeGraphicOptions(TypedDict):
     scale: Scalar
     distance_between_layers: Scalar
-    largest_marker_size: Scalar
+    marker_max_length: Scalar
     marker_length_shrinking_factor: Scalar
+    marker_max_thickness: Scalar
+    marker_thickness_shrinking_factor: Scalar
 
 
 class TreeGraphicOptionsPatch(TypedDict, total=False):
     scale: Scalar
     distance_between_layers: Scalar
-    largest_marker_size: Scalar
+    marker_max_length: Scalar
     marker_length_shrinking_factor: Scalar
+    marker_max_thickness: Scalar
+    marker_thickness_shrinking_factor: Scalar
 
 
 DEFAULT_TREE_GRAPHIC_OPTIONS: TreeGraphicOptions = {
     "scale": 10,
     "distance_between_layers": 10,
-    "largest_marker_size": 10,
+    "marker_max_length": 10,
     "marker_length_shrinking_factor": Decimal("0.7"),
+    "marker_max_thickness": Decimal("0.5"),
+    "marker_thickness_shrinking_factor": Decimal("0.7"),
 }
 
 
@@ -85,7 +91,8 @@ class ValueTreeGraphic(HomogeneousTree):
                     if node.is_leaf:
                         node.add_child(ValueTreeGraphic(node.get_value_tree_node()))
 
-            marker_lengths = {Fraction(0): self.options["largest_marker_size"]}
+            marker_lengths = {Fraction(0): self.options["marker_max_length"]}
+            marker_thicknesses = {Fraction(0): self.options["marker_max_thickness"]}
 
             for index, layer in enumerate(self.get_layers()):
                 lengths = _convert_layer_node_values_to_scaled_decimal(
@@ -98,17 +105,28 @@ class ValueTreeGraphic(HomogeneousTree):
                 ):
                     if position not in marker_lengths.keys():
                         marker_lengths[position] = self.options[
-                            "largest_marker_size"
+                            "marker_max_length"
                         ] * self.options["marker_length_shrinking_factor"] ** (
+                            index - 1
+                        )
+                        marker_thicknesses[position] = self.options[
+                            "marker_max_thickness"
+                        ] * self.options["marker_thickness_shrinking_factor"] ** (
                             index - 1
                         )
                     node._line_segment = LineSegment(
                         type=LineOrientation.HORIZONTAL, length=length
                     )
                     node._line_segment.start_marker.length = marker_lengths[position]
+                    node._line_segment.start_marker.options.thickness = (
+                        marker_thicknesses[position]
+                    )
                     if node == layer[-1]:
                         end_marker = node._line_segment.add_end_maker()
-                        end_marker.length = self.options["largest_marker_size"]
+                        end_marker.length = self.options["marker_max_length"]
+                        end_marker.options.thickness = self.options[
+                            "marker_max_thickness"
+                        ]
 
     def add_label(self, label: Label) -> None:
         self.get_line_segment().start_marker.add_label(label)
