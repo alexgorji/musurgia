@@ -15,7 +15,7 @@ def create_svg_object(
     width: Scalar,
     height: Scalar,
     positioned_draw_objects: list[tuple[Position, DrawObject]],
-    unit: Literal["em", "ex", "px", "pt", "pc", "cm", "mm", "in", "%"] = "mm",
+    unit: SVGUnit = "mm",
 ) -> svg.SVG:
     svg_object = svg.SVG(
         width=svg.Length(width, unit),

@@ -1,3 +1,4 @@
+from decimal import Decimal
 from fractions import Fraction
 from unittest import TestCase
 
@@ -220,6 +221,7 @@ class TestCheckTypeFunction(TestCase):
         assert convert_to_fraction(1) == Fraction(1, 1)
         assert convert_to_fraction(1.5) == Fraction(3, 2)
         assert convert_to_fraction(Fraction(3, 4)) == Fraction(3, 4)
+        assert convert_to_fraction(Decimal("0.25")) == Fraction(1, 4)
 
     def test_convertible_to_float(self) -> None:
         assert check_type(1, "ConvertibleToFloat")

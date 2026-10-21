@@ -1,3 +1,4 @@
+from decimal import Decimal
 from enum import Enum
 from fractions import Fraction
 from typing import Any, Literal, Callable, Sequence, cast, get_args
@@ -12,6 +13,7 @@ MUSURGIA_TYPES = [
     "PermutationOrder",
     "PositiveInteger",
     "ConvertibleToFraction",
+    "FractionInput",
     "FractalTreeReduceChildrenMode",
     "MatrixReadingDirection",
     "ConvertibleToFloat",
@@ -25,9 +27,7 @@ MUSURGIA_TYPES = [
     "VerticalPosition",
     "HorizontalPosition",
     "MarkLinePlacement",
-    "PageOrientation",
     "PageFormat",
-    "PageOrientation",
     "MarginType",
     "ClockMode",
     "MidiValueDirectionValue",
@@ -42,6 +42,7 @@ MusurgiaType = Literal[
     "PermutationOrder",
     "PositiveInteger",
     "ConvertibleToFraction",
+    "FractionInput",
     "ConvertibleToFloat",
     "FractalTreeReduceChildrenMode",
     "MatrixReadingDirection",
@@ -55,9 +56,7 @@ MusurgiaType = Literal[
     "VerticalPosition",
     "HorizontalPosition",
     "MarkLinePlacement",
-    "PageOrientation",
     "PageFormat",
-    "PageOrientation",
     "MarginType",
     "ClockMode",
     "MidiValue",
@@ -248,6 +247,7 @@ def check_positive_integer_type(value: PositiveInteger) -> bool:
 
 
 ConvertibleToFraction = float | int | Fraction
+FractionInput = ConvertibleToFraction | Decimal
 
 
 def check_convertible_to_fraction_type(value: ConvertibleToFraction) -> bool:
@@ -260,14 +260,16 @@ def check_convertible_to_fraction_type(value: ConvertibleToFraction) -> bool:
     return True
 
 
-def convert_to_fraction(value: ConvertibleToFraction) -> Fraction:
+def convert_to_fraction(value: FractionInput) -> Fraction:
     if isinstance(value, Fraction):
         return value
     else:
         return Fraction(value)
 
 
-def convert_to_fraction_list(input: Sequence[ConvertibleToFraction]) -> list[Fraction]:
+def convert_to_fraction_list(
+    input: Sequence[FractionInput],
+) -> list[Fraction]:
     return [convert_to_fraction(x) for x in input]
 
 
@@ -419,11 +421,6 @@ check_horizontal_position_type = LiteralCheckGenerator(
 MarkLinePlacement = Literal["start", "end"]
 check_mark_line_placement_type = LiteralCheckGenerator(
     MarkLinePlacement, "MarkLinePlacement"
-).generate_checker()
-
-PageOrientation = Literal["", "portrait", "p", "P", "landscape", "l", "L"]
-check_page_orientation_type = LiteralCheckGenerator(
-    PageOrientation, "PageOrientation"
 ).generate_checker()
 
 PageFormat = Literal[

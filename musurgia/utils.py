@@ -1,13 +1,20 @@
 from fractions import Fraction
-from typing import Any, Iterator, Literal, Sequence
+from typing import Any, Iterator, Sequence, TypeVar
 
-from musurgia.musurgia_types import ConvertibleToFraction, convert_to_fraction
+from musurgia.musurgia_types import (
+    ConvertibleToFraction,
+    DirectionValue,
+    FractionInput,
+    convert_to_fraction,
+)
 from musurgia.musurgia_types import convert_to_fraction_list as convert_to_fraction_list
 from musurgia.quantize import get_quantized_positions
 
+ValueT = TypeVar("ValueT")
+
 
 def dToX(
-    input_list: Sequence[ConvertibleToFraction],
+    input_list: Sequence[FractionInput],
     first_element: ConvertibleToFraction = 0,
 ) -> list[Fraction]:
     input = convert_to_fraction_list(input_list)
@@ -25,7 +32,7 @@ def xToD(input_list: Sequence[ConvertibleToFraction]) -> list[Fraction]:
     return result
 
 
-def flatten(input: list[Any]) -> list[Any]:
+def flatten(input: Sequence[ValueT]) -> Sequence[ValueT]:
     """
     :param input:
     :return:
@@ -38,7 +45,7 @@ def flatten(input: list[Any]) -> list[Any]:
     [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     """
-    output = []
+    output: list[ValueT] = []
     for item in input:
         if isinstance(item, list):
             output.extend(flatten(item))
@@ -106,14 +113,11 @@ class Normalizer:
         return convert_to_fraction(normalized_value)
 
 
-DirectionValueType = Literal[1, -1]
-
-
 class RelativeValueGenerator:
     def __init__(
         self,
         value_range: tuple[ConvertibleToFraction, ConvertibleToFraction],
-        directions: Sequence[DirectionValueType],
+        directions: Sequence[DirectionValue],
         proportions: Sequence[ConvertibleToFraction],
         value_grid: ConvertibleToFraction | None = None,
         include_last_midi_in_range: bool = False,
@@ -183,11 +187,11 @@ class RelativeValueGenerator:
         self._calculate_result_values()
 
     @property
-    def directions(self) -> Sequence[DirectionValueType]:
+    def directions(self) -> Sequence[DirectionValue]:
         return self._directions
 
     @directions.setter
-    def directions(self, value: list[DirectionValueType]) -> None:
+    def directions(self, value: list[DirectionValue]) -> None:
         self._directions = value
         self._calculate_intervals()
         self._calculate_result_values()

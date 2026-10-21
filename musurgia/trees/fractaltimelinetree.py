@@ -195,7 +195,7 @@ class FractalTimelineTree(TimelineTree):
             #     self._pic = PermutationIndexCalculater(self.get_permutation_order_matrix().get_size())
             #     return self._pic
 
-        return cast(PermutationIndexCalculator, self.get_root()._get_pic())
+        return self.get_root()._get_pic()
 
     # properties
     @property
@@ -211,7 +211,7 @@ class FractalTimelineTree(TimelineTree):
         if self.is_root:
             return self._main_permutation_order
         else:
-            return cast(FractalTimelineTree, self.get_root()).main_permutation_order
+            return self.get_root().main_permutation_order
 
     @main_permutation_order.setter
     def main_permutation_order(self, value: PermutationOrder | None) -> None:
@@ -499,9 +499,7 @@ class FractalTimelineTree(TimelineTree):
                 )
             return self._permutation_order_matrix
         else:
-            return cast(
-                FractalTimelineTree, self.get_root()
-            ).get_permutation_order_matrix()
+            return self.get_root().get_permutation_order_matrix()
 
     def get_size(self) -> int:
         """
