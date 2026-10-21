@@ -7,12 +7,12 @@ from musurgia.graphics.page_layout import PageLayout
 from verysimpletree import TreeNodeTupleRepresentation
 
 
-from musurgia.graphics.geometry import Position
+from musurgia.graphics.geometry import Margins, Position
 from musurgia.graphics.graphicbuilders.valuetree_graphic import (
     ValueTreeGraphic,
 )
 from musurgia.graphics.segmented_line import Label, LineSegment
-from musurgia.graphics.svg.paginator import SVGPage
+from musurgia.graphics.svg.paginator import SVGPage, SVGPaginator
 from musurgia.tests.helpers.svg import SVGTestCase
 from musurgia.tests.helpers.utils_for_tests import (
     DemoValueTree,
@@ -144,7 +144,7 @@ class ValueTreeGraphicBuilderRegressionTestCase(SVGTestCase):
         g_tree = graphic.build()
         page.add_draw_object(Position(10, 10), g_tree)
 
-        self.compare_page(
+        self.compare_page_files(
             page,
             "scaled_one_node",
             this_path,
@@ -171,7 +171,7 @@ class ValueTreeGraphicBuilderRegressionTestCase(SVGTestCase):
         g_tree = graphic.build()
         page.add_draw_object(Position(10, 10), g_tree)
 
-        self.compare_page(
+        self.compare_page_files(
             page,
             "one_layer",
             this_path,
@@ -183,11 +183,14 @@ class ValueTreeGraphicBuilderRegressionTestCase(SVGTestCase):
     def test_multiple_layered_tree(self) -> None:
         vt = DemoValueTree.create_tree_from_list(test_fractal_structure_list, ["value"])
 
-        page = SVGPage(layout=PageLayout(orientation="landscape"))
-        page.add_grid(thickness=Decimal("0.05"))
+        page = (
+            SVGPage(layout=PageLayout(margins=Margins(20, 10, 10, 10)))
+            .add_grid(thickness=Decimal("0.05"))
+            .add_background("white")
+        )
 
-        page.add_background("white")
-        page.add_grid()
+        paginator = SVGPaginator([page])
+
         graphic = ValueTreeGraphic(
             vt,
             options={
@@ -215,13 +218,33 @@ class ValueTreeGraphicBuilderRegressionTestCase(SVGTestCase):
                 )
             )
         g_tree = graphic.build()
-        page.add_draw_object(Position(10, 10), g_tree)
+        pages = paginator.paginate(g_tree)
 
-        self.compare_page(
-            page,
-            "multiple_layered",
-            this_path,
-            height=210 * 2,
-            width=297 * 2,
-            tolerance=set_ci_tolerance(0.2),
-        )
+        # for index, page in enumerate(pages):
+        #     self.create_page_files(
+        #         page,
+        #         f"multiple_layered_{index + 1}",
+        #         this_path,
+        #         height=210 * 2,
+        #         width=297 * 2,
+        #     )
+        for index, page in enumerate(pages):
+            self.compare_page_files(
+                page,
+                f"multiple_layered_{index + 1}",
+                this_path,
+                height=210 * 2,
+                width=297 * 2,
+                tolerance=set_ci_tolerance(0.2),
+            )
+
+        # page.add_draw_object(Position(10, 10), g_tree)
+
+        # self.compare_page(
+        #     page,
+        #     "multiple_layered",
+        #     this_path,
+        #     height=210 * 2,
+        #     width=297 * 2,
+        #     tolerance=set_ci_tolerance(0.2),
+        # )
