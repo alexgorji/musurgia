@@ -51,14 +51,7 @@ class SVGTestCase(unittest.TestCase):
         height: int = int(297 * 96 / 25.4),
         tolerance: float = 0.0,
     ) -> Literal[True]:
-        rendered_png_path = svg_path.with_suffix(".rendered.png")
-        cairosvg.svg2png(  # pyright: ignore[reportUnknownMemberType]
-            url=str(svg_path),
-            write_to=str(rendered_png_path),
-            output_width=width,
-            output_height=height,
-        )
-
+        rendered_png_path = self.create_png_from_svg(svg_path, width, height)
         img1 = Image.open(rendered_png_path).convert("RGBA")
         img2 = Image.open(png_path).convert("RGBA")
 
@@ -131,7 +124,42 @@ class SVGTestCase(unittest.TestCase):
 
         return percentage_diff, images_are_same, tolerance
 
-    def compare_page(
+    def create_svg(self, page: SVGPage, post_fix: str, this_path: Path) -> Path:
+        svg_path = SVG(page.convert_to_svg_string()).write_to_path(
+            self.create_test_path(this_path, post_fix, "svg")
+        )
+        return svg_path
+
+    def create_png_from_svg(
+        self,
+        svg_path: Path,
+        width: int = int(210 * 96 / 25.4),
+        height: int = int(297 * 96 / 25.4),
+    ) -> Path:
+        rendered_png_path = svg_path.with_suffix(".rendered.png")
+        cairosvg.svg2png(  # pyright: ignore[reportUnknownMemberType]
+            url=str(svg_path),
+            write_to=str(rendered_png_path),
+            output_width=width,
+            output_height=height,
+        )
+        return rendered_png_path
+
+    def create_page_files(
+        self,
+        page: SVGPage,
+        post_fix: str,
+        this_path: Path,
+        width: int | None = None,
+        height: int | None = None,
+    ) -> tuple[Path, Path]:
+        width = width or int(page.get_layout().get_size().width * 96 / Decimal(25.4))
+        height = height or int(page.get_layout().get_size().height * 96 / Decimal(25.4))
+        svg_path = self.create_svg(page, post_fix, this_path)
+        rendered_png_path = self.create_png_from_svg(svg_path, width, height)
+        return svg_path, rendered_png_path
+
+    def compare_page_files(
         self,
         page: SVGPage,
         post_fix: str,
@@ -140,10 +168,7 @@ class SVGTestCase(unittest.TestCase):
         height: int | None = None,
         tolerance: float = 0.0,
     ) -> None:
-        svg_path = SVG(page.convert_to_svg_string()).write_to_path(
-            self.create_test_path(this_path, post_fix, "svg")
-        )
-
+        svg_path = self.create_svg(page, post_fix, this_path)
         png_path = self.create_test_path(this_path, post_fix, "png", "golden_pngs")
         width = width or int(page.get_layout().get_size().width * 96 / Decimal(25.4))
         height = height or int(page.get_layout().get_size().height * 96 / Decimal(25.4))

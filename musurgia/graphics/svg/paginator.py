@@ -166,7 +166,11 @@ class SVGPage:
         )
 
     def copy(self) -> "SVGPage":
-        return SVGPage(layout=copy.deepcopy(self.get_layout()))
+        copied = SVGPage(layout=copy.deepcopy(self.get_layout()))
+        copied._background = copy.deepcopy(self._background)
+        copied._grid = copy.deepcopy(self._grid)
+        copied._rows = copy.deepcopy(self._rows)
+        return copied
 
     def as_svg(self) -> svg.SVG:
         w, h = self.get_layout().get_size().to_values()
@@ -237,17 +241,20 @@ class SVGPaginator:
 
     def paginate(self, container: Container) -> list[SVGPage]:
         page_number = 1
-        offset = Decimal(0)
+        offset = Decimal("0")
         svg_group = convert_drawobjects_to_svg_group(
             container.get_draw_objects(positioned=True)
         )
         pages = []
         while offset < container.size.width:
-            page_index = page_number - 1 if page_number <= len(self._pages) else -1
+            page_index = page_number - 1
+            # if page_number <= len(self._pages):
+            #     page = self._pages[page_index]
+            # print("page_index", page_index)
             try:
                 page = self._pages[page_index]
             except IndexError:
-                page = self._pages[page_index].copy()
+                page = self._pages[-1].copy()
             rows = page.get_rows()
             if not rows:
                 rows = create_page_rows(page)

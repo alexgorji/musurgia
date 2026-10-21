@@ -21,4 +21,4 @@ class DashedRectangleTestCase(SVGTestCase):
         )
         page.add_draw_object(Position(40, 40), r)
 
-        self.compare_page(page, "", this_path, width=297 * 2, height=210 * 2)
+        self.compare_page_files(page, "", this_path, width=297 * 2, height=210 * 2)

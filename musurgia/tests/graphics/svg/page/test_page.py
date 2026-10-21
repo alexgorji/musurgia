@@ -55,12 +55,12 @@ class PageToSVGTestCase(TestCase):
 class PageToSVGRegressionTests(SVGTestCase):
     def test_empty_page(self) -> None:
         page = SVGPage()
-        self.compare_page(page, "empty_page", this_path)
+        self.compare_page_files(page, "empty_page", this_path)
 
     def test_empty_page_with_grid(self) -> None:
         page = SVGPage()
         page.add_grid()
-        self.compare_page(page, "empty_page_with_grid", this_path)
+        self.compare_page_files(page, "empty_page_with_grid", this_path)
 
     def test_add_line_draw_object_to_page(self) -> None:
         page = SVGPage()
@@ -93,7 +93,7 @@ class PageToSVGRegressionTests(SVGTestCase):
         l4.box.show = True
         page.add_draw_object(Position(130, 30), l4)
 
-        self.compare_page(
+        self.compare_page_files(
             page, "add_line_draw_objects", this_path, width=210, height=297
         )
 
@@ -120,7 +120,7 @@ class PageToSVGRegressionTests(SVGTestCase):
         for position, draw_object in zip(positions, draw_objects, strict=True):
             page.add_draw_object(position, draw_object)
 
-        self.compare_page(
+        self.compare_page_files(
             page, "add_multiple_line_draw_objects", this_path, width=210, height=297
         )
 
@@ -149,7 +149,7 @@ class PageToSVGRegressionTests(SVGTestCase):
         page = SVGPage()
         page.add_draw_object(Position(50, 50), parent_container)
 
-        self.compare_page(
+        self.compare_page_files(
             page, "add_nested_container", this_path, width=210, height=297
         )
 
@@ -160,7 +160,7 @@ class PageToSVGRegressionTests(SVGTestCase):
         )
         page.add_draw_object(Position(10, 10), r)
 
-        self.compare_page(page, "add_rectangle", this_path, width=210, height=297)
+        self.compare_page_files(page, "add_rectangle", this_path, width=210, height=297)
 
     def test_boxed_rectangle(self) -> None:
         page = SVGPage()
@@ -179,7 +179,7 @@ class PageToSVGRegressionTests(SVGTestCase):
         page.add_draw_object(Position(50, 50), r1)
         page.add_draw_object(Position(50, 150), r2)
 
-        self.compare_page(
+        self.compare_page_files(
             page, "boxed_rectangle", this_path, width=210 * 2, height=297 * 2
         )
 
@@ -215,7 +215,7 @@ class PageToSVGRegressionTests(SVGTestCase):
         container.box.show = True
         page.add_draw_object(Position(10, 10), container)
 
-        self.compare_page(
+        self.compare_page_files(
             page,
             "add_container",
             this_path,

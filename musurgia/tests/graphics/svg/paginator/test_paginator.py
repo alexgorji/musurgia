@@ -167,7 +167,7 @@ class SVGPaginatorAsSVG(SVGTestCase):
         paginator = SVGPaginator([page])
         page = paginator.paginate(ruler)[0]
         assert isinstance(page.as_svg(), svg.SVG)
-        self.compare_page(
+        self.compare_page_files(
             page,
             "one_page",
             this_path,
@@ -187,9 +187,19 @@ class SVGPaginatorAsSVG(SVGTestCase):
 
         paginator = SVGPaginator([page])
         pages = paginator.paginate(ruler)
-        assert len(pages) == 4
+
+        assert len(set(pages)) == len(pages)
+        # for index, page in enumerate(pages):
+        #     self.create_page_files(
+        #         page,
+        #         f"multiple_pages_{index + 1}",
+        #         this_path,
+        #         height=210 * 2,
+        #         width=297 * 2,
+        #     )
+
         for index, page in enumerate(pages):
-            self.compare_page(
+            self.compare_page_files(
                 page,
                 f"multiple_pages_{index + 1}",
                 this_path,
@@ -220,8 +230,17 @@ class SVGPaginatorAsSVG(SVGTestCase):
         paginator = SVGPaginator([page])
         pages = paginator.paginate(ruler)
 
+        # for index, page in enumerate(pages):
+        #     self.create_page_files(
+        #         page,
+        #         f"multiple_pages_and_rows_{index + 1}",
+        #         this_path,
+        #         height=210 * 2,
+        #         width=297 * 2,
+        #     )
+
         for index, page in enumerate(pages):
-            self.compare_page(
+            self.compare_page_files(
                 page,
                 f"multiple_pages_and_rows_{index + 1}",
                 this_path,

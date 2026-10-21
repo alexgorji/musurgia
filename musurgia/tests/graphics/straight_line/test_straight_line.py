@@ -50,4 +50,4 @@ class LineDraw(SVGTestCase):
         page.add_background()
         page.add_grid()
 
-        self.compare_page(page, "", path, width=297 * 2, height=210 * 2)
+        self.compare_page_files(page, "", path, width=297 * 2, height=210 * 2)

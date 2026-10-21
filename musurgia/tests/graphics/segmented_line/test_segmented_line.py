@@ -86,7 +86,7 @@ class LineSegmentDraw(SVGTestCase):
         page.add_background("white")
         page.add_draw_object(Position(10, 10), ls)
 
-        self.compare_page(
+        self.compare_page_files(
             page,
             "line_segmented_horizontal",
             path,
@@ -106,7 +106,7 @@ class LineSegmentDraw(SVGTestCase):
         page.add_background("white")
         page.add_draw_object(Position(10, 10), ls)
 
-        self.compare_page(
+        self.compare_page_files(
             page,
             "line_segmented_vertical",
             path,
@@ -133,7 +133,7 @@ class SegmentedLineDraw(SVGTestCase):
         page.add_background("white")
         page.add_draw_object(Position(10, 10), sl)
 
-        self.compare_page(
+        self.compare_page_files(
             page,
             "horizontal",
             path,
@@ -158,7 +158,7 @@ class SegmentedLineDraw(SVGTestCase):
         page.add_background("white")
         page.add_draw_object(Position(10, 10), sl)
 
-        self.compare_page(
+        self.compare_page_files(
             page,
             "vertical",
             path,

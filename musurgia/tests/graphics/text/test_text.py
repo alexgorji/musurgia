@@ -59,7 +59,7 @@ class TextDraw(SVGTestCase):
         page.add_background("white")
         page.add_grid()
 
-        self.compare_page(
+        self.compare_page_files(
             page,
             "add_text_draw_object",
             path,

@@ -90,7 +90,7 @@ class RulerDrawTestCase(SVGTestCase):
         page.add_grid()
         page.add_draw_object(Position(10, 10), hr)
 
-        self.compare_page(
+        self.compare_page_files(
             page,
             "horizontal",
             this_path,
@@ -114,7 +114,7 @@ class RulerDrawTestCase(SVGTestCase):
         page.add_grid()
         page.add_draw_object(Position(10, 10), vr)
 
-        self.compare_page(
+        self.compare_page_files(
             page,
             "vertical",
             this_path,
